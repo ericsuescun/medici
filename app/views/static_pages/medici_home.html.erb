@@ -1,0 +1,6 @@
+<h1>Medici Home Page</h1>
+<h6><%= current_user.firstname if current_user.present? %></h6>
+<%= link_to 'Sign in', new_user_session_path %></br>
+<%= link_to 'Register', new_user_registration_path %>
+<%= button_to 'Logout', destroy_user_session_path, method: :delete %>
+<p>Find me in app/views/static_pages/medici_home.html.erb</p>

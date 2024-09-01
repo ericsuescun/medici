@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  studies: one
+  result_type: MyString
+  title: MyString
+  description: MyString
+
+two:
+  studies: two
+  result_type: MyString
+  title: MyString
+  description: MyString

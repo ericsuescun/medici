@@ -1,0 +1,12 @@
+<% content_for :title, "Editing sponsor" %>
+
+<h1>Editing sponsor</h1>
+
+<%= render "form", sponsor: @sponsor %>
+
+<br>
+
+<div>
+  <%= link_to "Show this sponsor", @sponsor %> |
+  <%= link_to "Back to sponsors", sponsors_path %>
+</div>

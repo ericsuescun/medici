@@ -1,0 +1,61 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  sponsors: one
+  study_status: MyString
+  local_unique_register: MyString
+  cientific_title: MyString
+  public_title: MyString
+  registrated_at: 2024-08-31
+  approved_at: 2024-08-31
+  started_at: 2024-08-31
+  first_patient_at: 2024-08-31
+  global_ending_at: 2024-08-31
+  study_type: MyString
+  study_phase: MyString
+  inclusion_criteria: MyString
+  exclusion_criteria: MyString
+  sample_size: 1
+  main_intervention: MyString
+  control_group: MyString
+  participant_starting_age: 1
+  participant_ending_age: 1
+  sex: MyString
+  medical_preexistencies: MyString
+  ethical_cometee: MyString
+  ethical_approval_at: 2024-08-31
+  keywords: MyString
+  pathology: MyString
+  medication: MyString
+  reviewed: false
+  review_user_id: 1
+
+two:
+  sponsors: two
+  study_status: MyString
+  local_unique_register: MyString
+  cientific_title: MyString
+  public_title: MyString
+  registrated_at: 2024-08-31
+  approved_at: 2024-08-31
+  started_at: 2024-08-31
+  first_patient_at: 2024-08-31
+  global_ending_at: 2024-08-31
+  study_type: MyString
+  study_phase: MyString
+  inclusion_criteria: MyString
+  exclusion_criteria: MyString
+  sample_size: 1
+  main_intervention: MyString
+  control_group: MyString
+  participant_starting_age: 1
+  participant_ending_age: 1
+  sex: MyString
+  medical_preexistencies: MyString
+  ethical_cometee: MyString
+  ethical_approval_at: 2024-08-31
+  keywords: MyString
+  pathology: MyString
+  medication: MyString
+  reviewed: false
+  review_user_id: 1

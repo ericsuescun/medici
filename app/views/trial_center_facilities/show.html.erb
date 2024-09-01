@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @trial_center_facility %>
+
+<div>
+  <%= link_to "Edit this trial center facility", edit_trial_center_facility_path(@trial_center_facility) %> |
+  <%= link_to "Back to trial center facilities", trial_center_facilities_path %>
+
+  <%= button_to "Destroy this trial center facility", @trial_center_facility, method: :delete %>
+</div>

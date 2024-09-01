@@ -1,0 +1,157 @@
+<%= form_with(model: study) do |form| %>
+  <% if study.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(study.errors.count, "error") %> prohibited this study from being saved:</h2>
+
+      <ul>
+        <% study.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :sponsors_id, style: "display: block" %>
+    <%= form.text_field :sponsors_id %>
+  </div>
+
+  <div>
+    <%= form.label :study_status, style: "display: block" %>
+    <%= form.text_field :study_status %>
+  </div>
+
+  <div>
+    <%= form.label :local_unique_register, style: "display: block" %>
+    <%= form.text_field :local_unique_register %>
+  </div>
+
+  <div>
+    <%= form.label :cientific_title, style: "display: block" %>
+    <%= form.text_field :cientific_title %>
+  </div>
+
+  <div>
+    <%= form.label :public_title, style: "display: block" %>
+    <%= form.text_field :public_title %>
+  </div>
+
+  <div>
+    <%= form.label :registrated_at, style: "display: block" %>
+    <%= form.date_field :registrated_at %>
+  </div>
+
+  <div>
+    <%= form.label :approved_at, style: "display: block" %>
+    <%= form.date_field :approved_at %>
+  </div>
+
+  <div>
+    <%= form.label :started_at, style: "display: block" %>
+    <%= form.date_field :started_at %>
+  </div>
+
+  <div>
+    <%= form.label :first_patient_at, style: "display: block" %>
+    <%= form.date_field :first_patient_at %>
+  </div>
+
+  <div>
+    <%= form.label :global_ending_at, style: "display: block" %>
+    <%= form.date_field :global_ending_at %>
+  </div>
+
+  <div>
+    <%= form.label :study_type, style: "display: block" %>
+    <%= form.text_field :study_type %>
+  </div>
+
+  <div>
+    <%= form.label :study_phase, style: "display: block" %>
+    <%= form.text_field :study_phase %>
+  </div>
+
+  <div>
+    <%= form.label :inclusion_criteria, style: "display: block" %>
+    <%= form.text_field :inclusion_criteria %>
+  </div>
+
+  <div>
+    <%= form.label :exclusion_criteria, style: "display: block" %>
+    <%= form.text_field :exclusion_criteria %>
+  </div>
+
+  <div>
+    <%= form.label :sample_size, style: "display: block" %>
+    <%= form.number_field :sample_size %>
+  </div>
+
+  <div>
+    <%= form.label :main_intervention, style: "display: block" %>
+    <%= form.text_field :main_intervention %>
+  </div>
+
+  <div>
+    <%= form.label :control_group, style: "display: block" %>
+    <%= form.text_field :control_group %>
+  </div>
+
+  <div>
+    <%= form.label :participant_starting_age, style: "display: block" %>
+    <%= form.number_field :participant_starting_age %>
+  </div>
+
+  <div>
+    <%= form.label :participant_ending_age, style: "display: block" %>
+    <%= form.number_field :participant_ending_age %>
+  </div>
+
+  <div>
+    <%= form.label :sex, style: "display: block" %>
+    <%= form.text_field :sex %>
+  </div>
+
+  <div>
+    <%= form.label :medical_preexistencies, style: "display: block" %>
+    <%= form.text_field :medical_preexistencies %>
+  </div>
+
+  <div>
+    <%= form.label :ethical_cometee, style: "display: block" %>
+    <%= form.text_field :ethical_cometee %>
+  </div>
+
+  <div>
+    <%= form.label :ethical_approval_at, style: "display: block" %>
+    <%= form.date_field :ethical_approval_at %>
+  </div>
+
+  <div>
+    <%= form.label :keywords, style: "display: block" %>
+    <%= form.text_field :keywords %>
+  </div>
+
+  <div>
+    <%= form.label :pathology, style: "display: block" %>
+    <%= form.text_field :pathology %>
+  </div>
+
+  <div>
+    <%= form.label :medication, style: "display: block" %>
+    <%= form.text_field :medication %>
+  </div>
+
+  <div>
+    <%= form.label :reviewed, style: "display: block" %>
+    <%= form.check_box :reviewed %>
+  </div>
+
+  <div>
+    <%= form.label :review_user_id, style: "display: block" %>
+    <%= form.number_field :review_user_id %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
