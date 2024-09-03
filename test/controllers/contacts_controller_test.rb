@@ -17,7 +17,7 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create contact" do
     assert_difference("Contact.count") do
-      post contacts_url, params: { contact: { address1: @contact.address1, address2: @contact.address2, comments: @contact.comments, email1: @contact.email1, email2: @contact.email2, firstname: @contact.firstname, lastname: @contact.lastname, number1: @contact.number1, number2: @contact.number2, studies_id: @contact.studies_id, title1: @contact.title1, title2: @contact.title2, url: @contact.url } }
+      post contacts_url, params: { contact: { address1: @contact.address1, comments: @contact.comments, email1: @contact.email1, firstname: @contact.firstname, lastname: @contact.lastname, number1: @contact.number1, studies_id: @contact.studies_id, title1: @contact.title1, url: @contact.url } }
     end
 
     assert_redirected_to contact_url(Contact.last)
@@ -34,7 +34,7 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update contact" do
-    patch contact_url(@contact), params: { contact: { address1: @contact.address1, address2: @contact.address2, comments: @contact.comments, email1: @contact.email1, email2: @contact.email2, firstname: @contact.firstname, lastname: @contact.lastname, number1: @contact.number1, number2: @contact.number2, studies_id: @contact.studies_id, title1: @contact.title1, title2: @contact.title2, url: @contact.url } }
+    patch contact_url(@contact), params: { contact: { address1: @contact.address1, comments: @contact.comments, email1: @contact.email1, firstname: @contact.firstname, lastname: @contact.lastname, number1: @contact.number1, studies_id: @contact.studies_id, title1: @contact.title1, url: @contact.url } }
     assert_redirected_to contact_url(@contact)
   end
 

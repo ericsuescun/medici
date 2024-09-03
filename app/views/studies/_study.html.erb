@@ -1,142 +1,172 @@
-<div id="<%= dom_id study %>">
-  <p>
-    <strong>Sponsors:</strong>
-    <%= study.sponsors_id %>
-  </p>
+<br id="<%= dom_id study %>">
+<h1><strong>Titulo Publico:</strong> <%= study.public_title %> - <strong>Titulo Cientifico:</strong> <%= study.scientific_title %></h1>
 
-  <p>
-    <strong>Study status:</strong>
-    <%= study.study_status %>
-  </p>
+<h2>Sujetos interesados en el estudio: <%= study.users.count%></h2>
 
-  <p>
-    <strong>Local unique register:</strong>
-    <%= study.local_unique_register %>
-  </p>
+<h2>Centros de Ensayos Clinicos asociados:</h2>
+<% study.trial_center_facilities.each do |tcf| %>
+  <p><strong>Centro de Ensayos Clinicos:</strong> <%= link_to tcf.name, tcf %></p>
+  <p><strong>Ciudades:</strong> <%= tcf.cities.pluck(:name).join(', ') %></p>
+<% end %>
+  <h3>Identificacion del estudio</h3>
+    <p>
+      <strong>INVIMA:</strong>
+      <%= study.local_unique_register %>
+    </p>
 
-  <p>
-    <strong>Cientific title:</strong>
-    <%= study.cientific_title %>
-  </p>
+    <p>
+      <strong>Public title:</strong>
+      <%= study.public_title %>
+    </p>
 
-  <p>
-    <strong>Public title:</strong>
-    <%= study.public_title %>
-  </p>
+    <p>
+      <strong>Registrated at:</strong>
+      <%= study.registered_at %>
+    </p>
 
-  <p>
-    <strong>Registrated at:</strong>
-    <%= study.registrated_at %>
-  </p>
+    <p>
+      <strong>Approved at:</strong>
+      <%= study.approved_at %>
+    </p>
 
-  <p>
-    <strong>Approved at:</strong>
-    <%= study.approved_at %>
-  </p>
+    <p>
+      <strong>Started at:</strong>
+      <%= study.started_at %>
+    </p>
 
-  <p>
-    <strong>Started at:</strong>
-    <%= study.started_at %>
-  </p>
+    <p>
+      <strong>First patient at:</strong>
+      <%= study.first_patient_at %>
+    </p>
 
-  <p>
-    <strong>First patient at:</strong>
-    <%= study.first_patient_at %>
-  </p>
+    <p>
+      <strong>Global ending at:</strong>
+      <%= study.global_ending_at %>
+    </p>
 
-  <p>
-    <strong>Global ending at:</strong>
-    <%= study.global_ending_at %>
-  </p>
+  <h3>Informacion del patrocinador</h3>
+    <p>
+      <strong>Sponsors:</strong>
+      <%= study.sponsor.name %>
+    </p>
 
-  <p>
-    <strong>Study type:</strong>
-    <%= study.study_type %>
-  </p>
+    <p>
+      <strong>Sponsor type:</strong>
+      <%= study.sponsor.sponsor_type %>
+    </p>
 
-  <p>
-    <strong>Study phase:</strong>
-    <%= study.study_phase %>
-  </p>
+    <p>
+      <strong>Study status:</strong>
+      <%= study.study_status %>
+    </p>
+  <h3>Diseno del Estudio</h3>
+    <p>
+      <strong>Study type:</strong>
+      <%= study.study_type %>
+    </p>
 
-  <p>
-    <strong>Inclusion criteria:</strong>
-    <%= study.inclusion_criteria %>
-  </p>
+    <p>
+      <strong>Study phase:</strong>
+      <%= study.study_phase %>
+    </p>
 
-  <p>
-    <strong>Exclusion criteria:</strong>
-    <%= study.exclusion_criteria %>
-  </p>
+    <p>
+      <strong>Inclusion criteria:</strong>
+      <%= study.inclusion_criteria %>
+    </p>
 
-  <p>
-    <strong>Sample size:</strong>
-    <%= study.sample_size %>
-  </p>
+    <p>
+      <strong>Exclusion criteria:</strong>
+      <%= study.exclusion_criteria %>
+    </p>
 
-  <p>
-    <strong>Main intervention:</strong>
-    <%= study.main_intervention %>
-  </p>
+    <p>
+      <strong>Sample size:</strong>
+      <%= study.sample_size %>
+    </p>
 
-  <p>
-    <strong>Control group:</strong>
-    <%= study.control_group %>
-  </p>
+    <p>
+      <strong>Main intervention:</strong>
+      <%= study.main_intervention %>
+    </p>
 
-  <p>
-    <strong>Participant starting age:</strong>
-    <%= study.participant_starting_age %>
-  </p>
+    <p>
+      <strong>Control group:</strong>
+      <%= study.control_group %>
+    </p>
+  <h3>Resultados Primarios y Secundarios</h3>
+<p><strong>Primarios: </strong></p>
+<% study.results.primary.each do |result| %>
+  <p><strong>Titulo:</strong><%= result.title %></p>
+  <p><%= result.description %></p>
+<% end %>
+<p><strong>Secundarios: </strong></p>
+<% study.results.secondary.each do |result| %>
+  <p><strong>Titulo:</strong><%= result.title %></p>
+  <p><%= result.description %></p>
+<% end %>
+  <h3>Poblacion del estudio</h3>
+    <p>
+      <strong>Participant starting age:</strong>
+      <%= study.participant_starting_age %>
+    </p>
 
-  <p>
-    <strong>Participant ending age:</strong>
-    <%= study.participant_ending_age %>
-  </p>
+    <p>
+      <strong>Participant ending age:</strong>
+      <%= study.participant_ending_age %>
+    </p>
 
-  <p>
-    <strong>Sex:</strong>
-    <%= study.sex %>
-  </p>
+    <p>
+      <strong>Sex:</strong>
+      <%= study.sex %>
+    </p>
 
-  <p>
-    <strong>Medical preexistencies:</strong>
-    <%= study.medical_preexistencies %>
-  </p>
+    <p>
+      <strong>Medical preexistences:</strong>
+      <%= study.medical_preexistences %>
+    </p>
+  <h3>Aspectos Eticos</h3>
+    <p>
+      <strong>Ethical committee:</strong>
+      <%= study.ethical_committee %>
+    </p>
 
-  <p>
-    <strong>Ethical cometee:</strong>
-    <%= study.ethical_cometee %>
-  </p>
+    <p>
+      <strong>Ethical approval at:</strong>
+      <%= study.ethical_approval_at %>
+    </p>
+  <h3>Informacion de contacto</h3>
+    <% study.contacts.each do |contact|%>
+      <p><span><%= contact.contact_info %> </span></p>
+    <% end %>
 
-  <p>
-    <strong>Ethical approval at:</strong>
-    <%= study.ethical_approval_at %>
-  </p>
+  <h3>Enlaces a publicaciones</h3>
 
-  <p>
-    <strong>Keywords:</strong>
-    <%= study.keywords %>
-  </p>
+  <h3>Criterios de busqueda</h3>
 
-  <p>
-    <strong>Pathology:</strong>
-    <%= study.pathology %>
-  </p>
+    <p>
+      <strong>Keywords:</strong>
+      <%= study.keywords %>
+    </p>
 
-  <p>
-    <strong>Medication:</strong>
-    <%= study.medication %>
-  </p>
+    <p>
+      <strong>Pathology:</strong>
+      <%= study.pathology %>
+    </p>
 
-  <p>
-    <strong>Reviewed:</strong>
-    <%= study.reviewed %>
-  </p>
+    <p>
+      <strong>Medication:</strong>
+      <%= study.medication %>
+    </p>
 
-  <p>
-    <strong>Review user:</strong>
-    <%= study.review_user_id %>
-  </p>
+  <h3>Revisiones</h3>
+    <p>
+      <strong>Reviewed:</strong>
+      <%= study.reviewed %>
+    </p>
 
+    <p>
+      <strong>Review user:</strong>
+      <%= study.review_user_id %>
+    </p>
 </div>

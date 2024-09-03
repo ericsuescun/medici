@@ -15,17 +15,13 @@ class ContactsTest < ApplicationSystemTestCase
     click_on "New contact"
 
     fill_in "Address1", with: @contact.address1
-    fill_in "Address2", with: @contact.address2
     fill_in "Comments", with: @contact.comments
     fill_in "Email1", with: @contact.email1
-    fill_in "Email2", with: @contact.email2
     fill_in "Firstname", with: @contact.firstname
     fill_in "Lastname", with: @contact.lastname
     fill_in "Number1", with: @contact.number1
-    fill_in "Number2", with: @contact.number2
     fill_in "Studies", with: @contact.studies_id
     fill_in "Title1", with: @contact.title1
-    fill_in "Title2", with: @contact.title2
     fill_in "Url", with: @contact.url
     click_on "Create Contact"
 
@@ -38,17 +34,13 @@ class ContactsTest < ApplicationSystemTestCase
     click_on "Edit this contact", match: :first
 
     fill_in "Address1", with: @contact.address1
-    fill_in "Address2", with: @contact.address2
     fill_in "Comments", with: @contact.comments
     fill_in "Email1", with: @contact.email1
-    fill_in "Email2", with: @contact.email2
     fill_in "Firstname", with: @contact.firstname
     fill_in "Lastname", with: @contact.lastname
     fill_in "Number1", with: @contact.number1
-    fill_in "Number2", with: @contact.number2
     fill_in "Studies", with: @contact.studies_id
     fill_in "Title1", with: @contact.title1
-    fill_in "Title2", with: @contact.title2
     fill_in "Url", with: @contact.url
     click_on "Update Contact"
 

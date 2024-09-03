@@ -14,7 +14,7 @@ class SponsorsTest < ApplicationSystemTestCase
     visit sponsors_url
     click_on "New sponsor"
 
-    fill_in "Intials", with: @sponsor.intials
+    fill_in "initials", with: @sponsor.initials
     fill_in "Name", with: @sponsor.name
     fill_in "Shortname", with: @sponsor.shortname
     fill_in "Sponsor type", with: @sponsor.sponsor_type
@@ -28,7 +28,7 @@ class SponsorsTest < ApplicationSystemTestCase
     visit sponsor_url(@sponsor)
     click_on "Edit this sponsor", match: :first
 
-    fill_in "Intials", with: @sponsor.intials
+    fill_in "Initials", with: @sponsor.initials
     fill_in "Name", with: @sponsor.name
     fill_in "Shortname", with: @sponsor.shortname
     fill_in "Sponsor type", with: @sponsor.sponsor_type

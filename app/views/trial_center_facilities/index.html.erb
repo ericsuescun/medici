@@ -5,12 +5,33 @@
 <h1>Trial center facilities</h1>
 
 <div id="trial_center_facilities">
-  <% @trial_center_facilities.each do |trial_center_facility| %>
-    <%= render trial_center_facility %>
-    <p>
-      <%= link_to "Show this trial center facility", trial_center_facility %>
-    </p>
-  <% end %>
+  <table>
+    <thead>
+        <tr>
+          <th>Nombre</th>
+
+          <th>Email</th>
+          <th>Telefono</th>
+          <th>Direccion</th>
+          <th>URL</th>
+          <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    <% @trial_center_facilities.each do |trial_center_facility| %>
+      <tr>
+        <td><%= trial_center_facility.name %></td>
+        <td><%= trial_center_facility.email %></td>
+        <td><%= trial_center_facility.contact_number %></td>
+        <td><%= trial_center_facility.contact_address %></td>
+        <td><%= trial_center_facility.url %></td>
+        <td><%= link_to "Show", trial_center_facility %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+
 </div>
 
-<%= link_to "New trial center facility", new_trial_center_facility_path %>
+<%= link_to "Retornar a Medici", static_pages_medici_home_path %> |
+<%= link_to "Nuevo Centro de Ensayo Clinico", new_trial_center_facility_path %>

@@ -1,22 +1,51 @@
 <div id="<%= dom_id sponsor %>">
+  <h1><%= sponsor.name %></h1>
+
   <p>
-    <strong>Name:</strong>
-    <%= sponsor.name %>
+    <strong>Inicales:</strong>
+    <%= sponsor.capitals %>
   </p>
 
   <p>
-    <strong>Intials:</strong>
-    <%= sponsor.intials %>
-  </p>
-
-  <p>
-    <strong>Shortname:</strong>
-    <%= sponsor.shortname %>
-  </p>
-
-  <p>
-    <strong>Sponsor type:</strong>
+    <strong>Tipo de patrocinador:</strong>
     <%= sponsor.sponsor_type %>
   </p>
+  <h1>Estudios asociados</h1>
+  <table>
+    <thead>
+    <tr>
+      <th>INVIMA</th>
+      <th>Scientific title</th>
+      <th>CEC asociados</th>
+      <th>Study status</th>
 
+      <th>Registrated at</th>
+      <th>Approved at</th>
+
+      <th>Keywords</th>
+      <th>Pathology</th>
+      <th>Medication</th>
+      <th>Reviewed</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% sponsor.studies.order(:study_status).each do |study| %>
+      <tr>
+        <td><%= study.local_unique_register %></td>
+        <td><%= study.scientific_title %></td>
+        <td><%= study.trial_center_facilities.pluck(:name).join(', ') %></td>
+        <td><%= study.study_status %></td>
+
+        <td><%= study.registered_at %></td>
+        <td><%= study.approved_at %></td>
+
+        <td><%= study.keywords %></td>
+        <td><%= study.pathology %></td>
+        <td><%= study.medication %></td>
+        <td><%= study.reviewed %></td>
+        <td><%= link_to "Mostrar", study %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
 </div>

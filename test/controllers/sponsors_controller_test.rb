@@ -17,7 +17,7 @@ class SponsorsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create sponsor" do
     assert_difference("Sponsor.count") do
-      post sponsors_url, params: { sponsor: { intials: @sponsor.intials, name: @sponsor.name, shortname: @sponsor.shortname, sponsor_type: @sponsor.sponsor_type } }
+      post sponsors_url, params: { sponsor: { initials: @sponsor.initials, name: @sponsor.name, shortname: @sponsor.shortname, sponsor_type: @sponsor.sponsor_type } }
     end
 
     assert_redirected_to sponsor_url(Sponsor.last)
@@ -34,7 +34,7 @@ class SponsorsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update sponsor" do
-    patch sponsor_url(@sponsor), params: { sponsor: { intials: @sponsor.intials, name: @sponsor.name, shortname: @sponsor.shortname, sponsor_type: @sponsor.sponsor_type } }
+    patch sponsor_url(@sponsor), params: { sponsor: { initials: @sponsor.initials, name: @sponsor.name, shortname: @sponsor.shortname, sponsor_type: @sponsor.sponsor_type } }
     assert_redirected_to sponsor_url(@sponsor)
   end
 

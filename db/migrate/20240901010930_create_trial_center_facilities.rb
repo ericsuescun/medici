@@ -1,13 +1,13 @@
 class CreateTrialCenterFacilities < ActiveRecord::Migration[7.2]
   def change
     create_table :trial_center_facilities do |t|
-      t.string :name
-      t.string :initials
-      t.string :email
-      t.string :description
-      t.string :contact_number
-      t.string :contact_address
-      t.string :url
+      t.string :name, default: ""
+      t.string :initials, default: ""
+      t.string :email, default: ""
+      t.string :description, default: ""
+      t.string :contact_number, default: ""
+      t.string :contact_address, default: ""
+      t.string :url, default: ""
 
       t.timestamps
     end

@@ -1,10 +1,16 @@
 <p style="color: green"><%= notice %></p>
+<div>
+  <%= link_to "Editar este estudio", edit_study_path(@study) %> |
+  <%= link_to "Retornar a Estudios", studies_path %>
+
+  <%= button_to "Borrar", @study, method: :delete %>
+</div>
 
 <%= render @study %>
 
 <div>
-  <%= link_to "Edit this study", edit_study_path(@study) %> |
-  <%= link_to "Back to studies", studies_path %>
+  <%= link_to "Editar este estudio", edit_study_path(@study) %> |
+  <%= link_to "Retornar a Estudios", studies_path %>
 
-  <%= button_to "Destroy this study", @study, method: :delete %>
+  <%= button_to "Borrar", @study, method: :delete %>
 </div>

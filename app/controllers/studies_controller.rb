@@ -65,6 +65,6 @@ class StudiesController < SecureApplicationController
 
     # Only allow a list of trusted parameters through.
     def study_params
-      params.require(:study).permit(:sponsors_id, :study_status, :local_unique_register, :cientific_title, :public_title, :registrated_at, :approved_at, :started_at, :first_patient_at, :global_ending_at, :study_type, :study_phase, :inclusion_criteria, :exclusion_criteria, :sample_size, :main_intervention, :control_group, :participant_starting_age, :participant_ending_age, :sex, :medical_preexistencies, :ethical_cometee, :ethical_approval_at, :keywords, :pathology, :medication, :reviewed, :review_user_id)
+      params.require(:study).permit(:sponsor_id, :study_status, :local_unique_register, :scientific_title, :public_title, :registered_at, :approved_at, :started_at, :first_patient_at, :global_ending_at, :study_type, :study_phase, :inclusion_criteria, :exclusion_criteria, :sample_size, :main_intervention, :control_group, :participant_starting_age, :participant_ending_age, :sex, :medical_preexistences, :ethical_committee, :ethical_approval_at, :keywords, :pathology, :medication, :reviewed, :review_user_id)
     end
 end

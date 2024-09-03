@@ -1,16 +1,55 @@
 <p style="color: green"><%= notice %></p>
 
 <% content_for :title, "Studies" %>
+<%= link_to "Retornar a Medici", static_pages_medici_home_path %> |
+<%= link_to "Nuevo Estudio", new_study_path %>
 
-<h1>Studies</h1>
+<h1>Estudios</h1>
+<table>
+  <thead>
+    <tr>
+      <th>INVIMA</th>
+      <th>Titulo Cientifico</th>
+      <th>Patrocinador</th>
+      <th># CEC</th>
+      <th># Ciudades</th>
+      <th># Pacientes</th>
+      <th>Estado</th>
 
+      <th>Fecha de aprobacion</th>
+
+      <th>Keywords</th>
+      <th>Patologia</th>
+      <th>Medicamento</th>
+      <th>Revisado</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @studies.order(:study_status).each do |study| %>
+        <tr>
+          <td><%= study.local_unique_register %></td>
+          <td><%= study.scientific_title %></td>
+          <td><%= study.sponsor.name %></td>
+          <td><%= study.trial_center_facilities.count %></td>
+          <td><%= study.cities.count %></td>
+          <td><%= study.users.count %></td>
+          <td><%= study.study_status %></td>
+
+          <td><%= study.approved_at %></td>
+
+
+          <td><%= study.keywords %></td>
+          <td><%= study.pathology %></td>
+          <td><%= study.medication %></td>
+          <td><%= study.reviewed %></td>
+          <td><%= link_to "Mostrar", study %></td>
+        </tr>
+    <% end %>
+  </tbody>
+</table>
 <div id="studies">
-  <% @studies.each do |study| %>
-    <%= render study %>
-    <p>
-      <%= link_to "Show this study", study %>
-    </p>
-  <% end %>
+
 </div>
 
-<%= link_to "New study", new_study_path %>
+<%= link_to "Retornar a Medici", static_pages_medici_home_path %> |
+<%= link_to "Nuevo Estudio", new_study_path %>

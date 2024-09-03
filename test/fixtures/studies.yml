@@ -1,12 +1,55 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# == Schema Information
+#
+# Table name: studies
+#
+#  id                       :bigint           not null, primary key
+#  approved_at              :date
+#  control_group            :string           default("")
+#  ethical_approval_at      :date
+#  ethical_committee        :string           default("")
+#  exclusion_criteria       :string           default("")
+#  first_patient_at         :date
+#  global_ending_at         :date
+#  inclusion_criteria       :string           default("")
+#  keywords                 :string           default("")
+#  local_unique_register    :string           default("")
+#  main_intervention        :string           default("")
+#  medical_preexistences    :string           default("")
+#  medication               :string           default("")
+#  participant_ending_age   :integer
+#  participant_starting_age :integer
+#  pathology                :string           default("")
+#  public_title             :string           default("")
+#  registered_at            :date
+#  reviewed                 :boolean          default(FALSE)
+#  sample_size              :integer
+#  scientific_title         :string           default("")
+#  sex                      :string           default("")
+#  started_at               :date
+#  study_phase              :string
+#  study_status             :string
+#  study_type               :string
+#  created_at               :datetime         not null
+#  updated_at               :datetime         not null
+#  review_user_id           :integer
+#  sponsor_id               :bigint           not null
+#
+# Indexes
+#
+#  index_studies_on_sponsor_id  (sponsor_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (sponsor_id => sponsors.id)
+#
 
 one:
   sponsors: one
   study_status: MyString
   local_unique_register: MyString
-  cientific_title: MyString
+  scientific_title: MyString
   public_title: MyString
-  registrated_at: 2024-08-31
+  registered_at: 2024-08-31
   approved_at: 2024-08-31
   started_at: 2024-08-31
   first_patient_at: 2024-08-31
@@ -21,8 +64,8 @@ one:
   participant_starting_age: 1
   participant_ending_age: 1
   sex: MyString
-  medical_preexistencies: MyString
-  ethical_cometee: MyString
+  medical_preexistences: MyString
+  ethical_committee: MyString
   ethical_approval_at: 2024-08-31
   keywords: MyString
   pathology: MyString
@@ -34,9 +77,9 @@ two:
   sponsors: two
   study_status: MyString
   local_unique_register: MyString
-  cientific_title: MyString
+  scientific_title: MyString
   public_title: MyString
-  registrated_at: 2024-08-31
+  registered_at: 2024-08-31
   approved_at: 2024-08-31
   started_at: 2024-08-31
   first_patient_at: 2024-08-31
@@ -51,8 +94,8 @@ two:
   participant_starting_age: 1
   participant_ending_age: 1
   sex: MyString
-  medical_preexistencies: MyString
-  ethical_cometee: MyString
+  medical_preexistences: MyString
+  ethical_committee: MyString
   ethical_approval_at: 2024-08-31
   keywords: MyString
   pathology: MyString

@@ -1,6 +1,27 @@
 <h1>Medici Home Page</h1>
-<h6><%= current_user.firstname if current_user.present? %></h6>
-<%= link_to 'Sign in', new_user_session_path %></br>
-<%= link_to 'Register', new_user_registration_path %>
-<%= button_to 'Logout', destroy_user_session_path, method: :delete %>
-<p>Find me in app/views/static_pages/medici_home.html.erb</p>
+<% if user_signed_in? %>
+  <h3>Usuario: <%= current_user.email %></h3>
+<% end %>
+<nav>
+  <%= link_to 'Patrocinadores', sponsors_path %> |
+  <%= link_to 'Estudios', studies_path %> |
+  <%= link_to 'Centros de Ensayos Clinicos', trial_center_facilities_path %> |
+  <%= link_to 'Usuarios', users_path %>
+</nav>
+
+<h4>Nuestras estadisticas</h4>
+<p>Cantidad de Patrocinadores enrolados: <%= Sponsor.count %></p>
+<p>Cantidad de Centros de Ensayos Clinicos enrolados: <%= TrialCenterFacility.count %></p>
+<p>Cantidad de Estudios Clinicos matriculados: <%= Study.count %></p>
+<p>Cantidad de Pacientes contactados: <%= User.patients.count %></p>
+</br>
+<% if user_signed_in? %>
+  <%= button_to 'Logout', destroy_user_session_path, method: :delete %>
+<% else %>
+  <%= link_to 'Sign in', new_user_session_path %>
+  </br>
+  </br>
+  <%= link_to 'Register', new_user_registration_path %>
+  </br>
+  </br>
+<% end %>

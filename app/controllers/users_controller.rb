@@ -4,6 +4,9 @@ class UsersController < SecureApplicationController
   # GET /users or /users.json
   def index
     @users = User.all
+    @patients = User.patients
+    @sponsors = User.sponsors
+    @admins = User.admins
   end
 
   # GET /users/1 or /users/1.json

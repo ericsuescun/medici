@@ -1,16 +1,34 @@
 <p style="color: green"><%= notice %></p>
 
 <% content_for :title, "Sponsors" %>
-
-<h1>Sponsors</h1>
+<%= link_to "Retornar a Medici", static_pages_medici_home_path %> |
+<%= link_to "Nuevo Patrocinador", new_sponsor_path %>
+<h1>Patrocinadores</h1>
 
 <div id="sponsors">
-  <% @sponsors.each do |sponsor| %>
-    <%= render sponsor %>
-    <p>
-      <%= link_to "Show this sponsor", sponsor %>
-    </p>
-  <% end %>
+  <table>
+    <thead>
+        <tr>
+          <th>Nombre</th>
+          <th># Estudios</th>
+          <th>Iniciales</th>
+          <th>Sponsor type</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% @sponsors.each do |sponsor| %>
+          <tr>
+            <td><%= sponsor.name %></td>
+            <td><%= sponsor.studies.count %></td>
+            <td><%= sponsor.capitals %></td>
+            <td><%= sponsor.sponsor_type %></td>
+            <td><%= link_to "Show", sponsor %></td>
+          </tr>
+        <% end %>
+    </tbody>
+  </table>
+
 </div>
 
-<%= link_to "New sponsor", new_sponsor_path %>
+<%= link_to "Retornar a Medici", static_pages_medici_home_path %> |
+<%= link_to "Nuevo Patrocinador", new_sponsor_path %>

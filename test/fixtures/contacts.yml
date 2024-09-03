@@ -1,17 +1,37 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# == Schema Information
+#
+# Table name: contacts
+#
+#  id         :bigint           not null, primary key
+#  address1   :string           default("")
+#  comments   :text             default("")
+#  email1     :string           default("")
+#  firstname  :string           default("")
+#  lastname   :string           default("")
+#  number1    :string           default("")
+#  title1     :string           default("")
+#  url        :string           default("")
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  study_id   :bigint           not null
+#
+# Indexes
+#
+#  index_contacts_on_study_id  (study_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (study_id => studies.id)
+#
 
 one:
   firstname: MyString
   lastname: MyString
   address1: MyString
-  address2: MyString
   number1: MyString
-  number2: MyString
   email1: MyString
-  email2: MyString
   comments: MyText
   title1: MyString
-  title2: MyString
   url: MyString
   studies: one
 
@@ -19,13 +39,9 @@ two:
   firstname: MyString
   lastname: MyString
   address1: MyString
-  address2: MyString
   number1: MyString
-  number2: MyString
   email1: MyString
-  email2: MyString
   comments: MyText
   title1: MyString
-  title2: MyString
   url: MyString
   studies: two
