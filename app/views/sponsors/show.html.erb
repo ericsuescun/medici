@@ -3,8 +3,8 @@
 <%= render @sponsor %>
 
 <div>
-  <%= link_to "Edit this sponsor", edit_sponsor_path(@sponsor) %> |
-  <%= link_to "Back to sponsors", sponsors_path %>
+  <%= link_to "Editar", edit_sponsor_path(@sponsor) %> |
+  <%= link_to "Retornar a Patrocinadores", sponsors_path %>
 
-  <%= button_to "Destroy this sponsor", @sponsor, method: :delete %>
+  <%= button_to "Borrar", @sponsor, method: :delete %>
 </div>

@@ -12,6 +12,11 @@
   <% end %>
 
   <div>
+    <%= form.label :users_id, style: "display: block" %>
+    <%= form.text_field :users_id %>
+  </div>
+
+  <div>
     <%= form.label :firstname, style: "display: block" %>
     <%= form.text_field :firstname %>
   </div>
@@ -27,11 +32,6 @@
   </div>
 
   <div>
-    <%= form.label :sex, style: "display: block" %>
-    <%= form.text_field :sex %>
-  </div>
-
-  <div>
     <%= form.label :contact_number, style: "display: block" %>
     <%= form.text_field :contact_number %>
   </div>
@@ -44,16 +44,6 @@
   <div>
     <%= form.label :email, style: "display: block" %>
     <%= form.text_field :email %>
-  </div>
-
-  <div>
-    <%= form.label :notes, style: "display: block" %>
-    <%= form.text_field :notes %>
-  </div>
-
-  <div>
-    <%= form.label :user_id, style: "display: block" %>
-    <%= form.text_field :user_id %>
   </div>
 
   <div>

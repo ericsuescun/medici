@@ -1,5 +1,10 @@
 <div id="<%= dom_id patient %>">
   <p>
+    <strong>Users:</strong>
+    <%= patient.users_id %>
+  </p>
+
+  <p>
     <strong>Firstname:</strong>
     <%= patient.firstname %>
   </p>
@@ -15,11 +20,6 @@
   </p>
 
   <p>
-    <strong>Sex:</strong>
-    <%= patient.sex %>
-  </p>
-
-  <p>
     <strong>Contact number:</strong>
     <%= patient.contact_number %>
   </p>
@@ -32,16 +32,6 @@
   <p>
     <strong>Email:</strong>
     <%= patient.email %>
-  </p>
-
-  <p>
-    <strong>Notes:</strong>
-    <%= patient.notes %>
-  </p>
-
-  <p>
-    <strong>User:</strong>
-    <%= patient.user_id %>
   </p>
 
 </div>
