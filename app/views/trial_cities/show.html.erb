@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @trial_city %>
+
+<div>
+  <%= link_to "Edit this trial city", edit_trial_city_path(@trial_city) %> |
+  <%= link_to "Back to trial cities", trial_cities_path %>
+
+  <%= button_to "Destroy this trial city", @trial_city, method: :delete %>
+</div>

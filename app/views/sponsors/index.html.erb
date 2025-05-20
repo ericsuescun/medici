@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Sponsors" %>
+
+<h1>Sponsors</h1>
+
+<div id="sponsors">
+  <% @sponsors.each do |sponsor| %>
+    <%= render sponsor %>
+    <p>
+      <%= link_to "Show this sponsor", sponsor %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New sponsor", new_sponsor_path %>

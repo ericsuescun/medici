@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @trial_center_branch %>
+
+<div>
+  <%= link_to "Edit this trial center branch", edit_trial_center_branch_path(@trial_center_branch) %> |
+  <%= link_to "Back to trial center branches", trial_center_branches_path %>
+
+  <%= button_to "Destroy this trial center branch", @trial_center_branch, method: :delete %>
+</div>

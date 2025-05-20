@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Trial cities" %>
+
+<h1>Trial cities</h1>
+
+<div id="trial_cities">
+  <% @trial_cities.each do |trial_city| %>
+    <%= render trial_city %>
+    <p>
+      <%= link_to "Show this trial city", trial_city %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New trial city", new_trial_city_path %>

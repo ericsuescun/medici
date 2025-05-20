@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Trial center branches" %>
+
+<h1>Trial center branches</h1>
+
+<div id="trial_center_branches">
+  <% @trial_center_branches.each do |trial_center_branch| %>
+    <%= render trial_center_branch %>
+    <p>
+      <%= link_to "Show this trial center branch", trial_center_branch %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New trial center branch", new_trial_center_branch_path %>
