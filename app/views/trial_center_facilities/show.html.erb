@@ -1,10 +1,16 @@
-<p style="color: green"><%= notice %></p>
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <p style="color: green"><%= notice %></p>
 
-<%= render @trial_center_facility %>
+      <%= render @trial_center_facility %>
 
-<div>
-  <%= link_to "Editar", edit_trial_center_facility_path(@trial_center_facility) %> |
-  <%= link_to "Retornar a CEC", trial_center_facilities_path %>
+      <div>
+        <%= link_to "Editar", edit_trial_center_facility_path(@trial_center_facility) %> |
+        <%= link_to "Retornar a Centros de Ensayo Clinicos", trial_center_facilities_path %>
 
-  <%= button_to "Borrar", @trial_center_facility, method: :delete %>
+        <%= button_to "Borrar", @trial_center_facility, method: :delete, class: "btn btn-primary btn-block mt-3 mb-3" %>
+      </div>
+    </div>
+  </div>
 </div>

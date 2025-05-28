@@ -3,7 +3,7 @@ class StudiesController < SecureApplicationController
 
   # GET /studies or /studies.json
   def index
-    @studies = Study.all
+    @studies = Study.all.paginate(page: params[:page], per_page: RECORDS_PER_PAGE)
   end
 
   # GET /studies/1 or /studies/1.json
@@ -13,18 +13,25 @@ class StudiesController < SecureApplicationController
   # GET /studies/new
   def new
     @study = Study.new
+    @sponsors = Sponsor.all
+    @trial_center_branches = TrialCenterBranch.all
   end
 
   # GET /studies/1/edit
   def edit
+    @sponsors = Sponsor.all
+    @trial_center_branches = TrialCenterBranch.all
   end
 
   # POST /studies or /studies.json
   def create
     @study = Study.new(study_params)
+    trial_center_branch = TrialCenterBranch.find(params[:study][:trial_center_branch_id])
 
     respond_to do |format|
       if @study.save
+        trial_center_branch.studies << @study
+
         format.html { redirect_to study_url(@study), notice: "Study was successfully created." }
         format.json { render :show, status: :created, location: @study }
       else
@@ -65,6 +72,6 @@ class StudiesController < SecureApplicationController
 
     # Only allow a list of trusted parameters through.
     def study_params
-      params.require(:study).permit(:sponsor_id, :study_status, :local_unique_register, :scientific_title, :public_title, :registered_at, :approved_at, :started_at, :first_patient_at, :global_ending_at, :study_type, :study_phase, :inclusion_criteria, :exclusion_criteria, :sample_size, :main_intervention, :control_group, :participant_starting_age, :participant_ending_age, :sex, :medical_preexistences, :ethical_committee, :ethical_approval_at, :keywords, :pathology, :medication, :reviewed, :review_user_id)
+      params.require(:study).permit(:sponsor_id, :study_status, :local_unique_register, :scientific_title, :public_title, :registered_at, :approved_at, :started_at, :first_patient_at, :global_ending_at, :study_type, :study_phase, :inclusion_criteria, :exclusion_criteria, :sample_size, :main_intervention, :control_group, :participant_starting_age, :participant_ending_age, :sex, :medical_preexistence, :ethical_committee, :ethical_approval_at, :keywords, :pathology, :medication, :reviewed, :review_user_id)
     end
 end

@@ -11,7 +11,7 @@
     <%= sponsor.sponsor_type %>
   </p>
   <h1>Estudios asociados</h1>
-  <table>
+  <table class="table table-striped">
     <thead>
     <tr>
       <th>INVIMA</th>
@@ -32,7 +32,7 @@
     <% sponsor.studies.order(:study_status).each do |study| %>
       <tr>
         <td><%= study.local_unique_register %></td>
-        <td><%= study.scientific_title %></td>
+        <td><%= link_to study.scientific_title, study %></td>
         <td><%= study.trial_center_facilities.pluck(:name).join(', ') %></td>
         <td><%= study.study_status %></td>
 
@@ -43,7 +43,6 @@
         <td><%= study.pathology %></td>
         <td><%= study.medication %></td>
         <td><%= study.reviewed %></td>
-        <td><%= link_to "Mostrar", study %></td>
       </tr>
     <% end %>
     </tbody>

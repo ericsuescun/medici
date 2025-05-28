@@ -1,11 +1,17 @@
-<% content_for :title, "New sponsor" %>
+<div class="container-fluid mt-3">
+  <div class="row">
+    <div class="col-4 mx-auto">
+      <% content_for :title, "New sponsor" %>
 
-<h1>New sponsor</h1>
+      <h1>Nuevo patrocinador</h1>
 
-<%= render "form", sponsor: @sponsor %>
+      <%= render "form", sponsor: @sponsor %>
 
-<br>
+      <br>
 
-<div>
-  <%= link_to "Retornar a Patrocinadores", sponsors_path %>
+      <div>
+        <%= link_to "Retornar a Patrocinadores", sponsors_path %>
+      </div>
+    </div>
+  </div>
 </div>

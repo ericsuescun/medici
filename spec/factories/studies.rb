@@ -14,7 +14,7 @@
 #  keywords                 :string           default("")
 #  local_unique_register    :string           default("")
 #  main_intervention        :string           default("")
-#  medical_preexistences    :string           default("")
+#  medical_preexistence    :string           default("")
 #  medication               :string           default("")
 #  participant_ending_age   :integer
 #  participant_starting_age :integer
@@ -59,7 +59,7 @@ FactoryBot.define do
     keywords { Faker::Lorem.words(number: 5, exclude_words: ['error', 'cum']) }
     local_unique_register { Faker::Number.number(digits: 10) }
     main_intervention { Faker::Lorem.sentence }
-    medical_preexistences { Faker::Lorem.sentence }
+    medical_preexistence { Faker::Lorem.sentence }
     medication { Faker::Lorem.word }
     participant_ending_age { Faker::Number.normal(mean: 45, standard_deviation: 3) }
     participant_starting_age { Faker::Number.normal(mean: 40, standard_deviation: 3) }

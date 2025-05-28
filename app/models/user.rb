@@ -40,6 +40,8 @@ class User < ApplicationRecord
   scope :admins, -> { where(user_type: 'admin') }
 
   def fullname
+    return '' if firstname.blank? || lastname.blank?
+
     firstname + ' ' + lastname
   end
 end

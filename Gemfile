@@ -45,7 +45,7 @@ gem "thruster", require: false
 gem "devise", "~> 4.9"
 
 gem 'bootstrap', '~> 5.3.3'
-gem "dartsass-rails", "~> 0.5.1"
+gem "dartsass-rails"
 gem 'will_paginate', '~> 3.3.0'
 gem 'bootstrap-will_paginate'
 

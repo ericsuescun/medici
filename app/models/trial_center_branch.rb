@@ -23,6 +23,7 @@
 #
 class TrialCenterBranch < ApplicationRecord
   belongs_to :trial_center_facility
+
   has_and_belongs_to_many :studies
   has_and_belongs_to_many :cities
 end

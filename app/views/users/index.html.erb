@@ -1,60 +1,95 @@
-<p style="color: green"><%= notice %></p>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <p style="color: green"><%= notice %></p>
 
-<% content_for :title, "Users" %>
-<%= link_to "Retornar a Medici", static_pages_medici_home_path %> |
-<%= link_to "Nuevo usuario", new_user_path %>
+      <% content_for :title, "Users" %>
+      <%= link_to "Retornar a Medici", static_pages_medici_home_path %> |
+      <%= link_to "Nuevo usuario", new_user_path %>
+
+      <br id="users">
+      <div class="row">
+        <div class="col-6">
+          <h1>Usuarios Administradores</h1>
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Telefono</th>
+              <th>Direccion</th>
+              <th>Email</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% @admins.each do |user| %>
+              <tr>
+                <td><%= link_to user.fullname, user %></td>
+                <td><%= user.contact_number %></td>
+                <td><%= user.contact_address %></td>
+                <td><%= user.email %></td>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-6">
+          <h1>Usuarios Patrocinadores</h1>
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Telefono</th>
+              <th>Direccion</th>
+              <th>Email</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% @sponsors.each do |user| %>
+              <tr>
+                <td><%= link_to user.fullname, user %></td>
+                <td><%= user.contact_number %></td>
+                <td><%= user.contact_address %></td>
+                <td><%= user.email %></td>
+                <td></td>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <h1>Usuarios Pacientes</h1>
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Telefono</th>
+              <th>Direccion</th>
+              <th>Email</th>
+              <th>Estudios</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% @patients.each do |user| %>
+              <tr>
+                <td><%= link_to user.fullname, user %></td>
+                <td><%= user.contact_number %></td>
+                <td><%= user.contact_address %></td>
+                <td><%= user.email %></td>
+                <td><%= user.studies.count %></td>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <%= will_paginate @users, :renderer => WillPaginate::ActionView::Bootstrap4LinkRenderer %>
+    <%= link_to "Retornar a Medici", static_pages_medici_home_path %> |
+    <%= link_to "Nuevo usuario", new_user_path %>
 
 
-<br id="users">
-  <h1>Usuarios Administradores</h1>
-  <table>
-    <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Telefono</th>
-          <th>Direccion</th>
-          <th>Email</th>
-        </tr>
-    </thead>
-    <tbody>
-      <% @admins.each do |user| %>
-      <tr>
-        <td><%= user.fullname %></td>
-        <td><%= user.contact_number %></td>
-        <td><%= user.contact_address %></td>
-        <td><%= user.email %></td>
-        <td><%= link_to "Show", user %></td>
-      </tr>
-      <% end %>
-    </tbody>
-  </table>
-</br>
-</br>
-  <h1>Usuarios Patrocinadores</h1>
-  <table>
-    <thead>
-    <tr>
-      <th>Nombre</th>
-      <th>Telefono</th>
-      <th>Direccion</th>
-      <th>Email</th>
-    </tr>
-    </thead>
-    <tbody>
-    <% @sponsors.each do |user| %>
-      <tr>
-        <td><%= user.fullname %></td>
-        <td><%= user.contact_number %></td>
-        <td><%= user.contact_address %></td>
-        <td><%= user.email %></td>
-        <td><%= link_to "Show", user %></td>
-      </tr>
-    <% end %>
-    </tbody>
-  </table>
-  </br>
+  </div>
+  </div>
 </div>
-
-<%= link_to "Retornar a Medici", static_pages_medici_home_path %> |
-<%= link_to "Nuevo usuario", new_user_path %>
-

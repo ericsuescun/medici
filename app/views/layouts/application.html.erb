@@ -15,9 +15,23 @@
     <link rel="apple-touch-icon" href="/icon.png">
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <meta name="layout-debug" content="application layout loaded" />
   </head>
 
   <body>
+    <% if user_signed_in? %>
+      <% if flash[:notice] %>
+        <div class="alert alert-warning"><%= flash[:notice] %></div>
+      <% end %>
+
+      <% if flash[:alert] %>
+        <div class="alert alert-danger"><%= flash[:alert] %></div>
+      <% end %>
+
+      <% if flash[:message] %>
+        <div class="alert alert-info"><%= flash[:message] %></div>
+      <% end %>
+    <% end %>
     <%= yield %>
   </body>
 </html>

@@ -3,7 +3,7 @@ class TrialCenterFacilitiesController < SecureApplicationController
 
   # GET /trial_center_facilities or /trial_center_facilities.json
   def index
-    @trial_center_facilities = TrialCenterFacility.all
+    @trial_center_facilities = TrialCenterFacility.all.paginate(page: params[:page], per_page: RECORDS_PER_PAGE)
   end
 
   # GET /trial_center_facilities/1 or /trial_center_facilities/1.json

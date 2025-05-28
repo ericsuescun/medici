@@ -13,25 +13,27 @@
 
   <div>
     <%= form.label :name, style: "display: block" %>
-    <%= form.text_field :name %>
+    <%= form.text_field :name, class: "form-control mb-3" %>
   </div>
 
   <div>
     <%= form.label :initials, style: "display: block" %>
-    <%= form.text_field :initials %>
+    <%= form.text_field :initials, class: "form-control mb-3" %>
   </div>
 
   <div>
     <%= form.label :shortname, style: "display: block" %>
-    <%= form.text_field :shortname %>
+    <%= form.text_field :shortname, class: "form-control mb-3" %>
   </div>
 
   <div>
     <%= form.label :sponsor_type, style: "display: block" %>
-    <%= form.text_field :sponsor_type %>
+    <%= form.select(:sponsor_type,
+                    [['private_type', 'private_type'], ['public_type', 'public_type'], ['mixed_type', 'mixed_type']],
+                    { include_blank: true }, class: "form-select mb-3") %>
   </div>
 
   <div>
-    <%= form.submit %>
+    <%= form.submit 'Guardar', class: 'btn btn-primary btn-block' %>
   </div>
 <% end %>

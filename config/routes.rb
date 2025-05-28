@@ -1,9 +1,11 @@
 Rails.application.routes.draw do
-  resources :trial_center_branches
-  resources :trial_cities
-  devise_for :users
+  get "static_pages/medici_home"
   root to: "static_pages#medici_home"
 
+  devise_for :users
+
+  resources :trial_center_branches
+  resources :trial_cities
   resources :trial_center_facilities
   resources :patients
   resources :cities

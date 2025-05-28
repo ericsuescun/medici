@@ -1,10 +1,16 @@
-<p style="color: green"><%= notice %></p>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <p style="color: green"><%= notice %></p>
 
-<%= render @sponsor %>
+      <%= render @sponsor %>
 
-<div>
-  <%= link_to "Editar", edit_sponsor_path(@sponsor) %> |
-  <%= link_to "Retornar a Patrocinadores", sponsors_path %>
+      <div>
+        <%= link_to "Editar", edit_sponsor_path(@sponsor) %> |
+        <%= link_to "Retornar a Patrocinadores", sponsors_path %>
 
-  <%= button_to "Borrar", @sponsor, method: :delete %>
+        <%= button_to "Borrar", @sponsor, method: :delete, class: "btn btn-primary btn-block mt-3 mb-3" %>
+      </div>
+    </div>
+  </div>
 </div>

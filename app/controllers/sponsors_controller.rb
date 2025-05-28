@@ -3,7 +3,7 @@ class SponsorsController < SecureApplicationController
 
   # GET /sponsors or /sponsors.json
   def index
-    @sponsors = Sponsor.all
+    @sponsors = Sponsor.all.paginate(page: params[:page], per_page: RECORDS_PER_PAGE)
   end
 
   # GET /sponsors/1 or /sponsors/1.json

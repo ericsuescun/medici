@@ -10,6 +10,10 @@
 
 require 'factory_bot'
 
+FactoryBot.create(:user, user_type: :admin, email: 'edsuescun@gmail.com', password: '12345678', password_confirmation: '12345678', firstname: 'Eric', lastname: 'Suescun')
+FactoryBot.create(:user, user_type: :admin, email: 'nlecuona@gmail.com', password: '12345678', password_confirmation: '12345678', firstname: 'Nathalia', lastname: 'Lecuona')
+FactoryBot.create(:user, user_type: :admin, email: 'agiraldo@gmail.com', password: '12345678', password_confirmation: '12345678', firstname: 'Alejandro', lastname: 'Giraldo')
+
 puts 'Creating Users...'
 50.times do
   FactoryBot.create(:user)
@@ -29,7 +33,7 @@ puts 'Creating Sponsors...'
 FactoryBot.create_list(:sponsor, 20) do |sponsor|
   FactoryBot.create_list(:study, (1..5).to_a.sample, sponsor: sponsor) do |study|
     puts 'Creating Studies...'
-    study.users << User.find(User.patients.ids.sample((1..3).to_a.sample))
+    study.users << User.find(User.patients.ids.sample) if study.users.empty?
     study.trial_center_branches << TrialCenterBranch.find(TrialCenterBranch.ids.sample((1..3).to_a.sample))
 
     puts 'Creating Articles...'

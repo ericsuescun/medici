@@ -1,12 +1,12 @@
 class CreateStudies < ActiveRecord::Migration[8.0]
   def change
     create_table :studies do |t|
-      t.references :sponsors, null: false, foreign_key: true
+      t.references :sponsor, null: false, foreign_key: true
       t.string :study_status
       t.string :local_unique_register
-      t.string :cientific_title
+      t.string :scientific_title
       t.string :public_title
-      t.date :registrated_at
+      t.date :registered_at
       t.date :approved_at
       t.date :started_at
       t.date :first_patient_at
@@ -21,8 +21,8 @@ class CreateStudies < ActiveRecord::Migration[8.0]
       t.integer :participant_starting_age
       t.integer :participant_ending_age
       t.string :sex
-      t.string :medical_preexistencies
-      t.string :ethical_cometee
+      t.string :medical_preexistence
+      t.string :ethical_committee
       t.date :ethical_approval_at
       t.string :keywords
       t.string :pathology

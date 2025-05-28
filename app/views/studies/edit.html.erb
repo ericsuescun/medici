@@ -1,12 +1,18 @@
-<% content_for :title, "Editing study" %>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <% content_for :title, "Editing study" %>
 
-<h1>Editing study</h1>
+      <h1>Editing study</h1>
 
-<%= render "form", study: @study %>
+      <%= render "form", study: @study %>
 
-<br>
+      <br>
 
-<div>
-  <%= link_to "Mostrar", @study %> |
-  <%= link_to "Retornar a Estudios", studies_path %>
+      <div>
+        <%= link_to "Mostrar", @study %> |
+        <%= link_to "Retornar a Estudios", studies_path %>
+      </div>
+    </div>
+  </div>
 </div>

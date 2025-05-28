@@ -23,9 +23,10 @@
 #
 FactoryBot.define do
   factory :trial_center_branch do
-    name { "MyString" }
-    initials { "MyString" }
-    description { "MyString" }
-    trial_center_facility { nil }
+    association :trial_center_facility, factory: :trial_center_facility
+
+    name { Faker::Company.name }
+    initials { "XYZ" }
+    description { Faker::Lorem.paragraph }
   end
 end

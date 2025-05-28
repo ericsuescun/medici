@@ -14,7 +14,7 @@
 #  keywords                 :string           default("")
 #  local_unique_register    :string           default("")
 #  main_intervention        :string           default("")
-#  medical_preexistences    :string           default("")
+#  medical_preexistence    :string           default("")
 #  medication               :string           default("")
 #  participant_ending_age   :integer
 #  participant_starting_age :integer
@@ -44,6 +44,7 @@
 #
 class Study < ApplicationRecord
   belongs_to :sponsor
+
   has_and_belongs_to_many :trial_center_branches
   has_and_belongs_to_many :users
   has_many :trial_center_facilities, through: :trial_center_branches
@@ -55,6 +56,10 @@ class Study < ApplicationRecord
   has_many :contacts, dependent: :destroy
 
   enum :study_type, random: 'random', controlled: 'controlled', open: 'open', closed: 'closed'
+  enum :study_status, approved: 'approved', finished: 'finished', rejected: 'rejected'
+  enum :study_phase, I: 'I', II: 'II', III: 'III', IV: 'IV'
+
+  validates :public_title, :scientific_title, presence: true
 
   def cities_names
     self.trial_center_facilities.map(&:cities).flatten.uniq

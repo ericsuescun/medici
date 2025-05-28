@@ -11,7 +11,7 @@
 #  updated_at   :datetime         not null
 #
 FactoryBot.define do
-  factory :sponsor, class: "Sponsor" do
+  factory :sponsor do
     initials { 'ABC' }
     name { Faker::Company.name }
     shortname { 'ShortName'}

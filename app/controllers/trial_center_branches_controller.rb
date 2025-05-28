@@ -3,7 +3,7 @@ class TrialCenterBranchesController < ApplicationController
 
   # GET /trial_center_branches or /trial_center_branches.json
   def index
-    @trial_center_branches = TrialCenterBranch.all
+    @trial_center_branches = TrialCenterBranch.all.paginate(page: params[:page], per_page: RECORDS_PER_PAGE)
   end
 
   # GET /trial_center_branches/1 or /trial_center_branches/1.json

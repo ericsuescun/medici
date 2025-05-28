@@ -13,7 +13,7 @@ class CreateContacts < ActiveRecord::Migration[8.0]
       t.string :title1
       t.string :title2
       t.string :url
-      t.references :studies, null: false, foreign_key: true
+      t.references :study, null: false, foreign_key: true
 
       t.timestamps
     end

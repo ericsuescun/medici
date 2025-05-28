@@ -1,0 +1,20 @@
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th>Titulo Cientifico</th>
+    <th>Patrocinador</th>
+    <th>Estado</th>
+    <th>Revisado</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% studies.order(:study_status).each do |study| %>
+    <tr>
+      <td><%= link_to study.scientific_title, study %></td>
+      <td><%= study.sponsor.name %></td>
+      <td><%= study.study_status %></td>
+      <td><%= study.reviewed %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>

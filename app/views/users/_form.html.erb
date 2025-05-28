@@ -12,26 +12,36 @@
   <% end %>
 
   <div>
-    <%= form.label :firstname, style: "display: block" %>
-    <%= form.text_field :firstname %>
+    <%= form.label 'Nombres', style: "display: block" %>
+    <%= form.text_field :firstname, class: "form-control mb-3" %>
   </div>
 
   <div>
-    <%= form.label :lastname, style: "display: block" %>
-    <%= form.text_field :lastname %>
+    <%= form.label 'Apellidos', style: "display: block" %>
+    <%= form.text_field :lastname, class: "form-control mb-3" %>
   </div>
 
   <div>
-    <%= form.label :user_type, style: "display: block" %>
-    <%= form.text_field :user_type %>
+    <%= form.label 'Fecha de nacimiento', style: "display: block" %>
+    <%= form.date_field :dob, class: "form-control mb-3 input" %>
+  </div>
+
+  <div>
+    <%= form.label 'Telefono', style: "display: block" %>
+    <%= form.text_field :contact_number, class: "form-control mb-3" %>
+  </div>
+
+  <div>
+    <%= form.label 'Direccion', style: "display: block" %>
+    <%= form.text_field :contact_address, class: "form-control mb-3" %>
   </div>
 
   <div>
     <%= form.label :email, style: "display: block" %>
-    <%= form.text_field :email %>
+    <%= form.text_field :email, class: "form-control mb-3" %>
   </div>
 
   <div>
-    <%= form.submit %>
+    <%= form.submit 'Guardar', class: 'btn btn-primary btn-block' %>
   </div>
 <% end %>

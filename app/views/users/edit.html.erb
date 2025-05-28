@@ -1,12 +1,18 @@
-<% content_for :title, "Editing user" %>
+<div class="container-fluid mt-3">
+  <div class="row">
+    <div class="col-3 mx-auto">
+      <% content_for :title, "Editing user" %>
 
-<h1>Editing user</h1>
+      <h1>Edicion de mis datos</h1>
 
-<%= render "form", user: @user %>
+      <%= render "form", user: @user %>
 
-<br>
+      <br>
 
-<div>
-  <%= link_to "Show this user", @user %> |
-  <%= link_to "Back to users", users_path %>
+      <div>
+        <%= link_to "Mostrar", @user %> |
+        <%= link_to "Retornar a Medici", static_pages_medici_home_path %>
+      </div>
+    </div>
+  </div>
 </div>

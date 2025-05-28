@@ -1,22 +1,25 @@
-<div id="<%= dom_id user %>">
-  <p>
-    <strong>Firstname:</strong>
-    <%= user.firstname %>
-  </p>
+<div class="card">
+  <h5 class="card-header"><%= user.fullname %> - Edad: <%= get_age(user.dob) %></h5>
+  <div class="card-body">
 
-  <p>
-    <strong>Lastname:</strong>
-    <%= user.lastname %>
-  </p>
+    <p class="card-text">
+      <strong>Email:</strong>
+      <%= user.email %>
+    </p>
 
-  <p>
-    <strong>User type:</strong>
-    <%= user.user_type %>
-  </p>
+    <p class="card-text">
+      <strong>Telefono:</strong>
+      <%= user.contact_number %>
+    </p>
 
-  <p>
-    <strong>Email:</strong>
-    <%= user.email %>
-  </p>
+    <p class="card-text">
+      <strong>Direccion:</strong>
+      <%= user.contact_address %>
+    </p>
 
+
+
+    <h6><strong>Estudio asociado</strong></h6>
+    <%= render(partial: 'studies/brief_study_index', locals: { studies: @studies }) if user.patient? && @studies.present? %>
+  </div>
 </div>

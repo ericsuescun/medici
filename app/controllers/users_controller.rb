@@ -3,14 +3,15 @@ class UsersController < SecureApplicationController
 
   # GET /users or /users.json
   def index
-    @users = User.all
-    @patients = User.patients
-    @sponsors = User.sponsors
-    @admins = User.admins
+    @users = User.all.paginate(page: params[:page], per_page: RECORDS_PER_PAGE)
+    @patients = User.patients.paginate(page: params[:page], per_page: RECORDS_PER_PAGE)
+    @sponsors = User.sponsors.paginate(page: params[:page], per_page: RECORDS_PER_PAGE)
+    @admins = User.admins.paginate(page: params[:page], per_page: RECORDS_PER_PAGE)
   end
 
   # GET /users/1 or /users/1.json
   def show
+    @studies = @user.studies.paginate(page: params[:page], per_page: RECORDS_PER_PAGE) if @user.patient?
   end
 
   # GET /users/new
@@ -24,6 +25,7 @@ class UsersController < SecureApplicationController
 
   # POST /users or /users.json
   def create
+    debugger
     @user = User.new(user_params)
 
     respond_to do |format|
@@ -68,6 +70,6 @@ class UsersController < SecureApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_params
-      params.require(:user).permit(:firstname, :lastname, :user_type, :email)
+      params.require(:user).permit(:firstname, :lastname, :user_type, :email, :dob, :contact_address, :contact_number)
     end
 end
