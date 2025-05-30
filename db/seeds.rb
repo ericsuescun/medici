@@ -15,39 +15,39 @@ FactoryBot.create(:user, user_type: :admin, email: 'nlecuona@gmail.com', passwor
 FactoryBot.create(:user, user_type: :admin, email: 'agiraldo@gmail.com', password: '12345678', password_confirmation: '12345678', firstname: 'Alejandro', lastname: 'Giraldo')
 
 
-puts 'Creating Users...'
-50.times do
-  FactoryBot.create(:user, user_type: :patient)
-end
-
-10.times do
-  FactoryBot.create(:user)
-end
-puts 'Users done...\n'
-
-puts 'Creating Facilities...'
-FactoryBot.create_list(:trial_center_facility, 30) do |tcf|
-  tcf.cities << FactoryBot.create(:city)
-  FactoryBot.create_list(:trial_center_branch, (1..3).to_a.sample, trial_center_facility: tcf) do |tcb|
-    tcb.cities << FactoryBot.create(:city)
-  end
-end
-puts 'Facilities done...\n'
-
-puts 'Creating Sponsors...'
-FactoryBot.create_list(:sponsor, 20) do |sponsor|
-  FactoryBot.create_list(:study, (1..5).to_a.sample, sponsor: sponsor) do |study|
-    puts 'Creating Studies...'
-    study.trial_center_branches << TrialCenterBranch.find(TrialCenterBranch.ids.sample((1..3).to_a.sample))
-    puts 'Creating Articles...'
-    FactoryBot.create_list(:article, (1..3).to_a.sample, study: study)
-    puts 'Creating Contacts...'
-    FactoryBot.create_list(:contact, (1..2).to_a.sample, study: study)
-    puts 'Creating Results...'
-    FactoryBot.create_list(:result, (1..4).to_a.sample, study: study)
-  end
-end
-
-User.patients.each do |user|
-  user.studies << Study.find(Study.ids.sample)
-end
+# puts 'Creating Users...'
+# 50.times do
+#   FactoryBot.create(:user, user_type: :patient)
+# end
+#
+# 10.times do
+#   FactoryBot.create(:user)
+# end
+# puts 'Users done...\n'
+#
+# puts 'Creating Facilities...'
+# FactoryBot.create_list(:trial_center_facility, 30) do |tcf|
+#   tcf.cities << FactoryBot.create(:city)
+#   FactoryBot.create_list(:trial_center_branch, (1..3).to_a.sample, trial_center_facility: tcf) do |tcb|
+#     tcb.cities << FactoryBot.create(:city)
+#   end
+# end
+# puts 'Facilities done...\n'
+#
+# puts 'Creating Sponsors...'
+# FactoryBot.create_list(:sponsor, 20) do |sponsor|
+#   FactoryBot.create_list(:study, (1..5).to_a.sample, sponsor: sponsor) do |study|
+#     puts 'Creating Studies...'
+#     study.trial_center_branches << TrialCenterBranch.find(TrialCenterBranch.ids.sample((1..3).to_a.sample))
+#     puts 'Creating Articles...'
+#     FactoryBot.create_list(:article, (1..3).to_a.sample, study: study)
+#     puts 'Creating Contacts...'
+#     FactoryBot.create_list(:contact, (1..2).to_a.sample, study: study)
+#     puts 'Creating Results...'
+#     FactoryBot.create_list(:result, (1..4).to_a.sample, study: study)
+#   end
+# end
+#
+# User.patients.each do |user|
+#   user.studies << Study.find(Study.ids.sample)
+# end
