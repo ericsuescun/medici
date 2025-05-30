@@ -16,4 +16,6 @@
 class TrialCenterFacility < ApplicationRecord
   has_and_belongs_to_many :cities
   has_and_belongs_to_many :studies
+
+  has_many :trial_center_branches
 end

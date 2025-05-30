@@ -13,10 +13,12 @@ class TrialCenterBranchesController < ApplicationController
   # GET /trial_center_branches/new
   def new
     @trial_center_branch = TrialCenterBranch.new
+    @cities = City.all.order(name: :asc).uniq
   end
 
   # GET /trial_center_branches/1/edit
   def edit
+    @cities = City.all.order(name: :asc).uniq
   end
 
   # POST /trial_center_branches or /trial_center_branches.json
@@ -25,6 +27,10 @@ class TrialCenterBranchesController < ApplicationController
 
     respond_to do |format|
       if @trial_center_branch.save
+        @trial_center_branch.cities << City.find(params[:trial_center_branch][:city_id])
+
+        @cities = City.all.order(name: :asc).uniq
+
         format.html { redirect_to trial_center_branch_url(@trial_center_branch), notice: "Trial center branch was successfully created." }
         format.json { render :show, status: :created, location: @trial_center_branch }
       else

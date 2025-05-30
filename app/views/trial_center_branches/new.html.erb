@@ -1,11 +1,17 @@
-<% content_for :title, "New trial center branch" %>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-6 mx-auto">
+      <% content_for :title, "New trial center branch" %>
 
-<h1>New trial center branch</h1>
+      <h1>Nueva sede</h1>
 
-<%= render "form", trial_center_branch: @trial_center_branch %>
+      <%= render "form", trial_center_branch: @trial_center_branch %>
 
-<br>
+      <br>
 
-<div>
-  <%= link_to "Back to trial center branches", trial_center_branches_path %>
+      <div>
+        <%= link_to "Retornar a sedes", trial_center_branches_path %>
+      </div>
+    </div>
+  </div>
 </div>

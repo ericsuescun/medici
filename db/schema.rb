@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_20_021531) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_29_011835) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -145,7 +145,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_20_021531) do
   create_table "trial_center_branches", force: :cascade do |t|
     t.string "name"
     t.string "initials"
+    t.string "email"
     t.string "description"
+    t.string "contact_number"
+    t.string "contact_address"
+    t.string "url"
     t.bigint "trial_center_facility_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -188,6 +192,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_20_021531) do
     t.string "contact_address"
     t.string "id_number", default: ""
     t.string "id_type", default: ""
+    t.string "illness_description", default: ""
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

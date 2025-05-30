@@ -1,10 +1,16 @@
-<p style="color: green"><%= notice %></p>
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <p style="color: green"><%= notice %></p>
 
-<%= render @trial_center_branch %>
+      <%= render @trial_center_branch %>
 
-<div>
-  <%= link_to "Edit this trial center branch", edit_trial_center_branch_path(@trial_center_branch) %> |
-  <%= link_to "Back to trial center branches", trial_center_branches_path %>
+      <div>
+        <%= link_to "Editar esta sede", edit_trial_center_branch_path(@trial_center_branch) %> |
+        <%= link_to "Retornar a #{@trial_center_branch.trial_center_facility.name}", trial_center_facility_path(@trial_center_branch.trial_center_facility)  %>
 
-  <%= button_to "Destroy this trial center branch", @trial_center_branch, method: :delete %>
+        <%= button_to "Borrar", @trial_center_branch, method: :delete, method: :delete, class: "btn btn-primary btn-block mt-3 mb-3" %>
+      </div>
+    </div>
+  </div>
 </div>

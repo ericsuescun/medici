@@ -5,11 +5,31 @@
   </div>
   <div class="card-body">
     <p class="card-text">
-    <h6><strong>Sujetos interesados en el estudio:</strong> <%= study.users.count%></h6>
-
+    <h6><strong>Sujetos interesados en el estudio:</strong> <%= study.users.count %></h6>
+    <div class="row">
+      <div class="col-3">
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Edad</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% @patients.each do |patient| %>
+            <tr>
+              <td><%= link_to patient.fullname, patient %></td>
+              <td><%= get_age(patient.dob) %></td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p><strong>Ensayos Clinicos:</strong></p>
     <% study.trial_center_facilities.each do |tcf| %>
-      <p><strong>Centro de Ensayos Clinicos:</strong> <%= link_to tcf.name, tcf, class: "card-link" %></p>
-      <p><strong>Ciudades:</strong> <%= tcf.cities.pluck(:name).join(', ') %></p>
+      <p><strong>Centros: <%= link_to tcf.name, tcf, class: "card-link" %></strong></p>
+      <p><strong>Ciudades: </strong> <%= tcf.cities.pluck(:name).join(', ') %></p>
     <% end %>
 
     <h4>Identificacion del estudio</h4>

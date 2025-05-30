@@ -40,5 +40,6 @@ FactoryBot.define do
     reset_password_sent_at { nil }
     reset_password_token { nil }
     user_type { %w[sponsor admin patient].sample }
+    illness_description { Faker::Lorem.paragraph }
   end
 end

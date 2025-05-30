@@ -37,6 +37,11 @@
   </div>
 
   <div>
+    <%= form.label 'Descripcion de la enfermedad', style: "display: block" %>
+    <%= form.text_area :illness_description, class: "form-control mb-3" %>
+  </div>
+
+  <div>
     <%= form.label :email, style: "display: block" %>
     <%= form.text_field :email, class: "form-control mb-3" %>
   </div>

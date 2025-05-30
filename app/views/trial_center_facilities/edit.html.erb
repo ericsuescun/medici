@@ -1,12 +1,18 @@
-<% content_for :title, "Editing trial center facility" %>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-6 mx-auto">
+      <% content_for :title, "Edicion Centro de Ensayo Clinico" %>
 
-<h1>Editing trial center facility</h1>
+      <h1>Edicion Centro de Ensayo Clinico</h1>
 
-<%= render "form", trial_center_facility: @trial_center_facility %>
+      <%= render "form", trial_center_facility: @trial_center_facility %>
 
-<br>
+      <br>
 
-<div>
-  <%= link_to "Mostrar", @trial_center_facility %> |
-  <%= link_to "Retornar a los CEC", trial_center_facilities_path %>
+      <div>
+        <%= link_to "Mostrar", @trial_center_facility %> |
+        <%= link_to "Retornar a los CEC", trial_center_facilities_path %>
+      </div>
+    </div>
+  </div>
 </div>

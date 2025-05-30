@@ -2,17 +2,26 @@ Rails.application.routes.draw do
   get "static_pages/medici_home"
   root to: "static_pages#medici_home"
 
-  devise_for :users
+  # devise_for :users
+
+  devise_for :users, controllers: {
+    registrations: 'users/registrations',
+    sessions: 'users/sessions'
+  }
+
+  resources :trial_center_facilities do
+    resources :trial_center_branches
+  end
 
   resources :trial_center_branches
   resources :trial_cities
-  resources :trial_center_facilities
-  resources :patients
   resources :cities
+  resources :studies
+
+  resources :patients
   resources :results
   resources :contacts
   resources :articles
-  resources :studies
   resources :sponsors
   resources :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

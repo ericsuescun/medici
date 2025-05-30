@@ -15,11 +15,11 @@
             <%= button_to 'Salir', destroy_user_session_path, method: :delete, class: "card-link btn btn-outline-primary btn-block" %>
           <% else %>
             <%= link_to 'Ingresa', new_user_session_path, class: "card-link btn btn-primary btn-block" %>
-            <%= link_to 'Registrate', new_user_registration_path, class: "card-link btn btn-primary btn-block" %>
+            <%#= link_to 'Registrate', new_user_registration_path, class: "card-link btn btn-primary btn-block" %>
           <% end %>
         </div>
       </div>
     </div>
   </div>
 </div>
-<%= render partial: 'medici_showcase' %>
+<%= render partial: 'medici_showcase' if current_user.blank? %>

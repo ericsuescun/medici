@@ -13,10 +13,12 @@ class TrialCenterFacilitiesController < SecureApplicationController
   # GET /trial_center_facilities/new
   def new
     @trial_center_facility = TrialCenterFacility.new
+    @cities = City.all.order(name: :asc).uniq
   end
 
   # GET /trial_center_facilities/1/edit
   def edit
+    @cities = City.all.order(name: :asc).uniq
   end
 
   # POST /trial_center_facilities or /trial_center_facilities.json
@@ -25,6 +27,7 @@ class TrialCenterFacilitiesController < SecureApplicationController
 
     respond_to do |format|
       if @trial_center_facility.save
+        @trial_center_facility.cities << City.find(params[:trial_center_facility][:city_id])
         format.html { redirect_to trial_center_facility_url(@trial_center_facility), notice: "Trial center facility was successfully created." }
         format.json { render :show, status: :created, location: @trial_center_facility }
       else
@@ -38,6 +41,10 @@ class TrialCenterFacilitiesController < SecureApplicationController
   def update
     respond_to do |format|
       if @trial_center_facility.update(trial_center_facility_params)
+
+        @trial_center_facility.cities.destroy_all
+        @trial_center_facility.cities << City.find(params[:trial_center_facility][:city_id])
+
         format.html { redirect_to trial_center_facility_url(@trial_center_facility), notice: "Trial center facility was successfully updated." }
         format.json { render :show, status: :ok, location: @trial_center_facility }
       else

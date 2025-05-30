@@ -1,22 +1,17 @@
-<div id="<%= dom_id trial_center_branch %>">
-  <p>
-    <strong>Name:</strong>
-    <%= trial_center_branch.name %>
-  </p>
-
-  <p>
-    <strong>Initials:</strong>
-    <%= trial_center_branch.initials %>
-  </p>
-
-  <p>
-    <strong>Description:</strong>
-    <%= trial_center_branch.description %>
-  </p>
-
-  <p>
-    <strong>Trial center facility:</strong>
-    <%= trial_center_branch.trial_center_facility_id %>
-  </p>
-
+<div class="card">
+  <h5 class="card-header"><%= trial_center_branch.name %></h5>
+  <div class="card-body">
+    <h5 class="card-title"><%= trial_center_branch.description %></h5>
+    <p class="card-text">
+    <p><strong>Initials: </strong><%= trial_center_branch.initials %></p>
+    <p><strong>Email: </strong><%= trial_center_branch.email %></p>
+    <p><strong>Contact number: </strong><%= trial_center_branch.contact_number %></p>
+    <p><strong>Contact address: </strong><%= trial_center_branch.contact_address %></p>
+    <p><strong>URL: </strong><%= link_to trial_center_branch.url %></p>
+    <p><strong>Sedes: </strong><%= trial_center_branch.cities.pluck(:name).join(', ') %></p>
+    <p><strong>Estudios: </strong><% trial_center_branch.studies.each do |study| %>
+        <%= link_to "#{study.public_title}", study %>
+      <% end %>
+    </p>
+  </div>
 </div>

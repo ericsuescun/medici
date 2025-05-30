@@ -25,8 +25,12 @@ FactoryBot.define do
   factory :trial_center_branch do
     association :trial_center_facility, factory: :trial_center_facility
 
-    name { Faker::Company.name }
-    initials { "XYZ" }
+    contact_address { Faker::Address.street_address }
+    contact_number { Faker::PhoneNumber.phone_number }
     description { Faker::Lorem.paragraph }
+    email { Faker::Internet.email }
+    initials { 'XYZ' }
+    name { Faker::Company.name }
+    url { Faker::Internet.url }
   end
 end
