@@ -1,12 +1,18 @@
-<% content_for :title, "Editing city" %>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-4 mx-auto">
+      <% content_for :title, "Editing city" %>
 
-<h1>Editing city</h1>
+      <h1>Edicion de ciudad</h1>
 
-<%= render "form", city: @city %>
+      <%= render "form", city: @city %>
 
-<br>
+      <br>
 
-<div>
-  <%= link_to "Show this city", @city %> |
-  <%= link_to "Back to cities", cities_path %>
+      <div>
+        <%= link_to "Mostrar", @city %> |
+        <%= link_to "Retornar a ciudades", cities_path %>
+      </div>
+    </div>
+  </div>
 </div>
