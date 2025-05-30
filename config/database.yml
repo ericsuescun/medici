@@ -83,8 +83,9 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: medici_app_production
-    username: medici_app
+    url: <%= ENV["DATABASE_URL"] %>
+    database: <%= ENV["DATABASE_URL"] %>
+    username: <%= ENV["MEDICI_APP_DATABASE_USERNAME"] %>
     password: <%= ENV["MEDICI_APP_DATABASE_PASSWORD"] %>
   cache:
     <<: *primary_production
