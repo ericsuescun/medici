@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card border-info">
   <div class="card-header">
     <h1 class="card-title"><strong><%= study.public_title %></strong></h1>
     <h2 class="card-subtitle mb-2 text-body-secondary"><strong><%= study.scientific_title %></strong></h2>
@@ -30,7 +30,7 @@
     <p><strong>Ensayos Clinicos:</strong></p>
 
     <div class="row">
-      <div class="col-6">
+      <div class="col-8">
         <!-- Display existing trial center branches -->
         <div class="mb-4">
           <h5>Centros y Sucursales Asociados:</h5>
@@ -54,7 +54,7 @@
                     <% if study.trial_center_branches.count > 1 %>
                       <%= button_to "Eliminar", remove_trial_center_branch_study_path(study, trial_center_branch_id: branch.id),
                                     method: :delete,
-                                    class: "btn btn-danger btn-sm",
+                                    class: "btn btn-outline-danger btn-sm",
                                     data: { confirm: "¿Está seguro de eliminar esta sucursal?" } %>
                     <% end %>
                   </td>
@@ -67,7 +67,7 @@
           <% end %>
         </div>
       </div>
-      <div class="col-6">
+      <div class="col-4">
         <!-- Form to add a new trial center branch -->
         <div class="card mb-4">
           <div class="card-header">
@@ -97,7 +97,7 @@
     </div>
 
     <div class="row">
-      <div class="col-6">
+      <div class="col-8">
         <!-- Display existing medications -->
         <div class="mb-4">
           <h5>Medicamentos Asociados:</h5>
@@ -119,7 +119,7 @@
                     <% if study.medications.count > 1 %>
                       <%= button_to "Eliminar", remove_medication_study_path(study, medication_id: medication.id),
                                     method: :delete,
-                                    class: "btn btn-danger btn-sm",
+                                    class: "btn btn-outline-danger btn-sm",
                                     data: { confirm: "¿Está seguro de eliminar este medicamento?" } %>
                     <% end %>
                   </td>
@@ -132,7 +132,7 @@
           <% end %>
         </div>
       </div>
-      <div class="col-6">
+      <div class="col-4">
         <!-- Form to add a new medication -->
         <div class="card mb-4">
           <div class="card-header">
