@@ -1,5 +1,5 @@
 class StudiesController < SecureApplicationController
-  before_action :set_study, only: %i[ show edit update destroy add_trial_center_branch remove_trial_center_branch ]
+  before_action :set_study, only: %i[ show edit update destroy add_trial_center_branch remove_trial_center_branch add_medication remove_medication ]
   before_action :set_commercial_data
 
   # GET /studies or /studies.json
@@ -91,6 +91,36 @@ class StudiesController < SecureApplicationController
       notice = "Trial center branch was successfully removed."
     else
       notice = "Cannot remove the last trial center branch from this study."
+    end
+    
+    redirect_to study_url(@study), notice: notice
+  end
+  
+  # POST /studies/1/add_medication
+  def add_medication
+    medication = Medication.find(params[:medication_id])
+    
+    if @study.medications.include?(medication)
+      notice = "Medication was already associated with this study."
+    elsif @study.medications.count >= 3
+      notice = "A study can have a maximum of 3 medications."
+    else
+      @study.medications << medication
+      notice = "Medication was successfully added."
+    end
+    
+    redirect_to study_url(@study), notice: notice
+  end
+  
+  # DELETE /studies/1/remove_medication
+  def remove_medication
+    medication = Medication.find(params[:medication_id])
+    
+    if @study.medications.count > 1
+      @study.medications.delete(medication)
+      notice = "Medication was successfully removed."
+    else
+      notice = "Cannot remove the last medication from this study."
     end
     
     redirect_to study_url(@study), notice: notice

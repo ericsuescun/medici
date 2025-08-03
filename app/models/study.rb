@@ -47,6 +47,7 @@ class Study < ApplicationRecord
 
   has_and_belongs_to_many :trial_center_branches
   has_and_belongs_to_many :users
+  has_and_belongs_to_many :medications
   has_many :trial_center_facilities, through: :trial_center_branches
 
   has_many :articles, dependent: :destroy

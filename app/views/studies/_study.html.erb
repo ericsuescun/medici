@@ -28,66 +28,135 @@
       </div>
     </div>
     <p><strong>Ensayos Clinicos:</strong></p>
-    
-    <!-- Display existing trial center branches -->
-    <div class="mb-4">
-      <h5>Centros y Sucursales Asociados:</h5>
-      <% if study.trial_center_branches.any? %>
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Centro</th>
-              <th>Sucursal</th>
-              <th>Ciudades</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% study.trial_center_branches.sort_by { |branch| branch.cities.pluck(:name).join(', ') }.each do |branch| %>
+
+    <div class="row">
+      <div class="col-6">
+        <!-- Display existing trial center branches -->
+        <div class="mb-4">
+          <h5>Centros y Sucursales Asociados:</h5>
+          <% if study.trial_center_branches.any? %>
+            <table class="table table-striped">
+              <thead>
               <tr>
-                <td><%= link_to branch.trial_center_facility.name, branch.trial_center_facility, class: "card-link" %></td>
-                <td><%= link_to branch.name, branch, class: "card-link" %></td>
-                <td><%= branch.cities.pluck(:name).join(', ') %></td>
-                <td>
-                  <% if study.trial_center_branches.count > 1 %>
-                    <%= button_to "Eliminar", remove_trial_center_branch_study_path(study, trial_center_branch_id: branch.id), 
-                                method: :delete, 
-                                class: "btn btn-danger btn-sm",
-                                data: { confirm: "¿Está seguro de eliminar esta sucursal?" } %>
-                  <% end %>
-                </td>
+                <th>Centro</th>
+                <th>Sucursal</th>
+                <th>Ciudades</th>
+                <th>Acciones</th>
               </tr>
-            <% end %>
-          </tbody>
-        </table>
-      <% else %>
-        <p>No hay sucursales asociadas a este estudio.</p>
-      <% end %>
-    </div>
-    
-    <!-- Form to add a new trial center branch -->
-    <div class="card mb-4">
-      <div class="card-header">
-        <h5>Agregar Sucursal al Estudio</h5>
-      </div>
-      <div class="card-body">
-        <%= form_with url: add_trial_center_branch_study_path(study), method: :post, class: "row g-3" do |form| %>
-          <div class="col-md-12">
-            <label for="trial_center_branch_id" class="form-label">Seleccionar Sucursal (por Ciudad)</label>
-            <select name="trial_center_branch_id" id="trial_center_branch_id" class="form-select" required>
-              <option value="">Seleccionar una sucursal...</option>
-              <% @trial_center_branches.sort_by { |branch| branch.cities.pluck(:name).join(', ') }.each do |branch| %>
-                <option value="<%= branch.id %>">
-                  <%= branch.name %> - <%= branch.trial_center_facility.name %> 
-                  (<%= branch.cities.pluck(:name).join(', ') %>)
-                </option>
+              </thead>
+              <tbody>
+              <% study.trial_center_branches.sort_by { |branch| branch.cities.pluck(:name).join(', ') }.each do |branch| %>
+                <tr>
+                  <td><%= link_to branch.trial_center_facility.name, branch.trial_center_facility, class: "card-link" %></td>
+                  <td><%= link_to branch.name, branch, class: "card-link" %></td>
+                  <td><%= branch.cities.pluck(:name).join(', ') %></td>
+                  <td>
+                    <% if study.trial_center_branches.count > 1 %>
+                      <%= button_to "Eliminar", remove_trial_center_branch_study_path(study, trial_center_branch_id: branch.id),
+                                    method: :delete,
+                                    class: "btn btn-danger btn-sm",
+                                    data: { confirm: "¿Está seguro de eliminar esta sucursal?" } %>
+                    <% end %>
+                  </td>
+                </tr>
               <% end %>
-            </select>
+              </tbody>
+            </table>
+          <% else %>
+            <p>No hay sucursales asociadas a este estudio.</p>
+          <% end %>
+        </div>
+      </div>
+      <div class="col-6">
+        <!-- Form to add a new trial center branch -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5>Agregar Sucursal al Estudio</h5>
           </div>
-          <div class="col-12">
-            <%= form.submit "Agregar Sucursal", class: "btn btn-primary" %>
+          <div class="card-body">
+            <%= form_with url: add_trial_center_branch_study_path(study), method: :post, class: "row g-3" do |form| %>
+              <div class="col-md-12">
+                <label for="trial_center_branch_id" class="form-label">Seleccionar Sucursal (por Ciudad)</label>
+                <select name="trial_center_branch_id" id="trial_center_branch_id" class="form-select" required>
+                  <option value="">Seleccionar una sucursal...</option>
+                  <% @trial_center_branches.sort_by { |branch| branch.cities.pluck(:name).join(', ') }.each do |branch| %>
+                    <option value="<%= branch.id %>">
+                      <%= branch.name %> - <%= branch.trial_center_facility.name %>
+                      (<%= branch.cities.pluck(:name).join(', ') %>)
+                    </option>
+                  <% end %>
+                </select>
+              </div>
+              <div class="col-12">
+                <%= form.submit "Agregar Sucursal", class: "btn btn-primary" %>
+              </div>
+            <% end %>
           </div>
-        <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-6">
+        <!-- Display existing medications -->
+        <div class="mb-4">
+          <h5>Medicamentos Asociados:</h5>
+          <% if study.medications.any? %>
+            <table class="table table-striped">
+              <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+              </tr>
+              </thead>
+              <tbody>
+              <% study.medications.each do |medication| %>
+                <tr>
+                  <td><strong><%= medication.name %></strong></td>
+                  <td><%= medication.description %></td>
+                  <td>
+                    <% if study.medications.count > 1 %>
+                      <%= button_to "Eliminar", remove_medication_study_path(study, medication_id: medication.id),
+                                    method: :delete,
+                                    class: "btn btn-danger btn-sm",
+                                    data: { confirm: "¿Está seguro de eliminar este medicamento?" } %>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+              </tbody>
+            </table>
+          <% else %>
+            <p>No hay medicamentos asociados a este estudio.</p>
+          <% end %>
+        </div>
+      </div>
+      <div class="col-6">
+        <!-- Form to add a new medication -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5>Agregar Medicamento al Estudio</h5>
+          </div>
+          <div class="card-body">
+            <%= form_with url: add_medication_study_path(study), method: :post, class: "row g-3" do |form| %>
+              <div class="col-md-12">
+                <label for="medication_id" class="form-label">Seleccionar Medicamento</label>
+                <select name="medication_id" id="medication_id" class="form-select" required>
+                  <option value="">Seleccionar un medicamento...</option>
+                  <% Medication.all.each do |medication| %>
+                    <option value="<%= medication.id %>">
+                      <%= medication.name %> - <%= medication.description %>
+                    </option>
+                  <% end %>
+                </select>
+              </div>
+              <div class="col-12">
+                <%= form.submit "Agregar Medicamento", class: "btn btn-primary" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
       </div>
     </div>
 

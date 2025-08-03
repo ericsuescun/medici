@@ -21,6 +21,8 @@ Rails.application.routes.draw do
     member do
       post :add_trial_center_branch
       delete :remove_trial_center_branch
+      post :add_medication
+      delete :remove_medication
     end
   end
 

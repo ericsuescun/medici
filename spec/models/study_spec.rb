@@ -49,6 +49,7 @@ RSpec.describe Study, type: :model do
     it { should belong_to(:sponsor) }
     it { should have_and_belong_to_many(:trial_center_branches) }
     it { should have_and_belong_to_many(:users) }
+    it { should have_and_belong_to_many(:medications) }
     it { should have_many(:trial_center_facilities).through(:trial_center_branches) }
     it { should have_many(:articles).dependent(:destroy) }
     it { should have_many(:results).dependent(:destroy) }
