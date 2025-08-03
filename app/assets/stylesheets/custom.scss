@@ -67,6 +67,105 @@ $dark: $medici-dark;
   }
 }
 
+// Model-specific card styling with colors matching the logo
+// Study card with green styling
+.study-card {
+  border-color: $medici-accent;
+  border-radius: 8px;
+  background-color: lighten($medici-accent, 48%);
+  
+  .card-header {
+    background-color: $medici-accent;
+    color: white;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+}
+
+// Sponsor card with primary blue styling
+.sponsor-card {
+  border-color: $medici-primary;
+  border-radius: 8px;
+  background-color: lighten($medici-primary, 55%);
+  
+  .card-header {
+    background-color: $medici-primary;
+    color: white;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+}
+
+// Trial center facility card with secondary blue styling
+.facility-card {
+  border-color: $medici-secondary;
+  border-radius: 8px;
+  background-color: lighten($medici-secondary, 35%);
+  
+  .card-header {
+    background-color: $medici-secondary;
+    color: white;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+}
+
+// Trial center branch card with info styling
+.branch-card {
+  border-color: $medici-info;
+  border-radius: 8px;
+  background-color: lighten($medici-info, 35%);
+  
+  .card-header {
+    background-color: $medici-info;
+    color: white;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+}
+
+// Patient card with warning styling
+.patient-card {
+  border-color: $medici-warning;
+  border-radius: 8px;
+  background-color: lighten($medici-warning, 35%);
+  
+  .card-header {
+    background-color: $medici-warning;
+    color: white;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+}
+
+// City card with muted styling
+.city-card {
+  border-color: $medici-muted;
+  border-radius: 8px;
+  background-color: lighten($medici-muted, 35%);
+  
+  .card-header {
+    background-color: $medici-muted;
+    color: white;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+}
+
+// User card with dark styling
+.user-card {
+  border-color: $medici-dark;
+  border-radius: 8px;
+  background-color: lighten($medici-dark, 65%);
+  
+  .card-header {
+    background-color: $medici-dark;
+    color: white;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+}
+
 // Button styling
 .btn-primary {
   background-color: $medici-primary;

@@ -1,37 +1,31 @@
-<div id="<%= dom_id patient %>">
-  <p>
-    <strong>Users:</strong>
-    <%= patient.users_id %>
-  </p>
+<div id="<%= dom_id patient %>" class="card patient-card">
+  <div class="card-header">
+    <h5 class="card-title"><%= patient.firstname %> <%= patient.lastname %></h5>
+  </div>
+  <div class="card-body">
+    <p>
+      <strong>Users:</strong>
+      <%= patient.users_id %>
+    </p>
 
-  <p>
-    <strong>Firstname:</strong>
-    <%= patient.firstname %>
-  </p>
+    <p>
+      <strong>Date of Birth:</strong>
+      <%= patient.dob %>
+    </p>
 
-  <p>
-    <strong>Lastname:</strong>
-    <%= patient.lastname %>
-  </p>
+    <p>
+      <strong>Contact number:</strong>
+      <%= patient.contact_number %>
+    </p>
 
-  <p>
-    <strong>Dob:</strong>
-    <%= patient.dob %>
-  </p>
+    <p>
+      <strong>Contact address:</strong>
+      <%= patient.contact_address %>
+    </p>
 
-  <p>
-    <strong>Contact number:</strong>
-    <%= patient.contact_number %>
-  </p>
-
-  <p>
-    <strong>Contact address:</strong>
-    <%= patient.contact_address %>
-  </p>
-
-  <p>
-    <strong>Email:</strong>
-    <%= patient.email %>
-  </p>
-
+    <p>
+      <strong>Email:</strong>
+      <%= patient.email %>
+    </p>
+  </div>
 </div>

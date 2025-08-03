@@ -1,15 +1,17 @@
-<div id="<%= dom_id sponsor %>">
-  <h1><%= sponsor.name %></h1>
+<div id="<%= dom_id sponsor %>" class="card sponsor-card">
+  <div class="card-header">
+    <h1 class="card-title"><%= sponsor.name %></h1>
+  </div>
+  <div class="card-body">
+    <p>
+      <strong>Inicales:</strong>
+      <%= sponsor.capitals %>
+    </p>
 
-  <p>
-    <strong>Inicales:</strong>
-    <%= sponsor.capitals %>
-  </p>
-
-  <p>
-    <strong>Tipo de patrocinador:</strong>
-    <%= sponsor.sponsor_type %>
-  </p>
+    <p>
+      <strong>Tipo de patrocinador:</strong>
+      <%= sponsor.sponsor_type %>
+    </p>
   <h1>Estudios asociados</h1>
   <table class="table table-striped">
     <thead>
@@ -36,4 +38,5 @@
     <% end %>
     </tbody>
   </table>
+  </div>
 </div>

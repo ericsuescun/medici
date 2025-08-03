@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card facility-card">
   <h5 class="card-header"><%= trial_center_facility.name %></h5>
   <div class="card-body">
     <h5 class="card-title"><%= trial_center_facility.description %></h5>
@@ -17,7 +17,7 @@
     <div class="row mt-3">
       <% trial_center_facility.trial_center_branches.each do |tcb| %>
         <div class="col-4">
-          <div class="card mb-3">
+          <div class="card branch-card mb-3">
             <h5 class="card-header">Sede <%= tcb.cities.pluck(:name).first %>: <%= link_to tcb.name, tcb %></h5>
             <div class="card-body">
               <h5 class="card-title"><%= tcb.description %></h5>
