@@ -32,6 +32,7 @@
         <div class="alert alert-info"><%= flash[:message] %></div>
       <% end %>
     <% end %>
+    <%= render 'layouts/logo_header' unless current_page?(controller: 'static_pages', action: 'medici_home') %>
     <%= yield %>
   </body>
 </html>
