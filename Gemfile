@@ -63,6 +63,10 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
   gem 'annotate'
   gem 'dotenv-rails', '~> 2.7', '>= 2.7.6'
+  
+  # RSpec for testing
+  gem 'rspec-rails', '~> 6.1.0'
+  gem 'shoulda-matchers', '~> 6.0'
 end
 
 group :development do

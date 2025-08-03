@@ -14,7 +14,7 @@
 #  keywords                 :string           default("")
 #  local_unique_register    :string           default("")
 #  main_intervention        :string           default("")
-#  medical_preexistence    :string           default("")
+#  medical_preexistence     :string           default("")
 #  medication               :string           default("")
 #  participant_ending_age   :integer
 #  participant_starting_age :integer
@@ -43,37 +43,27 @@
 #  fk_rails_...  (sponsor_id => sponsors.id)
 #
 FactoryBot.define do
-  standard_date = Faker::Date.on_day_of_week_between(day: [:monday, :wednesday, :friday], from: 1.year.ago, to: 1.year.from_now)
-
   factory :study do
     association :sponsor, factory: :sponsor
-
-    approved_at { standard_date }
-    control_group { nil }
-    ethical_approval_at { standard_date }
-    ethical_committee { Faker::Lorem.sentence }
-    exclusion_criteria { Faker::Lorem.sentence }
-    first_patient_at { standard_date }
-    global_ending_at { standard_date }
-    inclusion_criteria { Faker::Lorem.sentence }
-    keywords { Faker::Lorem.words(number: 5, exclude_words: ['error', 'cum']) }
-    local_unique_register { Faker::Number.number(digits: 10) }
-    main_intervention { Faker::Lorem.sentence }
-    medical_preexistence { Faker::Lorem.sentence }
-    medication { Faker::Lorem.word }
-    participant_ending_age { Faker::Number.normal(mean: 45, standard_deviation: 3) }
-    participant_starting_age { Faker::Number.normal(mean: 40, standard_deviation: 3) }
-    pathology { Faker::Lorem.words(number: 4, exclude_words: ['error', 'cum']) }
+    
     public_title { Faker::Lorem.sentence }
-    registered_at { standard_date }
+    scientific_title { Faker::Lorem.sentence }
+    short_title { Faker::Lorem.words(number: 3).join(' ') }
+    inclusion_criteria { Faker::Lorem.paragraph }
+    exclusion_criteria { Faker::Lorem.paragraph }
+    main_intervention { Faker::Lorem.sentence }
+    sample_size { Faker::Number.between(from: 50, to: 1000) }
+    sex { ['male', 'female', 'both'].sample }
+    
+    study_status { Study.study_statuses.keys.sample }
+    study_phase { Study.study_phases.keys.sample }
+    
+    started_at { Faker::Date.backward(days: 300) }
+    completed_at { Faker::Date.backward(days: 250) }
+    first_patient_at { Faker::Date.backward(days: 150) }
+    global_ending_at { Faker::Date.forward(days: 365) }
+    
     reviewed { false }
-    sample_size { Faker::Number.between(from: 5, to: 20) }
-    scientific_title { Faker::Science.tool }
-    sex { %w[F M].sample }
-    started_at { standard_date }
-    study_phase { %w[I II III IV].sample }
-    study_status { %w[approved rejected finished].sample }
-    study_type { %w[random controlled open closed].sample }
     review_user_id { nil }
   end
 end

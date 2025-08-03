@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   get "static_pages/medici_home"
+  get "static_pages/search_by_city"
   root to: "static_pages#medici_home"
 
   # devise_for :users
@@ -16,7 +17,12 @@ Rails.application.routes.draw do
   resources :trial_center_branches
   resources :trial_cities
   resources :cities
-  resources :studies
+  resources :studies do
+    member do
+      post :add_trial_center_branch
+      delete :remove_trial_center_branch
+    end
+  end
 
   resources :patients
   resources :results

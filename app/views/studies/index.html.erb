@@ -1,50 +1,67 @@
-<div class="container-fluid">
+<div class="container-fluid py-4">
   <div class="row">
     <div class="col-12">
       <% content_for :title, "Studies" %>
-      <h1>Estudios</h1>
-      <table class="table table-striped">
-        <thead>
-        <tr>
-          <th>INVIMA</th>
-          <th>Titulo Cientifico</th>
-          <th>Patrocinador</th>
-          <th># CEC</th>
-          <th># Ciudades</th>
-          <th># Pacientes</th>
-          <th>Estado</th>
-          <th>Fecha de aprobacion</th>
-          <th>Keywords</th>
-          <th>Patologia</th>
-          <th>Medicamento</th>
-          <th>Revisado</th>
-        </tr>
-        </thead>
-        <tbody>
-        <% @studies.order(:study_status).each do |study| %>
-          <tr>
-            <td><%= study.local_unique_register %></td>
-            <td><%= link_to study.scientific_title, study %></td>
-            <td><%= study.sponsor.name %></td>
-            <td><%= study.trial_center_facilities.count %></td>
-            <td><%= study.cities_names.count %></td>
-            <td><%= study.users.count %></td>
-            <td><%= study.study_status %></td>
-
-            <td><%= study.approved_at %></td>
-
-
-            <td><%= study.keywords %></td>
-            <td><%= study.pathology %></td>
-            <td><%= study.medication %></td>
-            <td><%= study.reviewed %></td>
-          </tr>
-        <% end %>
-        </tbody>
-      </table>
-      <%= will_paginate @studies, :renderer => WillPaginate::ActionView::Bootstrap4LinkRenderer %>
-      <%= link_to "Retornar a Be My Trial", static_pages_medici_home_path %> |
-      <%= link_to "Nuevo Estudio", new_study_path %>
+      
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Estudios Clínicos</h1>
+        <div>
+          <%= link_to "Retornar a Be My Trial", static_pages_medici_home_path, class: "btn btn-outline-primary me-2" %>
+          <%= link_to "Nuevo Estudio", new_study_path, class: "btn btn-success" %>
+        </div>
+      </div>
+      
+      <div class="card health-card shadow-sm mb-4">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-striped mb-0">
+              <thead>
+              <tr>
+                <th>Titulo Cientifico</th>
+                <th>Patrocinador</th>
+                <th>Centros</th>
+                <th>Ciudades</th>
+                <th>Pacientes</th>
+                <th>Estado</th>
+                <th>Completado</th>
+                <th>Acciones</th>
+              </tr>
+              </thead>
+              <tbody>
+              <% @studies.order(:study_status).each do |study| %>
+                <tr>
+                  <td><strong><%= link_to study.scientific_title, study %></strong></td>
+                  <td><%= link_to study.sponsor.name, study.sponsor %></td>
+                  <td><span class="badge bg-info text-dark"><%= study.trial_center_facilities.count %></span></td>
+                  <td><span class="badge bg-info text-dark"><%= study.cities_names.count %></span></td>
+                  <td><span class="badge bg-primary"><%= study.users.count %></span></td>
+                  <td>
+                    <% status_class = case study.study_status 
+                                      when "completed" then "bg-secondary"
+                                      when "recruiting" then "bg-primary"
+                                      else "bg-warning" 
+                                      end %>
+                    <span class="badge <%= status_class %>"><%= study.study_status %></span>
+                  </td>
+                  <td><%= study.completed_at&.strftime("%d/%m/%Y") %></td>
+                  <td>
+                    <%= link_to "Ver", study, class: "btn btn-sm btn-primary" %>
+                  </td>
+                </tr>
+              <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div class="d-flex justify-content-between align-items-center">
+        <%= will_paginate @studies, :renderer => WillPaginate::ActionView::Bootstrap4LinkRenderer %>
+        <div>
+          <%= link_to "Retornar a Be My Trial", static_pages_medici_home_path, class: "btn btn-outline-primary me-2" %>
+          <%= link_to "Nuevo Estudio", new_study_path, class: "btn btn-success" %>
+        </div>
+      </div>
     </div>
   </div>
 </div>

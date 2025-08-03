@@ -12,7 +12,7 @@
   <% end %>
 
 <div class="row">
-  <div class="col-3">
+  <div class="col-6">
     <div>
       <%= form.label :public_title, style: "display: block" %>
       <%= form.text_field :public_title, class: "form-control mb-3" %>
@@ -24,25 +24,20 @@
     </div>
 
     <div>
+      <%= form.label :short_title, style: "display: block" %>
+      <%= form.text_field :short_title, class: "form-control mb-3" %>
+    </div>
+
+    <div>
       <%= form.label :study_status, style: "display: block" %>
       <%= form.select(:study_status,
-                      [['approved', 'approved'], ['finished', 'finished'], ['rejected', 'rejected']],
+                      [['Completed', 'completed'], ['Recruiting', 'recruiting']],
                       { include_blank: true }, class: "form-select mb-3") %>
     </div>
 
     <div>
-      <%= form.label :local_unique_register, style: "display: block" %>
-      <%= form.text_field :local_unique_register, class: "form-control mb-3" %>
-    </div>
-
-    <div>
-      <%= form.label :registered_at, style: "display: block" %>
-      <%= form.date_field :registered_at, class: "form-control mb-3 input" %>
-    </div>
-
-    <div>
-      <%= form.label :approved_at, style: "display: block" %>
-      <%= form.date_field :approved_at, class: "form-control mb-3 input" %>
+      <%= form.label :completed_at, style: "display: block" %>
+      <%= form.date_field :completed_at, class: "form-control mb-3 input" %>
     </div>
 
     <div>
@@ -60,14 +55,7 @@
       <%= form.date_field :global_ending_at, class: "form-control mb-3 input" %>
     </div>
   </div>
-  <div class="col-3">
-    <div>
-      <%= form.label :study_type, style: "display: block" %>
-       <%= form.select(:study_type,
-                      [['random', 'random'], ['controlled', 'controlled'], ['open', 'open'], ['closed', 'closed']],
-                      { include_blank: true }, class: "form-select mb-3") %>
-    </div>
-
+  <div class="col-6">
     <div>
       <%= form.label :study_phase, style: "display: block" %>
       <%= form.select(:study_phase,
@@ -96,64 +84,11 @@
     </div>
 
     <div>
-      <%= form.label :control_group, style: "display: block" %>
-      <%= form.text_field :control_group, class: "form-control mb-3" %>
-    </div>
-
-    <div>
-      <%= form.label :participant_starting_age, style: "display: block" %>
-      <%= form.number_field :participant_starting_age, class: "form-control mb-3 input" %>
-    </div>
-
-    <div>
-      <%= form.label :participant_ending_age, style: "display: block" %>
-      <%= form.number_field :participant_ending_age, class: "form-control mb-3 input" %>
-    </div>
-
-    <div>
       <%= form.label :sex, style: "display: block" %>
         <%= form.select(:sex,
                       [['F', 'F'], ['M', 'M']],
                       { include_blank: true }, class: "form-select mb-3") %>
     </div>
-
-    <div>
-      <%= form.label :medical_preexistence, style: "display: block" %>
-      <%= form.text_field :medical_preexistence, class: "form-control mb-3" %>
-    </div>
-
-    <div>
-      <%= form.label :ethical_committee, style: "display: block" %>
-      <%= form.text_field :ethical_committee, class: "form-control mb-3" %>
-    </div>
-
-    <div>
-      <%= form.label :ethical_approval_at, style: "display: block" %>
-      <%= form.date_field :ethical_approval_at, class: "form-control mb-3 input" %>
-    </div>
-  </div>
-  <div class="col-3">
-    <div>
-      <%= form.label :keywords, style: "display: block" %>
-      <%= form.text_field :keywords, class: "form-control mb-3" %>
-    </div>
-
-    <div>
-      <%= form.label :pathology, style: "display: block" %>
-      <%= form.text_field :pathology, class: "form-control mb-3" %>
-    </div>
-
-    <div>
-      <%= form.label :medication, style: "display: block" %>
-      <%= form.text_field :medication, class: "form-control mb-3" %>
-    </div>
-
-    <div>
-      <%= form.label :reviewed, style: "display: block" %>
-      <%= form.check_box :reviewed %>
-    </div>
-  </div>
-  <div class="col-3">
     <div class="form-group">
       <%= form.label "Patrocinador" %>
       <%= form.select :sponsor_id, @sponsors.pluck(:name, :id), { }, class: "form-select mb-3" %>
@@ -163,7 +98,12 @@
       <%= form.label "Trial Center Branch" %>
       <%= form.select :trial_center_branch_id, @trial_center_branches.pluck(:name, :id), { }, class: "form-select mb-3" %>
     </div>
+    <div>
+      <%= form.label :reviewed, style: "display: block" %>
+      <%= form.check_box :reviewed %>
+    </div>
   </div>
+
 </div>
   <div>
     <%= form.submit 'Guardar', class: 'btn btn-primary btn-block' %>

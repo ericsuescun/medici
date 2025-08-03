@@ -44,9 +44,17 @@ class TrialCenterBranchesController < ApplicationController
   def update
     respond_to do |format|
       if @trial_center_branch.update(trial_center_branch_params)
+        # Update city association if city_id is provided
+        if params[:trial_center_branch][:city_id].present?
+          # Clear existing cities and add the new one
+          @trial_center_branch.cities.clear
+          @trial_center_branch.cities << City.find(params[:trial_center_branch][:city_id])
+        end
+        
         format.html { redirect_to trial_center_branch_url(@trial_center_branch), notice: "Trial center branch was successfully updated." }
         format.json { render :show, status: :ok, location: @trial_center_branch }
       else
+        @cities = City.all.order(name: :asc).uniq
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @trial_center_branch.errors, status: :unprocessable_entity }
       end
@@ -71,6 +79,6 @@ class TrialCenterBranchesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def trial_center_branch_params
-      params.require(:trial_center_branch).permit(:name, :initials, :description, :trial_center_facility_id)
+      params.require(:trial_center_branch).permit(:name, :initials, :description, :email, :contact_number, :contact_address, :url, :trial_center_facility_id)
     end
 end

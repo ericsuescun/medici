@@ -14,34 +14,23 @@
   <table class="table table-striped">
     <thead>
     <tr>
-      <th>INVIMA</th>
       <th>Scientific title</th>
       <th>CEC asociados</th>
       <th>Study status</th>
 
-      <th>Registrated at</th>
-      <th>Approved at</th>
+      <th>Completed at</th>
 
-      <th>Keywords</th>
-      <th>Pathology</th>
-      <th>Medication</th>
       <th>Reviewed</th>
     </tr>
     </thead>
     <tbody>
     <% sponsor.studies.order(:study_status).each do |study| %>
       <tr>
-        <td><%= study.local_unique_register %></td>
         <td><%= link_to study.scientific_title, study %></td>
         <td><%= study.trial_center_facilities.pluck(:name).join(', ') %></td>
         <td><%= study.study_status %></td>
 
-        <td><%= study.registered_at %></td>
-        <td><%= study.approved_at %></td>
-
-        <td><%= study.keywords %></td>
-        <td><%= study.pathology %></td>
-        <td><%= study.medication %></td>
+        <td><%= study.completed_at %></td>
         <td><%= study.reviewed %></td>
       </tr>
     <% end %>

@@ -1,41 +1,62 @@
-<div class="container">
+<div class="container py-4">
   <div class="row">
     <div class="col-12">
-      <p style="color: green"><%= notice %></p>
+      <% if notice.present? %>
+        <div class="alert alert-success"><%= notice %></div>
+      <% end %>
 
       <% content_for :title, "Trial center facilities" %>
 
-      <h1>Centro de Ensayos Clinicos</h1>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Centro de Ensayos Clinicos</h1>
+        <div>
+          <%= link_to "Retornar a Be My Trial", static_pages_medici_home_path, class: "btn btn-outline-primary me-2" %>
+          <%= link_to "Nuevo Centro de Ensayo Clinico", new_trial_center_facility_path, class: "btn btn-success" %>
+        </div>
+      </div>
 
       <div id="trial_center_facilities">
-        <table class="table table-striped">
-          <thead>
-          <tr>
-            <th>Nombre</th>
-
-            <th>Email</th>
-            <th>Telefono</th>
-            <th>Direccion</th>
-            <th>URL</th>
-          </tr>
-          </thead>
-          <tbody>
-          <% @trial_center_facilities.each do |trial_center_facility| %>
-            <tr>
-              <td><%= link_to trial_center_facility.name, trial_center_facility %></td>
-              <td><%= trial_center_facility.email %></td>
-              <td><%= trial_center_facility.contact_number %></td>
-              <td><%= trial_center_facility.contact_address %></td>
-              <td><%= trial_center_facility.url %></td>
-            </tr>
-          <% end %>
-          </tbody>
-        </table>
-
+        <div class="card health-card shadow-sm mb-4">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-striped mb-0">
+                <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Email</th>
+                  <th>Telefono</th>
+                  <th>Direccion</th>
+                  <th>URL</th>
+                  <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% @trial_center_facilities.each do |trial_center_facility| %>
+                  <tr>
+                    <td><%= trial_center_facility.name %></td>
+                    <td><%= trial_center_facility.email %></td>
+                    <td><%= trial_center_facility.contact_number %></td>
+                    <td><%= trial_center_facility.contact_address %></td>
+                    <td><%= trial_center_facility.url %></td>
+                    <td>
+                      <%= link_to "Ver", trial_center_facility, class: "btn btn-sm btn-primary" %>
+                    </td>
+                  </tr>
+                <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <div class="d-flex justify-content-between align-items-center">
+          <%= will_paginate @trial_center_facilities, :renderer => WillPaginate::ActionView::Bootstrap4LinkRenderer %>
+          <div>
+            <%= link_to "Retornar a Be My Trial", static_pages_medici_home_path, class: "btn btn-outline-primary me-2" %>
+            <%= link_to "Nuevo Centro de Ensayo Clinico", new_trial_center_facility_path, class: "btn btn-success" %>
+          </div>
+        </div>
       </div>
-      <%= will_paginate @trial_center_facilities, :renderer => WillPaginate::ActionView::Bootstrap4LinkRenderer %>
-      <%= link_to "Retornar a Be My Trial", static_pages_medici_home_path %> |
-      <%= link_to "Nuevo Centro de Ensayo Clinico", new_trial_center_facility_path %>
     </div>
   </div>
 </div>

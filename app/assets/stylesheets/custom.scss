@@ -1,0 +1,189 @@
+// Custom Healthcare Theme Colors
+// Based on research of US healthcare websites
+
+// Primary Colors
+$medici-primary: #0077c8; // Blue - Trust, reliability, professionalism
+$medici-secondary: #41b6e6; // Light blue - Calm, clarity
+$medici-accent: #00a651; // Green - Health, vitality, growth
+$medici-dark: #2c3e50; // Dark blue/slate - Stability, authority
+$medici-light: #f8f9fa; // Light gray/white - Cleanliness, simplicity
+
+// Semantic Colors
+$medici-success: #00a651; // Green - Success, positive outcomes
+$medici-info: #41b6e6; // Light blue - Information, guidance
+$medici-warning: #f7941d; // Orange - Caution, attention
+$medici-danger: #e63946; // Red - Alerts, critical information
+$medici-muted: #6c757d; // Gray - Secondary information
+
+// Background Colors
+$medici-bg-light: #ffffff; // White - Clean, clinical
+$medici-bg-subtle: #f0f7fa; // Very light blue - Subtle background
+$medici-bg-accent: #e8f4f8; // Light blue - Highlighted areas
+
+// Override Bootstrap Variables
+$primary: $medici-primary;
+$secondary: $medici-secondary;
+$success: $medici-success;
+$info: $medici-info;
+$warning: $medici-warning;
+$danger: $medici-danger;
+$light: $medici-light;
+$dark: $medici-dark;
+
+// Custom Component Styling
+.health-card {
+  border-color: $medici-primary;
+  border-radius: 8px;
+  
+  .card-header {
+    background-color: $medici-primary;
+    color: white;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+}
+
+.stat-card {
+  background-color: $medici-bg-subtle;
+  border-radius: 8px;
+  padding: 1.5rem;
+  height: 100%;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: $medici-primary;
+  }
+  
+  .stat-label {
+    color: $medici-dark;
+    font-weight: 500;
+  }
+}
+
+// Button styling
+.btn-primary {
+  background-color: $medici-primary;
+  border-color: $medici-primary;
+  
+  &:hover, &:focus {
+    background-color: darken($medici-primary, 10%);
+    border-color: darken($medici-primary, 10%);
+  }
+}
+
+.btn-success {
+  background-color: $medici-success;
+  border-color: $medici-success;
+  
+  &:hover, &:focus {
+    background-color: darken($medici-success, 10%);
+    border-color: darken($medici-success, 10%);
+  }
+}
+
+.btn-info {
+  background-color: $medici-info;
+  border-color: $medici-info;
+  color: white;
+  
+  &:hover, &:focus {
+    background-color: darken($medici-info, 10%);
+    border-color: darken($medici-info, 10%);
+    color: white;
+  }
+}
+
+.btn-outline-primary {
+  color: $medici-primary;
+  border-color: $medici-primary;
+  
+  &:hover, &:focus {
+    background-color: $medici-primary;
+    color: white;
+  }
+}
+
+// Navbar styling
+.navbar {
+  background-color: $medici-primary;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+  .navbar-brand {
+    color: white;
+    font-weight: 700;
+  }
+  
+  .nav-link {
+    color: rgba(255, 255, 255, 0.9);
+    
+    &:hover, &:focus {
+      color: white;
+    }
+  }
+}
+
+// Alert styling
+.alert-success {
+  background-color: lighten($medici-success, 45%);
+  border-color: $medici-success;
+  color: darken($medici-success, 15%);
+}
+
+.alert-info {
+  background-color: lighten($medici-info, 30%);
+  border-color: $medici-info;
+  color: darken($medici-info, 15%);
+}
+
+.alert-warning {
+  background-color: lighten($medici-warning, 30%);
+  border-color: $medici-warning;
+  color: darken($medici-warning, 15%);
+}
+
+.alert-danger {
+  background-color: lighten($medici-danger, 30%);
+  border-color: $medici-danger;
+  color: darken($medici-danger, 15%);
+}
+
+// Table styling
+.table {
+  thead {
+    background-color: $medici-bg-subtle;
+    
+    th {
+      color: $medici-dark;
+      font-weight: 600;
+      border-bottom: 2px solid $medici-primary;
+    }
+  }
+  
+  tbody {
+    tr:hover {
+      background-color: $medici-bg-accent;
+    }
+  }
+}
+
+// Form styling
+.form-control:focus {
+  border-color: $medici-primary;
+  box-shadow: 0 0 0 0.25rem rgba($medici-primary, 0.25);
+}
+
+// Links
+a {
+  color: $medici-primary;
+  
+  &:hover {
+    color: darken($medici-primary, 15%);
+  }
+}

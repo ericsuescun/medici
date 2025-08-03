@@ -10,6 +10,9 @@
 
 require 'factory_bot'
 
+# Load seed files
+require_relative 'seeds/update_studies_short_title'
+
 FactoryBot.create(:user, user_type: :admin, email: 'edsuescun@gmail.com', password: '12345678', password_confirmation: '12345678', firstname: 'Eric', lastname: 'Suescun')
 FactoryBot.create(:user, user_type: :admin, email: 'nlecuona@gmail.com', password: '12345678', password_confirmation: '12345678', firstname: 'Nathalia', lastname: 'Lecuona')
 FactoryBot.create(:user, user_type: :admin, email: 'agiraldo@gmail.com', password: '12345678', password_confirmation: '12345678', firstname: 'Alejandro', lastname: 'Giraldo')

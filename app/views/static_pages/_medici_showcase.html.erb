@@ -1,15 +1,19 @@
-<div class="container-fluid mt-3">
+<div class="container-fluid mt-5 mb-5">
+  <h2 class="text-center mb-4">Estudios Clínicos Disponibles</h2>
   <div class="row">
     <% Study.all.each do |study| %>
-      <div class="col-3">
-        <div class="card mb-3">
+      <div class="col-md-3 mb-4">
+        <div class="card health-card shadow-sm h-100">
           <div class="card-header">
             <%= study.public_title %>
           </div>
-          <div class="card-body">
+          <div class="card-body d-flex flex-column">
             <h5 class="card-title">Scientific title: <%= study.scientific_title %></h5>
-            <p class="card-text">Registry: <%= study.local_unique_register %></p>
-            <%= link_to "Quiero participar!", new_user_registration_path(study_id: study.id), class: "btn btn-success btn-block mt-3 mb-3" %>
+            <h6 class="card-subtitle mb-2 text-muted">Short title: <%= study.short_title %></h6>
+            <p class="card-text">Status: <%= study.study_status.capitalize %></p>
+            <div class="mt-auto">
+              <%= link_to "Quiero participar!", new_user_registration_path(study_id: study.id), class: "btn btn-success w-100" %>
+            </div>
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 class StudiesController < SecureApplicationController
-  before_action :set_study, only: %i[ show edit update destroy ]
+  before_action :set_study, only: %i[ show edit update destroy add_trial_center_branch remove_trial_center_branch ]
   before_action :set_commercial_data
 
   # GET /studies or /studies.json
@@ -67,6 +67,34 @@ class StudiesController < SecureApplicationController
       format.json { head :no_content }
     end
   end
+  
+  # POST /studies/1/add_trial_center_branch
+  def add_trial_center_branch
+    trial_center_branch = TrialCenterBranch.find(params[:trial_center_branch_id])
+    
+    unless @study.trial_center_branches.include?(trial_center_branch)
+      @study.trial_center_branches << trial_center_branch
+      notice = "Trial center branch was successfully added."
+    else
+      notice = "Trial center branch was already associated with this study."
+    end
+    
+    redirect_to study_url(@study), notice: notice
+  end
+  
+  # DELETE /studies/1/remove_trial_center_branch
+  def remove_trial_center_branch
+    trial_center_branch = TrialCenterBranch.find(params[:trial_center_branch_id])
+    
+    if @study.trial_center_branches.count > 1
+      @study.trial_center_branches.delete(trial_center_branch)
+      notice = "Trial center branch was successfully removed."
+    else
+      notice = "Cannot remove the last trial center branch from this study."
+    end
+    
+    redirect_to study_url(@study), notice: notice
+  end
 
   private
     # Use callbacks to share common setup or constraints between actions.
@@ -76,7 +104,7 @@ class StudiesController < SecureApplicationController
 
     # Only allow a list of trusted parameters through.
     def study_params
-      params.require(:study).permit(:city_id, :sponsor_id, :study_status, :local_unique_register, :scientific_title, :public_title, :registered_at, :approved_at, :started_at, :first_patient_at, :global_ending_at, :study_type, :study_phase, :inclusion_criteria, :exclusion_criteria, :sample_size, :main_intervention, :control_group, :participant_starting_age, :participant_ending_age, :sex, :medical_preexistence, :ethical_committee, :ethical_approval_at, :keywords, :pathology, :medication, :reviewed, :review_user_id)
+      params.require(:study).permit(:city_id, :sponsor_id, :study_status, :scientific_title, :public_title, :short_title, :completed_at, :started_at, :first_patient_at, :global_ending_at, :study_phase, :inclusion_criteria, :exclusion_criteria, :sample_size, :main_intervention, :sex, :reviewed, :review_user_id)
     end
 
   def set_commercial_data

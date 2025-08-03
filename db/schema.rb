@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_29_011835) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_03_223213) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -96,34 +96,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_29_011835) do
   create_table "studies", force: :cascade do |t|
     t.bigint "sponsor_id", null: false
     t.string "study_status"
-    t.string "local_unique_register"
     t.string "scientific_title"
     t.string "public_title"
-    t.date "registered_at"
-    t.date "approved_at"
+    t.date "completed_at"
     t.date "started_at"
     t.date "first_patient_at"
     t.date "global_ending_at"
-    t.string "study_type"
     t.string "study_phase"
     t.string "inclusion_criteria"
     t.string "exclusion_criteria"
     t.integer "sample_size"
     t.string "main_intervention"
-    t.string "control_group"
-    t.integer "participant_starting_age"
-    t.integer "participant_ending_age"
     t.string "sex"
-    t.string "medical_preexistence"
-    t.string "ethical_committee"
-    t.date "ethical_approval_at"
-    t.string "keywords"
-    t.string "pathology"
-    t.string "medication"
     t.boolean "reviewed"
     t.integer "review_user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "short_title", default: ""
     t.index ["sponsor_id"], name: "index_studies_on_sponsor_id"
   end
 

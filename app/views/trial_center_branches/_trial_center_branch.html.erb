@@ -1,16 +1,28 @@
-<div class="card">
+<div class="card health-card shadow-sm">
   <h5 class="card-header"><%= trial_center_branch.name %></h5>
   <div class="card-body">
     <h5 class="card-title"><%= trial_center_branch.description %></h5>
-    <p class="card-text">
-    <p><strong>Initials: </strong><%= trial_center_branch.initials %></p>
-    <p><strong>Contact number: </strong><%= trial_center_branch.contact_number %></p>
-    <p><strong>Contact address: </strong><%= trial_center_branch.contact_address %></p>
-    <p><strong>URL: </strong><%= link_to trial_center_branch.url %></p>
-    <p><strong>Sedes: </strong><%= trial_center_branch.cities.pluck(:name).join(', ') %></p>
-    <p><strong>Estudios: </strong><% trial_center_branch.studies.each do |study| %>
-        <%= link_to "#{study.public_title}", study %>
-      <% end %>
-    </p>
+    <div class="card-text">
+      <div class="row">
+        <div class="col-md-6">
+          <p><strong>Initials: </strong><%= trial_center_branch.initials %></p>
+          <p><strong>Email: </strong><%= trial_center_branch.email %></p>
+          <p><strong>Contact number: </strong><%= trial_center_branch.contact_number %></p>
+        </div>
+        <div class="col-md-6">
+          <p><strong>Contact address: </strong><%= trial_center_branch.contact_address %></p>
+          <p><strong>URL: </strong><%= link_to trial_center_branch.url, trial_center_branch.url, target: "_blank" if trial_center_branch.url.present? %></p>
+          <p><strong>Sedes: </strong><span class="badge bg-info text-dark"><%= trial_center_branch.cities.pluck(:name).join('</span> <span class="badge bg-info text-dark">') %></span></p>
+        </div>
+      </div>
+      <div class="mt-3">
+        <p><strong>Estudios: </strong></p>
+        <div class="d-flex flex-wrap gap-2">
+          <% trial_center_branch.studies.each do |study| %>
+            <%= link_to "#{study.short_title.present? ? study.short_title : study.public_title}", study, class: "badge bg-primary text-white" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

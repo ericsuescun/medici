@@ -1,0 +1,59 @@
+<%= render partial: 'layouts/general_navbar' if current_user.present? && !current_user.patient? %>
+<%= render partial: 'layouts/patient_navbar' if current_user.present? && current_user.patient? %>
+
+<div class="container py-5">
+  <div class="row">
+    <div class="col-md-10 mx-auto">
+      <div class="card health-card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h4 class="mb-0">Estudios Clínicos en <%= @city_name %></h4>
+          <%= link_to "Volver a la búsqueda", static_pages_medici_home_path, class: "btn btn-outline-primary" %>
+        </div>
+        <div class="card-body">
+          <% if @studies.present? %>
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Título Corto</th>
+                    <th>Título Científico</th>
+                    <th>Patrocinador</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @studies.each do |study| %>
+                    <tr>
+                      <td><%= study.short_title %></td>
+                      <td><%= study.scientific_title %></td>
+                      <td><%= study.sponsor.name %></td>
+                      <td><span class="badge bg-<%= study.study_status == 'approved' ? 'success' : (study.study_status == 'finished' ? 'info' : 'warning') %>">
+                        <%= study.study_status %>
+                      </span></td>
+                      <td>
+                        <% if user_signed_in? %>
+                          <%= link_to "Ver detalles", study_path(study), class: "btn btn-sm btn-primary" %>
+                        <% else %>
+                          <%= link_to "Quiero participar", new_user_registration_path(study_id: study.id), class: "btn btn-sm btn-success" %>
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <div class="alert alert-info">
+              <p class="mb-0">No se encontraron estudios clínicos en <%= @city_name %>.</p>
+            </div>
+          <% end %>
+          
+          <div class="mt-4 text-center">
+            <%= link_to "Volver a la búsqueda", static_pages_medici_home_path, class: "btn btn-primary" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

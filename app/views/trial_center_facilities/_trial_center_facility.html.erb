@@ -10,7 +10,7 @@
     <p><strong>URL: </strong><%= link_to trial_center_facility.url %></p>
     <p><strong>Sedes: </strong><%= trial_center_facility.cities.pluck(:name).join(', ') %></p>
     <p><strong>Estudios: </strong><% trial_center_facility.studies.each do |study| %>
-        <%= link_to "#{study.public_title}", study %>
+        <%= link_to "#{study.short_title.present? ? study.short_title : study.public_title}", study %>
       <% end %>
     </p>
     <%= link_to 'Agregar sede', new_trial_center_facility_trial_center_branch_path(trial_center_facility) %>
@@ -28,7 +28,7 @@
               <p><strong>Contact address: </strong><%= trial_center_facility.contact_address %></p>
               <p><strong>URL: </strong><%= link_to trial_center_facility.url %></p>
               <p><strong>Estudios: </strong><% tcb.studies.each do |study| %>
-                  <%= link_to "#{study.public_title}", study %>
+                  <%= link_to "#{study.short_title.present? ? study.short_title : study.public_title}", study %>
                 <% end %>
               </p>
             </div>

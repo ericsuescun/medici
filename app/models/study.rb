@@ -52,16 +52,18 @@ class Study < ApplicationRecord
   has_many :articles, dependent: :destroy
   has_many :results, dependent: :destroy
   has_many :trial_cities, dependent: :destroy
-  has_many :results, dependent: :destroy
   has_many :contacts, dependent: :destroy
 
-  enum :study_type, random: 'random', controlled: 'controlled', open: 'open', closed: 'closed'
-  enum :study_status, approved: 'approved', finished: 'finished', rejected: 'rejected'
+  enum :study_status, completed: 'completed', recruiting: 'recruiting'
   enum :study_phase, I: 'I', II: 'II', III: 'III', IV: 'IV'
 
-  validates :public_title, :scientific_title, presence: true
+  validates :public_title, :scientific_title, :short_title, presence: true
 
   def cities_names
-    self.trial_center_facilities.map(&:cities).flatten.uniq
+    cities = []
+    self.trial_center_branches.each do |branch|
+      cities.concat(branch.cities)
+    end
+    cities.uniq
   end
 end

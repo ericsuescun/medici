@@ -2,6 +2,7 @@
   <div class="card-header">
     <h1 class="card-title"><strong><%= study.public_title %></strong></h1>
     <h2 class="card-subtitle mb-2 text-body-secondary"><strong><%= study.scientific_title %></strong></h2>
+    <h3 class="card-subtitle mb-2 text-body-secondary"><strong>Short Title: <%= study.short_title %></strong></h3>
   </div>
   <div class="card-body">
     <p class="card-text">
@@ -27,18 +28,74 @@
       </div>
     </div>
     <p><strong>Ensayos Clinicos:</strong></p>
-    <% study.trial_center_facilities.each do |tcf| %>
-      <p><strong>Centros: <%= link_to tcf.name, tcf, class: "card-link" %></strong></p>
-      <p><strong>Ciudades: </strong> <%= tcf.cities.pluck(:name).join(', ') %></p>
-    <% end %>
+    
+    <!-- Display existing trial center branches -->
+    <div class="mb-4">
+      <h5>Centros y Sucursales Asociados:</h5>
+      <% if study.trial_center_branches.any? %>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Centro</th>
+              <th>Sucursal</th>
+              <th>Ciudades</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% study.trial_center_branches.sort_by { |branch| branch.cities.pluck(:name).join(', ') }.each do |branch| %>
+              <tr>
+                <td><%= link_to branch.trial_center_facility.name, branch.trial_center_facility, class: "card-link" %></td>
+                <td><%= link_to branch.name, branch, class: "card-link" %></td>
+                <td><%= branch.cities.pluck(:name).join(', ') %></td>
+                <td>
+                  <% if study.trial_center_branches.count > 1 %>
+                    <%= button_to "Eliminar", remove_trial_center_branch_study_path(study, trial_center_branch_id: branch.id), 
+                                method: :delete, 
+                                class: "btn btn-danger btn-sm",
+                                data: { confirm: "¿Está seguro de eliminar esta sucursal?" } %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p>No hay sucursales asociadas a este estudio.</p>
+      <% end %>
+    </div>
+    
+    <!-- Form to add a new trial center branch -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5>Agregar Sucursal al Estudio</h5>
+      </div>
+      <div class="card-body">
+        <%= form_with url: add_trial_center_branch_study_path(study), method: :post, class: "row g-3" do |form| %>
+          <div class="col-md-12">
+            <label for="trial_center_branch_id" class="form-label">Seleccionar Sucursal (por Ciudad)</label>
+            <select name="trial_center_branch_id" id="trial_center_branch_id" class="form-select" required>
+              <option value="">Seleccionar una sucursal...</option>
+              <% @trial_center_branches.sort_by { |branch| branch.cities.pluck(:name).join(', ') }.each do |branch| %>
+                <option value="<%= branch.id %>">
+                  <%= branch.name %> - <%= branch.trial_center_facility.name %> 
+                  (<%= branch.cities.pluck(:name).join(', ') %>)
+                </option>
+              <% end %>
+            </select>
+          </div>
+          <div class="col-12">
+            <%= form.submit "Agregar Sucursal", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
 
     <h4>Identificacion del estudio</h4>
     <table class="table table-striped">
       <thead>
       <tr>
-        <th>INVIMA</th>
-        <th>Registrated at</th>
-        <th>Approved at</th>
+        <th>Completed at</th>
         <th>Started at</th>
         <th>First patient at</th>
         <th>Global ending at</th>
@@ -46,9 +103,7 @@
       </thead>
       <tbody>
       <tr>
-        <td><%= study.local_unique_register %></td>
-        <td><%= study.registered_at %></td>
-        <td><%= study.approved_at %></td>
+        <td><%= study.completed_at %></td>
         <td><%= study.started_at %></td>
         <td><%= study.first_patient_at %></td>
         <td><%= study.global_ending_at %></td>
@@ -68,15 +123,6 @@
             <p><strong>Study status: </strong><%= study.study_status %></p>
           </div>
         </div>
-        <div class="card mt-3">
-          <div class="card-header">
-            <h5>Aspectos Eticos</h5>
-          </div>
-          <div class="card-body">
-            <p><strong>Ethical committee: </strong><%= study.ethical_committee %></p>
-            <p><strong>Ethical approval at: </strong><%= study.ethical_approval_at %></p>
-          </div>
-        </div>
       </div>
       <div class="col-3">
         <div class="card mt-3">
@@ -84,13 +130,11 @@
             <h5>Diseno del Estudio</h5>
           </div>
           <div class="card-body">
-            <p><strong>Study type: </strong><%= study.study_type %></p>
             <p><strong>Study phase: </strong><%= study.study_phase %></p>
             <p><strong>Inclusion criteria: </strong><%= study.inclusion_criteria %></p>
             <p><strong>Exclusion criteria: </strong><%= study.exclusion_criteria %></p>
             <p><strong>Sample size: </strong><%= study.sample_size %></p>
             <p><strong>Main intervention: </strong><%= study.main_intervention %></p>
-            <p><strong>Control group: </strong><%= study.control_group %></p>
           </div>
         </div>
       </div>
@@ -119,10 +163,7 @@
             <h5>Poblacion del estudio</h5>
           </div>
           <div class="card-body">
-            <p><strong>Participant starting age: </strong><%= study.participant_starting_age %></p>
-            <p><strong>Participant ending age: </strong><%= study.participant_ending_age %></p>
             <p><strong>Sex: </strong><%= study.sex %></p>
-            <p><strong>Medical preexistence: </strong><%= study.medical_preexistence %></p>
           </div>
         </div>
         <div class="card mt-3">
@@ -153,18 +194,6 @@
             <h5>Enlaces a publicaciones</h5>
           </div>
           <div class="card-body">
-          </div>
-        </div>
-      </div>
-      <div class="col-3">
-        <div class="card mt-3">
-          <div class="card-header">
-            <h5>Criterios de busqueda</h5>
-          </div>
-          <div class="card-body">
-            <p><strong>Keywords: </strong><%= study.keywords %></p>
-            <p><strong>Pathology: </strong><%= study.pathology %></p>
-            <p><strong>Medication: </strong><%= study.medication %></p>
           </div>
         </div>
       </div>

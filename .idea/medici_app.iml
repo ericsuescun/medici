@@ -61,6 +61,7 @@
     <orderEntry type="library" scope="PROVIDED" name="date (v3.4.1, asdf: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="debug (v1.10.0, asdf: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="devise (v4.9.4, asdf: 3.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="diff-lcs (v1.6.2, asdf: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="dotenv (v2.8.1, asdf: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="dotenv-rails (v2.8.1, asdf: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="drb (v2.2.3, asdf: 3.3.0) [gem]" level="application" />
@@ -127,6 +128,11 @@
     <orderEntry type="library" scope="PROVIDED" name="regexp_parser (v2.10.0, asdf: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="reline (v0.6.1, asdf: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="responders (v3.1.1, asdf: 3.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rspec-core (v3.13.5, asdf: 3.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rspec-expectations (v3.13.5, asdf: 3.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rspec-mocks (v3.13.5, asdf: 3.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rspec-rails (v6.1.5, asdf: 3.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rspec-support (v3.13.4, asdf: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="rubocop (v1.75.7, asdf: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="rubocop-ast (v1.44.1, asdf: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="rubocop-performance (v1.25.0, asdf: 3.3.0) [gem]" level="application" />
@@ -135,6 +141,7 @@
     <orderEntry type="library" scope="PROVIDED" name="ruby-progressbar (v1.13.0, asdf: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="sass-embedded (v1.89.0, asdf: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="securerandom (v0.4.1, asdf: 3.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="shoulda-matchers (v6.5.0, asdf: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="solid_cable (v3.0.8, asdf: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="solid_cache (v1.0.7, asdf: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="solid_queue (v1.1.5, asdf: 3.3.0) [gem]" level="application" />
