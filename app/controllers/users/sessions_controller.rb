@@ -4,14 +4,27 @@ class Users::SessionsController < Devise::SessionsController
   # before_action :configure_sign_in_params, only: [:create]
 
   # GET /resource/sign_in
-  # def new
-  #   super
-  # end
+  def new
+    session[:study_id] = params[:study_id] if params[:study_id].present?
+    super
+  end
 
   # POST /resource/sign_in
-  # def create
-  #   super
-  # end
+  def create
+    super do |resource|
+      if session[:study_id].present?
+        study = Study.find_by(id: session[:study_id])
+        if study && !resource.studies.include?(study)
+          study.users << resource
+          if resource.user_type != 'patient'
+            resource.update(user_type: 'patient')
+          end
+          flash[:notice] = "Te has registrado exitosamente para participar en el estudio: #{study.short_title}"
+        end
+        session.delete(:study_id)
+      end
+    end
+  end
 
   # DELETE /resource/sign_out
   # def destroy

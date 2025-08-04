@@ -12,7 +12,7 @@
             <h6 class="card-subtitle mb-2 text-muted">Short title: <%= study.short_title %></h6>
             <p class="card-text">Status: <%= study.study_status.capitalize %></p>
             <div class="mt-auto">
-              <%= link_to "Quiero participar!", new_user_registration_path(study_id: study.id), class: "btn btn-success w-100" %>
+              <%= link_to "Quiero participar!", new_user_session_path(study_id: study.id), class: "btn btn-success w-100" %>
             </div>
           </div>
         </div>
