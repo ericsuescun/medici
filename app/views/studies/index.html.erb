@@ -6,14 +6,14 @@
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="mb-0">Estudios Clínicos</h1>
         <div>
-          <%= link_to "Retornar a Be My Trial", static_pages_medici_home_path, class: "btn btn-outline-primary me-2" %>
-          <%= link_to "Nuevo Estudio", new_study_path, class: "btn btn-success" %>
+          <%= link_to "Retornar a Be My Trial", static_pages_medici_home_path %> |
+          <%= link_to "Nuevo Estudio", new_study_path %>
         </div>
       </div>
       
-      <div class="card health-card shadow-sm mb-4">
+      <div class="card mb-4">
         <div class="card-body p-0">
-          <div class="table-responsive">
+          <div class="table">
             <table class="table table-striped mb-0">
               <thead>
               <tr>
@@ -24,7 +24,6 @@
                 <th>Pacientes</th>
                 <th>Estado</th>
                 <th>Completado</th>
-                <th>Acciones</th>
               </tr>
               </thead>
               <tbody>
@@ -32,8 +31,8 @@
                 <tr>
                   <td><strong><%= link_to study.scientific_title, study %></strong></td>
                   <td><%= link_to study.sponsor.name, study.sponsor %></td>
-                  <td><span class="badge bg-info text-dark"><%= study.trial_center_facilities.count %></span></td>
-                  <td><span class="badge bg-info text-dark"><%= study.cities_names.count %></span></td>
+                  <td><%= study.trial_center_facilities.count %></td>
+                  <td><%= study.cities_names.count %></td>
                   <td><span class="badge bg-primary"><%= study.users.count %></span></td>
                   <td>
                     <% status_class = case study.study_status 
@@ -44,9 +43,6 @@
                     <span class="badge <%= status_class %>"><%= study.study_status %></span>
                   </td>
                   <td><%= study.completed_at&.strftime("%d/%m/%Y") %></td>
-                  <td>
-                    <%= link_to "Ver", study, class: "btn btn-sm btn-primary" %>
-                  </td>
                 </tr>
               <% end %>
               </tbody>
@@ -58,8 +54,8 @@
       <div class="d-flex justify-content-between align-items-center">
         <%= will_paginate @studies, :renderer => WillPaginate::ActionView::Bootstrap4LinkRenderer %>
         <div>
-          <%= link_to "Retornar a Be My Trial", static_pages_medici_home_path, class: "btn btn-outline-primary me-2" %>
-          <%= link_to "Nuevo Estudio", new_study_path, class: "btn btn-success" %>
+          <%= link_to "Retornar a Be My Trial", static_pages_medici_home_path %> |
+          <%= link_to "Nuevo Estudio", new_study_path %>
         </div>
       </div>
     </div>

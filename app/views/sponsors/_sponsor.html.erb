@@ -16,6 +16,7 @@
   <table class="table table-striped">
     <thead>
     <tr>
+      <th>Short title</th>
       <th>Scientific title</th>
       <th>CEC asociados</th>
       <th>Study status</th>
@@ -28,6 +29,7 @@
     <tbody>
     <% sponsor.studies.order(:study_status).each do |study| %>
       <tr>
+        <td><%= link_to study.short_title, study %></td>
         <td><%= link_to study.scientific_title, study %></td>
         <td><%= study.trial_center_facilities.pluck(:name).join(', ') %></td>
         <td><%= study.study_status %></td>

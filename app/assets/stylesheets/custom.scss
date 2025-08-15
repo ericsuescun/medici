@@ -4,7 +4,7 @@
 // Primary Colors
 $medici-primary: #0077c8; // Blue - Trust, reliability, professionalism
 $medici-secondary: #41b6e6; // Light blue - Calm, clarity
-$medici-accent: #00a651; // Green - Health, vitality, growth
+$medici-accent: #e4f4ea; // Green - Health, vitality, growth
 $medici-dark: #2c3e50; // Dark blue/slate - Stability, authority
 $medici-light: #f8f9fa; // Light gray/white - Cleanliness, simplicity
 
@@ -72,11 +72,11 @@ $dark: $medici-dark;
 .study-card {
   border-color: $medici-accent;
   border-radius: 8px;
-  background-color: lighten($medici-accent, 48%);
+  background-color: lighten($medici-accent, 60%);
   
   .card-header {
     background-color: $medici-accent;
-    color: white;
+    color: #317351;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
   }
