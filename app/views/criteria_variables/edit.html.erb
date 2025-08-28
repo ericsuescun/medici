@@ -1,0 +1,12 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <h1>Editar Variable: <%= @criteria_variable.name %></h1>
+      <%= render "form" %>
+      <div class="mt-2">
+        <%= link_to "Mostrar", [@criteria_profile, @criteria_variable] %> |
+        <%= link_to "Retornar a Variables", criteria_profile_criteria_variables_path(@criteria_profile) %>
+      </div>
+    </div>
+  </div>
+</div>

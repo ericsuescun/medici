@@ -1,0 +1,31 @@
+<div id="<%= dom_id criteria_variable %>" class="card">
+  <div class="card-header">
+    <h3 class="card-title"><%= criteria_variable.name %></h3>
+  </div>
+  <div class="card-body">
+    <p>
+      <strong>Descripción:</strong>
+      <%= criteria_variable.description.presence || '-' %>
+    </p>
+    <p>
+      <strong>Tipo de variable:</strong>
+      <%= criteria_variable.variable_type %>
+    </p>
+    <p>
+      <strong>Tipo de comparación:</strong>
+      <%= criteria_variable.comparison_type %>
+    </p>
+    <p>
+      <strong>Valor referencia 1:</strong>
+      <%= criteria_variable.reference_value_1 %>
+    </p>
+    <p>
+      <strong>Valor referencia 2:</strong>
+      <%= criteria_variable.reference_value_2 %>
+    </p>
+    <p>
+      <strong>Condiciones:</strong>
+      <%= criteria_variable.conditions.presence || '-' %>
+    </p>
+  </div>
+</div>

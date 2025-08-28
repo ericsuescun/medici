@@ -1,0 +1,77 @@
+class CriteriaVariablesController < SecureApplicationController
+  before_action :set_criteria_profile
+  before_action :set_criteria_variable, only: %i[ show edit update destroy ]
+
+  # GET /criteria_profiles/:criteria_profile_id/criteria_variables
+  def index
+    @criteria_variables = @criteria_profile.criteria_variables.order(created_at: :desc)
+  end
+
+  # GET /criteria_profiles/:criteria_profile_id/criteria_variables/:id
+  def show
+  end
+
+  # GET /criteria_profiles/:criteria_profile_id/criteria_variables/new
+  def new
+    @criteria_variable = @criteria_profile.criteria_variables.build
+  end
+
+  # GET /criteria_profiles/:criteria_profile_id/criteria_variables/:id/edit
+  def edit
+  end
+
+  # POST /criteria_profiles/:criteria_profile_id/criteria_variables
+  def create
+    @criteria_variable = @criteria_profile.criteria_variables.build(criteria_variable_params)
+
+    respond_to do |format|
+      if @criteria_variable.save
+        format.html { redirect_to criteria_profile_criteria_variable_url(@criteria_profile, @criteria_variable), notice: "Criteria variable was successfully created." }
+        format.json { render :show, status: :created, location: criteria_profile_criteria_variable_url(@criteria_profile, @criteria_variable) }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @criteria_variable.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # PATCH/PUT /criteria_profiles/:criteria_profile_id/criteria_variables/:id
+  def update
+    respond_to do |format|
+      if @criteria_variable.update(criteria_variable_params)
+        format.html { redirect_to criteria_profile_criteria_variable_url(@criteria_profile, @criteria_variable), notice: "Criteria variable was successfully updated." }
+        format.json { render :show, status: :ok, location: criteria_profile_criteria_variable_url(@criteria_profile, @criteria_variable) }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @criteria_variable.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # DELETE /criteria_profiles/:criteria_profile_id/criteria_variables/:id
+  def destroy
+    @criteria_variable.destroy!
+
+    respond_to do |format|
+      format.html { redirect_to criteria_profile_criteria_variables_url(@criteria_profile), notice: "Criteria variable was successfully destroyed." }
+      format.json { head :no_content }
+    end
+  end
+
+  private
+    def set_criteria_profile
+      # Ensure users can only access their own profiles' variables
+      @criteria_profile = CriteriaProfile.where(user: current_user).find(params[:criteria_profile_id])
+    end
+
+    def set_criteria_variable
+      @criteria_variable = @criteria_profile.criteria_variables.find(params[:id])
+    end
+
+    # Only allow a list of trusted parameters through.
+    def criteria_variable_params
+      params.require(:criteria_variable).permit(
+        :name, :description, :variable_type, :reference_value_1, :reference_value_2, :comparison_type, :conditions
+      )
+    end
+end

@@ -1,0 +1,51 @@
+<%= form_with(model: [@criteria_profile, @criteria_variable], class: "row g-3") do |form| %>
+  <% if @criteria_variable.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(@criteria_variable.errors.count, "error") %> impidieron guardar la variable:</h4>
+      <ul>
+        <% @criteria_variable.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="col-md-6">
+    <%= form.label :name, "Nombre" %>
+    <%= form.text_field :name, class: "form-control", required: true %>
+  </div>
+
+  <div class="col-12">
+    <%= form.label :description, "Descripción" %>
+    <%= form.text_area :description, class: "form-control", rows: 3 %>
+  </div>
+
+  <div class="col-md-4">
+    <%= form.label :variable_type, "Tipo de variable" %>
+    <%= form.select :variable_type, CriteriaVariable.variable_types.keys.map { |k| [k.humanize, k] }, {}, class: "form-select", required: true %>
+  </div>
+
+  <div class="col-md-4">
+    <%= form.label :comparison_type, "Tipo de comparación" %>
+    <%= form.select :comparison_type, CriteriaVariable.comparison_types.keys.map { |k| [k.humanize, k] }, {}, class: "form-select", required: true %>
+  </div>
+
+  <div class="col-md-4">
+    <%= form.label :reference_value_1, "Valor de referencia 1" %>
+    <%= form.number_field :reference_value_1, step: :any, class: "form-control" %>
+  </div>
+
+  <div class="col-md-4">
+    <%= form.label :reference_value_2, "Valor de referencia 2" %>
+    <%= form.number_field :reference_value_2, step: :any, class: "form-control" %>
+  </div>
+
+  <div class="col-12">
+    <%= form.label :conditions, "Condiciones (texto)" %>
+    <%= form.text_area :conditions, class: "form-control", rows: 3 %>
+  </div>
+
+  <div class="col-12">
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>
