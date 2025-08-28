@@ -1,0 +1,16 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <p style="color: green"><%= notice %></p>
+
+      <%= render @criteria_profile %>
+
+      <div class="mt-3">
+        <%= link_to "Editar", edit_criteria_profile_path(@criteria_profile) %> |
+        <%= link_to "Retornar a Perfiles", criteria_profiles_path %>
+
+        <%= button_to "Borrar", @criteria_profile, method: :delete, class: "btn btn-primary btn-block mt-3 mb-3" %>
+      </div>
+    </div>
+  </div>
+</div>

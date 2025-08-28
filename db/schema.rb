@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_03_230407) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_27_225000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -57,6 +57,33 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_03_230407) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["study_id"], name: "index_contacts_on_study_id"
+  end
+
+  create_table "criteria_profiles", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.bigint "study_id"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["study_id", "user_id"], name: "index_criteria_profiles_on_study_id_and_user_id"
+    t.index ["study_id"], name: "index_criteria_profiles_on_study_id"
+    t.index ["user_id"], name: "index_criteria_profiles_on_user_id"
+  end
+
+  create_table "criteria_variables", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.string "variable_type", null: false
+    t.decimal "reference_value_1", precision: 15, scale: 6
+    t.decimal "reference_value_2", precision: 15, scale: 6
+    t.string "comparison_type", null: false
+    t.text "conditions"
+    t.bigint "criteria_profile_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["criteria_profile_id", "name"], name: "index_criteria_variables_on_criteria_profile_id_and_name"
+    t.index ["criteria_profile_id"], name: "index_criteria_variables_on_criteria_profile_id"
   end
 
   create_table "medications", force: :cascade do |t|
@@ -202,6 +229,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_03_230407) do
 
   add_foreign_key "articles", "studies"
   add_foreign_key "contacts", "studies"
+  add_foreign_key "criteria_profiles", "studies"
+  add_foreign_key "criteria_profiles", "users"
+  add_foreign_key "criteria_variables", "criteria_profiles"
   add_foreign_key "patients", "users"
   add_foreign_key "results", "studies"
   add_foreign_key "studies", "sponsors"

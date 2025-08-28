@@ -54,6 +54,7 @@ class Study < ApplicationRecord
   has_many :results, dependent: :destroy
   has_many :trial_cities, dependent: :destroy
   has_many :contacts, dependent: :destroy
+  has_many :criteria_profiles, dependent: :destroy
 
   enum :study_status, completed: 'completed', recruiting: 'recruiting'
   enum :study_phase, I: 'I', II: 'II', III: 'III', IV: 'IV'

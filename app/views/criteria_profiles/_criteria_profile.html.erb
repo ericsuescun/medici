@@ -1,0 +1,23 @@
+<div id="<%= dom_id criteria_profile %>" class="card">
+  <div class="card-header">
+    <h3 class="card-title"><%= criteria_profile.name %></h3>
+  </div>
+  <div class="card-body">
+    <p>
+      <strong>Descripción:</strong>
+      <%= criteria_profile.description.presence || '-' %>
+    </p>
+    <p>
+      <strong>Estudio:</strong>
+      <% if criteria_profile.study.present? %>
+        <%= link_to criteria_profile.study.short_title, criteria_profile.study %>
+      <% else %>
+        <span class="text-muted">No asociado</span>
+      <% end %>
+    </p>
+    <p>
+      <strong>Usuario:</strong>
+      <%= criteria_profile.user.fullname.presence || criteria_profile.user.email %>
+    </p>
+  </div>
+</div>

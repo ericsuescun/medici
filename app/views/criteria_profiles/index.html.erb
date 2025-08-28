@@ -1,0 +1,47 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <%= render partial: 'layouts/general_navbar' if current_user.present? && !current_user.patient? %>
+      <p class="mt-2" style="color: green"><%= notice %></p>
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Perfiles de Criterios</h1>
+        <%= link_to 'Nuevo Perfil', new_criteria_profile_path, class: 'btn btn-primary' %>
+      </div>
+
+      <% if @criteria_profiles.any? %>
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Estudio</th>
+            <th>Creado</th>
+            <th></th>
+          </tr>
+          </thead>
+          <tbody>
+          <% @criteria_profiles.each do |profile| %>
+            <tr>
+              <td><%= link_to profile.name, profile %></td>
+              <td>
+                <% if profile.study.present? %>
+                  <%= link_to profile.study.short_title, profile.study %>
+                <% else %>
+                  <span class="text-muted">No asociado</span>
+                <% end %>
+              </td>
+              <td><%= l(profile.created_at, format: :short) rescue profile.created_at.to_s %></td>
+              <td>
+                <%= link_to 'Editar', edit_criteria_profile_path(profile) %>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+        <%= will_paginate @criteria_profiles if defined?(will_paginate) %>
+      <% else %>
+        <div class="alert alert-info">Aún no tienes perfiles de criterios. Crea el primero.</div>
+      <% end %>
+    </div>
+  </div>
+</div>
