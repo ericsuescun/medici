@@ -14,9 +14,13 @@
           <tr>
             <th>Nombre</th>
             <th>Tipo</th>
+            <th>Descripcion</th>
             <th>Comparación</th>
             <th>Ref 1</th>
             <th>Ref 2</th>
+            <th>Condiciones</th>
+            <th>Escala cualitativa</th>
+            <th>Valor cualitativo</th>
             <th></th>
           </tr>
           </thead>
@@ -25,9 +29,13 @@
             <tr>
               <td><%= link_to variable.name, [@criteria_profile, variable] %></td>
               <td><%= variable.variable_type %></td>
+              <td><%= variable.description %></td>
               <td><%= variable.comparison_type %></td>
               <td><%= variable.reference_value_1 %></td>
               <td><%= variable.reference_value_2 %></td>
+              <td><%= variable.conditions.presence || '-' %></td>
+              <td><%= (variable.qualitative_scale || []).join(', ') %></td>
+              <td><%= variable.qualitative_value %></td>
               <td>
                 <%= link_to 'Editar', edit_criteria_profile_criteria_variable_path(@criteria_profile, variable) %>
               </td>

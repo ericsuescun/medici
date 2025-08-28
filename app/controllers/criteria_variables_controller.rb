@@ -71,7 +71,8 @@ class CriteriaVariablesController < SecureApplicationController
     # Only allow a list of trusted parameters through.
     def criteria_variable_params
       params.require(:criteria_variable).permit(
-        :name, :description, :variable_type, :reference_value_1, :reference_value_2, :comparison_type, :conditions
+        :name, :description, :variable_type, :reference_value_1, :reference_value_2, :comparison_type, :conditions,
+        :qualitative_value, :qualitative_scale
       )
     end
 end

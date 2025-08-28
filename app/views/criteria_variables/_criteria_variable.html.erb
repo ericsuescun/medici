@@ -23,6 +23,16 @@
       <strong>Valor referencia 2:</strong>
       <%= criteria_variable.reference_value_2 %>
     </p>
+
+    <p>
+      <strong>Escala cualitativa:</strong>
+      <%= (criteria_variable.qualitative_scale || []).join(', ').presence || '-' %>
+    </p>
+    <p>
+      <strong>Valor cualitativo:</strong>
+      <%= criteria_variable.qualitative_value.presence || '-' %>
+    </p>
+
     <p>
       <strong>Condiciones:</strong>
       <%= criteria_variable.conditions.presence || '-' %>

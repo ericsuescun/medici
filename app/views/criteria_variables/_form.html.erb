@@ -40,6 +40,17 @@
     <%= form.number_field :reference_value_2, step: :any, class: "form-control" %>
   </div>
 
+  <div class="col-md-6">
+    <%= form.label :qualitative_scale, "Escala cualitativa (separada por comas)" %>
+    <%= form.text_field :qualitative_scale, value: @criteria_variable.qualitative_scale&.join(', '), class: "form-control", placeholder: "Alto, Medio, Bajo" %>
+    <div class="form-text">Ingrese los valores cualitativos separados por comas.</div>
+  </div>
+
+  <div class="col-md-6">
+    <%= form.label :qualitative_value, "Valor cualitativo" %>
+    <%= form.text_field :qualitative_value, class: "form-control", placeholder: "Medio" %>
+  </div>
+
   <div class="col-12">
     <%= form.label :conditions, "Condiciones (texto)" %>
     <%= form.text_area :conditions, class: "form-control", rows: 3 %>
