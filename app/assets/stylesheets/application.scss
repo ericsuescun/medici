@@ -1,3 +1,5 @@
 // Main application stylesheet
-// Custom styles and Bootstrap overrides
+// Temporary fallback: import Bootstrap here so production still has styles even if Node cssbundling doesn't run.
+// Once Heroku Node buildpack is ensured, we can remove this duplicate import and rely solely on application.bootstrap.scss.
+@import "bootstrap";
 @import "custom";
