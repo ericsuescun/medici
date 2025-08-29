@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_28_003000) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_28_193500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -74,7 +74,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_28_003000) do
   create_table "criteria_variables", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
-    t.string "variable_type", null: false
+    t.string "value_type", null: false
     t.decimal "reference_value_1", precision: 15, scale: 6
     t.decimal "reference_value_2", precision: 15, scale: 6
     t.string "comparison_type", null: false
@@ -84,6 +84,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_28_003000) do
     t.datetime "updated_at", null: false
     t.text "qualitative_scale", default: [], null: false, array: true
     t.string "qualitative_value"
+    t.boolean "enabled", default: true, null: false
+    t.boolean "shown", default: true, null: false
+    t.string "variable_type", default: "inclusion", null: false
     t.index ["criteria_profile_id", "name"], name: "index_criteria_variables_on_criteria_profile_id_and_name"
     t.index ["criteria_profile_id"], name: "index_criteria_variables_on_criteria_profile_id"
   end

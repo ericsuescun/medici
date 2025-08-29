@@ -4,7 +4,8 @@ class CriteriaVariablesController < SecureApplicationController
 
   # GET /criteria_profiles/:criteria_profile_id/criteria_variables
   def index
-    @criteria_variables = @criteria_profile.criteria_variables.order(created_at: :desc)
+    # Order inclusion first, then exclusion, and within each group by most recent
+    @criteria_variables = @criteria_profile.criteria_variables.order(Arel.sql("CASE criteria_variables.variable_type WHEN 'inclusion' THEN 0 ELSE 1 END, created_at DESC"))
   end
 
   # GET /criteria_profiles/:criteria_profile_id/criteria_variables/:id
@@ -71,8 +72,8 @@ class CriteriaVariablesController < SecureApplicationController
     # Only allow a list of trusted parameters through.
     def criteria_variable_params
       params.require(:criteria_variable).permit(
-        :name, :description, :variable_type, :reference_value_1, :reference_value_2, :comparison_type, :conditions,
-        :qualitative_value, :qualitative_scale
+        :name, :description, :value_type, :variable_type, :reference_value_1, :reference_value_2, :comparison_type, :conditions,
+        :qualitative_value, :qualitative_scale, :enabled, :shown
       )
     end
 end

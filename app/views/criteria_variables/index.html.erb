@@ -13,14 +13,17 @@
           <thead>
           <tr>
             <th>Nombre</th>
-            <th>Tipo</th>
             <th>Descripcion</th>
+            <th>Tipo</th>
+            <th>Tipo de regla</th>
             <th>Comparación</th>
             <th>Ref 1</th>
             <th>Ref 2</th>
             <th>Condiciones</th>
             <th>Escala cualitativa</th>
             <th>Valor cualitativo</th>
+            <th>Habilitada</th>
+            <th>Visible</th>
             <th></th>
           </tr>
           </thead>
@@ -28,14 +31,35 @@
           <% @criteria_variables.each do |variable| %>
             <tr>
               <td><%= link_to variable.name, [@criteria_profile, variable] %></td>
-              <td><%= variable.variable_type %></td>
               <td><%= variable.description %></td>
+              <td><%= variable.value_type %></td>
+              <td>
+                <% if variable.variable_type == "inclusion" %>
+                  <span class="badge bg-success">inclusion</span>
+                <% else %>
+                  <span class="badge bg-danger">exclusion</span>
+                <% end %>
+              </td>
               <td><%= variable.comparison_type %></td>
               <td><%= variable.reference_value_1 %></td>
               <td><%= variable.reference_value_2 %></td>
               <td><%= variable.conditions.presence || '-' %></td>
               <td><%= (variable.qualitative_scale || []).join(', ') %></td>
               <td><%= variable.qualitative_value %></td>
+              <td>
+                <% if variable.enabled? %>
+                  <span class="badge bg-success">Sí</span>
+                <% else %>
+                  <span class="badge bg-secondary">No</span>
+                <% end %>
+              </td>
+              <td>
+                <% if variable.shown? %>
+                  <span class="badge bg-success">Sí</span>
+                <% else %>
+                  <span class="badge bg-secondary">No</span>
+                <% end %>
+              </td>
               <td>
                 <%= link_to 'Editar', edit_criteria_profile_criteria_variable_path(@criteria_profile, variable) %>
               </td>

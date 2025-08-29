@@ -4,10 +4,10 @@ class CreateCriteriaVariables < ActiveRecord::Migration[8.0]
       t.string :name, null: false
       t.text :description
 
-      # type of variable (boolean or numeric)
+      # type of variable (boolean or quantitative)
       t.string :variable_type, null: false
 
-      # numeric reference values for comparisons/ranges
+      # quantitative reference values for comparisons/ranges
       t.decimal :reference_value_1, precision: 15, scale: 6
       t.decimal :reference_value_2, precision: 15, scale: 6
 

@@ -9,7 +9,15 @@
     </p>
     <p>
       <strong>Tipo de variable:</strong>
-      <%= criteria_variable.variable_type %>
+      <%= criteria_variable.value_type %>
+    </p>
+    <p>
+      <strong>Tipo de regla:</strong>
+      <% if criteria_variable.variable_type == "inclusion" %>
+        <span class="badge bg-success">inclusion</span>
+      <% else %>
+        <span class="badge bg-danger">exclusion</span>
+      <% end %>
     </p>
     <p>
       <strong>Tipo de comparación:</strong>
@@ -36,6 +44,15 @@
     <p>
       <strong>Condiciones:</strong>
       <%= criteria_variable.conditions.presence || '-' %>
+    </p>
+
+    <p>
+      <strong>Habilitada:</strong>
+      <%= criteria_variable.enabled? ? 'Sí' : 'No' %>
+    </p>
+    <p>
+      <strong>Visible:</strong>
+      <%= criteria_variable.shown? ? 'Sí' : 'No' %>
     </p>
   </div>
 </div>
