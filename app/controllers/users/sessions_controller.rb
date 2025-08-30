@@ -16,8 +16,10 @@ class Users::SessionsController < Devise::SessionsController
         study = Study.find_by(id: session[:study_id])
         if study && !resource.studies.include?(study)
           study.users << resource
-          if resource.user_type != 'patient'
-            resource.update(user_type: 'patient')
+          # Ensure the user has a Patient profile via delegated_type
+          unless resource.patient?
+            patient_profile = Patient.create!
+            resource.update(userable: patient_profile)
           end
           flash[:notice] = "Te has registrado exitosamente para participar en el estudio: #{study.short_title}"
         end

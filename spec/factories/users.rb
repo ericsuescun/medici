@@ -28,7 +28,6 @@ FactoryBot.define do
   factory :user do
     contact_address { Faker::Address.street_address }
     contact_number { Faker::PhoneNumber.phone_number }
-    dob { Faker::Date.birthday(min_age: 18, max_age: 65) }
     sequence(:email) { |n| Faker::Lorem.word + n.to_s + '@yopmail.com' }
     password { '12345678' }
     password_confirmation { '12345678'}

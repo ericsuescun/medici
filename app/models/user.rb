@@ -34,11 +34,30 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  enum :user_type, sponsor: 'sponsor', admin: 'admin', patient: 'patient'
 
-  scope :patients, -> { where(user_type: 'patient') }
-  scope :sponsors, -> { where(user_type: 'sponsor') }
-  scope :admins, -> { where(user_type: 'admin') }
+  # scope :patients, -> { where(user_type: 'patient') }
+  # scope :sponsors, -> { where(user_type: 'sponsor') }
+  # scope :admins, -> { where(user_type: 'admin') }
+
+  delegated_type :userable, types: %w[SponsorRep Admin Patient], dependent: :destroy
+
+  # Scopes based on delegated type
+  scope :patients, -> { where(userable_type: 'Patient') }
+  scope :sponsors, -> { where(userable_type: 'SponsorRep') }
+  scope :admins,   -> { where(userable_type: 'Admin') }
+
+  # Convenience predicate methods to keep API compatible with previous enum
+  def patient?
+    userable_type == 'Patient'
+  end
+
+  def sponsor?
+    userable_type == 'SponsorRep'
+  end
+
+  def admin?
+    userable_type == 'Admin'
+  end
 
   def fullname
     return '' if firstname.blank? || lastname.blank?

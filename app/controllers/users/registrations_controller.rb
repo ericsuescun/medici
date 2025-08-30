@@ -12,7 +12,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
         study = Study.find_by(id: session[:study_id])
         if study
           study.users << resource
-          resource.update(user_type: 'patient')
+          # Ensure the user has a Patient profile via delegated_type
+          unless resource.patient?
+            patient_profile = Patient.create!
+            resource.update(userable: patient_profile)
+          end
           # Aquí puedes asociar el study al nuevo usuario
           # study.update(user: resource)
         end

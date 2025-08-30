@@ -27,6 +27,8 @@ Rails.application.routes.draw do
   end
 
   resources :patients
+  resources :admins
+  resources :sponsor_reps
   resources :results
   resources :contacts
   resources :articles

@@ -10,9 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_28_193500) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_30_185500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "admins", force: :cascade do |t|
+    t.string "contact_number"
+    t.string "contact_address"
+    t.string "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "articles", force: :cascade do |t|
     t.string "title"
@@ -114,10 +122,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_28_193500) do
     t.string "contact_address"
     t.string "email"
     t.string "notes"
-    t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_patients_on_user_id"
+    t.text "illness_description", default: ""
+    t.string "id_type", default: ""
+    t.string "id_number", default: ""
   end
 
   create_table "results", force: :cascade do |t|
@@ -128,6 +137,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_28_193500) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["study_id"], name: "index_results_on_study_id"
+  end
+
+  create_table "sponsor_reps", force: :cascade do |t|
+    t.string "contact_number"
+    t.string "contact_address"
+    t.string "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "sponsors", force: :cascade do |t|
@@ -214,7 +231,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_28_193500) do
   create_table "users", force: :cascade do |t|
     t.string "firstname"
     t.string "lastname"
-    t.string "user_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "email", default: "", null: false
@@ -222,14 +238,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_28_193500) do
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.date "dob"
-    t.string "contact_number"
-    t.string "contact_address"
-    t.string "id_number", default: ""
-    t.string "id_type", default: ""
     t.string "illness_description", default: ""
+    t.string "userable_type"
+    t.bigint "userable_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["userable_type", "userable_id"], name: "index_users_on_userable_type_and_userable_id"
   end
 
   add_foreign_key "articles", "studies"
@@ -237,7 +251,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_28_193500) do
   add_foreign_key "criteria_profiles", "studies"
   add_foreign_key "criteria_profiles", "users"
   add_foreign_key "criteria_variables", "criteria_profiles"
-  add_foreign_key "patients", "users"
   add_foreign_key "results", "studies"
   add_foreign_key "studies", "sponsors"
   add_foreign_key "trial_center_branches", "trial_center_facilities"

@@ -14,9 +14,14 @@ require 'factory_bot'
 require_relative 'seeds/update_studies_short_title'
 require_relative 'seeds/create_medications'
 
-FactoryBot.create(:user, user_type: :admin, email: 'edsuescun@gmail.com', password: '12345678', password_confirmation: '12345678', firstname: 'Eric', lastname: 'Suescun')
-FactoryBot.create(:user, user_type: :admin, email: 'nlecuona@gmail.com', password: '12345678', password_confirmation: '12345678', firstname: 'Nathalia', lastname: 'Lecuona')
-FactoryBot.create(:user, user_type: :admin, email: 'agiraldo@gmail.com', password: '12345678', password_confirmation: '12345678', firstname: 'Alejandro', lastname: 'Giraldo')
+[ ['edsuescun@gmail.com', 'Eric', 'Suescun'],
+  ['nlecuona@gmail.com', 'Nathalia', 'Lecuona'],
+  ['agiraldo@gmail.com', 'Alejandro', 'Giraldo']
+].each do |email, first, last|
+  user = FactoryBot.create(:user, email: email, password: '12345678', password_confirmation: '12345678', firstname: first, lastname: last)
+  admin_profile = Admin.create!
+  user.update!(userable: admin_profile)
+end
 
 
 # puts 'Creating Users...'

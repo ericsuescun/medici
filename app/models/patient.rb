@@ -24,5 +24,5 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Patient < ApplicationRecord
-  belongs_to :user
+  include Userable
 end
