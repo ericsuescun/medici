@@ -27,12 +27,13 @@
               <% end %>
             </div>
 
-            <% variables = profile.criteria_variables.order(Arel.sql("CASE WHEN variable_type = 'inclusion' THEN 0 ELSE 1 END"), :name) %>
+            <% variables = profile.criteria_variables.order(Arel.sql("CASE WHEN variable_type = 'inclusion' THEN 0 ELSE 1 END, COALESCE(criteria_order, 2147483647) ASC"), :name) %>
             <% if variables.any? %>
               <div class="table-responsive">
                 <table class="table table-striped">
                   <thead>
                   <tr>
+                    <th>Orden</th>
                     <th>Nombre</th>
                     <th>Descripcion</th>
                     <th>Tipo</th>
@@ -50,6 +51,7 @@
                   <tbody>
                   <% variables.each do |variable| %>
                     <tr>
+                      <td><%= variable.criteria_order.present? ? variable.criteria_order : '-' %></td>
                       <td><%= link_to variable.name, [profile, variable] %></td>
                       <td><%= variable.description %></td>
                       <td><%= variable.value_type %></td>

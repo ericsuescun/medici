@@ -12,6 +12,7 @@
         <table class="table table-striped">
           <thead>
           <tr>
+            <th>Orden</th>
             <th>Nombre</th>
             <th>Descripcion</th>
             <th>Tipo</th>
@@ -30,6 +31,7 @@
           <tbody>
           <% @criteria_variables.each do |variable| %>
             <tr>
+              <td><%= variable.criteria_order.present? ? variable.criteria_order : '-' %></td>
               <td><%= link_to variable.name, [@criteria_profile, variable] %></td>
               <td><%= variable.description %></td>
               <td><%= variable.value_type %></td>

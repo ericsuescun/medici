@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_30_185500) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_31_112100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -95,7 +95,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_30_185500) do
     t.boolean "enabled", default: true, null: false
     t.boolean "shown", default: true, null: false
     t.string "variable_type", default: "inclusion", null: false
+    t.integer "criteria_order"
     t.index ["criteria_profile_id", "name"], name: "index_criteria_variables_on_criteria_profile_id_and_name"
+    t.index ["criteria_profile_id", "variable_type", "criteria_order"], name: "index_cv_on_profile_type_order"
     t.index ["criteria_profile_id"], name: "index_criteria_variables_on_criteria_profile_id"
   end
 
@@ -166,8 +168,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_30_185500) do
     t.date "first_patient_at"
     t.date "global_ending_at"
     t.string "study_phase"
-    t.string "inclusion_criteria"
-    t.string "exclusion_criteria"
     t.integer "sample_size"
     t.string "main_intervention"
     t.string "sex"
@@ -176,6 +176,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_30_185500) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "short_title", default: ""
+    t.string "inclusion_criteria", default: ""
+    t.string "exclusion_criteria", default: ""
     t.index ["sponsor_id"], name: "index_studies_on_sponsor_id"
   end
 

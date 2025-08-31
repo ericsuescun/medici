@@ -10,6 +10,12 @@
     </div>
   <% end %>
 
+  <div class="col-md-3">
+    <%= form.label :criteria_order, "Orden dentro del grupo" %>
+    <%= form.number_field :criteria_order, class: "form-control", min: 0, step: 1 %>
+    <div class="form-text">Sugerido automáticamente según el grupo (inclusión/exclusión). Puede cambiarlo.</div>
+  </div>
+
   <div class="col-md-6">
     <%= form.label :name, "Nombre" %>
     <%= form.text_field :name, class: "form-control", required: true %>
