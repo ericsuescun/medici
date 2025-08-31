@@ -45,6 +45,10 @@ class CriteriaVariablesController < SecureApplicationController
 
   # PATCH/PUT /criteria_profiles/:criteria_profile_id/criteria_variables/:id
   def update
+    Rails.logger.info "Received params: #{params.inspect}"
+    Rails.logger.info "Permitted params: #{criteria_variable_params.inspect}"
+
+
     respond_to do |format|
       if @criteria_variable.update(criteria_variable_params)
         format.html { redirect_to criteria_profile_criteria_variable_url(@criteria_profile, @criteria_variable), notice: "Criteria variable was successfully updated." }
