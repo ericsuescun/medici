@@ -68,4 +68,7 @@ class Study < ApplicationRecord
     end
     cities.uniq
   end
+  def current_criteria_profile
+    CriteriaProfile.find_by(study_id: id)
+  end
 end

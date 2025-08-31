@@ -1,5 +1,5 @@
 class StudiesController < SecureApplicationController
-  before_action :set_study, only: %i[ show edit update destroy add_trial_center_branch remove_trial_center_branch add_medication remove_medication ]
+  before_action :set_study, only: %i[ show edit update destroy add_trial_center_branch remove_trial_center_branch add_medication remove_medication set_criteria_profile unset_criteria_profile ]
   before_action :set_commercial_data
 
   # GET /studies or /studies.json
@@ -123,6 +123,31 @@ class StudiesController < SecureApplicationController
       notice = "Cannot remove the last medication from this study."
     end
     
+    redirect_to study_url(@study), notice: notice
+  end
+
+  # POST /studies/1/set_criteria_profile
+  def set_criteria_profile
+    profile = CriteriaProfile.find(params[:criteria_profile_id])
+
+    # Clear any existing profile associated to this study
+    CriteriaProfile.where(study_id: @study.id).update_all(study_id: nil)
+
+    # Associate the selected one
+    profile.update!(study: @study)
+
+    redirect_to study_url(@study), notice: 'Perfil de criterios asociado exitosamente.'
+  end
+
+  # DELETE /studies/1/unset_criteria_profile
+  def unset_criteria_profile
+    profile = CriteriaProfile.find_by(study_id: @study.id)
+    if profile
+      profile.update!(study_id: nil)
+      notice = 'Perfil de criterios desasociado.'
+    else
+      notice = 'Este estudio no tiene un perfil de criterios asociado.'
+    end
     redirect_to study_url(@study), notice: notice
   end
 

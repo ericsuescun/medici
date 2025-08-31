@@ -23,6 +23,8 @@ Rails.application.routes.draw do
       delete :remove_trial_center_branch
       post :add_medication
       delete :remove_medication
+      post :set_criteria_profile
+      delete :unset_criteria_profile
     end
   end
 

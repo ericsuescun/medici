@@ -10,6 +10,105 @@
       </div>
 
       <%= render @study %>
+
+      <div class="card mt-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Perfil de Criterios</h5>
+          <% if (profile = @study.current_criteria_profile) %>
+            <%= button_to 'Desasociar perfil', unset_criteria_profile_study_path(@study), method: :delete, class: 'btn btn-sm btn-outline-danger', data: { confirm: '¿Seguro que deseas desasociar el perfil?' } %>
+          <% end %>
+        </div>
+        <div class="card-body">
+          <% if profile.present? %>
+            <div class="mb-3">
+              <h6 class="mb-1"><%= link_to profile.name, criteria_profile_path(profile) %></h6>
+              <% if profile.description.present? %>
+                <p class="text-muted"><%= profile.description %></p>
+              <% end %>
+            </div>
+
+            <% variables = profile.criteria_variables.order(Arel.sql("CASE WHEN variable_type = 'inclusion' THEN 0 ELSE 1 END"), :name) %>
+            <% if variables.any? %>
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Descripcion</th>
+                    <th>Tipo</th>
+                    <th>Tipo de regla</th>
+                    <th>Comparación</th>
+                    <th>Ref 1</th>
+                    <th>Ref 2</th>
+                    <th>Condiciones</th>
+                    <th>Escala cualitativa</th>
+                    <th>Valor cualitativo</th>
+                    <th>Habilitada</th>
+                    <th>Visible</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <% variables.each do |variable| %>
+                    <tr>
+                      <td><%= link_to variable.name, [profile, variable] %></td>
+                      <td><%= variable.description %></td>
+                      <td><%= variable.value_type %></td>
+                      <td>
+                        <% if variable.variable_type == "inclusion" %>
+                          <span class="badge bg-success">inclusion</span>
+                        <% else %>
+                          <span class="badge bg-danger">exclusion</span>
+                        <% end %>
+                      </td>
+                      <td><%= variable.comparison_type %></td>
+                      <td><%= variable.reference_value_1 %></td>
+                      <td><%= variable.reference_value_2 %></td>
+                      <td><%= variable.conditions.presence || '-' %></td>
+                      <td><%= (variable.qualitative_scale || []).join(', ') %></td>
+                      <td><%= variable.qualitative_value %></td>
+                      <td>
+                        <% if variable.enabled? %>
+                          <span class="badge bg-success">Sí</span>
+                        <% else %>
+                          <span class="badge bg-secondary">No</span>
+                        <% end %>
+                      </td>
+                      <td>
+                        <% if variable.shown? %>
+                          <span class="badge bg-success">Sí</span>
+                        <% else %>
+                          <span class="badge bg-secondary">No</span>
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                  </tbody>
+                </table>
+              </div>
+            <% else %>
+              <div class="alert alert-info">Este perfil no tiene variables aún.</div>
+            <% end %>
+          <% else %>
+            <% available_profiles = CriteriaProfile.where(study_id: nil).order(:name) %>
+            <% if available_profiles.any? %>
+              <%= form_with url: set_criteria_profile_study_path(@study), method: :post, class: 'row g-3 align-items-end' do |f| %>
+                <div class="col-md-6">
+                  <label for="criteria_profile_id" class="form-label">Seleccionar perfil</label>
+                  <%= select_tag :criteria_profile_id, options_from_collection_for_select(available_profiles, :id, :name), include_blank: 'Seleccione un perfil', class: 'form-select' %>
+                </div>
+                <div class="col-md-3">
+                  <button type="submit" class="btn btn-primary">Asociar perfil</button>
+                </div>
+                <div class="col-12">
+                  <small class="text-muted">Selecciona un perfil para asociarlo a este estudio. Solo un perfil puede estar asociado a la vez.</small>
+                </div>
+              <% end %>
+            <% else %>
+              <p class="text-muted mb-0">No hay perfiles disponibles para asociar. <%= link_to 'Crear un perfil', new_criteria_profile_path %>.</p>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
     </div>
   </div>
 </div>
