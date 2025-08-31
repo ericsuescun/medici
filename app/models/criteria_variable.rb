@@ -46,16 +46,6 @@ class CriteriaVariable < ApplicationRecord
        true: "true",
        false: "false"
 
-  before_update do
-    Rails.logger.info "Before update - criteria_order: #{criteria_order}"
-    Rails.logger.info "Changes: #{changes.inspect}"
-  end
-
-  after_update do
-    Rails.logger.info "After update - criteria_order: #{criteria_order}"
-  end
-
-
   # Normalize qualitative_scale when provided as a comma-separated string from forms
   before_validation :normalize_qualitative_scale
 
