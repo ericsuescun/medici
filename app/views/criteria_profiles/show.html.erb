@@ -35,7 +35,7 @@
           </tr>
           </thead>
           <tbody>
-          <% @criteria_profile.criteria_variables.order(created_at: :desc).each do |variable| %>
+          <% @criteria_profile.criteria_variables.order(Arel.sql("CASE WHEN variable_type = 'inclusion' THEN 0 ELSE 1 END, COALESCE(criteria_order, 2147483647) ASC"), :name).each do |variable| %>
             <tr>
               <td><%= variable.criteria_order.present? ? variable.criteria_order : '-' %></td>
               <td><%= link_to variable.name, [@criteria_profile, variable] %></td>
