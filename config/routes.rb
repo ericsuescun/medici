@@ -33,6 +33,7 @@ Rails.application.routes.draw do
   resources :contacts
   resources :articles
   resources :sponsors
+  resources :medications
   resources :users
   resources :criteria_profiles do
     resources :criteria_variables
