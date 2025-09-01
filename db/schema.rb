@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_31_210000) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_31_223000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -65,6 +65,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_31_210000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["study_id"], name: "index_contacts_on_study_id"
+  end
+
+  create_table "countries", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "code", null: false
+    t.string "phone_prefix", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "country_priority", default: 4, null: false
+    t.index ["code"], name: "index_countries_on_code", unique: true
+    t.index ["country_priority"], name: "index_countries_on_country_priority"
   end
 
   create_table "criteria_profiles", force: :cascade do |t|

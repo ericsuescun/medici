@@ -11,19 +11,19 @@
 require 'factory_bot'
 
 # Load seed files
-require_relative 'seeds/update_studies_short_title'
-require_relative 'seeds/create_medications'
-require_relative 'seeds/create_id_types'
+# require_relative 'seeds/update_studies_short_title'
+# require_relative 'seeds/create_medications'
+# require_relative 'seeds/create_id_types'
 require_relative 'seeds/create_countries'
 
-[ ['edsuescun@gmail.com', 'Eric', 'Suescun'],
-  ['nlecuona@gmail.com', 'Nathalia', 'Lecuona'],
-  ['agiraldo@gmail.com', 'Alejandro', 'Giraldo']
-].each do |email, first, last|
-  user = FactoryBot.create(:user, email: email, password: '12345678', password_confirmation: '12345678', firstname: first, lastname: last)
-  admin_profile = Admin.create!
-  user.update!(userable: admin_profile)
-end
+# [ ['edsuescun@gmail.com', 'Eric', 'Suescun'],
+#   ['nlecuona@gmail.com', 'Nathalia', 'Lecuona'],
+#   ['agiraldo@gmail.com', 'Alejandro', 'Giraldo']
+# ].each do |email, first, last|
+#   user = FactoryBot.create(:user, email: email, password: '12345678', password_confirmation: '12345678', firstname: first, lastname: last)
+#   admin_profile = Admin.create!
+#   user.update!(userable: admin_profile)
+# end
 
 
 # puts 'Creating Users...'

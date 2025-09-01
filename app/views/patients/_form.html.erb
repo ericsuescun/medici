@@ -44,7 +44,7 @@
 
   <div>
     <%= form.label :country, style: "display: block" %>
-    <%= form.text_field :country, class: "form-control mb-3" %>
+    <%= form.select :country, country_options_for_select(@patient.country.presence), { include_blank: true }, class: "form-select mb-3" %>
   </div>
 
   <div>
