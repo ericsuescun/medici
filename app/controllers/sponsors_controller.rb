@@ -1,5 +1,5 @@
 class SponsorsController < SecureApplicationController
-  before_action :set_sponsor, only: %i[ show edit update destroy ]
+  before_action :set_sponsor, only: %i[ show edit update destroy add_rep remove_rep ]
 
   # GET /sponsors or /sponsors.json
   def index
@@ -55,6 +55,20 @@ class SponsorsController < SecureApplicationController
       format.html { redirect_to sponsors_url, notice: "Sponsor was successfully destroyed." }
       format.json { head :no_content }
     end
+  end
+
+  # POST /sponsors/:id/add_rep
+  def add_rep
+    rep = SponsorRep.find(params[:rep_id])
+    rep.update!(sponsor: @sponsor)
+    redirect_to sponsor_path(@sponsor), notice: 'Representante asociado correctamente.'
+  end
+
+  # DELETE /sponsors/:id/remove_rep
+  def remove_rep
+    rep = SponsorRep.find(params[:rep_id])
+    rep.update!(sponsor: nil)
+    redirect_to sponsor_path(@sponsor), notice: 'Representante desasociado.'
   end
 
   private

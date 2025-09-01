@@ -1,9 +1,9 @@
-<%= form_with(model: sponsor_rep) do |f| %>
-  <% if sponsor_rep.errors.any? %>
+<%= form_with(model: trial_center_branch_rep) do |f| %>
+  <% if trial_center_branch_rep.errors.any? %>
     <div style="color: red">
-      <h2><%= pluralize(sponsor_rep.errors.count, "error") %> prohibited this sponsor representative from being saved:</h2>
+      <h2><%= pluralize(trial_center_branch_rep.errors.count, "error") %> prohibited this representative from being saved:</h2>
       <ul>
-        <% sponsor_rep.errors.each do |error| %>
+        <% trial_center_branch_rep.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
       </ul>
@@ -27,7 +27,7 @@
             <%= u.label :email %>
             <%= u.email_field :email, class: 'form-control' %>
           </div>
-          <% if sponsor_rep.new_record? || sponsor_rep.user&.encrypted_password.blank? %>
+          <% if trial_center_branch_rep.new_record? || trial_center_branch_rep.user&.encrypted_password.blank? %>
             <div class="mb-2">
               <%= u.label :password %>
               <%= u.password_field :password, class: 'form-control' %>
@@ -42,13 +42,12 @@
     </div>
   </fieldset>
 
-  <%# If coming from a Sponsor, keep association hidden %>
-  <% if sponsor_rep.sponsor_id.present? %>
-    <%= f.hidden_field :sponsor_id %>
+  <% if trial_center_branch_rep.trial_center_branch_id.present? %>
+    <%= f.hidden_field :trial_center_branch_id %>
   <% end %>
 
   <fieldset>
-    <legend>Perfil de Representante</legend>
+    <legend>Perfil de Representante de Sede</legend>
     <div class="row">
       <div class="col-md-6">
         <div class="mb-2">

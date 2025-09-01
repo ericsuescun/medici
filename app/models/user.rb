@@ -39,12 +39,13 @@ class User < ApplicationRecord
   # scope :sponsors, -> { where(user_type: 'sponsor') }
   # scope :admins, -> { where(user_type: 'admin') }
 
-  delegated_type :userable, types: %w[SponsorRep Admin Patient], dependent: :destroy
+  delegated_type :userable, types: %w[SponsorRep Admin Patient TrialCenterBranchRep], dependent: :destroy
 
   # Scopes based on delegated type
   scope :patients, -> { where(userable_type: 'Patient') }
   scope :sponsors, -> { where(userable_type: 'SponsorRep') }
   scope :admins,   -> { where(userable_type: 'Admin') }
+  scope :trial_center_branch_reps, -> { where(userable_type: 'TrialCenterBranchRep') }
 
   # Convenience predicate methods to keep API compatible with previous enum
   def patient?
@@ -57,6 +58,10 @@ class User < ApplicationRecord
 
   def admin?
     userable_type == 'Admin'
+  end
+
+  def trial_center_branch_rep?
+    userable_type == 'TrialCenterBranchRep'
   end
 
   def fullname

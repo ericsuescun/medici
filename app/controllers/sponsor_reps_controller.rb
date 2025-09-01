@@ -10,6 +10,7 @@ class SponsorRepsController < SecureApplicationController
 
   def new
     @sponsor_rep = SponsorRep.new
+    @sponsor_rep.sponsor_id = params[:sponsor_id] if params[:sponsor_id].present?
     @sponsor_rep.build_user
   end
 
@@ -58,7 +59,7 @@ class SponsorRepsController < SecureApplicationController
     end
 
     def sponsor_rep_params
-      params.require(:sponsor_rep).permit(:contact_number, :contact_address, :title,
+      params.require(:sponsor_rep).permit(:contact_number, :contact_address, :title, :sponsor_id,
                                           user_attributes: [:id, :firstname, :lastname, :email, :password, :password_confirmation])
     end
 end

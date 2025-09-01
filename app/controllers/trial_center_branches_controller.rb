@@ -1,5 +1,5 @@
 class TrialCenterBranchesController < ApplicationController
-  before_action :set_trial_center_branch, only: %i[ show edit update destroy ]
+  before_action :set_trial_center_branch, only: %i[ show edit update destroy add_rep remove_rep ]
 
   # GET /trial_center_branches or /trial_center_branches.json
   def index
@@ -69,6 +69,20 @@ class TrialCenterBranchesController < ApplicationController
       format.html { redirect_to trial_center_branches_url, notice: "Trial center branch was successfully destroyed." }
       format.json { head :no_content }
     end
+  end
+
+  # POST /trial_center_branches/:id/add_rep
+  def add_rep
+    rep = TrialCenterBranchRep.find(params[:rep_id])
+    rep.update!(trial_center_branch: @trial_center_branch)
+    redirect_to trial_center_branch_path(@trial_center_branch), notice: 'Representante de sede asociado correctamente.'
+  end
+
+  # DELETE /trial_center_branches/:id/remove_rep
+  def remove_rep
+    rep = TrialCenterBranchRep.find(params[:rep_id])
+    rep.update!(trial_center_branch: nil)
+    redirect_to trial_center_branch_path(@trial_center_branch), notice: 'Representante de sede desasociado.'
   end
 
   private

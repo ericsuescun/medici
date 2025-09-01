@@ -11,6 +11,40 @@
 
         <%= button_to "Borrar", @trial_center_branch, method: :delete, method: :delete, class: "btn btn-primary btn-block mt-3 mb-3" %>
       </div>
+
+      <hr/>
+      <div class="mt-3">
+        <h4>Representantes de Sede</h4>
+        <% reps = @trial_center_branch.trial_center_branch_reps.includes(:user) %>
+        <% if reps.any? %>
+          <ul>
+            <% reps.each do |r| %>
+              <li>
+                <%= r.fullname.presence || r.email %>
+                <%= button_to 'Desasociar', remove_rep_trial_center_branch_path(@trial_center_branch, rep_id: r.id), method: :delete, class: 'btn btn-sm btn-outline-danger ms-2' %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-muted">No hay representantes asociados.</p>
+        <% end %>
+
+        <% available_users = User.trial_center_branch_reps.includes(:userable).select { |u| u.userable&.trial_center_branch_id.nil? } %>
+        <% if available_users.any? %>
+          <%= form_with url: add_rep_trial_center_branch_path(@trial_center_branch), method: :post, class: 'row g-2 align-items-end' do |f| %>
+            <div class="col-md-6">
+              <label for="rep_id" class="form-label">Asociar representante desde usuarios</label>
+              <%= select_tag :rep_id, options_for_select(available_users.map { |u| [(u.fullname.presence || u.email), u.userable_id] }), include_blank: 'Seleccione un representante', class: 'form-select' %>
+            </div>
+            <div class="col-md-3">
+              <button type="submit" class="btn btn-primary">Asociar</button>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-muted">No hay representantes disponibles para asociar.</p>
+        <% end %>
+
+      </div>
     </div>
   </div>
 </div>

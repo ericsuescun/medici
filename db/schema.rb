@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_31_112100) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_31_190500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -147,6 +147,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_31_112100) do
     t.string "title"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "sponsor_id"
+    t.index ["sponsor_id"], name: "index_sponsor_reps_on_sponsor_id"
   end
 
   create_table "sponsors", force: :cascade do |t|
@@ -194,6 +196,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_31_112100) do
   create_table "studies_users", id: false, force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "study_id", null: false
+  end
+
+  create_table "trial_center_branch_reps", force: :cascade do |t|
+    t.string "contact_number"
+    t.string "contact_address"
+    t.string "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "trial_center_branch_id"
+    t.index ["trial_center_branch_id"], name: "index_trial_center_branch_reps_on_trial_center_branch_id"
   end
 
   create_table "trial_center_branches", force: :cascade do |t|
@@ -254,7 +266,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_31_112100) do
   add_foreign_key "criteria_profiles", "users"
   add_foreign_key "criteria_variables", "criteria_profiles"
   add_foreign_key "results", "studies"
+  add_foreign_key "sponsor_reps", "sponsors"
   add_foreign_key "studies", "sponsors"
+  add_foreign_key "trial_center_branch_reps", "trial_center_branches"
   add_foreign_key "trial_center_branches", "trial_center_facilities"
   add_foreign_key "trial_cities", "studies"
 end

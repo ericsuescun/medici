@@ -27,4 +27,5 @@ class TrialCenterBranch < ApplicationRecord
 
   has_and_belongs_to_many :studies
   has_and_belongs_to_many :cities
+  has_many :trial_center_branch_reps, dependent: :nullify
 end
