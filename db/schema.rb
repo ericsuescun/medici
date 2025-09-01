@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_31_190500) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_31_210000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -101,6 +101,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_31_190500) do
     t.index ["criteria_profile_id"], name: "index_criteria_variables_on_criteria_profile_id"
   end
 
+  create_table "id_types", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "code", null: false
+    t.string "country_code", null: false
+    t.string "description"
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_id_types_on_active"
+    t.index ["country_code", "code"], name: "index_id_types_on_country_code_and_code", unique: true
+    t.index ["country_code"], name: "index_id_types_on_country_code"
+  end
+
   create_table "medications", force: :cascade do |t|
     t.string "name"
     t.text "description"
@@ -129,6 +142,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_31_190500) do
     t.text "illness_description", default: ""
     t.string "id_type", default: ""
     t.string "id_number", default: ""
+    t.string "country", default: ""
   end
 
   create_table "results", force: :cascade do |t|

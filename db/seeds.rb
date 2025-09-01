@@ -13,6 +13,8 @@ require 'factory_bot'
 # Load seed files
 require_relative 'seeds/update_studies_short_title'
 require_relative 'seeds/create_medications'
+require_relative 'seeds/create_id_types'
+require_relative 'seeds/create_countries'
 
 [ ['edsuescun@gmail.com', 'Eric', 'Suescun'],
   ['nlecuona@gmail.com', 'Nathalia', 'Lecuona'],

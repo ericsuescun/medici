@@ -14,50 +14,55 @@
 
   <div>
     <%= form.label :firstname, style: "display: block" %>
-    <%= form.text_field :firstname %>
+    <%= form.text_field :firstname, class: "form-control mb-3" %>
   </div>
 
   <div>
     <%= form.label :lastname, style: "display: block" %>
-    <%= form.text_field :lastname %>
+    <%= form.text_field :lastname, class: "form-control mb-3" %>
   </div>
 
   <div>
     <%= form.label :dob, style: "display: block" %>
-    <%= form.date_field :dob %>
+    <%= form.date_field :dob, class: "form-control mb-3" %>
   </div>
 
   <div>
     <%= form.label :contact_number, style: "display: block" %>
-    <%= form.text_field :contact_number %>
+    <%= form.text_field :contact_number, class: "form-control mb-3" %>
   </div>
 
   <div>
     <%= form.label :contact_address, style: "display: block" %>
-    <%= form.text_field :contact_address %>
+    <%= form.text_field :contact_address, class: "form-control mb-3" %>
   </div>
 
   <div>
     <%= form.label :email, style: "display: block" %>
-    <%= form.text_field :email %>
+    <%= form.text_field :email, class: "form-control mb-3" %>
+  </div>
+
+  <div>
+    <%= form.label :country, style: "display: block" %>
+    <%= form.text_field :country, class: "form-control mb-3" %>
   </div>
 
   <div>
     <%= form.label :id_type, style: "display: block" %>
-    <%= form.text_field :id_type %>
+    <%= form.select :id_type, options_from_collection_for_select(IdType.by_country((@patient.country.presence || 'CO')).active, :code, :name, @patient.id_type), { include_blank: true }, class: "form-select mb-3" %>
   </div>
 
   <div>
     <%= form.label :id_number, style: "display: block" %>
-    <%= form.text_field :id_number %>
+    <%= form.text_field :id_number, class: "form-control mb-3" %>
   </div>
 
   <div>
     <%= form.label :illness_description, style: "display: block" %>
-    <%= form.text_area :illness_description %>
+    <%= form.text_area :illness_description, class: "form-control mb-3" %>
   </div>
 
   <div>
-    <%= form.submit %>
+    <%= form.submit 'Guardar', class: 'btn btn-primary btn-block' %>
   </div>
 <% end %>
