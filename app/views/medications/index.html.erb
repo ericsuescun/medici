@@ -1,22 +1,23 @@
-<p style="color: green"><%= notice %></p>
+<div class="container">
+  <p style="color: green"><%= notice %></p>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h1>Medicamentos</h1>
-  <div>
-    <%= link_to "Retornar a Vitalia", static_pages_medici_home_path %> |
-    <%= link_to "Nuevo medicamento", new_medication_path, class: "btn btn-primary" %>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Medicamentos</h1>
+    <div>
+      <%= link_to "Retornar a Vitalia", static_pages_medici_home_path %> |
+      <%= link_to "Nuevo medicamento", new_medication_path, class: "btn btn-primary" %>
+    </div>
   </div>
-</div>
 
-<table class="table table-striped">
-  <thead>
+  <table class="table table-striped">
+    <thead>
     <tr>
       <th>Nombre</th>
       <th>Descripción</th>
       <th></th>
     </tr>
-  </thead>
-  <tbody>
+    </thead>
+    <tbody>
     <% @medications.each do |m| %>
       <tr>
         <td><%= link_to m.name, medication_path(m) %></td>
@@ -26,5 +27,7 @@
         </td>
       </tr>
     <% end %>
-  </tbody>
-</table>
+    </tbody>
+  </table>
+
+</div>

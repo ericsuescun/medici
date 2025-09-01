@@ -1,11 +1,12 @@
-<% content_for :title, "New article" %>
-
-<h1>New article</h1>
-
-<%= render "form", article: @article %>
-
-<br>
-
-<div>
-  <%= link_to "Back to articles", articles_path %>
+<div class="container-fluid mt-3">
+  <div class="row">
+    <div class="col-4 mx-auto">
+      <% content_for :title, "New article" %>
+      <h1>New article</h1>
+      <%= render "form", article: @article %>
+      <div class="mt-2">
+        <%= link_to "Back to articles", articles_path %>
+      </div>
+    </div>
+  </div>
 </div>

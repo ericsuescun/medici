@@ -19,20 +19,46 @@
   </head>
 
   <body>
+    <%= render 'layouts/general_navbar' if current_user.present? && !current_user.patient? %>
+    <%= render 'layouts/patient_navbar' if current_user.present? && current_user.patient? %>
+
     <% if user_signed_in? %>
       <% if flash[:notice] %>
-        <div class="alert alert-warning"><%= flash[:notice] %></div>
+        <div class="alert alert-warning mt-2"><%= flash[:notice] %></div>
       <% end %>
 
       <% if flash[:alert] %>
-        <div class="alert alert-danger"><%= flash[:alert] %></div>
+        <div class="alert alert-danger mt-2"><%= flash[:alert] %></div>
       <% end %>
 
       <% if flash[:message] %>
-        <div class="alert alert-info"><%= flash[:message] %></div>
+        <div class="alert alert-info mt-2"><%= flash[:message] %></div>
       <% end %>
     <% end %>
-    <%= render 'layouts/logo_header' unless controller_name == 'static_pages' && action_name == 'medici_home' %>
+
     <%= yield %>
+    <script>
+      (function() {
+        function updateBodyPadding() {
+          try {
+            var nav = document.querySelector('.navbar.fixed-top');
+            var padding = nav ? nav.offsetHeight : 0;
+            document.body.style.paddingTop = padding + 'px';
+          } catch (e) {
+            // noop
+          }
+        }
+
+        // Run on initial loads (Turbo or non-Turbo)
+        document.addEventListener('DOMContentLoaded', updateBodyPadding);
+        document.addEventListener('turbo:load', updateBodyPadding);
+        // Adjust on resize
+        window.addEventListener('resize', updateBodyPadding);
+
+        // Also listen for Bootstrap navbar collapse events when available
+        document.addEventListener('shown.bs.collapse', updateBodyPadding);
+        document.addEventListener('hidden.bs.collapse', updateBodyPadding);
+      })();
+    </script>
   </body>
 </html>

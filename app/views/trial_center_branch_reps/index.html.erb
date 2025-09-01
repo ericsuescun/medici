@@ -1,12 +1,13 @@
-<p style="color: green"><%= notice %></p>
+<div class="container">
+  <p style="color: green"><%= notice %></p>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h1>Representantes de Sedes</h1>
-  <%= link_to "Nuevo representante de sede", new_trial_center_branch_rep_path, class: "btn btn-primary" %>
-</div>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Representantes de Sedes</h1>
+    <%= link_to "Nuevo representante de sede", new_trial_center_branch_rep_path, class: "btn btn-primary" %>
+  </div>
 
-<table class="table table-striped">
-  <thead>
+  <table class="table table-striped">
+    <thead>
     <tr>
       <th>Nombre</th>
       <th>Email</th>
@@ -14,8 +15,8 @@
       <th>Direccion</th>
       <th></th>
     </tr>
-  </thead>
-  <tbody>
+    </thead>
+    <tbody>
     <% @trial_center_branch_reps.each do |r| %>
       <tr>
         <td><%= link_to r.fullname, trial_center_branch_rep_path(r) %></td>
@@ -27,5 +28,6 @@
         </td>
       </tr>
     <% end %>
-  </tbody>
-</table>
+    </tbody>
+  </table>
+</div>

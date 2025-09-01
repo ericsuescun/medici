@@ -211,6 +211,13 @@ $dark: $medici-dark;
 
 // Navbar styling
 .navbar {
+  &.fixed-top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030; // above content
+  }
   background-color: $medici-primary;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   
@@ -276,6 +283,11 @@ $dark: $medici-dark;
 .form-control:focus {
   border-color: $medici-primary;
   box-shadow: 0 0 0 0.25rem rgba($medici-primary, 0.25);
+}
+
+// Global layout tweaks for fixed navbar
+body {
+  padding-top: 70px; // accommodate fixed-top navbar height
 }
 
 // Links
