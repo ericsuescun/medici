@@ -20,7 +20,7 @@
           <ul>
             <% reps.each do |r| %>
               <li>
-                <%= r.fullname.presence || r.email %>
+                <%= link_to (r.fullname.presence || r.email), trial_center_branch_rep_path(r) %>
                 <%= button_to 'Desasociar', remove_rep_trial_center_branch_path(@trial_center_branch, rep_id: r.id), method: :delete, class: 'btn btn-sm btn-outline-danger ms-2' %>
               </li>
             <% end %>
