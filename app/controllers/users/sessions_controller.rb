@@ -18,7 +18,8 @@ class Users::SessionsController < Devise::SessionsController
           study.users << resource
           # Ensure the user has a Patient profile via delegated_type
           unless resource.patient?
-            patient_profile = Patient.create!
+            # Create a Patient record tied to this user to satisfy patients.user_id NOT NULL
+            patient_profile = Patient.create!(user_id: resource.id)
             resource.update(userable: patient_profile)
           end
           flash[:notice] = "Te has registrado exitosamente para participar en el estudio: #{study.short_title}"

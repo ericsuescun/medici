@@ -34,12 +34,8 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-
-  # scope :patients, -> { where(user_type: 'patient') }
-  # scope :sponsors, -> { where(user_type: 'sponsor') }
-  # scope :admins, -> { where(user_type: 'admin') }
-
   delegated_type :userable, types: %w[SponsorRep Admin Patient TrialCenterBranchRep], dependent: :destroy
+  accepts_nested_attributes_for :userable
 
   # Scopes based on delegated type
   scope :patients, -> { where(userable_type: 'Patient') }

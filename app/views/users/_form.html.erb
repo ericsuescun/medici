@@ -33,7 +33,48 @@
     <%= form.text_field :email, class: "form-control mb-3" %>
   </div>
 
+  <% if user.patient? && user.userable.present? %>
+    <hr />
+    <h5>Datos de paciente</h5>
+    <%= form.fields_for :userable do |pf| %>
+      <div>
+        <%= pf.label :dob, style: "display: block" %>
+        <%= pf.date_field :dob, class: "form-control mb-3" %>
+      </div>
+
+      <div>
+        <%= pf.label :contact_number, style: "display: block" %>
+        <%= pf.text_field :contact_number, class: "form-control mb-3" %>
+      </div>
+
+      <div>
+        <%= pf.label :contact_address, style: "display: block" %>
+        <%= pf.text_field :contact_address, class: "form-control mb-3" %>
+      </div>
+
+      <div>
+        <%= pf.label :country, style: "display: block" %>
+        <%= pf.select :country, country_options_for_select(pf.object.country.presence), { include_blank: true }, class: "form-select mb-3" %>
+      </div>
+
+      <div>
+        <%= pf.label :id_type, style: "display: block" %>
+        <%= pf.select :id_type, options_from_collection_for_select(IdType.by_country((pf.object.country.presence || 'CO')).active, :code, :name, pf.object.id_type), { include_blank: true }, class: "form-select mb-3" %>
+      </div>
+
+      <div>
+        <%= pf.label :id_number, style: "display: block" %>
+        <%= pf.text_field :id_number, class: "form-control mb-3" %>
+      </div>
+
+      <div>
+        <%= pf.label :notes, style: "display: block" %>
+        <%= pf.text_area :notes, class: "form-control mb-3" %>
+      </div>
+    <% end %>
+  <% end %>
+
   <div>
     <%= form.submit 'Guardar', class: 'btn btn-primary btn-block' %>
   </div>
-<% end %>
+  <% end %>

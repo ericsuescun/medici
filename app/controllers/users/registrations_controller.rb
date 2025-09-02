@@ -11,6 +11,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
       if session[:study_id].present?
         study = Study.find_by(id: session[:study_id])
         if study
+          new_patient = Patient.create!
+          resource.userable = new_patient
           study.users << resource
           # Ensure the user has a Patient profile via delegated_type
           unless resource.patient?

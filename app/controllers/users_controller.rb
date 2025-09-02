@@ -25,7 +25,6 @@ class UsersController < SecureApplicationController
 
   # POST /users or /users.json
   def create
-    debugger
     @user = User.new(user_params)
 
     respond_to do |format|
@@ -70,6 +69,24 @@ class UsersController < SecureApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_params
-      params.require(:user).permit(:firstname, :lastname, :email, :illness_description)
+      params.require(:user).permit(
+        :firstname,
+        :lastname,
+        :email,
+        :illness_description,
+        userable_attributes: [
+          :id,
+          :dob,
+          :sex,
+          :contact_number,
+          :contact_address,
+          :country,
+          :id_type,
+          :id_number,
+          :notes,
+          :email,
+          :illness_description
+        ]
+      )
     end
 end
