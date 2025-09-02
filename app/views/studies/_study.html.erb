@@ -20,7 +20,7 @@
           <% @patients.each do |patient| %>
             <tr>
               <td><%= link_to patient.fullname, patient %></td>
-              <td><%= get_age(patient.dob) %></td>
+              <td><%= get_age(patient.dob) if patient.dob.present? %></td>
             </tr>
           <% end %>
           </tbody>

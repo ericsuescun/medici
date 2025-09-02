@@ -1,18 +1,52 @@
-<div class="container">
-  <p style="color: green"><%= notice %></p>
+<div class="container mt-4">
+  <% if notice.present? %>
+    <div class="alert alert-success"><%= notice %></div>
+  <% end %>
 
   <% content_for :title, "Patients" %>
 
-  <h1>Patients</h1>
+  <h1 class="mb-4">Pacientes</h1>
 
-  <div id="patients">
-    <% @patients.each do |patient| %>
-      <%= render patient %>
-      <p>
-        <%= link_to "Show this patient", patient %>
-      </p>
-    <% end %>
+  <div class="mb-4">
+    <%= link_to "Retornar a Vitalia", static_pages_medici_home_path %> |
+    <%= link_to "Nuevo paciente", new_patient_path %>
   </div>
 
-  <%= link_to "New patient", new_patient_path %>
+  <div id="patients">
+    <table class="table table-striped align-middle">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>País</th>
+          <th>Tipo ID</th>
+          <th>Número ID</th>
+          <th>Enfermedad</th>
+          <th>Estudios</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @patients.each do |patient| %>
+          <tr id="<%= dom_id(patient) %>">
+            <td><strong><%= link_to "#{patient.firstname} #{patient.lastname}", patient %></strong></td>
+            <td><%= patient.country %></td>
+            <td><%= patient.id_type %></td>
+            <td><%= patient.id_number %></td>
+            <td class="text-truncate" style="max-width: 280px;"><%= patient.illness_description %></td>
+            <td>
+              <% if patient.user && patient.user.studies.any? %>
+                <% patient.user.studies.each do |study| %>
+                  <%= link_to (study.short_title.presence || study.public_title || "Ver estudio"), study, class: "badge bg-info text-white me-1" %>
+                <% end %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-4">
+    <%= link_to "Retornar a Vitalia", static_pages_medici_home_path %> |
+    <%= link_to "Nuevo paciente", new_patient_path %>
+  </div>
 </div>

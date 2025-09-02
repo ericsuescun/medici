@@ -35,6 +35,16 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   delegated_type :userable, types: %w[SponsorRep Admin Patient TrialCenterBranchRep], dependent: :destroy
+  delegate :dob,
+           :sex,
+           :contact_number,
+           :contact_address,
+           :notes,
+           :country,
+           :illness_description,
+           :id_type,
+           :id_number, to: :userable, allow_nil: true
+
   accepts_nested_attributes_for :userable
 
   # Scopes based on delegated type

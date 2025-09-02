@@ -73,7 +73,6 @@ class UsersController < SecureApplicationController
         :firstname,
         :lastname,
         :email,
-        :illness_description,
         userable_attributes: [
           :id,
           :dob,
