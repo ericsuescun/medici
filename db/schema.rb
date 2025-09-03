@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_31_223000) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_02_183500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -285,6 +285,29 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_31_223000) do
     t.index ["userable_type", "userable_id"], name: "index_users_on_userable_type_and_userable_id"
   end
 
+  create_table "variable_values", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.string "value_type", null: false
+    t.decimal "reference_value_1", precision: 15, scale: 6
+    t.decimal "reference_value_2", precision: 15, scale: 6
+    t.string "comparison_type", null: false
+    t.text "conditions"
+    t.text "qualitative_scale", default: [], null: false, array: true
+    t.string "qualitative_value"
+    t.string "variable_type", default: "inclusion", null: false
+    t.boolean "enabled", default: true, null: false
+    t.boolean "shown", default: true, null: false
+    t.integer "criteria_order"
+    t.bigint "patient_id", null: false
+    t.string "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["patient_id", "name"], name: "index_variable_values_on_patient_id_and_name"
+    t.index ["patient_id", "variable_type", "criteria_order"], name: "index_vv_on_patient_type_order"
+    t.index ["patient_id"], name: "index_variable_values_on_patient_id"
+  end
+
   add_foreign_key "articles", "studies"
   add_foreign_key "contacts", "studies"
   add_foreign_key "criteria_profiles", "studies"
@@ -296,4 +319,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_31_223000) do
   add_foreign_key "trial_center_branch_reps", "trial_center_branches"
   add_foreign_key "trial_center_branches", "trial_center_facilities"
   add_foreign_key "trial_cities", "studies"
+  add_foreign_key "variable_values", "patients"
 end

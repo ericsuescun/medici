@@ -25,4 +25,6 @@
 #
 class Patient < ApplicationRecord
   include Userable
+
+  has_many :variable_values, dependent: :destroy
 end

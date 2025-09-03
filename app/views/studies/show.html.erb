@@ -14,7 +14,7 @@
       <div class="card mt-4">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="mb-0">Perfil de Criterios</h5>
-          <% if (profile = @study.current_criteria_profile) %>
+          <% if (profile = @study.criteria_profile) %>
             <%= button_to 'Desasociar perfil', unset_criteria_profile_study_path(@study), method: :delete, class: 'btn btn-sm btn-outline-danger', data: { confirm: '¿Seguro que deseas desasociar el perfil?' } %>
           <% end %>
         </div>
@@ -91,7 +91,7 @@
               <div class="alert alert-info">Este perfil no tiene variables aún.</div>
             <% end %>
           <% else %>
-            <% available_profiles = CriteriaProfile.where(study_id: nil).order(:name) %>
+            <% available_profiles = CriteriaProfile.order(:name) %>
             <% if available_profiles.any? %>
               <%= form_with url: set_criteria_profile_study_path(@study), method: :post, class: 'row g-3 align-items-end' do |f| %>
                 <div class="col-md-6">
