@@ -50,7 +50,7 @@ class TrialCenterBranchesController < ApplicationController
           @trial_center_branch.cities.clear
           @trial_center_branch.cities << City.find(params[:trial_center_branch][:city_id])
         end
-        
+
         format.html { redirect_to trial_center_branch_url(@trial_center_branch), notice: "Trial center branch was successfully updated." }
         format.json { render :show, status: :ok, location: @trial_center_branch }
       else
@@ -75,14 +75,14 @@ class TrialCenterBranchesController < ApplicationController
   def add_rep
     rep = TrialCenterBranchRep.find(params[:rep_id])
     rep.update!(trial_center_branch: @trial_center_branch)
-    redirect_to trial_center_branch_path(@trial_center_branch), notice: 'Representante de sede asociado correctamente.'
+    redirect_to trial_center_branch_path(@trial_center_branch), notice: "Representante de sede asociado correctamente."
   end
 
   # DELETE /trial_center_branches/:id/remove_rep
   def remove_rep
     rep = TrialCenterBranchRep.find(params[:rep_id])
     rep.update!(trial_center_branch: nil)
-    redirect_to trial_center_branch_path(@trial_center_branch), notice: 'Representante de sede desasociado.'
+    redirect_to trial_center_branch_path(@trial_center_branch), notice: "Representante de sede desasociado."
   end
 
   private

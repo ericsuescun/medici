@@ -56,8 +56,8 @@ class Study < ApplicationRecord
   has_many :contacts, dependent: :destroy
   has_one :criteria_profile, dependent: :destroy
 
-  enum :study_status, completed: 'completed', recruiting: 'recruiting'
-  enum :study_phase, I: 'I', II: 'II', III: 'III', IV: 'IV'
+  enum :study_status, completed: "completed", recruiting: "recruiting"
+  enum :study_phase, I: "I", II: "II", III: "III", IV: "IV"
 
   validates :public_title, :scientific_title, :short_title, presence: true
 

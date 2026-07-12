@@ -21,8 +21,8 @@
 class Result < ApplicationRecord
   belongs_to :study
 
-  enum :result_type, primary: 'Primary', secondary: 'Secondary', empty: ''
+  enum :result_type, primary: "Primary", secondary: "Secondary", empty: ""
 
-  scope :primary, -> { where(result_type: 'Primary') }
-  scope :secondary, -> { where(result_type: 'Secondary') }
+  scope :primary, -> { where(result_type: "Primary") }
+  scope :secondary, -> { where(result_type: "Secondary") }
 end

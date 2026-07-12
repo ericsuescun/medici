@@ -13,7 +13,7 @@ RSpec.describe CriteriaVariable, type: :model do
       )
 
       expect(variable.valid?).to be true
-      expect(variable.qualitative_scale).to eq(["low", "medium", "high"]) # exact text preserved
+      expect(variable.qualitative_scale).to eq([ "low", "medium", "high" ]) # exact text preserved
     end
 
     it 'strips whitespace and ignores blank entries' do
@@ -27,7 +27,7 @@ RSpec.describe CriteriaVariable, type: :model do
       )
 
       variable.valid?
-      expect(variable.qualitative_scale).to eq(["low", "medium", "high"]) 
+      expect(variable.qualitative_scale).to eq([ "low", "medium", "high" ])
     end
 
     it 'normalizes arrays by trimming entries' do
@@ -36,12 +36,12 @@ RSpec.describe CriteriaVariable, type: :model do
         name: 'Severity',
         value_type: 'qualitative',
         comparison_type: 'equal',
-        qualitative_scale: [" low ", "medium", " high"],
+        qualitative_scale: [ " low ", "medium", " high" ],
         qualitative_value: 'medium'
       )
 
       variable.valid?
-      expect(variable.qualitative_scale).to eq(["low", "medium", "high"]) 
+      expect(variable.qualitative_scale).to eq([ "low", "medium", "high" ])
     end
   end
 end

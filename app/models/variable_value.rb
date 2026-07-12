@@ -55,7 +55,7 @@ class VariableValue < ApplicationRecord
 
     raw = nil
     begin
-      raw = self.attribute_before_type_cast('qualitative_scale')
+      raw = self.attribute_before_type_cast("qualitative_scale")
     rescue NoMethodError
       raw = nil
     end
@@ -78,7 +78,7 @@ class VariableValue < ApplicationRecord
     if s.start_with?("{") && s.end_with?("}")
       s = s[1..-2]
     end
-    parts = s.split(',').map(&:strip).reject(&:blank?)
-    parts.map { |p| p.gsub(/\A["']|["']\z/, '') }
+    parts = s.split(",").map(&:strip).reject(&:blank?)
+    parts.map { |p| p.gsub(/\A["']|["']\z/, "") }
   end
 end

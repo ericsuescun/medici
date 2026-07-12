@@ -12,4 +12,4 @@ Rails.application.config.assets.paths << Rails.root.join("node_modules/bootstrap
 Rails.application.config.assets.paths << Rails.root.join("app/assets/images")
 Rails.application.config.assets.paths << Rails.root.join("app/assets/images/logo")
 Rails.application.config.assets.precompile << "bootstrap.bundle.min.js"
-Rails.application.config.assets.precompile += %w( logo/medici_logo.png )
+Rails.application.config.assets.precompile += %w[ logo/medici_logo.png ]

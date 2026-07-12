@@ -18,5 +18,5 @@ class Country < ApplicationRecord
   validates :code, uniqueness: { case_sensitive: false }
 
   # Basic format: + followed by digits (and optional spaces)
-  validates :phone_prefix, format: { with: /\A\+\d[\d\s]*\z/, message: 'must start with + and contain digits' }
+  validates :phone_prefix, format: { with: /\A\+\d[\d\s]*\z/, message: "must start with + and contain digits" }
 end

@@ -18,7 +18,6 @@ RSpec.describe "trial_center_branches/edit", type: :view do
     render
 
     assert_select "form[action=?][method=?]", trial_center_branch_path(trial_center_branch), "post" do
-
       assert_select "input[name=?]", "trial_center_branch[name]"
 
       assert_select "input[name=?]", "trial_center_branch[initials]"

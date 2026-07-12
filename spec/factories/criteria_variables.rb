@@ -8,7 +8,7 @@ FactoryBot.define do
     value_type { "qualitative" }
     comparison_type { "equal" }
 
-    qualitative_scale { ["low", "medium", "high"] }
+    qualitative_scale { [ "low", "medium", "high" ] }
     qualitative_value { "medium" }
 
     enabled { true }

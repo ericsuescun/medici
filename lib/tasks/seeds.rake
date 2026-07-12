@@ -5,16 +5,16 @@
 #   bin/rails seeds:all
 
 namespace :seeds do
-  desc 'Seed countries from db/seeds/create_countries.rb'
+  desc "Seed countries from db/seeds/create_countries.rb"
   task countries: :environment do
-    seed_file = Rails.root.join('db', 'seeds', 'create_countries.rb')
+    seed_file = Rails.root.join("db", "seeds", "create_countries.rb")
     puts "Loading #{seed_file}..."
     load seed_file
   end
 
-  desc 'Seed id_types from db/seeds/create_id_types.rb'
+  desc "Seed id_types from db/seeds/create_id_types.rb"
   task id_types: :environment do
-    seed_file = Rails.root.join('db', 'seeds', 'create_id_types.rb')
+    seed_file = Rails.root.join("db", "seeds", "create_id_types.rb")
     if File.exist?(seed_file)
       puts "Loading #{seed_file}..."
       load seed_file
@@ -23,14 +23,14 @@ namespace :seeds do
     end
   end
 
-  desc 'Run all custom seeds (countries, id_types)'
+  desc "Run all custom seeds (countries, id_types)"
   task all: :environment do
-    Rake::Task['seeds:countries'].invoke
+    Rake::Task["seeds:countries"].invoke
     # Reenable so tasks can be called again in same process if needed
-    Rake::Task['seeds:countries'].reenable
+    Rake::Task["seeds:countries"].reenable
 
-    if Rake::Task.task_defined?('seeds:id_types')
-      Rake::Task['seeds:id_types'].invoke
+    if Rake::Task.task_defined?("seeds:id_types")
+      Rake::Task["seeds:id_types"].invoke
     end
   end
 end
