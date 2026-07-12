@@ -6,7 +6,7 @@ RSpec.describe "trial_center_branches/show", type: :view do
       name: "Name",
       initials: "Initials",
       description: "Description",
-      trial_center_facility: nil
+      trial_center_facility: FactoryBot.create(:trial_center_facility)
     ))
   end
 

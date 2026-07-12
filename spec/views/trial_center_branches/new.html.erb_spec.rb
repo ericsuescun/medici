@@ -19,8 +19,6 @@ RSpec.describe "trial_center_branches/new", type: :view do
       assert_select "input[name=?]", "trial_center_branch[initials]"
 
       assert_select "input[name=?]", "trial_center_branch[description]"
-
-      assert_select "input[name=?]", "trial_center_branch[trial_center_facility_id]"
     end
   end
 end

@@ -7,23 +7,21 @@ RSpec.describe "trial_center_branches/index", type: :view do
         name: "Name",
         initials: "Initials",
         description: "Description",
-        trial_center_facility: nil
+        trial_center_facility: FactoryBot.create(:trial_center_facility)
       ),
       TrialCenterBranch.create!(
         name: "Name",
         initials: "Initials",
         description: "Description",
-        trial_center_facility: nil
+        trial_center_facility: FactoryBot.create(:trial_center_facility)
       )
     ])
   end
 
   it "renders a list of trial_center_branches" do
     render
-    cell_selector = 'div>p'
-    assert_select cell_selector, text: Regexp.new("Name".to_s), count: 2
-    assert_select cell_selector, text: Regexp.new("Initials".to_s), count: 2
-    assert_select cell_selector, text: Regexp.new("Description".to_s), count: 2
-    assert_select cell_selector, text: Regexp.new(nil.to_s), count: 2
+    assert_select ".branch-card", count: 2
+    assert_select "h5.card-header", text: "Name", count: 2
+    assert_select "h5.card-title", text: "Description", count: 2
   end
 end

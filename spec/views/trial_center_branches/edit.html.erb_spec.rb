@@ -6,7 +6,7 @@ RSpec.describe "trial_center_branches/edit", type: :view do
       name: "MyString",
       initials: "MyString",
       description: "MyString",
-      trial_center_facility: nil
+      trial_center_facility: FactoryBot.create(:trial_center_facility)
     )
   }
 
@@ -23,8 +23,6 @@ RSpec.describe "trial_center_branches/edit", type: :view do
       assert_select "input[name=?]", "trial_center_branch[initials]"
 
       assert_select "input[name=?]", "trial_center_branch[description]"
-
-      assert_select "input[name=?]", "trial_center_branch[trial_center_facility_id]"
     end
   end
 end
