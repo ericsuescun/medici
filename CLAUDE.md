@@ -53,6 +53,7 @@ CI (`.github/workflows/ci.yml`) runs Brakeman, importmap audit, and RuboCop on e
 ### Authentication & Authorization
 
 - **Devise** handles authentication on `User`, with custom `users/registrations` and `users/sessions` controllers (`app/controllers/users/`).
+- **Patient registration is study-scoped — this is intentional, not a bug.** There is no standalone public sign-up: a bare `GET /users/sign_up` returns **404 by design**. A patient signs up by first picking a **Study** to participate in; that puts a `study_id` in the session (`configure_permitted_parameters` permits `:study_id` on `:sign_up`), and `Users::RegistrationsController#create` then creates the `User` + `Patient` (`userable`) tied to that study. So the entry point is a study/participation link, never a generic registration page. Do not "fix" the 404 or add a standalone sign-up flow without understanding this — patient creation is deliberately coupled to study selection.
 - **Pundit** handles authorization (`app/policies/`). `ApplicationController` includes `Pundit::Authorization`. Only a few policies exist so far (`patient_policy.rb`, `study_policy.rb`, `static_page_policy.rb`) — most controllers do not yet enforce a policy.
 - `SecureApplicationController < ApplicationController` adds `before_action :authenticate_user!`; controllers that require login inherit from it instead of `ApplicationController` directly.
 - `PaperTrail` is included in the Gemfile for auditing/versioning (check individual models for `has_paper_trail` before assuming a model is versioned).
