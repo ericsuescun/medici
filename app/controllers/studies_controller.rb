@@ -1,6 +1,9 @@
 class StudiesController < SecureApplicationController
   before_action :set_study, only: %i[ show edit update destroy add_trial_center_branch remove_trial_center_branch add_medication remove_medication set_criteria_profile unset_criteria_profile ]
   before_action :set_commercial_data
+  before_action -> { authorize(@study, :update?) },
+                only: %i[add_trial_center_branch remove_trial_center_branch add_medication
+                         remove_medication set_criteria_profile unset_criteria_profile]
 
   # GET /studies or /studies.json
   def index

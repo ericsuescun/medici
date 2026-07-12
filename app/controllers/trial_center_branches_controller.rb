@@ -1,5 +1,6 @@
-class TrialCenterBranchesController < ApplicationController
+class TrialCenterBranchesController < SecureApplicationController
   before_action :set_trial_center_branch, only: %i[ show edit update destroy add_rep remove_rep ]
+  before_action -> { authorize(@trial_center_branch, :update?) }, only: %i[add_rep remove_rep]
 
   # GET /trial_center_branches or /trial_center_branches.json
   def index

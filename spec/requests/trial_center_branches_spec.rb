@@ -13,6 +13,10 @@ require 'rails_helper'
 # sticking to rails and rspec-rails APIs to keep things simple and stable.
 
 RSpec.describe "/trial_center_branches", type: :request do
+  # The controller now requires an authenticated, authorized user. Admin has
+  # full permissions; explicit scope avoids the User -> userable delegation bug.
+  before { sign_in(FactoryBot.create(:user, :admin), scope: :user) }
+
   # This should return the minimal set of attributes required to create a valid
   # TrialCenterBranch. As you add validations to TrialCenterBranch, be sure to
   # adjust the attributes here as well.

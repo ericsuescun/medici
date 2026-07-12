@@ -1,5 +1,6 @@
 class SponsorsController < SecureApplicationController
   before_action :set_sponsor, only: %i[ show edit update destroy add_rep remove_rep ]
+  before_action -> { authorize(@sponsor, :update?) }, only: %i[add_rep remove_rep]
 
   # GET /sponsors or /sponsors.json
   def index
