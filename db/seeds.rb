@@ -10,32 +10,52 @@
 
 require 'factory_bot'
 
-# Load seed files
+# ---------------------------------------------------------------------------
+# All seed data below is intentionally DISABLED (commented out).
+#
+# `bin/rails db:seed` (and `db:setup`) run automatically in every environment,
+# so leaving these active is a source of issues — the sample blocks generate
+# fake users (with hard-coded passwords) and a large FactoryBot data graph that
+# must never land in production. Enable a block deliberately, in development
+# only, when you need sample data.
+#
+# The code is kept correct for the current delegated_type user model (role
+# traits), so it works as-is if you uncomment it.
+# ---------------------------------------------------------------------------
+
+# Reference / lookup data (uncomment the pieces your local work needs):
 # require_relative 'seeds/update_studies_short_title'
 # require_relative 'seeds/create_medications'
 # require_relative 'seeds/create_id_types'
-require_relative 'seeds/create_countries'
+# require_relative 'seeds/create_countries'
 
+# Named admin accounts:
 # [ ['edsuescun@gmail.com', 'Eric', 'Suescun'],
 #   ['nlecuona@gmail.com', 'Nathalia', 'Lecuona'],
 #   ['agiraldo@gmail.com', 'Alejandro', 'Giraldo']
 # ].each do |email, first, last|
-#   user = FactoryBot.create(:user, email: email, password: '12345678', password_confirmation: '12345678', firstname: first, lastname: last)
-#   admin_profile = Admin.create!
-#   user.update!(userable: admin_profile)
+#   next if User.exists?(email: email)
+#
+#   FactoryBot.create(:user, :admin,
+#                     email: email,
+#                     password: '12345678',
+#                     password_confirmation: '12345678',
+#                     firstname: first,
+#                     lastname: last)
 # end
 
-
+# Sample users:
 # puts 'Creating Users...'
 # 50.times do
-#   FactoryBot.create(:user, user_type: :patient)
+#   FactoryBot.create(:user, :patient)
 # end
 #
 # 10.times do
-#   FactoryBot.create(:user)
+#   FactoryBot.create(:user, %i[admin sponsor_rep trial_center_branch_rep].sample)
 # end
-# puts 'Users done...\n'
-#
+# puts 'Users done...'
+
+# Sample facilities / sponsors / studies graph:
 # puts 'Creating Facilities...'
 # FactoryBot.create_list(:trial_center_facility, 30) do |tcf|
 #   tcf.cities << FactoryBot.create(:city)
@@ -43,7 +63,7 @@ require_relative 'seeds/create_countries'
 #     tcb.cities << FactoryBot.create(:city)
 #   end
 # end
-# puts 'Facilities done...\n'
+# puts 'Facilities done...'
 #
 # puts 'Creating Sponsors...'
 # FactoryBot.create_list(:sponsor, 20) do |sponsor|

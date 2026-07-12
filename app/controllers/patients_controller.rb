@@ -1,5 +1,5 @@
 class PatientsController < SecureApplicationController
-  before_action :set_patient, only: %i[ show edit update destroy ]
+  before_action :set_patient, only: %i[ show edit update destroy transition ]
 
   # GET /patients or /patients.json
   def index
@@ -47,6 +47,30 @@ class PatientsController < SecureApplicationController
     end
   end
 
+  def transition
+    event = params[:event].to_s
+
+    # Map events to policy checks
+    allowed = case event
+    when "assess" then policy(@patient).assess?
+    when "accept" then policy(@patient).accept?
+    when "discard" then policy(@patient).discard?
+    when "reject" then policy(@patient).reject?
+    else false
+    end
+
+    if !allowed
+      redirect_back fallback_location: patient_url(@patient), alert: "No está autorizado para realizar esta acción." and return
+    end
+
+    begin
+      @patient.public_send("#{event}!")
+      redirect_back fallback_location: patient_url(@patient), notice: "Estado actualizado correctamente."
+    rescue StandardError => e
+      redirect_back fallback_location: patient_url(@patient), alert: "No se pudo actualizar el estado: #{e.message}"
+    end
+  end
+
   # DELETE /patients/1 or /patients/1.json
   def destroy
     @patient.destroy!
@@ -64,6 +88,8 @@ class PatientsController < SecureApplicationController
     end
 
     # Only allow a list of trusted parameters through.
+    # NOTE: :state is intentionally NOT permitted here — patient state changes
+    # go exclusively through the policy-guarded #transition action, never mass-assignment.
     def patient_params
       params.require(:patient).permit(:firstname,
                                       :lastname,

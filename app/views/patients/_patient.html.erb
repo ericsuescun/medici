@@ -3,6 +3,30 @@
     <h5 class="card-title"><%= patient.firstname %> <%= patient.lastname %></h5>
   </div>
   <div class="card-body">
+    <% if policy(patient).show_state? %>
+      <p>
+        <strong>State:</strong>
+        <%= patient.state %>
+      </p>
+
+      <div class="mb-3">
+        <div class="btn-group" role="group">
+          <% if policy(patient).assess? %>
+            <%= button_to 'Evaluar', transition_patient_path(patient, event: 'assess'), method: :post, class: 'btn btn-sm btn-outline-primary', form: { data: { turbo: true } } %>
+          <% end %>
+          <% if policy(patient).accept? %>
+            <%= button_to 'Aceptar', transition_patient_path(patient, event: 'accept'), method: :post, class: 'btn btn-sm btn-outline-success', form: { data: { turbo: true } } %>
+          <% end %>
+          <% if policy(patient).discard? %>
+            <%= button_to 'Descartar', transition_patient_path(patient, event: 'discard'), method: :post, class: 'btn btn-sm btn-outline-warning', form: { data: { turbo: true } } %>
+          <% end %>
+          <% if policy(patient).reject? %>
+            <%= button_to 'Rechazar', transition_patient_path(patient, event: 'reject'), method: :post, class: 'btn btn-sm btn-outline-danger', form: { data: { turbo: true } } %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
     <p>
       <strong>Country:</strong>
       <%= patient.country %>

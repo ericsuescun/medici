@@ -11,6 +11,11 @@
     </div>
   <% end %>
 
+  <% if patient.persisted? && policy(patient).show_state? %>
+    <div class="alert alert-info">
+      Estado actual: <span class="badge bg-secondary"><%= patient.state %></span>
+    </div>
+  <% end %>
 
   <div>
     <%= form.label :firstname, style: "display: block" %>
