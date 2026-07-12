@@ -27,4 +27,28 @@ class Patient < ApplicationRecord
   include Userable
 
   has_many :variable_values, dependent: :destroy
+
+  include AASM
+
+  aasm column: :state do
+    state :prospect, initial: true
+    state :candidate
+    state :participant
+
+    event :assess do
+      transitions from: :prospect, to: :candidate
+    end
+
+    event :accept do
+      transitions from: :candidate, to: :participant
+    end
+
+    event :discard do
+      transitions from: :candidate, to: :prospect
+    end
+
+    event :reject do
+      transitions from: :participant, to: :candidate
+    end
+  end
 end

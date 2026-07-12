@@ -22,6 +22,8 @@
           <th>Número ID</th>
           <th>Enfermedad</th>
           <th>Estudios</th>
+          <th>Estado</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -38,6 +40,28 @@
                   <%= link_to (study.short_title.presence || study.public_title || "Ver estudio"), study, class: "badge bg-info text-white me-1" %>
                 <% end %>
               <% end %>
+            </td>
+            <td>
+              <% if policy(patient).show_state? %>
+                <span class="badge bg-secondary"><%= patient.state %></span>
+              <% end %>
+            </td>
+            <td>
+              <%# Transition buttons shown only when permitted by policy and AASM %>
+              <div class="btn-group" role="group">
+                <% if policy(patient).assess? %>
+                  <%= button_to 'Evaluar', transition_patient_path(patient, event: 'assess'), method: :post, class: 'btn btn-sm btn-outline-primary', form: { data: { turbo: true } } %>
+                <% end %>
+                <% if policy(patient).accept? %>
+                  <%= button_to 'Aceptar', transition_patient_path(patient, event: 'accept'), method: :post, class: 'btn btn-sm btn-outline-success', form: { data: { turbo: true } } %>
+                <% end %>
+                <% if policy(patient).discard? %>
+                  <%= button_to 'Descartar', transition_patient_path(patient, event: 'discard'), method: :post, class: 'btn btn-sm btn-outline-warning', form: { data: { turbo: true } } %>
+                <% end %>
+                <% if policy(patient).reject? %>
+                  <%= button_to 'Rechazar', transition_patient_path(patient, event: 'reject'), method: :post, class: 'btn btn-sm btn-outline-danger', form: { data: { turbo: true } } %>
+                <% end %>
+              </div>
             </td>
           </tr>
         <% end %>

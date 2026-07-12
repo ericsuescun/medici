@@ -33,7 +33,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :patients
+  resources :patients do
+    member do
+      post :transition
+    end
+  end
   resources :admins
   resources :sponsor_reps
   resources :trial_center_branch_reps

@@ -76,3 +76,4 @@ end
 
 gem "pundit", "~> 2.5"
 gem "paper_trail", "~> 15.0"
+gem "aasm", "~> 5.5"

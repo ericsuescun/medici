@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_02_183500) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_02_192500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -154,6 +154,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_02_183500) do
     t.string "id_type", default: ""
     t.string "id_number", default: ""
     t.string "country", default: ""
+    t.string "state", default: "prospect", null: false
+    t.index ["state"], name: "index_patients_on_state"
   end
 
   create_table "results", force: :cascade do |t|
@@ -195,6 +197,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_02_183500) do
     t.date "first_patient_at"
     t.date "global_ending_at"
     t.string "study_phase"
+    t.string "inclusion_criteria"
+    t.string "exclusion_criteria"
     t.integer "sample_size"
     t.string "main_intervention"
     t.string "sex"
@@ -203,8 +207,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_02_183500) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "short_title", default: ""
-    t.string "inclusion_criteria", default: ""
-    t.string "exclusion_criteria", default: ""
     t.index ["sponsor_id"], name: "index_studies_on_sponsor_id"
   end
 

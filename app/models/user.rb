@@ -35,6 +35,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   delegated_type :userable, types: %w[SponsorRep Admin Patient TrialCenterBranchRep], dependent: :destroy
+
   delegate :dob,
            :sex,
            :contact_number,
@@ -43,7 +44,8 @@ class User < ApplicationRecord
            :country,
            :illness_description,
            :id_type,
-           :id_number, to: :userable, allow_nil: true
+           :id_number,
+           :state, to: :userable, allow_nil: true
 
   accepts_nested_attributes_for :userable
 
