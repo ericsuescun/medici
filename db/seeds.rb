@@ -10,6 +10,12 @@
 
 require 'factory_bot'
 
+# Essential authorization reference data — roles + default permission matrix.
+# Idempotent and safe for every environment (creates nothing that isn't required
+# for the app to function; never overwrites admin-customized permissions).
+require_relative 'seeds/roles_and_permissions'
+RolesAndPermissionsSeeder.seed!
+
 # ---------------------------------------------------------------------------
 # All seed data below is intentionally DISABLED (commented out).
 #

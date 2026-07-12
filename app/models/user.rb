@@ -30,11 +30,24 @@ class User < ApplicationRecord
 
   has_and_belongs_to_many :studies
   has_many :criteria_profiles, dependent: :destroy
+  belongs_to :role, optional: true
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
   delegated_type :userable, types: %w[SponsorRep Admin Patient TrialCenterBranchRep], dependent: :destroy
+
+  # Authorization role is derived once from the userable (data) type at creation.
+  # Every user-creation path sets `userable` before save, so this single callback
+  # covers registration, the admins/reps controllers, and factories.
+  ROLE_FOR_USERABLE = {
+    "SponsorRep" => "sponsor_rep",
+    "Admin" => "admin",
+    "Patient" => "patient",
+    "TrialCenterBranchRep" => "trial_center_branch_rep"
+  }.freeze
+
+  before_save :assign_default_role, if: -> { role_id.nil? && userable_type.present? }
 
   delegate :dob,
            :sex,
@@ -76,5 +89,12 @@ class User < ApplicationRecord
     return "" if firstname.blank? || lastname.blank?
 
     firstname + " " + lastname
+  end
+
+  private
+
+  def assign_default_role
+    role_name = ROLE_FOR_USERABLE[userable_type]
+    self.role = Role.find_by(name: role_name) if role_name
   end
 end
