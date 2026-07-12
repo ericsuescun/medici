@@ -5,9 +5,9 @@ namespace :users do
 
     # Map user_type to delegated class
     type_mapping = {
-      'admin' => 'Admin',
-      'sponsor' => 'SponsorRep',
-      'patient' => 'Patient'
+      "admin" => "Admin",
+      "sponsor" => "SponsorRep",
+      "patient" => "Patient"
     }
 
     User.where(userable: nil).find_each do |user|
@@ -19,13 +19,13 @@ namespace :users do
       userable_type = type_mapping[legacy_type] || user.userable_type
 
       case userable_type
-      when 'Admin'
+      when "Admin"
         new_record = userable_type.constantize.create!(contact_number: user.contact_number, contact_address: user.contact_address)
         user.update!(userable: new_record)
-      when 'SponsorRep'
+      when "SponsorRep"
         new_record = userable_type.constantize.create!(contact_number: user.contact_number, contact_address: user.contact_address)
         user.update!(userable: new_record)
-      when 'Patient'
+      when "Patient"
         new_record = userable_type
                        .constantize
                        .create!(contact_number: user.contact_number,

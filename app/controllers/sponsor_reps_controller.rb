@@ -60,6 +60,6 @@ class SponsorRepsController < SecureApplicationController
 
     def sponsor_rep_params
       params.require(:sponsor_rep).permit(:contact_number, :contact_address, :title, :sponsor_id,
-                                          user_attributes: [:id, :firstname, :lastname, :email, :password, :password_confirmation])
+                                          user_attributes: [ :id, :firstname, :lastname, :email, :password, :password_confirmation ])
     end
 end

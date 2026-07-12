@@ -16,7 +16,7 @@ class CriteriaVariablesController < SecureApplicationController
   def new
     @criteria_variable = @criteria_profile.criteria_variables.build
     # Default variable_type and suggested order within its group
-    @criteria_variable.variable_type ||= 'inclusion'
+    @criteria_variable.variable_type ||= "inclusion"
     @criteria_variable.criteria_order ||= next_criteria_order(@criteria_variable.variable_type)
   end
 

@@ -45,7 +45,7 @@
 FactoryBot.define do
   factory :study do
     association :sponsor, factory: :sponsor
-    
+
     public_title { Faker::Lorem.sentence }
     scientific_title { Faker::Lorem.sentence }
     short_title { Faker::Lorem.words(number: 3).join(' ') }
@@ -53,16 +53,16 @@ FactoryBot.define do
     exclusion_criteria { Faker::Lorem.paragraph }
     main_intervention { Faker::Lorem.sentence }
     sample_size { Faker::Number.between(from: 50, to: 1000) }
-    sex { ['male', 'female', 'both'].sample }
-    
+    sex { [ 'male', 'female', 'both' ].sample }
+
     study_status { Study.study_statuses.keys.sample }
     study_phase { Study.study_phases.keys.sample }
-    
+
     started_at { Faker::Date.backward(days: 300) }
     completed_at { Faker::Date.backward(days: 250) }
     first_patient_at { Faker::Date.backward(days: 150) }
     global_ending_at { Faker::Date.forward(days: 365) }
-    
+
     reviewed { false }
     review_user_id { nil }
   end

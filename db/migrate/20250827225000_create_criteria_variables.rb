@@ -21,6 +21,6 @@ class CreateCriteriaVariables < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :criteria_variables, [:criteria_profile_id, :name]
+    add_index :criteria_variables, [ :criteria_profile_id, :name ]
   end
 end

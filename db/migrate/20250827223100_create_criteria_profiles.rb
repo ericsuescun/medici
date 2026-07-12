@@ -9,6 +9,6 @@ class CreateCriteriaProfiles < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :criteria_profiles, [:study_id, :user_id]
+    add_index :criteria_profiles, [ :study_id, :user_id ]
   end
 end

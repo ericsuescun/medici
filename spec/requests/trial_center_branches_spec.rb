@@ -13,7 +13,6 @@ require 'rails_helper'
 # sticking to rails and rspec-rails APIs to keep things simple and stable.
 
 RSpec.describe "/trial_center_branches", type: :request do
-  
   # This should return the minimal set of attributes required to create a valid
   # TrialCenterBranch. As you add validations to TrialCenterBranch, be sure to
   # adjust the attributes here as well.
@@ -77,12 +76,11 @@ RSpec.describe "/trial_center_branches", type: :request do
         }.to change(TrialCenterBranch, :count).by(0)
       end
 
-    
+
       it "renders a response with 422 status (i.e. to display the 'new' template)" do
         post trial_center_branches_url, params: { trial_center_branch: invalid_attributes }
         expect(response).to have_http_status(:unprocessable_entity)
       end
-    
     end
   end
 
@@ -108,13 +106,11 @@ RSpec.describe "/trial_center_branches", type: :request do
     end
 
     context "with invalid parameters" do
-    
       it "renders a response with 422 status (i.e. to display the 'edit' template)" do
         trial_center_branch = TrialCenterBranch.create! valid_attributes
         patch trial_center_branch_url(trial_center_branch), params: { trial_center_branch: invalid_attributes }
         expect(response).to have_http_status(:unprocessable_entity)
       end
-    
     end
   end
 

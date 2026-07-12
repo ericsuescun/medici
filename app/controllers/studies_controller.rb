@@ -67,39 +67,39 @@ class StudiesController < SecureApplicationController
       format.json { head :no_content }
     end
   end
-  
+
   # POST /studies/1/add_trial_center_branch
   def add_trial_center_branch
     trial_center_branch = TrialCenterBranch.find(params[:trial_center_branch_id])
-    
+
     unless @study.trial_center_branches.include?(trial_center_branch)
       @study.trial_center_branches << trial_center_branch
       notice = "Trial center branch was successfully added."
     else
       notice = "Trial center branch was already associated with this study."
     end
-    
+
     redirect_to study_url(@study), notice: notice
   end
-  
+
   # DELETE /studies/1/remove_trial_center_branch
   def remove_trial_center_branch
     trial_center_branch = TrialCenterBranch.find(params[:trial_center_branch_id])
-    
+
     if @study.trial_center_branches.count > 1
       @study.trial_center_branches.delete(trial_center_branch)
       notice = "Trial center branch was successfully removed."
     else
       notice = "Cannot remove the last trial center branch from this study."
     end
-    
+
     redirect_to study_url(@study), notice: notice
   end
-  
+
   # POST /studies/1/add_medication
   def add_medication
     medication = Medication.find(params[:medication_id])
-    
+
     if @study.medications.include?(medication)
       notice = "Medication was already associated with this study."
     elsif @study.medications.count >= 3
@@ -108,21 +108,21 @@ class StudiesController < SecureApplicationController
       @study.medications << medication
       notice = "Medication was successfully added."
     end
-    
+
     redirect_to study_url(@study), notice: notice
   end
-  
+
   # DELETE /studies/1/remove_medication
   def remove_medication
     medication = Medication.find(params[:medication_id])
-    
+
     if @study.medications.count > 1
       @study.medications.delete(medication)
       notice = "Medication was successfully removed."
     else
       notice = "Cannot remove the last medication from this study."
     end
-    
+
     redirect_to study_url(@study), notice: notice
   end
 
@@ -136,7 +136,7 @@ class StudiesController < SecureApplicationController
     # Associate the selected one
     profile.update!(study: @study)
 
-    redirect_to study_url(@study), notice: 'Perfil de criterios asociado exitosamente.'
+    redirect_to study_url(@study), notice: "Perfil de criterios asociado exitosamente."
   end
 
   # DELETE /studies/1/unset_criteria_profile
@@ -144,9 +144,9 @@ class StudiesController < SecureApplicationController
     profile = CriteriaProfile.find_by(study_id: @study.id)
     if profile
       profile.update!(study_id: nil)
-      notice = 'Perfil de criterios desasociado.'
+      notice = "Perfil de criterios desasociado."
     else
-      notice = 'Este estudio no tiene un perfil de criterios asociado.'
+      notice = "Este estudio no tiene un perfil de criterios asociado."
     end
     redirect_to study_url(@study), notice: notice
   end

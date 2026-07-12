@@ -14,7 +14,7 @@ FactoryBot.define do
   factory :sponsor do
     initials { 'ABC' }
     name { Faker::Company.name }
-    shortname { 'ShortName'}
+    shortname { 'ShortName' }
     sponsor_type { %w[private_type public_type mixed_type].sample }
   end
 end

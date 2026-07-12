@@ -48,31 +48,31 @@ class User < ApplicationRecord
   accepts_nested_attributes_for :userable
 
   # Scopes based on delegated type
-  scope :patients, -> { where(userable_type: 'Patient') }
-  scope :sponsors, -> { where(userable_type: 'SponsorRep') }
-  scope :admins,   -> { where(userable_type: 'Admin') }
-  scope :trial_center_branch_reps, -> { where(userable_type: 'TrialCenterBranchRep') }
+  scope :patients, -> { where(userable_type: "Patient") }
+  scope :sponsors, -> { where(userable_type: "SponsorRep") }
+  scope :admins,   -> { where(userable_type: "Admin") }
+  scope :trial_center_branch_reps, -> { where(userable_type: "TrialCenterBranchRep") }
 
   # Convenience predicate methods to keep API compatible with previous enum
   def patient?
-    userable_type == 'Patient'
+    userable_type == "Patient"
   end
 
   def sponsor?
-    userable_type == 'SponsorRep'
+    userable_type == "SponsorRep"
   end
 
   def admin?
-    userable_type == 'Admin'
+    userable_type == "Admin"
   end
 
   def trial_center_branch_rep?
-    userable_type == 'TrialCenterBranchRep'
+    userable_type == "TrialCenterBranchRep"
   end
 
   def fullname
-    return '' if firstname.blank? || lastname.blank?
+    return "" if firstname.blank? || lastname.blank?
 
-    firstname + ' ' + lastname
+    firstname + " " + lastname
   end
 end

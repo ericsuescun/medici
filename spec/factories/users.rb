@@ -30,7 +30,7 @@ FactoryBot.define do
     contact_number { Faker::PhoneNumber.phone_number }
     sequence(:email) { |n| Faker::Lorem.word + n.to_s + '@yopmail.com' }
     password { '12345678' }
-    password_confirmation { '12345678'}
+    password_confirmation { '12345678' }
     firstname { Faker::Name.first_name }
     id_number { Faker::Number.number(digits: 10) }
     id_type { 'CC' }

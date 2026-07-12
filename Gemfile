@@ -44,13 +44,13 @@ gem "thruster", require: false
 
 gem "devise", "~> 4.9"
 
-gem 'bootstrap', '~> 5.3.3'
+gem "bootstrap", "~> 5.3.3"
 gem "dartsass-rails"
-gem 'will_paginate', '~> 3.3.0'
-gem 'bootstrap-will_paginate'
+gem "will_paginate", "~> 3.3.0"
+gem "bootstrap-will_paginate"
 
-gem 'factory_bot_rails'
-gem 'faker'
+gem "factory_bot_rails"
+gem "faker"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -61,12 +61,12 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
-  gem 'annotate'
-  gem 'dotenv-rails', '~> 2.7', '>= 2.7.6'
-  
+  gem "annotate"
+  gem "dotenv-rails", "~> 2.7", ">= 2.7.6"
+
   # RSpec for testing
-  gem 'rspec-rails', '~> 6.1.0'
-  gem 'shoulda-matchers', '~> 6.0'
+  gem "rspec-rails", "~> 6.1.0"
+  gem "shoulda-matchers", "~> 6.0"
 end
 
 group :development do
@@ -76,4 +76,3 @@ end
 
 gem "pundit", "~> 2.5"
 gem "paper_trail", "~> 15.0"
-

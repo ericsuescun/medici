@@ -22,7 +22,7 @@ FactoryBot.define do
   factory :article do
     association :study, factory: :study
 
-    description { Faker::Lorem::paragraph }
+    description { Faker::Lorem.paragraph }
     title { Faker::Lorem.sentence }
     url { Faker::Internet.url }
   end

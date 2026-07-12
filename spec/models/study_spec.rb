@@ -101,20 +101,20 @@ RSpec.describe Study, type: :model do
         facility2 = FactoryBot.create(:trial_center_facility)
         branch1 = FactoryBot.create(:trial_center_branch, trial_center_facility: facility1)
         branch2 = FactoryBot.create(:trial_center_branch, trial_center_facility: facility2)
-        
+
         city1 = FactoryBot.create(:city, name: "City1")
         city2 = FactoryBot.create(:city, name: "City2")
         city3 = FactoryBot.create(:city, name: "City3")
-        
+
         branch1.cities << city1
         branch1.cities << city2
         branch2.cities << city2
         branch2.cities << city3
-        
+
         study.trial_center_branches << branch1
         study.trial_center_branches << branch2
-        
-        expect(study.cities_names).to match_array([city1, city2, city3])
+
+        expect(study.cities_names).to match_array([ city1, city2, city3 ])
       end
     end
   end

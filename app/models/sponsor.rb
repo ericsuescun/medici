@@ -11,7 +11,7 @@
 #  updated_at   :datetime         not null
 #
 class Sponsor < ApplicationRecord
-  enum :sponsor_type, private_type: 'private_type', public_type: 'public_type', mixed_type: 'mixed_type'
+  enum :sponsor_type, private_type: "private_type", public_type: "public_type", mixed_type: "mixed_type"
 
   has_many :studies, dependent: :destroy
   has_many :sponsor_reps, dependent: :nullify

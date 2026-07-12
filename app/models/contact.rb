@@ -27,7 +27,7 @@ class Contact < ApplicationRecord
   belongs_to :study
 
   def fullname
-    firstname + ' ' + lastname
+    firstname + " " + lastname
   end
 
   def contact_info

@@ -59,6 +59,6 @@ class AdminsController < SecureApplicationController
 
     def admin_params
       params.require(:admin).permit(:contact_number, :contact_address, :title,
-                                    user_attributes: [:id, :firstname, :lastname, :email, :password, :password_confirmation])
+                                    user_attributes: [ :id, :firstname, :lastname, :email, :password, :password_confirmation ])
     end
 end

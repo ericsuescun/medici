@@ -60,6 +60,6 @@ class TrialCenterBranchRepsController < SecureApplicationController
 
     def trial_center_branch_rep_params
       params.require(:trial_center_branch_rep).permit(:contact_number, :contact_address, :title, :trial_center_branch_id,
-                                          user_attributes: [:id, :firstname, :lastname, :email, :password, :password_confirmation])
+                                          user_attributes: [ :id, :firstname, :lastname, :email, :password, :password_confirmation ])
     end
 end

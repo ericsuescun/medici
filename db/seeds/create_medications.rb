@@ -28,11 +28,11 @@ puts 'Associating medications with studies...'
 Study.all.each do |study|
   # Skip if the study already has medications
   next if study.medications.any?
-  
+
   # Associate 1-3 random medications with each study
   medication_count = rand(1..3)
   random_medications = Medication.all.sample(medication_count)
-  
+
   study.medications << random_medications
   puts "Associated #{medication_count} medications with study: #{study.short_title}"
 end

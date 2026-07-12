@@ -15,8 +15,8 @@ RSpec.describe Medication, type: :model do
       medication1 = FactoryBot.create(:medication, name: "Zyrtec")
       medication2 = FactoryBot.create(:medication, name: "Aspirin")
       medication3 = FactoryBot.create(:medication, name: "Metformin")
-      
-      expect(Medication.all.to_a).to eq([medication2, medication3, medication1])
+
+      expect(Medication.all.to_a).to eq([ medication2, medication3, medication1 ])
     end
   end
 end

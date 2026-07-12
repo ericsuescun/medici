@@ -20,7 +20,7 @@ class CreateVariableValues < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :variable_values, [:patient_id, :variable_type, :criteria_order], name: :index_vv_on_patient_type_order
-    add_index :variable_values, [:patient_id, :name]
+    add_index :variable_values, [ :patient_id, :variable_type, :criteria_order ], name: :index_vv_on_patient_type_order
+    add_index :variable_values, [ :patient_id, :name ]
   end
 end
