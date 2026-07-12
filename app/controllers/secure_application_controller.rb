@@ -3,7 +3,10 @@ class SecureApplicationController < ApplicationController
 
   before_action :authenticate_user!
 
-  # NOTE: `after_action :verify_authorized` (deny-by-default guarantee) is enabled
-  # in the final phase, once every controller — including custom member actions —
-  # calls `authorize` and roles/permissions are seeded in every environment.
+  # Deny-by-default guarantee: every action under this controller must call
+  # `authorize` (standard actions via ResourceAuthorization, custom member
+  # actions explicitly). Any that doesn't raises Pundit::AuthorizationNotPerformed
+  # in tests — surfacing a missed authorization as a failing spec, not a leak.
+  # index is authorized too (resource-level), so no verify_policy_scoped.
+  after_action :verify_authorized
 end
