@@ -38,6 +38,9 @@ Rails.application.routes.draw do
       post :transition
     end
   end
+
+  # Admin-only role/permission manager.
+  resources :roles, only: %i[index edit update]
   resources :admins
   resources :sponsor_reps
   resources :trial_center_branch_reps

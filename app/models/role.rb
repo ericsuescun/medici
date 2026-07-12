@@ -8,19 +8,14 @@ class Role < ApplicationRecord
   validates :display_name, presence: true
 
   # Does this role permit `action` (:can_show/:can_edit/:can_delete) on `resource`
-  # (a model Class or its class-name string)? Loads role_permissions once and
-  # checks in memory to avoid N+1 across the many policy checks on a page.
+  # (a model Class or its class-name string)? `detect` loads role_permissions
+  # once and then reads from the in-memory association (no N+1 across the many
+  # policy checks on a page), and stays correct after `reload`.
   def permits?(resource, action)
     return false unless PermissionCatalog::ACTIONS.include?(action)
 
-    name = resource.is_a?(Class) ? resource.name : resource.to_s
-    permission = permission_by_resource[name]
+    resource_name = resource.is_a?(Class) ? resource.name : resource.to_s
+    permission = role_permissions.detect { |rp| rp.resource == resource_name }
     permission ? permission.public_send(action) : false
-  end
-
-  private
-
-  def permission_by_resource
-    @permission_by_resource ||= role_permissions.index_by(&:resource)
   end
 end
