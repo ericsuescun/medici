@@ -1,5 +1,13 @@
 # frozen_string_literal: true
 
+# Generic, permission-driven base policy. Every action maps to a per-resource
+# permission on the current user's Role:
+#   index/show   -> can_show
+#   new/create   -> can_edit
+#   edit/update  -> can_edit
+#   destroy      -> can_delete
+# Per-model policies inherit this for free; they only override to add bespoke
+# rules (e.g. PatientPolicy's AASM state transitions).
 class ApplicationPolicy
   attr_reader :user, :record
 
@@ -9,15 +17,15 @@ class ApplicationPolicy
   end
 
   def index?
-    false
+    permitted?(:can_show)
   end
 
   def show?
-    false
+    permitted?(:can_show)
   end
 
   def create?
-    false
+    permitted?(:can_edit)
   end
 
   def new?
@@ -25,7 +33,7 @@ class ApplicationPolicy
   end
 
   def update?
-    false
+    permitted?(:can_edit)
   end
 
   def edit?
@@ -33,7 +41,21 @@ class ApplicationPolicy
   end
 
   def destroy?
-    false
+    permitted?(:can_delete)
+  end
+
+  private
+
+  def permitted?(action)
+    return false if user&.role.nil?
+
+    user.role.permits?(record_class, action)
+  end
+
+  # `record` is a Class for collection/new actions (authorize(Model)) and an
+  # instance for member actions (authorize(@instance)).
+  def record_class
+    record.is_a?(Class) ? record : record.class
   end
 
   class Scope
@@ -43,7 +65,11 @@ class ApplicationPolicy
     end
 
     def resolve
-      raise NoMethodError, "You must define #resolve in #{self.class}"
+      if user&.role&.permits?(scope.klass, :can_show)
+        scope.all
+      else
+        scope.none
+      end
     end
 
     private

@@ -1,13 +1,10 @@
 # frozen_string_literal: true
 
+# Inherits generic CRUD (show?/edit?/destroy?/index? + Scope) from
+# ApplicationPolicy, driven by the role permission matrix. Adds the bespoke
+# AASM state-transition rules, which are gated by role *type* (admin or trial
+# center rep) independently of the permission matrix.
 class PatientPolicy < ApplicationPolicy
-  attr_reader :user, :record
-
-  def initialize(user, record)
-    @user = user
-    @record = record
-  end
-
   # Only admins and trial center reps can view the state value
   def show_state?
     admin_or_trial_center_rep?
@@ -35,13 +32,6 @@ class PatientPolicy < ApplicationPolicy
 
   def reject?
     admin_or_trial_center_rep? && record.may_reject?
-  end
-
-  class Scope < ApplicationPolicy::Scope
-    def resolve
-      # No special filtering mandated for patients list in this task
-      scope.all
-    end
   end
 
   private
