@@ -199,7 +199,7 @@ Checked the requirements above against the current medici_app codebase directly 
 
 ### Critical pending tasks — compliance remediation (planned 2026-07-11)
 
-Each item below is a task to execute, not just a gem to install — most gaps need real development work, with a gem (if any) as only one ingredient. Ordered by priority. **Status as of 2026-07-13: 4/8 done (tasks 1, 2, 5, 6).** Check items off as they're completed, with a one-line dated note.
+Each item below is a task to execute, not just a gem to install — most gaps need real development work, with a gem (if any) as only one ingredient. Ordered by priority. **Status as of 2026-07-13: 6/8 done (tasks 1, 2, 3, 5, 6, 7).** Remaining: 4 (INVIMA multi-party consent — dev, blocked on legal task 8) and 8 (legal, not dev). Check items off as they're completed, with a one-line dated note.
 
 - [x] 1. **[CRITICAL — live exposure] Fix the Pundit access-control gap in `PatientsController`.** _(2026-07-13 — PR #28, role permissions.)_
    - Gem: none new — `pundit` is already in the Gemfile. This is a wiring task.
@@ -211,9 +211,10 @@ Each item below is a task to execute, not just a gem to install — most gaps ne
    - Dev work: either wire `authorize`/`policy_scope` into `StudiesController` so `StudyPolicy` actually runs, or remove it if intentionally unused — a policy file that looks like it's enforcing access but isn't is worse than no policy at all.
    - **Done:** `StudiesController < SecureApplicationController` now authorizes (standard actions via `ResourceAuthorization`, plus an explicit `authorize(@study, :update?)` for its custom action); `StudyPolicy < ApplicationPolicy` inherits the real permission-driven rules — no longer dead code.
 
-- [ ] 3. **[CRITICAL] Implement Ley 1581 authorization capture at registration.**
+- [x] 3. **[CRITICAL] Implement Ley 1581 authorization capture at registration.** _(2026-07-13 — branch `MA-pseudonymization`.)_
    - Gem: none — no standard gem exists for Colombian habeas-data consent capture.
    - Dev work: add a `Consent`/`Authorization` model (who authorized, what text/version, when) and a discrete, auditable step in the sign-up flow (`Users::RegistrationsController`) that captures it **before** `dob`/`sex`/`illness_description`/etc. start being collected — not folded into a generic terms-of-service checkbox.
+   - **Done:** `Consent` model (immutable, versioned: document_type/version, purpose, granted_at, ip_address; `has_paper_trail`). A distinct habeas-data authorization checkbox on the study-scoped sign-up form; registration is a hard gate (no account/data without it — rejected sign-up 422s and creates nothing); a `Consent` is persisted on success. Version bumps via `Consent::LEY_1581_CURRENT_VERSION`. Also fixed a latent "Userable must exist" registration bug (Patient is now built before the User is saved).
 
 - [ ] 4. **[CRITICAL] Implement INVIMA multi-party informed consent (participant + 2 witnesses + investigating physician).**
    - Gem options: `prawn` (add to Gemfile) to generate the consent PDF, + Active Storage (already in Rails, no separate gem) to attach the signed document; `hexapdf` (evaluate, don't add yet) if a digital-signature path is chosen instead of scanned wet-ink signatures.
@@ -230,9 +231,10 @@ Each item below is a task to execute, not just a gem to install — most gaps ne
    - Dev work: declare `has_paper_trail` on `Patient`, `CriteriaVariable`, `Study`, and any other model holding clinical/eligibility data.
    - **Done:** installed PaperTrail (`versions` table), wired `set_paper_trail_whodunnit` in `ApplicationController` (PaperTrail 15 no longer auto-installs it) so every change records the acting user, and declared `has_paper_trail` on `Patient`, `VariableValue`, `CriteriaVariable`, `CriteriaProfile`, and `Study`. Also added an `entered_by` user FK on `VariableValue` (first-capture attribution).
 
-- [ ] 7. **[MEDIUM] Add a cross-border transfer safeguard for international `Sponsor`s.**
+- [x] 7. **[MEDIUM] Add a cross-border transfer safeguard for international `Sponsor`s.** _(2026-07-13 — branch `MA-pseudonymization`.)_
    - Gem: none — this is a process/legal control (data transfer agreements, explicit consent language), not a technical one.
    - Dev work: minimal — mostly ensure the Ley 1581 authorization captured in task 3 explicitly covers transfer to a foreign sponsor when applicable, and flag/log which `Sponsor`s are international.
+   - **Done:** `sponsors.international` flag + `Study#international_sponsor?`. When enrolling in an international-sponsor study, the sign-up authorization shows an Art. 26 cross-border clause and a distinct `Consent` (`ley_1581_cross_border_transfer`) is recorded alongside the base one.
 
 - [ ] 8. **[MEDIUM — legal, not dev] Resolve the open INVIMA / Ley 1581 interaction questions.**
    - Not a development task: get legal confirmation on (a) whether INVIMA consent satisfies or stacks on top of Ley 1581 authorization, (b) electronic consent validity, (c) sponsor/DMC access rules to identifiable data.
