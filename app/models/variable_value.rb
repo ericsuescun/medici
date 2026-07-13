@@ -32,7 +32,14 @@
 #  fk_rails_...  (patient_id => patients.id)
 #
 class VariableValue < ApplicationRecord
+  include CriteriaComparable
+
   belongs_to :patient
+
+  # Whether the patient's captured `value` meets this variable's comparison.
+  def satisfied?
+    satisfied_by?(value)
+  end
 
   attribute :value_type, :string
   attribute :variable_type, :string

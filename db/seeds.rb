@@ -33,6 +33,10 @@ RolesAndPermissionsSeeder.seed!
 # require_relative 'seeds/create_id_types'
 # require_relative 'seeds/create_countries'
 #
+# Example eligibility profile (dev/demo only — see the file header):
+# require_relative 'seeds/example_seborrheic_dermatitis_profile'
+# ExampleSeborrheicDermatitisProfile.seed!
+#
 # Named admin accounts:
 # [ [ 'edsuescun@gmail.com', 'Eric', 'Suescun' ],
 #   [ 'nlecuona@gmail.com', 'Nathalia', 'Lecuona' ],
