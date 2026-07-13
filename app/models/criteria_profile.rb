@@ -28,4 +28,22 @@ class CriteriaProfile < ApplicationRecord
   has_many :criteria_variables, dependent: :destroy
 
   validates :name, presence: true
+
+  # Evaluate `patient` against this profile's enabled variables. Patient answers
+  # (VariableValues) are matched to variables by `name` — the app's denormalized
+  # snapshot design has no FK linking the two. Returns an EligibilityResult.
+  def evaluate(patient)
+    answers = patient.variable_values.index_by(&:name)
+
+    checks = criteria_variables
+             .select(&:enabled)
+             .sort_by { |cv| cv.criteria_order || 0 }
+             .map do |cv|
+      answer = answers[cv.name]
+      met = answer ? cv.satisfied_by?(answer.value) : nil
+      EligibilityResult::Check.new(variable: cv, value: answer&.value, met: met)
+    end
+
+    EligibilityResult.new(checks)
+  end
 end

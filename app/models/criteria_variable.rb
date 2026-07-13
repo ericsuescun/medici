@@ -31,6 +31,8 @@
 #  fk_rails_...  (criteria_profile_id => criteria_profiles.id)
 #
 class CriteriaVariable < ApplicationRecord
+  include CriteriaComparable
+
   belongs_to :criteria_profile
 
   attribute :value_type, :string
