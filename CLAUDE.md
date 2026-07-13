@@ -199,15 +199,17 @@ Checked the requirements above against the current medici_app codebase directly 
 
 ### Critical pending tasks — compliance remediation (planned 2026-07-11)
 
-Each item below is a task to execute, not just a gem to install — most gaps need real development work, with a gem (if any) as only one ingredient. Ordered by priority. **Status as of 2026-07-11: 0/8 done — nothing has been remediated yet.** Check items off as they're completed, with a one-line dated note.
+Each item below is a task to execute, not just a gem to install — most gaps need real development work, with a gem (if any) as only one ingredient. Ordered by priority. **Status as of 2026-07-13: 3/8 done (tasks 1, 2, 6).** Check items off as they're completed, with a one-line dated note.
 
-- [ ] 1. **[CRITICAL — live exposure] Fix the Pundit access-control gap in `PatientsController`.**
+- [x] 1. **[CRITICAL — live exposure] Fix the Pundit access-control gap in `PatientsController`.** _(2026-07-13 — PR #28, role permissions.)_
    - Gem: none new — `pundit` is already in the Gemfile. This is a wiring task.
    - Dev work: extend `PatientPolicy` with real `index?`/`show?`/`update?` rules (not just the existing `update_state?`/AASM-transition methods, scoped by role); call `authorize`/`policy_scope` in `PatientsController#index`, `#show`, `#edit`, `#create`, and non-state `#update`. This is the highest-priority fix — it's a live exposure of every patient's `dob`/`sex`/`illness_description`/`notes` to any logged-in user today, not a future deadline risk.
+   - **Done:** `PatientsController < SecureApplicationController`, whose `ResourceAuthorization` concern auto-authorizes every standard action and whose `verify_authorized` after_action makes a missed `authorize` a failing spec (deny-by-default). The unscoped `index`/`show` exposure is closed.
 
-- [ ] 2. **[HIGH] Fix or remove the dead `StudyPolicy`.**
+- [x] 2. **[HIGH] Fix or remove the dead `StudyPolicy`.** _(2026-07-13 — PR #28, role permissions.)_
    - Gem: none new — `pundit` already present.
    - Dev work: either wire `authorize`/`policy_scope` into `StudiesController` so `StudyPolicy` actually runs, or remove it if intentionally unused — a policy file that looks like it's enforcing access but isn't is worse than no policy at all.
+   - **Done:** `StudiesController < SecureApplicationController` now authorizes (standard actions via `ResourceAuthorization`, plus an explicit `authorize(@study, :update?)` for its custom action); `StudyPolicy < ApplicationPolicy` inherits the real permission-driven rules — no longer dead code.
 
 - [ ] 3. **[CRITICAL] Implement Ley 1581 authorization capture at registration.**
    - Gem: none — no standard gem exists for Colombian habeas-data consent capture.
