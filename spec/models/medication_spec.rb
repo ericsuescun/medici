@@ -1,5 +1,15 @@
 require 'rails_helper'
 
+# == Schema Information
+#
+# Table name: medications
+#
+#  id          :bigint           not null, primary key
+#  description :text
+#  name        :string
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
 RSpec.describe Medication, type: :model do
   describe "associations" do
     it { should have_and_belong_to_many(:studies) }

@@ -3,16 +3,18 @@
 # Table name: criteria_profiles
 #
 #  id          :bigint           not null, primary key
-#  name        :string           not null
 #  description :text
-#  study_id    :bigint           not null
-#  user_id     :bigint           not null
+#  name        :string           not null
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
+#  study_id    :bigint
+#  user_id     :bigint           not null
 #
 # Indexes
 #
+#  index_criteria_profiles_on_study_id              (study_id)
 #  index_criteria_profiles_on_study_id_and_user_id  (study_id,user_id)
+#  index_criteria_profiles_on_user_id               (user_id)
 #
 # Foreign Keys
 #

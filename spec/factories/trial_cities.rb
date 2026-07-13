@@ -3,7 +3,7 @@
 # Table name: trial_cities
 #
 #  id         :bigint           not null, primary key
-#  name       :string           default("")
+#  name       :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  study_id   :bigint           not null

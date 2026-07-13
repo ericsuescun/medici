@@ -2,12 +2,18 @@
 #
 # Table name: countries
 #
-#  id           :bigint           not null, primary key
-#  name         :string           not null
-#  code         :string           not null
-#  phone_prefix :string           not null
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
+#  id               :bigint           not null, primary key
+#  code             :string           not null
+#  country_priority :integer          default(4), not null
+#  name             :string           not null
+#  phone_prefix     :string           not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#
+# Indexes
+#
+#  index_countries_on_code              (code) UNIQUE
+#  index_countries_on_country_priority  (country_priority)
 #
 class Country < ApplicationRecord
   # ISO 3166-1 alpha-2 recommended for code (e.g., 'CO')

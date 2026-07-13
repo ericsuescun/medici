@@ -1,5 +1,30 @@
 require 'rails_helper'
 
+# == Schema Information
+#
+# Table name: patients
+#
+#  id                  :bigint           not null, primary key
+#  contact_address     :string
+#  contact_number      :string
+#  country             :string           default("")
+#  dob                 :date
+#  email               :string
+#  firstname           :string
+#  id_number           :string           default("")
+#  id_type             :string           default("")
+#  illness_description :text             default("")
+#  lastname            :string
+#  notes               :string
+#  sex                 :string
+#  state               :string           default("prospect"), not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#
+# Indexes
+#
+#  index_patients_on_state  (state)
+#
 RSpec.describe Patient, type: :model do
   subject(:patient) { FactoryBot.create(:patient) }
 

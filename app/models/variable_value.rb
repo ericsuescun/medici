@@ -2,24 +2,34 @@
 #
 # Table name: variable_values
 #
-#  id          :bigint           not null, primary key
-#  name        :string           not null
-#  description :text
-#  value_type  :string           not null
-#  reference_value_1 :decimal(15,6)
-#  reference_value_2 :decimal(15,6)
-#  comparison_type :string       not null
-#  conditions  :text
-#  qualitative_scale :text        default([]), not null, is an Array
+#  id                :bigint           not null, primary key
+#  comparison_type   :string           not null
+#  conditions        :text
+#  criteria_order    :integer
+#  description       :text
+#  enabled           :boolean          default(TRUE), not null
+#  name              :string           not null
+#  qualitative_scale :text             default([]), not null, is an Array
 #  qualitative_value :string
-#  variable_type :string         default("inclusion"), not null
-#  enabled     :boolean          default(TRUE), not null
-#  shown       :boolean          default(TRUE), not null
-#  criteria_order :integer
-#  patient_id  :bigint           not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  value       :string
+#  reference_value_1 :decimal(15, 6)
+#  reference_value_2 :decimal(15, 6)
+#  shown             :boolean          default(TRUE), not null
+#  value             :string
+#  value_type        :string           not null
+#  variable_type     :string           default("inclusion"), not null
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  patient_id        :bigint           not null
+#
+# Indexes
+#
+#  index_variable_values_on_patient_id           (patient_id)
+#  index_variable_values_on_patient_id_and_name  (patient_id,name)
+#  index_vv_on_patient_type_order                (patient_id,variable_type,criteria_order)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (patient_id => patients.id)
 #
 class VariableValue < ApplicationRecord
   belongs_to :patient

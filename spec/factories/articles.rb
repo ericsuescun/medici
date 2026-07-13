@@ -2,10 +2,10 @@
 #
 # Table name: articles
 #
-#  id :bigint not null, primary key
-#  description :string           default("")
-#  title       :string           default("")
-#  url         :string           default("")
+#  id          :bigint           not null, primary key
+#  description :string
+#  title       :string
+#  url         :string
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  study_id    :bigint           not null
