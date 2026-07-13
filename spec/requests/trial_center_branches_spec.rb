@@ -17,6 +17,22 @@ RSpec.describe "/trial_center_branches", type: :request do
   # full permissions; explicit scope avoids the User -> userable delegation bug.
   before { sign_in(FactoryBot.create(:user, :admin), scope: :user) }
 
+  describe "GET /show reps table" do
+    it "lists reps in a table with edit and disassociate actions" do
+      branch = FactoryBot.create(:trial_center_branch)
+      rep_user = FactoryBot.create(:user, :trial_center_branch_rep)
+      rep_user.userable.update!(trial_center_branch: branch)
+
+      get trial_center_branch_url(branch)
+
+      expect(response).to be_successful
+      expect(response.body).to include("Representantes de Sede")
+      expect(response.body).to include("Acciones")
+      expect(response.body).to include("Editar")
+      expect(response.body).to include("Desasociar")
+    end
+  end
+
   # This should return the minimal set of attributes required to create a valid
   # TrialCenterBranch. As you add validations to TrialCenterBranch, be sure to
   # adjust the attributes here as well.
