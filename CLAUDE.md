@@ -225,7 +225,7 @@ Each item below is a task to execute, not just a gem to install — most gaps ne
 - [x] 6. **[HIGH] Wire the audit trail.** _(2026-07-13 — branch `MA-variable-value-attribution`.)_
    - Gem: none new — `paper_trail` is already in the Gemfile.
    - Dev work: declare `has_paper_trail` on `Patient`, `CriteriaVariable`, `Study`, and any other model holding clinical/eligibility data.
-   - **Done:** installed PaperTrail (`versions` table), wired `set_paper_trail_whodunnit` in `ApplicationController` (PaperTrail 15 no longer auto-installs it) so every change records the acting user, and declared `has_paper_trail` on `Patient`, `VariableValue`, `CriteriaVariable`, `CriteriaProfile`. Also added an `entered_by` user FK on `VariableValue` (first-capture attribution). **Not covered:** `Study` — intentionally left out (not patient data); add `has_paper_trail` to `Study` if full Task-6 scope is wanted.
+   - **Done:** installed PaperTrail (`versions` table), wired `set_paper_trail_whodunnit` in `ApplicationController` (PaperTrail 15 no longer auto-installs it) so every change records the acting user, and declared `has_paper_trail` on `Patient`, `VariableValue`, `CriteriaVariable`, `CriteriaProfile`, and `Study`. Also added an `entered_by` user FK on `VariableValue` (first-capture attribution).
 
 - [ ] 7. **[MEDIUM] Add a cross-border transfer safeguard for international `Sponsor`s.**
    - Gem: none — this is a process/legal control (data transfer agreements, explicit consent language), not a technical one.
