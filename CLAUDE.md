@@ -92,6 +92,20 @@ State lives in the `state` column. Use `patient.assess!` / `patient.accept!` / `
 - **Result** — belongs to Study, `result_type` enum (Primary/Secondary).
 - Geography: **Country → City / TrialCity**, referenced by facilities, branches, and studies.
 
+### Eligibility criteria engine (analyzed 2026-07-13)
+
+How the inclusion/exclusion rules engine is modeled — three tables, `app/models/{criteria_profile,criteria_variable,variable_value}.rb`:
+
+- **`CriteriaProfile`** — a named, reusable set of eligibility rules. `belongs_to :study` (optional → reusable across studies) and `belongs_to :user` (owner); `has_many :criteria_variables`.
+- **`CriteriaVariable`** — ONE atomic rule. Its "grammar": `name` + `value_type` (the datatype: `boolean` / `quantitative` / `qualitative`) + `variable_type` (the polarity: `inclusion` = patient must satisfy / `exclusion` = patient must NOT satisfy) + `comparison_type` (the operator: `less_than`, `less_than_or_equal`, `more_than`, `more_than_or_equal`, `between_range`, `out_of_range`, `equal`, `different`, `true`, `false`) + operands: `reference_value_1`/`reference_value_2` (decimals; two are used for `between_range`/`out_of_range`), or `qualitative_scale` (array of allowed categories) + `qualitative_value` (the category to compare against). Plus `criteria_order`, `enabled`, `shown`, free-text `conditions`.
+- **`VariableValue`** — same column shape as `CriteriaVariable` but `belongs_to :patient` and adds `value` (the patient's actual measured value). It is the per-patient snapshot meant to be checked against a profile's variables (`Patient has_many :variable_values`).
+
+**Key limitations (important — the engine is a rule *representation*, not yet an evaluator):**
+- **No evaluation/matching code exists.** Nothing compares a patient's `VariableValue.value` against a `CriteriaVariable`'s `comparison_type` + reference values to decide eligibility. "All inclusion pass AND no exclusion triggers" is implied but unimplemented. So today it stores criteria and patient values; it does not compute eligibility.
+- **Atomic only — no boolean composition.** Each variable is a single comparison. There is no AND/OR/grouping/nesting, so a compound rule ("severe = score ≥ 20 AND BSA ≥ 10%") must be split into several separate variables, and an OR ("candidate due to A *or* B") cannot be represented — only flattened to one boolean.
+- **No temporal semantics.** "in the last 2 / 6 / 24 weeks" is descriptive text baked into the variable `name`; the engine compares a static value, never a date window.
+- **No investigator-judgment / free-text criteria** as first-class — clinical catch-alls ("any condition that, in the investigator's opinion, …") can only be modeled as a single boolean flag the investigator toggles.
+
 ### JavaScript
 
 Import maps (no JS build step). Hotwire (Turbo + Stimulus) is available via the Gemfile, but check `app/javascript/controllers/` before assuming a given page is Stimulus-driven — usage is lighter than a fully Hotwire-native app.
