@@ -1,0 +1,87 @@
+<% item_label = "#{params[:item_type]} ##{@item.id}" %>
+<% content_for :title, "Control de cambios — #{item_label}" %>
+<% base_path = change_control_path(params[:item_type], @item.id) %>
+
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Control de cambios <small class="text-muted">— <%= item_label %></small></h3>
+    <div class="d-flex gap-2">
+      <%= link_to "Exportar CSV",
+                  change_control_path(params[:item_type], @item.id,
+                    format: :csv, event: params[:event], whodunnit: params[:whodunnit],
+                    from: params[:from], to: params[:to]),
+                  class: "btn btn-sm btn-outline-success" %>
+      <%= link_to "Volver", :back, class: "btn btn-sm btn-outline-secondary" %>
+    </div>
+  </div>
+
+  <%= form_with url: base_path, method: :get, class: "row g-2 align-items-end mb-3" do |f| %>
+    <div class="col-auto">
+      <%= label_tag :event, "Evento", class: "form-label mb-0 small" %>
+      <%= select_tag :event,
+            options_for_select([ [ "Todos", "" ], [ "Creación", "create" ], [ "Actualización", "update" ], [ "Eliminación", "destroy" ] ], params[:event]),
+            class: "form-select form-select-sm" %>
+    </div>
+    <div class="col-auto">
+      <%= label_tag :whodunnit, "Usuario", class: "form-label mb-0 small" %>
+      <%= select_tag :whodunnit,
+            options_for_select([ [ "Todos", "" ] ] + @editors.values.map { |u| [ (u.fullname.presence || u.email), u.id.to_s ] }, params[:whodunnit]),
+            class: "form-select form-select-sm" %>
+    </div>
+    <div class="col-auto">
+      <%= label_tag :from, "Desde", class: "form-label mb-0 small" %>
+      <%= date_field_tag :from, params[:from], class: "form-control form-control-sm" %>
+    </div>
+    <div class="col-auto">
+      <%= label_tag :to, "Hasta", class: "form-label mb-0 small" %>
+      <%= date_field_tag :to, params[:to], class: "form-control form-control-sm" %>
+    </div>
+    <div class="col-auto">
+      <%= submit_tag "Filtrar", class: "btn btn-sm btn-primary" %>
+      <%= link_to "Limpiar", base_path, class: "btn btn-sm btn-outline-secondary" %>
+    </div>
+  <% end %>
+
+  <% if @versions.empty? %>
+    <div class="alert alert-info">No hay cambios que coincidan con los filtros.</div>
+  <% else %>
+    <div class="table-responsive">
+      <table class="table table-sm table-striped align-middle">
+        <thead>
+          <tr>
+            <th class="text-nowrap">Fecha</th>
+            <th>Evento</th>
+            <th>Usuario</th>
+            <th>Cambios</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @versions.each do |version| %>
+            <tr>
+              <td class="text-nowrap"><%= version.created_at&.strftime("%Y-%m-%d %H:%M") %></td>
+              <td><span class="badge bg-<%= change_control_event_badge(version.event) %>"><%= version.event %></span></td>
+              <td><%= change_control_editor_name(version, @editors) %></td>
+              <td>
+                <% diff = change_control_diff(version) %>
+                <% if diff.empty? %>
+                  <span class="text-muted">—</span>
+                <% else %>
+                  <ul class="mb-0 ps-3 small">
+                    <% diff.each do |attr, (old_val, new_val)| %>
+                      <li>
+                        <strong><%= attr.humanize %>:</strong>
+                        <%= change_control_value(old_val) %>
+                        &rarr;
+                        <%= change_control_value(new_val) %>
+                      </li>
+                    <% end %>
+                  </ul>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>

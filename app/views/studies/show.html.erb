@@ -5,6 +5,9 @@
       <div>
         <%= link_to "Editar este estudio", edit_study_path(@study) %> |
         <%= link_to "Retornar a Estudios", studies_path %>
+        <% if current_user&.admin? %>
+          | <%= link_to "Control de cambios", change_control_path("Study", @study.id) %>
+        <% end %>
 
         <%= button_to "Borrar", @study, method: :delete, class: "btn btn-primary btn-block mt-3 mb-3" %>
       </div>

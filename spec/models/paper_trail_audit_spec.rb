@@ -36,7 +36,9 @@ RSpec.describe "PaperTrail audit trail on patient-related models", type: :model 
 
   it "versions a Study (status/phase changes affect eligibility)" do
     study = FactoryBot.create(:study)
-    expect { study.update!(study_status: "completed") }
+    # Flip to a definitely-different status (the factory randomises it).
+    new_status = study.recruiting? ? "completed" : "recruiting"
+    expect { study.update!(study_status: new_status) }
       .to change { study.versions.count }.by(1)
   end
 end

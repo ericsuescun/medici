@@ -19,6 +19,9 @@
 <div>
   <%= link_to "Edit this patient", edit_patient_path(@patient) %> |
   <%= link_to "Back to patients", patients_path %>
+  <% if current_user&.admin? %>
+    | <%= link_to "Control de cambios", change_control_path("Patient", @patient.id) %>
+  <% end %>
 
   <%= button_to "Destroy this patient", @patient, method: :delete %>
 </div>

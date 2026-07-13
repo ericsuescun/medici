@@ -7,6 +7,9 @@ RSpec.describe "criteria_variables/show", type: :view do
 
     assign(:criteria_profile, profile)
     assign(:criteria_variable, variable)
+    # The view has an admin-only "Control de cambios" link gated on current_user,
+    # which isn't wired up in view specs (no Warden middleware).
+    allow(view).to receive(:current_user).and_return(nil)
 
     render template: 'criteria_variables/show'
 
