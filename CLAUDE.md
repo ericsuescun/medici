@@ -199,7 +199,7 @@ Checked the requirements above against the current medici_app codebase directly 
 
 ### Critical pending tasks — compliance remediation (planned 2026-07-11)
 
-Each item below is a task to execute, not just a gem to install — most gaps need real development work, with a gem (if any) as only one ingredient. Ordered by priority. **Status as of 2026-07-13: 3/8 done (tasks 1, 2, 6).** Check items off as they're completed, with a one-line dated note.
+Each item below is a task to execute, not just a gem to install — most gaps need real development work, with a gem (if any) as only one ingredient. Ordered by priority. **Status as of 2026-07-13: 4/8 done (tasks 1, 2, 5, 6).** Check items off as they're completed, with a one-line dated note.
 
 - [x] 1. **[CRITICAL — live exposure] Fix the Pundit access-control gap in `PatientsController`.** _(2026-07-13 — PR #28, role permissions.)_
    - Gem: none new — `pundit` is already in the Gemfile. This is a wiring task.
@@ -220,9 +220,10 @@ Each item below is a task to execute, not just a gem to install — most gaps ne
    - Dev work: build the consent capture flow (participant/legal representative + 2 witnesses + investigating physician), require re-signature when the form is amended, and track it as an auditable checklist item equivalent to INVIMA's item 32.
    - **Blocked on:** legal confirmation of whether a pure digital signature satisfies Resolución 2378 de 2008, or whether a scanned wet-ink signature is required — don't commit to the `hexapdf` path before this is confirmed.
 
-- [ ] 5. **[HIGH] Implement participant data pseudonymization/coding (Anexo Técnico Tabla 7).**
+- [x] 5. **[HIGH] Implement participant data pseudonymization/coding (Anexo Técnico Tabla 7).** _(2026-07-13 — branch `MA-pseudonymization`.)_
    - Gem: none new — use Rails 8's native `ActiveRecord::Encryption`.
    - Dev work: encrypt identifiable clinical fields (`illness_description`, `dob`, etc.) that feed into study/eligibility data, and add a participant-code column (`SecureRandom`-backed) so research data can be linked to identity only via that code, per the secure-storage requirement.
+   - **Done:** `Patient` now owns its identity (delegation moved off the shared `User` into `DelegatesIdentityToUser`, used only by Admin/reps) and encrypts `firstname`/`lastname`/`email`/`dob`/`contact_number`/`contact_address`/`id_number` (deterministic, searchable) + `illness_description`/`notes` (non-deterministic). `dob` moved date→string (+ `attribute :dob, :date`). Added `participant_code` (unique, `SecureRandom`, backfilled). `has_paper_trail skip:` the encrypted fields so plaintext never reaches the `versions` table. Keys via `config/initializers/active_record_encryption.rb` (ENV in prod). **Post-deploy:** set `AR_ENCRYPTION_*` env vars on Heroku, then run `rails patients:reencrypt` to encrypt existing rows. Devise login (`User#email`) is untouched. Status: 4/8 done (1, 2, 5, 6).
 
 - [x] 6. **[HIGH] Wire the audit trail.** _(2026-07-13 — branch `MA-variable-value-attribution`.)_
    - Gem: none new — `paper_trail` is already in the Gemfile.
