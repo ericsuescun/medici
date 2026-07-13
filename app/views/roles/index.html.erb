@@ -3,7 +3,10 @@
     <div class="alert alert-success"><%= notice %></div>
   <% end %>
 
-  <h1 class="mb-4">Gestión de Roles</h1>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Gestión de Roles</h1>
+    <%= link_to "Nuevo Rol", new_role_path, class: "btn btn-primary" %>
+  </div>
 
   <table class="table table-striped align-middle">
     <thead>

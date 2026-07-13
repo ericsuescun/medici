@@ -40,7 +40,7 @@ Rails.application.routes.draw do
   end
 
   # Admin-only role/permission manager.
-  resources :roles, only: %i[index edit update]
+  resources :roles, only: %i[index new create edit update]
   resources :admins
   resources :sponsor_reps
   resources :trial_center_branch_reps

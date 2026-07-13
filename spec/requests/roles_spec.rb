@@ -15,6 +15,12 @@ RSpec.describe "Roles (admin role manager)", type: :request do
       patch role_path(role), params: { role: { role_permissions_attributes: {} } }
       expect(response).to have_http_status(:redirect)
     end
+
+    it "is blocked from creating a role" do
+      post roles_path, params: { role: { name: "auditor", display_name: "Auditor" } }
+      expect(response).to have_http_status(:redirect)
+      expect(Role.exists?(name: "auditor")).to be(false)
+    end
   end
 
   context "as an admin" do
@@ -28,6 +34,21 @@ RSpec.describe "Roles (admin role manager)", type: :request do
     it "can open a role's permission editor" do
       get edit_role_path(role)
       expect(response).to be_successful
+    end
+
+    it "can open the new-role form" do
+      get new_role_path
+      expect(response).to be_successful
+    end
+
+    it "creates a role and continues to its permission editor" do
+      expect do
+        post roles_path, params: {
+          role: { name: "auditor", display_name: "Auditor", description: "Solo lectura" }
+        }
+      end.to change(Role, :count).by(1)
+
+      expect(response).to redirect_to(edit_role_path(Role.find_by!(name: "auditor")))
     end
 
     it "updating a permission takes effect on the role" do
