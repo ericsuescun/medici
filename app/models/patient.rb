@@ -26,6 +26,10 @@
 class Patient < ApplicationRecord
   include Userable
 
+  # Audit trail for the patient's personal/clinical data and AASM state changes;
+  # whodunnit records the acting user (see PaperTrail controller integration).
+  has_paper_trail
+
   has_many :variable_values, dependent: :destroy
 
   include AASM

@@ -39,6 +39,9 @@ class CriteriaAssessmentsController < SecureApplicationController
       next if raw.blank?
 
       record = @patient.variable_values.find_or_initialize_by(name: cv.name)
+      # Attribute the first capture to the acting user; later edits are tracked by
+      # PaperTrail's whodunnit, so we don't overwrite the original recorder here.
+      record.entered_by ||= current_user
       record.assign_attributes(
         value: raw.to_s,
         value_type: cv.value_type, comparison_type: cv.comparison_type, variable_type: cv.variable_type,

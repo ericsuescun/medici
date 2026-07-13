@@ -20,21 +20,32 @@
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  patient_id        :bigint           not null
+#  entered_by_id     :bigint
 #
 # Indexes
 #
+#  index_variable_values_on_entered_by_id        (entered_by_id)
 #  index_variable_values_on_patient_id           (patient_id)
 #  index_variable_values_on_patient_id_and_name  (patient_id,name)
 #  index_vv_on_patient_type_order                (patient_id,variable_type,criteria_order)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (entered_by_id => users.id)
 #  fk_rails_...  (patient_id => patients.id)
 #
 class VariableValue < ApplicationRecord
   include CriteriaComparable
 
+  # Audit trail: every create/update/destroy is versioned, and whodunnit records
+  # the acting user (see PaperTrail controller integration).
+  has_paper_trail
+
   belongs_to :patient
+  # The user (physician) who captured this value. Optional: existing/seeded rows
+  # may have none. PaperTrail's whodunnit tracks *every* change; entered_by is the
+  # convenient "who first recorded it" reference on the row itself.
+  belongs_to :entered_by, class_name: "User", optional: true
 
   # Whether the patient's captured `value` meets this variable's comparison.
   def satisfied?

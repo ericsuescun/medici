@@ -22,6 +22,9 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class CriteriaProfile < ApplicationRecord
+  # Audit trail for the eligibility rule set (changes ripple to patient verdicts).
+  has_paper_trail
+
   belongs_to :study, optional: true
   belongs_to :user
 
