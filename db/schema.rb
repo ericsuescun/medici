@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_13_193026) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_13_202333) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -46,6 +46,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_13_193026) do
   create_table "cities_trial_center_facilities", id: false, force: :cascade do |t|
     t.bigint "city_id", null: false
     t.bigint "trial_center_facility_id", null: false
+  end
+
+  create_table "consents", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "document_type", null: false
+    t.string "document_version", null: false
+    t.string "purpose", null: false
+    t.datetime "granted_at", null: false
+    t.string "ip_address"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "document_type"], name: "index_consents_on_user_id_and_document_type"
+    t.index ["user_id"], name: "index_consents_on_user_id"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -349,6 +362,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_13_193026) do
   end
 
   add_foreign_key "articles", "studies"
+  add_foreign_key "consents", "users"
   add_foreign_key "contacts", "studies"
   add_foreign_key "criteria_profiles", "studies"
   add_foreign_key "criteria_profiles", "users"

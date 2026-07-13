@@ -4,15 +4,16 @@
   <div class="row">
     <div class="col-3 mx-auto">
       <h1>Bienvenido al estudio:</h1>
-      <div class="card mb-3">
-        <div class="card-header">
-          <%= Study.find(params[:study_id]).public_title %>
+      <% if @study %>
+        <div class="card mb-3">
+          <div class="card-header">
+            <%= @study.public_title %>
+          </div>
+          <div class="card-body">
+            <%= @study.scientific_title %>
+          </div>
         </div>
-        <div class="card-body">
-          <%= Study.find(params[:study_id]).scientific_title %>
-
-        </div>
-      </div>
+      <% end %>
       <h2>Regístrate para poder participar</h2>
 
       <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
@@ -34,6 +35,17 @@
         <div class="form-group mb-3">
           <%= f.label :password_confirmation %><br />
           <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control" %>
+        </div>
+
+        <div class="form-check mt-4 mb-2 p-3 border rounded bg-light">
+          <%= f.check_box :data_processing_authorization, class: "form-check-input" %>
+          <%= f.label :data_processing_authorization, class: "form-check-label" do %>
+            Autorizo de manera libre, previa, expresa e informada el tratamiento de mis
+            <strong>datos personales sensibles de salud</strong> con la finalidad de evaluar mi
+            elegibilidad y participación en el estudio clínico, conforme a la
+            <strong>Ley 1581 de 2012</strong> (Habeas Data).
+            <span class="text-muted d-block small mt-1">Versión <%= Consent::LEY_1581_CURRENT_VERSION %></span>
+          <% end %>
         </div>
 
         <div class="actions">
