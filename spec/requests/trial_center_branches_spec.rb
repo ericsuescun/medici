@@ -18,10 +18,9 @@ RSpec.describe "/trial_center_branches", type: :request do
   before { sign_in(FactoryBot.create(:user, :admin), scope: :user) }
 
   describe "GET /show reps table" do
-    it "lists reps in a table with edit and disassociate actions" do
+    it "lists reps in a table with edit/delete actions and a create link" do
       branch = FactoryBot.create(:trial_center_branch)
-      rep_user = FactoryBot.create(:user, :trial_center_branch_rep)
-      rep_user.userable.update!(trial_center_branch: branch)
+      FactoryBot.create(:user, userable: FactoryBot.build(:trial_center_branch_rep, trial_center_branch: branch))
 
       get trial_center_branch_url(branch)
 
@@ -29,7 +28,8 @@ RSpec.describe "/trial_center_branches", type: :request do
       expect(response.body).to include("Representantes de Sede")
       expect(response.body).to include("Acciones")
       expect(response.body).to include("Editar")
-      expect(response.body).to include("Desasociar")
+      expect(response.body).to include("Eliminar")
+      expect(response.body).to include("Nuevo representante")
     end
   end
 

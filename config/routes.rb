@@ -14,12 +14,7 @@ Rails.application.routes.draw do
     resources :trial_center_branches
   end
 
-  resources :trial_center_branches do
-    member do
-      post :add_rep
-      delete :remove_rep
-    end
-  end
+  resources :trial_center_branches
   resources :trial_cities
   resources :cities
   resources :studies do
@@ -47,12 +42,7 @@ Rails.application.routes.draw do
   resources :results
   resources :contacts
   resources :articles
-  resources :sponsors do
-    member do
-      post :add_rep
-      delete :remove_rep
-    end
-  end
+  resources :sponsors
   resources :medications
   resources :users
   resources :criteria_profiles do

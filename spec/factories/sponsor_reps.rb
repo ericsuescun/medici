@@ -20,6 +20,7 @@
 #
 FactoryBot.define do
   factory :sponsor_rep do
+    association :sponsor
     contact_number { "MyString" }
     contact_address { "MyString" }
     title { "MyString" }

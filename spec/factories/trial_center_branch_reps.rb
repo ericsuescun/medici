@@ -20,6 +20,7 @@
 #
 FactoryBot.define do
   factory :trial_center_branch_rep do
+    association :trial_center_branch
     contact_number { "MyString" }
     contact_address { "MyString" }
     title { "MyString" }
