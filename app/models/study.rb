@@ -32,6 +32,9 @@
 #  fk_rails_...  (sponsor_id => sponsors.id)
 #
 class Study < ApplicationRecord
+  # Audit trail: study status/phase changes affect enrolled patients' eligibility.
+  has_paper_trail
+
   belongs_to :sponsor
 
   has_and_belongs_to_many :trial_center_branches

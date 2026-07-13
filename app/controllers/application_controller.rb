@@ -4,6 +4,10 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
   before_action :configure_permitted_parameters, if: :devise_controller?
+  # PaperTrail no longer auto-installs this; wire whodunnit to the acting user so
+  # every audited change is attributable. `user_for_paper_trail` defaults to
+  # current_user.id (nil for unauthenticated requests).
+  before_action :set_paper_trail_whodunnit
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 

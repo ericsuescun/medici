@@ -222,9 +222,10 @@ Each item below is a task to execute, not just a gem to install — most gaps ne
    - Gem: none new — use Rails 8's native `ActiveRecord::Encryption`.
    - Dev work: encrypt identifiable clinical fields (`illness_description`, `dob`, etc.) that feed into study/eligibility data, and add a participant-code column (`SecureRandom`-backed) so research data can be linked to identity only via that code, per the secure-storage requirement.
 
-- [ ] 6. **[HIGH] Wire the audit trail.**
+- [x] 6. **[HIGH] Wire the audit trail.** _(2026-07-13 — branch `MA-variable-value-attribution`.)_
    - Gem: none new — `paper_trail` is already in the Gemfile.
    - Dev work: declare `has_paper_trail` on `Patient`, `CriteriaVariable`, `Study`, and any other model holding clinical/eligibility data.
+   - **Done:** installed PaperTrail (`versions` table), wired `set_paper_trail_whodunnit` in `ApplicationController` (PaperTrail 15 no longer auto-installs it) so every change records the acting user, and declared `has_paper_trail` on `Patient`, `VariableValue`, `CriteriaVariable`, `CriteriaProfile`, and `Study`. Also added an `entered_by` user FK on `VariableValue` (first-capture attribution).
 
 - [ ] 7. **[MEDIUM] Add a cross-border transfer safeguard for international `Sponsor`s.**
    - Gem: none — this is a process/legal control (data transfer agreements, explicit consent language), not a technical one.

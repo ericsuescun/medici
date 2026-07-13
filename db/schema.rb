@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_12_140004) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_13_153908) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -328,9 +328,21 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_12_140004) do
     t.string "value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "entered_by_id"
+    t.index ["entered_by_id"], name: "index_variable_values_on_entered_by_id"
     t.index ["patient_id", "name"], name: "index_variable_values_on_patient_id_and_name"
     t.index ["patient_id", "variable_type", "criteria_order"], name: "index_vv_on_patient_type_order"
     t.index ["patient_id"], name: "index_variable_values_on_patient_id"
+  end
+
+  create_table "versions", force: :cascade do |t|
+    t.string "whodunnit"
+    t.datetime "created_at"
+    t.bigint "item_id", null: false
+    t.string "item_type", null: false
+    t.string "event", null: false
+    t.text "object"
+    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
   add_foreign_key "articles", "studies"
@@ -347,4 +359,5 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_12_140004) do
   add_foreign_key "trial_cities", "studies"
   add_foreign_key "users", "roles"
   add_foreign_key "variable_values", "patients"
+  add_foreign_key "variable_values", "users", column: "entered_by_id"
 end

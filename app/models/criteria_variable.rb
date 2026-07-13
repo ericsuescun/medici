@@ -33,6 +33,9 @@
 class CriteriaVariable < ApplicationRecord
   include CriteriaComparable
 
+  # Audit trail: eligibility rules feed a patient's verdict, so changes are versioned.
+  has_paper_trail
+
   belongs_to :criteria_profile
 
   attribute :value_type, :string

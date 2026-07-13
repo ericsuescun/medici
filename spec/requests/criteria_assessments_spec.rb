@@ -15,7 +15,8 @@ RSpec.describe "Criteria assessments", type: :request do
   end
 
   context "as an admin (can edit patients)" do
-    before { sign_in(FactoryBot.create(:user, :admin), scope: :user) }
+    let(:admin_user) { FactoryBot.create(:user, :admin) }
+    before { sign_in(admin_user, scope: :user) }
 
     it "renders the assessment form" do
       get assessment_path
@@ -30,6 +31,15 @@ RSpec.describe "Criteria assessments", type: :request do
       expect(response).to redirect_to(assessment_path)
       expect(patient.variable_values.find_by(name: "Edad").value).to eq("30")
       expect(profile.evaluate(patient.reload)).to be_eligible
+    end
+
+    it "attributes the captured value to the acting user and versions the change" do
+      patch assessment_path, params: { values: { age.id.to_s => "30" } }
+
+      value = patient.variable_values.find_by(name: "Edad")
+      expect(value.entered_by).to eq(admin_user)
+      # PaperTrail records the change with the acting user as whodunnit.
+      expect(value.versions.last.whodunnit).to eq(admin_user.id.to_s)
     end
   end
 
