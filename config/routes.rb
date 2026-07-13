@@ -32,6 +32,8 @@ Rails.application.routes.draw do
     member do
       post :transition
     end
+    # Capture a patient's values for a study's criteria profile + see the verdict.
+    resource :criteria_assessment, only: %i[show update]
   end
 
   # Admin-only role/permission manager.

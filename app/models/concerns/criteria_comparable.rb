@@ -19,7 +19,35 @@ module CriteriaComparable
     end
   end
 
+  # Short human description of the comparison, e.g. "entre 18 y 40", "≥ 20", "Sí".
+  def rule_summary
+    case value_type
+    when "boolean"      then comparison_type == "true" ? "Sí" : "No"
+    when "qualitative"  then "#{comparison_type == 'different' ? '≠' : '='} #{qualitative_value}"
+    when "quantitative"
+      r1 = fmt_reference(reference_value_1)
+      r2 = fmt_reference(reference_value_2)
+      case comparison_type
+      when "between_range"      then "entre #{r1} y #{r2}"
+      when "out_of_range"       then "fuera de #{r1}–#{r2}"
+      when "less_than"          then "< #{r1}"
+      when "less_than_or_equal" then "≤ #{r1}"
+      when "more_than"          then "> #{r1}"
+      when "more_than_or_equal" then "≥ #{r1}"
+      when "equal"              then "= #{r1}"
+      when "different"          then "≠ #{r1}"
+      end
+    end
+  end
+
   private
+
+  def fmt_reference(value)
+    return if value.nil?
+
+    number = value.to_f
+    (number % 1).zero? ? number.to_i.to_s : number.to_s
+  end
 
   def boolean_satisfied?(raw)
     actual = ActiveModel::Type::Boolean.new.cast(raw)
