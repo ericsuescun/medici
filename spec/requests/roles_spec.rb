@@ -51,6 +51,28 @@ RSpec.describe "Roles (admin role manager)", type: :request do
       expect(response).to redirect_to(edit_role_path(Role.find_by!(name: "auditor")))
     end
 
+    it "creates a role with all permissions off when nothing is cloned" do
+      post roles_path, params: { role: { name: "auditor", display_name: "Auditor" } }
+
+      new_role = Role.find_by!(name: "auditor")
+      expect(new_role.role_permissions).to be_empty
+      expect(new_role.permits?(Patient, :can_show)).to be(false)
+      expect(new_role.permits?(Study, :can_show)).to be(false)
+    end
+
+    it "clones permissions from a chosen role when requested" do
+      admin_role = Role.find_by!(name: "admin")
+
+      post roles_path, params: {
+        role: { name: "auditor", display_name: "Auditor" },
+        clone_from_role_id: admin_role.id
+      }
+
+      new_role = Role.find_by!(name: "auditor")
+      expect(new_role.role_permissions.count).to eq(admin_role.role_permissions.count)
+      expect(new_role.permits?(Patient, :can_delete)).to be(true) # copied from admin
+    end
+
     it "updating a permission takes effect on the role" do
       expect(Role.find(role.id).permits?(Sponsor, :can_show)).to be(false)
       perm = role.role_permissions.find_or_create_by!(resource: "Sponsor")

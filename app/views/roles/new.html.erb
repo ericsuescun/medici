@@ -28,6 +28,15 @@
       <%= form.text_area :description, class: "form-control", rows: 3 %>
     </div>
 
+    <div class="mb-3">
+      <%= label_tag :clone_from_role_id, "Clonar permisos de (opcional)", class: "form-label" %>
+      <%= select_tag :clone_from_role_id,
+                     options_from_collection_for_select(@roles, :id, :display_name),
+                     include_blank: "— Ninguno (empezar sin permisos) —",
+                     class: "form-select" %>
+      <div class="form-text">Si eliges un rol, el nuevo rol copiará sus permisos actuales.</div>
+    </div>
+
     <%= form.submit "Crear rol", class: "btn btn-success" %>
     <%= link_to "Cancelar", roles_path, class: "btn btn-link" %>
   <% end %>

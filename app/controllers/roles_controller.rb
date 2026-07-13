@@ -10,13 +10,17 @@ class RolesController < SecureApplicationController
 
   def new
     @role = Role.new
+    @roles = Role.order(:name)
   end
 
   def create
     @role = Role.new(role_attributes_params)
+    clone_permissions_into(@role, params[:clone_from_role_id])
+
     if @role.save
       redirect_to edit_role_path(@role), notice: "Rol creado. Ahora configura sus permisos."
     else
+      @roles = Role.order(:name)
       render :new, status: :unprocessable_entity
     end
   end
@@ -53,6 +57,24 @@ class RolesController < SecureApplicationController
   # Attributes set when creating a role.
   def role_attributes_params
     params.require(:role).permit(:name, :display_name, :description)
+  end
+
+  # Optionally seed the new role by copying another role's permissions. Built on
+  # the (unsaved) role so it's persisted atomically with `@role.save`.
+  def clone_permissions_into(role, source_role_id)
+    return if source_role_id.blank?
+
+    source = Role.find_by(id: source_role_id)
+    return unless source
+
+    source.role_permissions.each do |permission|
+      role.role_permissions.build(
+        resource: permission.resource,
+        can_show: permission.can_show,
+        can_edit: permission.can_edit,
+        can_delete: permission.can_delete
+      )
+    end
   end
 
   # Permission matrix edited on the edit/update screen.
