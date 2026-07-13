@@ -50,6 +50,9 @@ Rails.application.routes.draw do
   resources :criteria_profiles do
     resources :criteria_variables
   end
+
+  # Admin-only change-control (audit) log for any PaperTrail-tracked model.
+  get "change-control/:item_type/:item_id", to: "change_controls#show", as: :change_control
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

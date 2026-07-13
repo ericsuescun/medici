@@ -8,6 +8,9 @@
       <div class="mt-3">
         <%= link_to "Editar", edit_criteria_profile_criteria_variable_path(@criteria_profile, @criteria_variable) %> |
         <%= link_to "Retornar a Variables", criteria_profile_criteria_variables_path(@criteria_profile) %>
+        <% if current_user&.admin? %>
+          | <%= link_to "Control de cambios", change_control_path("CriteriaVariable", @criteria_variable.id) %>
+        <% end %>
 
         <%= button_to "Borrar", [@criteria_profile, @criteria_variable], method: :delete, class: "btn btn-primary btn-block mt-3 mb-3" %>
       </div>
