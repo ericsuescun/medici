@@ -1,5 +1,5 @@
 class SponsorsController < SecureApplicationController
-  before_action :set_sponsor, only: %i[ show edit update destroy add_rep remove_rep ]
+  before_action :set_sponsor, only: %i[ show edit update destroy ]
 
   # GET /sponsors or /sponsors.json
   def index
@@ -57,19 +57,6 @@ class SponsorsController < SecureApplicationController
     end
   end
 
-  # POST /sponsors/:id/add_rep
-  def add_rep
-    rep = SponsorRep.find(params[:rep_id])
-    rep.update!(sponsor: @sponsor)
-    redirect_to sponsor_path(@sponsor), notice: "Representante asociado correctamente."
-  end
-
-  # DELETE /sponsors/:id/remove_rep
-  def remove_rep
-    rep = SponsorRep.find(params[:rep_id])
-    rep.update!(sponsor: nil)
-    redirect_to sponsor_path(@sponsor), notice: "Representante desasociado."
-  end
 
   private
     # Use callbacks to share common setup or constraints between actions.

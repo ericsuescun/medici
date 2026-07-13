@@ -2,26 +2,26 @@
 #
 # Table name: patients
 #
-#  id              :bigint           not null, primary key
-#  contact_address :string
-#  contact_number  :string
-#  dob             :date
-#  email           :string
-#  firstname       :string
-#  lastname        :string
-#  notes           :text
-#  sex             :string
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
-#  user_id         :bigint           not null
+#  id                  :bigint           not null, primary key
+#  contact_address     :string
+#  contact_number      :string
+#  country             :string           default("")
+#  dob                 :date
+#  email               :string
+#  firstname           :string
+#  id_number           :string           default("")
+#  id_type             :string           default("")
+#  illness_description :text             default("")
+#  lastname            :string
+#  notes               :string
+#  sex                 :string
+#  state               :string           default("prospect"), not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
 #
 # Indexes
 #
-#  index_patients_on_user_id  (user_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (user_id => users.id)
+#  index_patients_on_state  (state)
 #
 class Patient < ApplicationRecord
   include Userable

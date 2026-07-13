@@ -1,0 +1,33 @@
+<div class="container mt-4">
+  <h1 class="mb-2">Permisos: <%= @role.display_name %></h1>
+  <p class="text-muted">Define qué puede ver, editar y eliminar este rol en cada recurso.</p>
+
+  <%= form_with model: @role, url: role_path(@role), method: :patch do |form| %>
+    <table class="table table-sm table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Recurso</th>
+          <th class="text-center">Ver</th>
+          <th class="text-center">Editar</th>
+          <th class="text-center">Eliminar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= form.fields_for :role_permissions, @role.role_permissions.sort_by(&:resource) do |perm| %>
+          <tr>
+            <td>
+              <%= perm.hidden_field :resource %>
+              <%= perm.object.resource %>
+            </td>
+            <td class="text-center"><%= perm.check_box :can_show %></td>
+            <td class="text-center"><%= perm.check_box :can_edit %></td>
+            <td class="text-center"><%= perm.check_box :can_delete %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <%= form.submit "Guardar permisos", class: "btn btn-success" %>
+    <%= link_to "Cancelar", roles_path, class: "btn btn-link" %>
+  <% end %>
+</div>

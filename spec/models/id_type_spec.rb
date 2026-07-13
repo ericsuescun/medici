@@ -1,5 +1,24 @@
 require 'rails_helper'
 
+# == Schema Information
+#
+# Table name: id_types
+#
+#  id           :bigint           not null, primary key
+#  active       :boolean          default(TRUE), not null
+#  code         :string           not null
+#  country_code :string           not null
+#  description  :string
+#  name         :string           not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#
+# Indexes
+#
+#  index_id_types_on_active                 (active)
+#  index_id_types_on_country_code           (country_code)
+#  index_id_types_on_country_code_and_code  (country_code,code) UNIQUE
+#
 RSpec.describe IdType, type: :model do
   describe 'validations' do
     it { should validate_presence_of(:name) }

@@ -3,16 +3,16 @@
 # Table name: trial_center_branches
 #
 #  id                       :bigint           not null, primary key
-#  name                     :string
-#  initials                 :string
-#  email                    :string
-#  description              :string
-#  contact_number           :string
 #  contact_address          :string
+#  contact_number           :string
+#  description              :string
+#  email                    :string
+#  initials                 :string
+#  name                     :string
 #  url                      :string
-#  trial_center_facility_id :bigint           not null
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
+#  trial_center_facility_id :bigint           not null
 #
 # Indexes
 #

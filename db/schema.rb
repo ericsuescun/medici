@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_02_192500) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_12_140004) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -168,6 +168,27 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_02_192500) do
     t.index ["study_id"], name: "index_results_on_study_id"
   end
 
+  create_table "role_permissions", force: :cascade do |t|
+    t.bigint "role_id", null: false
+    t.string "resource", null: false
+    t.boolean "can_show", default: false, null: false
+    t.boolean "can_edit", default: false, null: false
+    t.boolean "can_delete", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["role_id", "resource"], name: "index_role_permissions_on_role_id_and_resource", unique: true
+    t.index ["role_id"], name: "index_role_permissions_on_role_id"
+  end
+
+  create_table "roles", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "display_name", default: "", null: false
+    t.string "description", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_roles_on_name", unique: true
+  end
+
   create_table "sponsor_reps", force: :cascade do |t|
     t.string "contact_number"
     t.string "contact_address"
@@ -282,8 +303,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_02_192500) do
     t.string "illness_description", default: ""
     t.string "userable_type"
     t.bigint "userable_id"
+    t.bigint "role_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["role_id"], name: "index_users_on_role_id"
     t.index ["userable_type", "userable_id"], name: "index_users_on_userable_type_and_userable_id"
   end
 
@@ -316,10 +339,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_02_192500) do
   add_foreign_key "criteria_profiles", "users"
   add_foreign_key "criteria_variables", "criteria_profiles"
   add_foreign_key "results", "studies"
+  add_foreign_key "role_permissions", "roles"
   add_foreign_key "sponsor_reps", "sponsors"
   add_foreign_key "studies", "sponsors"
   add_foreign_key "trial_center_branch_reps", "trial_center_branches"
   add_foreign_key "trial_center_branches", "trial_center_facilities"
   add_foreign_key "trial_cities", "studies"
+  add_foreign_key "users", "roles"
   add_foreign_key "variable_values", "patients"
 end

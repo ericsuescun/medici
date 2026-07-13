@@ -3,13 +3,19 @@
 # Table name: id_types
 #
 #  id           :bigint           not null, primary key
-#  name         :string           not null
+#  active       :boolean          default(TRUE), not null
 #  code         :string           not null
 #  country_code :string           not null
 #  description  :string
-#  active       :boolean          default(TRUE), not null
+#  name         :string           not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
+#
+# Indexes
+#
+#  index_id_types_on_active                 (active)
+#  index_id_types_on_country_code           (country_code)
+#  index_id_types_on_country_code_and_code  (country_code,code) UNIQUE
 #
 class IdType < ApplicationRecord
   # ISO 3166-1 alpha-2 country code expected in country_code (e.g., 'CO')

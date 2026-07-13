@@ -1,5 +1,6 @@
 class PatientsController < SecureApplicationController
   before_action :set_patient, only: %i[ show edit update destroy transition ]
+  before_action -> { authorize(@patient, :update_state?) }, only: :transition
 
   # GET /patients or /patients.json
   def index

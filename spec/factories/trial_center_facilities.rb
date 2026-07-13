@@ -3,13 +3,13 @@
 # Table name: trial_center_facilities
 #
 #  id              :bigint           not null, primary key
-#  contact_address :string           default("")
-#  contact_number  :string           default("")
-#  description     :string           default("")
-#  email           :string           default("")
-#  initials        :string           default("")
-#  name            :string           default("")
-#  url             :string           default("")
+#  contact_address :string
+#  contact_number  :string
+#  description     :string
+#  email           :string
+#  initials        :string
+#  name            :string
+#  url             :string
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #

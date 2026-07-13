@@ -1,0 +1,35 @@
+<div class="container mt-4">
+  <% if notice %>
+    <div class="alert alert-success"><%= notice %></div>
+  <% end %>
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Gestión de Roles</h1>
+    <%= link_to "Nuevo Rol", new_role_path, class: "btn btn-primary" %>
+  </div>
+
+  <table class="table table-striped align-middle">
+    <thead>
+      <tr>
+        <th>Rol</th>
+        <th>Nombre interno</th>
+        <th>Recursos con permisos</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @roles.each do |role| %>
+        <tr>
+          <td><%= role.display_name %></td>
+          <td><code><%= role.name %></code></td>
+          <td><%= role.role_permissions.count %></td>
+          <td class="text-end">
+            <%= link_to "Editar permisos", edit_role_path(role), class: "btn btn-sm btn-primary" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= link_to "Retornar a Vitalia", root_path, class: "btn btn-link" %>
+</div>

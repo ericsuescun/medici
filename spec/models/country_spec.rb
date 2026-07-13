@@ -1,5 +1,22 @@
 require 'rails_helper'
 
+# == Schema Information
+#
+# Table name: countries
+#
+#  id               :bigint           not null, primary key
+#  code             :string           not null
+#  country_priority :integer          default(4), not null
+#  name             :string           not null
+#  phone_prefix     :string           not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#
+# Indexes
+#
+#  index_countries_on_code              (code) UNIQUE
+#  index_countries_on_country_priority  (country_priority)
+#
 RSpec.describe Country, type: :model do
   describe 'validations' do
     it { should validate_presence_of(:name) }

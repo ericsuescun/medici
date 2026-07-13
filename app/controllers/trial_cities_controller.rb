@@ -1,4 +1,4 @@
-class TrialCitiesController < ApplicationController
+class TrialCitiesController < SecureApplicationController
   before_action :set_trial_city, only: %i[ show edit update destroy ]
 
   # GET /trial_cities or /trial_cities.json

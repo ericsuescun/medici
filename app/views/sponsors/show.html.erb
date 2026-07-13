@@ -14,34 +14,49 @@
 
       <hr/>
       <div class="mt-3">
-        <h4>Representantes</h4>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h4 class="mb-0">Representantes</h4>
+          <% if policy(SponsorRep).new? %>
+            <%= link_to "Nuevo representante", new_sponsor_rep_path(sponsor_id: @sponsor.id), class: "btn btn-sm btn-primary" %>
+          <% end %>
+        </div>
         <% reps = @sponsor.sponsor_reps.includes(:user) %>
         <% if reps.any? %>
-          <ul>
-            <% reps.each do |r| %>
-              <li>
-                <%= link_to (r.fullname.presence || r.email), sponsor_rep_path(r) %>
-                <%= button_to 'Desasociar', remove_rep_sponsor_path(@sponsor, rep_id: r.id), method: :delete, class: 'btn btn-sm btn-outline-danger ms-2' %>
-              </li>
-            <% end %>
-          </ul>
+          <div class="table-responsive">
+            <table class="table table-striped align-middle">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Email</th>
+                  <th>Título</th>
+                  <th>Teléfono</th>
+                  <th class="text-end">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% reps.each do |r| %>
+                  <tr>
+                    <td><%= link_to (r.fullname.presence || r.email), sponsor_rep_path(r) %></td>
+                    <td><%= r.email %></td>
+                    <td><%= r.title %></td>
+                    <td><%= r.contact_number %></td>
+                    <td class="text-end">
+                      <div class="d-inline-flex gap-2">
+                        <% if policy(r).edit? %>
+                          <%= link_to 'Editar', edit_sponsor_rep_path(r), class: 'btn btn-sm btn-outline-secondary' %>
+                        <% end %>
+                        <% if policy(r).destroy? %>
+                          <%= button_to 'Eliminar', sponsor_rep_path(r), method: :delete, class: 'btn btn-sm btn-outline-danger', form: { data: { turbo_confirm: '¿Eliminar este representante?' } } %>
+                        <% end %>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
         <% else %>
-          <p class="text-muted">No hay representantes asociados.</p>
-        <% end %>
-
-        <% available_reps = SponsorRep.where(sponsor_id: nil).includes(:user) %>
-        <% if available_reps.any? %>
-          <%= form_with url: add_rep_sponsor_path(@sponsor), method: :post, class: 'row g-2 align-items-end' do |f| %>
-            <div class="col-md-6">
-              <label for="rep_id" class="form-label">Asociar representante existente</label>
-              <%= select_tag :rep_id, options_from_collection_for_select(available_reps, :id, :fullname), include_blank: 'Seleccione un representante', class: 'form-select' %>
-            </div>
-            <div class="col-md-3">
-              <button type="submit" class="btn btn-primary">Asociar</button>
-            </div>
-          <% end %>
-        <% else %>
-          <p class="text-muted">No hay representantes disponibles para asociar.</p>
+          <p class="text-muted">No hay representantes en este patrocinador.</p>
         <% end %>
 
       </div>

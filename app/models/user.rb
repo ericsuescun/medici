@@ -3,26 +3,30 @@
 # Table name: users
 #
 #  id                     :bigint           not null, primary key
-#  contact_address        :string           default("")
-#  contact_number         :string           default("")
-#  dob                    :date
 #  email                  :string           default(""), not null
 #  encrypted_password     :string           default(""), not null
-#  firstname              :string           default("")
-#  id_number              :string           default("")
-#  id_type                :string           default("")
-#  lastname               :string           default("")
+#  firstname              :string
+#  illness_description    :string           default("")
+#  lastname               :string
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string
-#  user_type              :string
+#  userable_type          :string
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
+#  role_id                :bigint
+#  userable_id            :bigint
 #
 # Indexes
 #
-#  index_users_on_email                 (email) UNIQUE
-#  index_users_on_reset_password_token  (reset_password_token) UNIQUE
+#  index_users_on_email                          (email) UNIQUE
+#  index_users_on_reset_password_token           (reset_password_token) UNIQUE
+#  index_users_on_role_id                        (role_id)
+#  index_users_on_userable_type_and_userable_id  (userable_type,userable_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (role_id => roles.id)
 #
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
@@ -30,11 +34,24 @@ class User < ApplicationRecord
 
   has_and_belongs_to_many :studies
   has_many :criteria_profiles, dependent: :destroy
+  belongs_to :role, optional: true
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
   delegated_type :userable, types: %w[SponsorRep Admin Patient TrialCenterBranchRep], dependent: :destroy
+
+  # Authorization role is derived once from the userable (data) type at creation.
+  # Every user-creation path sets `userable` before save, so this single callback
+  # covers registration, the admins/reps controllers, and factories.
+  ROLE_FOR_USERABLE = {
+    "SponsorRep" => "sponsor_rep",
+    "Admin" => "admin",
+    "Patient" => "patient",
+    "TrialCenterBranchRep" => "trial_center_branch_rep"
+  }.freeze
+
+  before_save :assign_default_role, if: -> { role_id.nil? && userable_type.present? }
 
   delegate :dob,
            :sex,
@@ -76,5 +93,12 @@ class User < ApplicationRecord
     return "" if firstname.blank? || lastname.blank?
 
     firstname + " " + lastname
+  end
+
+  private
+
+  def assign_default_role
+    role_name = ROLE_FOR_USERABLE[userable_type]
+    self.role = Role.find_by(name: role_name) if role_name
   end
 end
