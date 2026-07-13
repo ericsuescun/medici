@@ -11,4 +11,5 @@
 #
 class Admin < ApplicationRecord
   include Userable
+  include DelegatesIdentityToUser
 end

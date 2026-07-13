@@ -25,6 +25,11 @@
 #
 FactoryBot.define do
   factory :patient do
+    # Patient owns its own (encrypted) identity now — set it here rather than on
+    # the User, so patient.firstname/fullname/email are populated in specs.
+    firstname { Faker::Name.first_name }
+    lastname { Faker::Name.last_name }
+    sequence(:email) { |n| "patient#{n}@example.com" }
     dob { Faker::Date.birthday(min_age: 18, max_age: 80) }
     sex { %w[male female].sample }
     # state defaults to "prospect" (DB default); AASM manages transitions.

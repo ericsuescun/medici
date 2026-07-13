@@ -11,12 +11,15 @@ class Users::RegistrationsController < Devise::RegistrationsController
       if session[:study_id].present?
         study = Study.find_by(id: session[:study_id])
         if study
-          new_patient = Patient.create!
+          # Patient owns its identity now; seed its (encrypted) email from the
+          # sign-up email so the record isn't identity-less. Devise login still
+          # authenticates against User#email.
+          new_patient = Patient.create!(email: resource.email)
           resource.userable = new_patient
           study.users << resource
           # Ensure the user has a Patient profile via delegated_type
           unless resource.patient?
-            patient_profile = Patient.create!
+            patient_profile = Patient.create!(email: resource.email)
             resource.update(userable: patient_profile)
           end
           # Aquí puedes asociar el study al nuevo usuario

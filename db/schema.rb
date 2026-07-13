@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_13_160019) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_13_193026) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -142,7 +142,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_13_160019) do
   create_table "patients", force: :cascade do |t|
     t.string "firstname"
     t.string "lastname"
-    t.date "dob"
+    t.string "dob"
     t.string "sex"
     t.string "contact_number"
     t.string "contact_address"
@@ -155,6 +155,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_13_160019) do
     t.string "id_number", default: ""
     t.string "country", default: ""
     t.string "state", default: "prospect", null: false
+    t.string "participant_code"
+    t.index ["participant_code"], name: "index_patients_on_participant_code", unique: true
     t.index ["state"], name: "index_patients_on_state"
   end
 

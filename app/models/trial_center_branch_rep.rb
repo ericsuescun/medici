@@ -20,6 +20,7 @@
 #
 class TrialCenterBranchRep < ApplicationRecord
   include Userable
+  include DelegatesIdentityToUser
 
   belongs_to :trial_center_branch
 end
