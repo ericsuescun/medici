@@ -28,6 +28,7 @@
 class Consent < ApplicationRecord
   # Document types.
   LEY_1581_HABEAS_DATA = "ley_1581_habeas_data".freeze
+  LEY_1581_CROSS_BORDER = "ley_1581_cross_border_transfer".freeze
 
   # Bump when the authorization text changes; the accepted version is stored per
   # record so we always know exactly what a patient agreed to.
@@ -35,6 +36,7 @@ class Consent < ApplicationRecord
 
   # Processing purposes.
   PURPOSE_SENSITIVE_HEALTH = "sensitive_health_data_processing".freeze
+  PURPOSE_CROSS_BORDER_TRANSFER = "cross_border_transfer_to_foreign_sponsor".freeze
 
   has_paper_trail
 
@@ -49,6 +51,19 @@ class Consent < ApplicationRecord
       document_type: LEY_1581_HABEAS_DATA,
       document_version: LEY_1581_CURRENT_VERSION,
       purpose: PURPOSE_SENSITIVE_HEALTH,
+      granted_at: Time.current,
+      ip_address: ip_address
+    )
+  end
+
+  # Record the Ley 1581 Art. 26 authorization to transfer data to a foreign
+  # sponsor. Only applicable when the study's sponsor is international.
+  def self.record_cross_border_transfer!(user, ip_address: nil)
+    create!(
+      user: user,
+      document_type: LEY_1581_CROSS_BORDER,
+      document_version: LEY_1581_CURRENT_VERSION,
+      purpose: PURPOSE_CROSS_BORDER_TRANSFER,
       granted_at: Time.current,
       ip_address: ip_address
     )

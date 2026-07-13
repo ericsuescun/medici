@@ -44,6 +44,10 @@
             <strong>datos personales sensibles de salud</strong> con la finalidad de evaluar mi
             elegibilidad y participación en el estudio clínico, conforme a la
             <strong>Ley 1581 de 2012</strong> (Habeas Data).
+            <% if @study&.international_sponsor? %>
+              Autorizo asimismo la <strong>transferencia de mis datos a un patrocinador
+              internacional</strong> ubicado fuera de Colombia, conforme al Art. 26 de la Ley 1581 de 2012.
+            <% end %>
             <span class="text-muted d-block small mt-1">Versión <%= Consent::LEY_1581_CURRENT_VERSION %></span>
           <% end %>
         </div>

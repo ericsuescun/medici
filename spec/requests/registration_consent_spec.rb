@@ -36,6 +36,28 @@ RSpec.describe "Patient registration consent (Ley 1581)", type: :request do
     expect(consent.granted_at).to be_present
   end
 
+  context "when the study's sponsor is international" do
+    let(:study) { FactoryBot.create(:study, sponsor: FactoryBot.create(:sponsor, :international)) }
+
+    it "also records a distinct cross-border-transfer consent (Ley 1581 Art. 26)" do
+      post user_registration_path, params: signup_params(authorized: true)
+
+      user = User.last
+      types = user.consents.pluck(:document_type)
+      expect(types).to contain_exactly(
+        Consent::LEY_1581_HABEAS_DATA,
+        Consent::LEY_1581_CROSS_BORDER
+      )
+    end
+  end
+
+  it "does NOT record a cross-border consent for a domestic sponsor" do
+    post user_registration_path, params: signup_params(authorized: true)
+
+    types = User.last.consents.pluck(:document_type)
+    expect(types).to eq([ Consent::LEY_1581_HABEAS_DATA ])
+  end
+
   it "blocks registration entirely when authorization is not granted" do
     expect {
       post user_registration_path, params: signup_params(authorized: false)

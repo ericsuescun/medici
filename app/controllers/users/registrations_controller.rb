@@ -32,6 +32,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
       @study.users << resource if @study
       # Persist the habeas-data authorization as an immutable, auditable record.
       Consent.record_ley_1581!(resource, ip_address: request.remote_ip)
+      # If the study's sponsor is a foreign entity, the same authorization also
+      # covers the cross-border transfer (Ley 1581 Art. 26) — record it distinctly.
+      if @study&.international_sponsor?
+        Consent.record_cross_border_transfer!(resource, ip_address: request.remote_ip)
+      end
       session.delete(:study_id)
 
       sign_up(resource_name, resource)
