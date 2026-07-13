@@ -32,7 +32,8 @@ class Consent < ApplicationRecord
 
   # Bump when the authorization text changes; the accepted version is stored per
   # record so we always know exactly what a patient agreed to.
-  LEY_1581_CURRENT_VERSION = "2026-07-13".freeze
+  # 2026-07-13.1: added the "processors possibly abroad (transmisión)" acknowledgment.
+  LEY_1581_CURRENT_VERSION = "2026-07-13.1".freeze
 
   # Processing purposes.
   PURPOSE_SENSITIVE_HEALTH = "sensitive_health_data_processing".freeze

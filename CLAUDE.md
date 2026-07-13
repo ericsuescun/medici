@@ -197,6 +197,25 @@ Checked the requirements above against the current medici_app codebase directly 
 
 **Priority for remediation:** the `PatientsController` access-control gap is the most urgent — it's a live, exploitable exposure of sensitive health data to any logged-in user, not just a future compliance-deadline risk like the interoperability question.
 
+### Offshore hosting (Heroku/AWS) & "sponsors are just records" (researched 2026-07-13, web-sourced)
+
+**Question raised:** medici_app is deployed on Heroku, which runs on AWS with servers in the US, so *all* patient data physically lives outside Colombia. Does that mean every patient must give an international-transfer authorization? (Adversarially checked against Colombian secondary legal sources; this is informational, **not legal advice** — the clinical-trials/INVIMA layer may be stricter, and the SIC adequacy list can change.)
+
+**Finding — the key distinction is *transmisión* vs *transferencia* (Decreto 1377 de 2013, Art. 24–26):**
+- **Transferencia** = sending data to another **responsable** (controller) that processes it for **its own** purposes → gated by Ley 1581 **Art. 26**: allowed only to an adequate-protection country **or** with explicit consent (or another exception).
+- **Transmisión** = sending data to an **encargado** (processor) that processes **on the controller's behalf, under its instructions** → **does NOT require the titular's consent** when a data-processing/transmission **contract** exists (Art. 25). Foreign cloud hosting (Heroku/AWS) is a **transmisión**.
+- **So offshore hosting does NOT require a per-patient transfer opt-in.** What it requires is: (a) a **Data Processing / International Transmission Agreement (DPA)** with the provider (Salesforce/Heroku, AWS — both publish standard DPAs), and (b) the general Ley 1581 authorization to **acknowledge** that data may be processed by operators possibly located abroad. Security baseline: SIC recommends ISO/IEC 27001.
+- **Bonus:** the **US is on the SIC's adequate-protection list** (Circular Externa 005 de 2017, ~37 jurisdictions — controversially, but it is listed), so even a US *transferencia* would satisfy Art. 26's adequacy exception.
+
+**Domain correction (2026-07-13):** in medici_app, **`Sponsor` records are just labels to organize studies — the app does not actually transmit patient data to sponsors.** The only legally-bound data subject is the **`Patient`**. Therefore the "transferencia to a foreign sponsor" scenario (task 7's original premise) is **not a real data flow here**; the real offshore flow is the **hosting transmisión**, which every patient's data is subject to. The `sponsors.international` flag + sponsor cross-border consent built for task 7 are harmless but **precautionary, not a legally-triggered requirement** given sponsors aren't recipients.
+
+**What medici_app actually needs (net of the above):**
+1. **[dev — done 2026-07-13]** The base Ley 1581 authorization text acknowledges processing by third-party operators possibly abroad under a transmission contract (added to the sign-up consent).
+2. **[legal/process — not code]** Execute DPAs with Heroku/Salesforce and AWS; confirm ISO 27001 posture. Confirm who is "responsable" (likely the trial site/sponsor entity, not the software vendor).
+3. The sponsor cross-border-consent code stays as a dormant safeguard; do **not** treat it as the mechanism that legitimizes offshore hosting — that's the DPA + base-consent acknowledgment.
+
+Sources: [Ley 1581 de 2012](https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981), [Decreto 1377 de 2013](https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=53646), [Ámbito Jurídico – régimen de transferencias](https://www.ambitojuridico.com/noticias/comercial/regimen-de-transferencias-internacionales-de-datos-personales-una-guia-rapida), [Cuadro Legal – nube (2025)](https://cuadrolegal.com/2025/11/05/habeas-data-y-servicios-de-computacion-en-la-nube/), [SIC Circular Externa 005 de 2017](https://normograma.dian.gov.co/dian/compilacion/docs/circular_superindustria_0005_2017.htm).
+
 ### Critical pending tasks — compliance remediation (planned 2026-07-11)
 
 Each item below is a task to execute, not just a gem to install — most gaps need real development work, with a gem (if any) as only one ingredient. Ordered by priority. **Status as of 2026-07-13: 6/8 done (tasks 1, 2, 3, 5, 6, 7).** Remaining: 4 (INVIMA multi-party consent — dev, blocked on legal task 8) and 8 (legal, not dev). Check items off as they're completed, with a one-line dated note.
@@ -235,7 +254,9 @@ Each item below is a task to execute, not just a gem to install — most gaps ne
    - Gem: none — this is a process/legal control (data transfer agreements, explicit consent language), not a technical one.
    - Dev work: minimal — mostly ensure the Ley 1581 authorization captured in task 3 explicitly covers transfer to a foreign sponsor when applicable, and flag/log which `Sponsor`s are international.
    - **Done:** `sponsors.international` flag + `Study#international_sponsor?`. When enrolling in an international-sponsor study, the sign-up authorization shows an Art. 26 cross-border clause and a distinct `Consent` (`ley_1581_cross_border_transfer`) is recorded alongside the base one.
+   - **Re-fit (2026-07-13, see "Offshore hosting" note above):** the real offshore data flow is **hosting on Heroku/AWS (US), which is a *transmisión* to a processor**, not a transferencia — handled by a **DPA (legal/process)** + a *transmisión* acknowledgment now in the **base** consent text (all patients), not by a per-patient opt-in. And **`Sponsor`s are only records** (no real data flow to them), so this sponsor cross-border consent is **precautionary, not legally triggered**. Remaining real item is **legal/process**: execute DPAs with Heroku/Salesforce + AWS and confirm the "responsable" is the trial site/sponsor entity.
 
 - [ ] 8. **[MEDIUM — legal, not dev] Resolve the open INVIMA / Ley 1581 interaction questions.**
    - Not a development task: get legal confirmation on (a) whether INVIMA consent satisfies or stacks on top of Ley 1581 authorization, (b) electronic consent validity, (c) sponsor/DMC access rules to identifiable data.
    - Blocks the final design of tasks 3 and 4 — build the safer "both required" version now, revise once confirmed.
+   - **Cross-border question RESOLVED (2026-07-13):** offshore hosting = *transmisión* (DPA, not per-patient consent); US is on the SIC adequacy list. Remaining legal items are the INVIMA consent questions (a/b/c above) + executing the hosting DPAs (a contract/process task, not code). See the "Offshore hosting" research note above.
