@@ -17,28 +17,26 @@ require_relative 'seeds/roles_and_permissions'
 RolesAndPermissionsSeeder.seed!
 
 # ---------------------------------------------------------------------------
-# All seed data below is intentionally DISABLED (commented out).
+# All sample data below is intentionally DISABLED (commented out).
 #
 # `bin/rails db:seed` (and `db:setup`) run automatically in every environment,
 # so leaving these active is a source of issues — the sample blocks generate
 # fake users (with hard-coded passwords) and a large FactoryBot data graph that
 # must never land in production. Enable a block deliberately, in development
-# only, when you need sample data.
-#
-# The code is kept correct for the current delegated_type user model (role
-# traits), so it works as-is if you uncomment it.
+# only, when you need sample data. The code is kept correct for the current
+# models (delegated_type users, reps required to belong to a parent).
 # ---------------------------------------------------------------------------
 
-# Reference / lookup data (uncomment the pieces your local work needs):
+# Reference / lookup data:
 # require_relative 'seeds/update_studies_short_title'
 # require_relative 'seeds/create_medications'
 # require_relative 'seeds/create_id_types'
 # require_relative 'seeds/create_countries'
-
+#
 # Named admin accounts:
-# [ ['edsuescun@gmail.com', 'Eric', 'Suescun'],
-#   ['nlecuona@gmail.com', 'Nathalia', 'Lecuona'],
-#   ['agiraldo@gmail.com', 'Alejandro', 'Giraldo']
+# [ [ 'edsuescun@gmail.com', 'Eric', 'Suescun' ],
+#   [ 'nlecuona@gmail.com', 'Nathalia', 'Lecuona' ],
+#   [ 'agiraldo@gmail.com', 'Alejandro', 'Giraldo' ]
 # ].each do |email, first, last|
 #   next if User.exists?(email: email)
 #
@@ -49,42 +47,38 @@ RolesAndPermissionsSeeder.seed!
 #                     firstname: first,
 #                     lastname: last)
 # end
-
-# Sample users:
-# puts 'Creating Users...'
-# 50.times do
-#   FactoryBot.create(:user, :patient)
-# end
 #
-# 10.times do
-#   FactoryBot.create(:user, %i[admin sponsor_rep trial_center_branch_rep].sample)
-# end
-# puts 'Users done...'
-
-# Sample facilities / sponsors / studies graph:
-# puts 'Creating Facilities...'
+# Sample patients:
+# 50.times { FactoryBot.create(:user, :patient) }
+#
+# A few extra admins:
+# 5.times { FactoryBot.create(:user, :admin) }
+#
+# Sample facilities + branches, each with its own representatives
+# (reps must belong to a branch):
 # FactoryBot.create_list(:trial_center_facility, 30) do |tcf|
 #   tcf.cities << FactoryBot.create(:city)
 #   FactoryBot.create_list(:trial_center_branch, (1..3).to_a.sample, trial_center_facility: tcf) do |tcb|
 #     tcb.cities << FactoryBot.create(:city)
+#     (1..2).to_a.sample.times do
+#       FactoryBot.create(:user, userable: FactoryBot.build(:trial_center_branch_rep, trial_center_branch: tcb))
+#     end
 #   end
 # end
-# puts 'Facilities done...'
 #
-# puts 'Creating Sponsors...'
+# Sample sponsors, each with its own representatives (reps must belong to a
+# sponsor) plus a studies graph:
 # FactoryBot.create_list(:sponsor, 20) do |sponsor|
+#   (1..3).to_a.sample.times do
+#     FactoryBot.create(:user, userable: FactoryBot.build(:sponsor_rep, sponsor: sponsor))
+#   end
 #   FactoryBot.create_list(:study, (1..5).to_a.sample, sponsor: sponsor) do |study|
-#     puts 'Creating Studies...'
 #     study.trial_center_branches << TrialCenterBranch.find(TrialCenterBranch.ids.sample((1..3).to_a.sample))
-#     puts 'Creating Articles...'
 #     FactoryBot.create_list(:article, (1..3).to_a.sample, study: study)
-#     puts 'Creating Contacts...'
 #     FactoryBot.create_list(:contact, (1..2).to_a.sample, study: study)
-#     puts 'Creating Results...'
 #     FactoryBot.create_list(:result, (1..4).to_a.sample, study: study)
 #   end
 # end
 #
-# User.patients.each do |user|
-#   user.studies << Study.find(Study.ids.sample)
-# end
+# Enroll each sample patient in a random study:
+# User.patients.each { |user| user.studies << Study.find(Study.ids.sample) }
