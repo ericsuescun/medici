@@ -20,6 +20,7 @@
 #
 class SponsorRep < ApplicationRecord
   include Userable
+  include DelegatesIdentityToUser
 
   belongs_to :sponsor
 end

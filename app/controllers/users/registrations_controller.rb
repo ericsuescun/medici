@@ -3,28 +3,54 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   def new
     session[:study_id] = params[:study_id] if params[:study_id].present?
+    @study = Study.find_by(id: session[:study_id])
     super
   end
 
   def create
-    super do |resource|
-      if session[:study_id].present?
-        study = Study.find_by(id: session[:study_id])
-        if study
-          new_patient = Patient.create!
-          resource.userable = new_patient
-          study.users << resource
-          # Ensure the user has a Patient profile via delegated_type
-          unless resource.patient?
-            patient_profile = Patient.create!
-            resource.update(userable: patient_profile)
-          end
-          # Aquí puedes asociar el study al nuevo usuario
-          # study.update(user: resource)
-        end
-        session.delete(:study_id)
-      end
+    @study = Study.find_by(id: session[:study_id])
+
+    # Ley 1581 de 2012 (Art. 6, 9): explicit, prior authorization to process
+    # sensitive health data is a hard gate — no account is created (and therefore
+    # no patient data is collected) until it is granted.
+    unless data_processing_authorized?
+      build_resource(sign_up_params)
+      resource.errors.add(:data_processing_authorization,
+                          "Debe autorizar el tratamiento de datos personales sensibles para registrarse.")
+      clean_up_passwords(resource)
+      render :new, status: :unprocessable_entity
+      return
     end
+
+    build_resource(sign_up_params)
+    # Patient owns its identity; build it up-front so the required `userable`
+    # (delegated_type) exists at save time. Seed its (encrypted) email from the
+    # sign-up email — Devise login still authenticates against User#email.
+    resource.userable = Patient.new(email: resource.email)
+
+    if resource.save
+      @study.users << resource if @study
+      # Persist the habeas-data authorization as an immutable, auditable record.
+      Consent.record_ley_1581!(resource, ip_address: request.remote_ip)
+      # If the study's sponsor is a foreign entity, the same authorization also
+      # covers the cross-border transfer (Ley 1581 Art. 26) — record it distinctly.
+      if @study&.international_sponsor?
+        Consent.record_cross_border_transfer!(resource, ip_address: request.remote_ip)
+      end
+      session.delete(:study_id)
+
+      sign_up(resource_name, resource)
+      respond_with resource, location: after_sign_up_path_for(resource)
+    else
+      clean_up_passwords(resource)
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def data_processing_authorized?
+    ActiveModel::Type::Boolean.new.cast(params.dig(:user, :data_processing_authorization))
   end
 
   # before_action :configure_sign_up_params, only: [:create]

@@ -15,38 +15,40 @@ RSpec.describe "Change control (audit log)", type: :request do
       PaperTrail.request(whodunnit: admin_user.id.to_s) { patient.update!(attrs) }
     end
 
+    # Use a non-encrypted, tracked field (country). Encrypted fields like `notes`
+    # are intentionally skipped from the audit trail, so they never appear here.
     it "renders the change log with a field-level diff attributed to the user" do
-      make_change!(notes: "seen in clinic")
+      make_change!(country: "Colombia")
 
       get change_control_for(patient)
 
       expect(response).to be_successful
       expect(response.body).to include("Control de cambios")
-      expect(response.body).to include("Notes") # humanized attribute name
-      expect(response.body).to include("seen in clinic")
+      expect(response.body).to include("Country") # humanized attribute name
+      expect(response.body).to include("Colombia")
       expect(response.body).to include(admin_user.fullname.presence || admin_user.email)
     end
 
     it "filters by event type" do
-      make_change!(notes: "first")
+      make_change!(country: "Colombia")
 
       # Only 'update' events exist; filtering to 'destroy' yields nothing.
       get change_control_for(patient, event: "destroy")
       expect(response.body).to include("No hay cambios que coincidan")
 
       get change_control_for(patient, event: "update")
-      expect(response.body).to include("first")
+      expect(response.body).to include("Colombia")
     end
 
     it "exports the change log as CSV" do
-      make_change!(notes: "csv row")
+      make_change!(country: "Colombia")
 
       get change_control_for(patient, format: :csv)
 
       expect(response).to be_successful
       expect(response.content_type).to include("text/csv")
       expect(response.body).to include("fecha,evento,usuario,campo,antes,despues")
-      expect(response.body).to include("csv row")
+      expect(response.body).to include("Colombia")
     end
 
     it "404s for an untracked / unknown type" do

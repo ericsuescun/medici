@@ -5,8 +5,18 @@ require 'rails_helper'
 RSpec.describe "PaperTrail audit trail on patient-related models", type: :model do
   it "versions a Patient on create and update" do
     patient = FactoryBot.create(:patient)
-    expect { patient.update!(notes: "seen in clinic") }
+    expect { patient.update!(country: "Colombia") }
       .to change { patient.versions.count }.by(1)
+  end
+
+  it "does NOT record encrypted patient fields in the audit trail (skip list)" do
+    patient = FactoryBot.create(:patient)
+    # Changing only encrypted fields produces no version, and never leaks their
+    # plaintext into versions.object_changes.
+    expect { patient.update!(illness_description: "psoriasis severa", notes: "x") }
+      .not_to change { patient.versions.count }
+    expect(patient.versions.flat_map { |v| (v.changeset || {}).keys })
+      .not_to include("illness_description", "notes", "firstname", "dob")
   end
 
   it "versions a VariableValue and can attribute it to a user" do

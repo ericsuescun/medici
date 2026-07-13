@@ -34,7 +34,12 @@ class User < ApplicationRecord
 
   has_and_belongs_to_many :studies
   has_many :criteria_profiles, dependent: :destroy
+  has_many :consents, dependent: :destroy
   belongs_to :role, optional: true
+
+  # Virtual: the Ley 1581 habeas-data authorization checkbox on the sign-up form.
+  # Enforced (and persisted as a Consent) in Users::RegistrationsController.
+  attr_accessor :data_processing_authorization
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable

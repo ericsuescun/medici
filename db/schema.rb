@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_13_160019) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_13_205844) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -46,6 +46,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_13_160019) do
   create_table "cities_trial_center_facilities", id: false, force: :cascade do |t|
     t.bigint "city_id", null: false
     t.bigint "trial_center_facility_id", null: false
+  end
+
+  create_table "consents", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "document_type", null: false
+    t.string "document_version", null: false
+    t.string "purpose", null: false
+    t.datetime "granted_at", null: false
+    t.string "ip_address"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "document_type"], name: "index_consents_on_user_id_and_document_type"
+    t.index ["user_id"], name: "index_consents_on_user_id"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -142,7 +155,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_13_160019) do
   create_table "patients", force: :cascade do |t|
     t.string "firstname"
     t.string "lastname"
-    t.date "dob"
+    t.string "dob"
     t.string "sex"
     t.string "contact_number"
     t.string "contact_address"
@@ -155,6 +168,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_13_160019) do
     t.string "id_number", default: ""
     t.string "country", default: ""
     t.string "state", default: "prospect", null: false
+    t.string "participant_code"
+    t.index ["participant_code"], name: "index_patients_on_participant_code", unique: true
     t.index ["state"], name: "index_patients_on_state"
   end
 
@@ -206,6 +221,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_13_160019) do
     t.string "sponsor_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "international", default: false, null: false
   end
 
   create_table "studies", force: :cascade do |t|
@@ -347,6 +363,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_13_160019) do
   end
 
   add_foreign_key "articles", "studies"
+  add_foreign_key "consents", "users"
   add_foreign_key "contacts", "studies"
   add_foreign_key "criteria_profiles", "studies"
   add_foreign_key "criteria_profiles", "users"

@@ -37,6 +37,12 @@ class Study < ApplicationRecord
 
   belongs_to :sponsor
 
+  # Whether enrolling in this study implies a cross-border transfer of patient
+  # data to a foreign sponsor (Ley 1581 Art. 26).
+  def international_sponsor?
+    !!sponsor&.international?
+  end
+
   has_and_belongs_to_many :trial_center_branches
   has_and_belongs_to_many :users
   has_and_belongs_to_many :medications
