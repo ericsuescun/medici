@@ -38,5 +38,12 @@ module MediciApp
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    # Internationalization. Spanish is the standard (native audience); English,
+    # French and Portuguese are offered via the in-app language selector. Missing
+    # translations fall back to Spanish in every environment.
+    config.i18n.default_locale = :es
+    config.i18n.available_locales = [ :es, :en, :fr, :pt ]
+    config.i18n.fallbacks = [ :es ]
   end
 end

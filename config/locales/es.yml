@@ -1,0 +1,217 @@
+es:
+  # ---- Language selector ----
+  languages:
+    selector_label: "Seleccionar idioma"
+    es: "Español"
+    en: "Inglés"
+    fr: "Francés"
+    pt: "Portugués"
+
+  # ---- Navigation / menus ----
+  nav:
+    toggle: "Alternar navegación"
+    sponsors: "Patrocinadores"
+    studies: "Estudios"
+    facilities: "Centros de Ensayos Clínicos"
+    medications: "Medicamentos"
+    users: "Usuarios"
+    admins: "Administradores"
+    sponsor_reps: "Representantes de Patrocinadores"
+    branch_reps: "Representantes de Sedes"
+    patients: "Pacientes"
+    roles: "Gestionar Roles"
+    profiles: "Perfiles"
+    cities: "Ciudades"
+    my_data: "Mis datos"
+    search: "Buscar"
+
+  # ---- Shared UI ----
+  common:
+    edit: "Editar"
+    back: "Volver"
+    show: "Ver"
+    new: "Nuevo"
+    create: "Crear"
+    save: "Guardar"
+    update: "Actualizar"
+    destroy: "Eliminar"
+    delete: "Borrar"
+    cancel: "Cancelar"
+    actions: "Acciones"
+    confirm: "¿Está seguro?"
+    filter: "Filtrar"
+    clear: "Limpiar"
+    "yes": "Sí"
+    "no": "No"
+    none: "—"
+    export_csv: "Exportar CSV"
+    age:
+      years:
+        one: "%{count} año"
+        other: "%{count} años"
+      months:
+        one: "%{count} mes"
+        other: "%{count} meses"
+      days:
+        one: "%{count} día"
+        other: "%{count} días"
+
+  errors:
+    not_authorized: "No está autorizado para realizar esta acción."
+
+  # ---- View-specific labels ----
+  sponsors:
+    associated_studies: "Estudios asociados"
+  studies:
+    associated_facilities: "Centros de Ensayos Clínicos asociados"
+
+  # ---- Enum value labels (used via t_enum helper) ----
+  enums:
+    sponsor:
+      sponsor_type:
+        private_type: "Privado"
+        public_type: "Público"
+        mixed_type: "Mixto"
+    study:
+      study_status:
+        completed: "Completado"
+        recruiting: "Reclutando"
+      study_phase:
+        I: "Fase I"
+        II: "Fase II"
+        III: "Fase III"
+        IV: "Fase IV"
+    result:
+      result_type:
+        primary: "Primario"
+        secondary: "Secundario"
+        empty: "—"
+    criteria_variable: &criteria_enums
+      value_type:
+        boolean: "Booleano"
+        quantitative: "Cuantitativo"
+        qualitative: "Cualitativo"
+      variable_type:
+        inclusion: "Inclusión"
+        exclusion: "Exclusión"
+      comparison_type:
+        less_than: "Menor que"
+        less_than_or_equal: "Menor o igual que"
+        more_than: "Mayor que"
+        more_than_or_equal: "Mayor o igual que"
+        between_range: "Dentro del rango"
+        out_of_range: "Fuera del rango"
+        equal: "Igual a"
+        different: "Diferente de"
+        "true": "Verdadero"
+        "false": "Falso"
+    variable_value: *criteria_enums
+
+  # ---- Model & attribute names (auto-translates form labels & human_attribute_name) ----
+  activerecord:
+    models:
+      sponsor: "Patrocinador"
+      study: "Estudio"
+      patient: "Paciente"
+      medication: "Medicamento"
+      city: "Ciudad"
+      result: "Resultado"
+      criteria_profile: "Perfil de Criterios"
+      criteria_variable: "Variable de Criterio"
+      variable_value: "Valor de Variable"
+      trial_center_facility: "Centro de Ensayos Clínicos"
+      trial_center_branch: "Sede"
+      sponsor_rep: "Representante de Patrocinador"
+      trial_center_branch_rep: "Representante de Sede"
+      admin: "Administrador"
+      contact: "Contacto"
+      article: "Artículo"
+      role: "Rol"
+      consent: "Autorización"
+      user: "Usuario"
+    attributes:
+      sponsor:
+        name: "Nombre"
+        initials: "Iniciales"
+        shortname: "Nombre corto"
+        sponsor_type: "Tipo de patrocinador"
+        international: "Internacional"
+      study:
+        public_title: "Título público"
+        scientific_title: "Título científico"
+        short_title: "Título corto"
+        study_status: "Estado del estudio"
+        study_phase: "Fase del estudio"
+        inclusion_criteria: "Criterios de inclusión"
+        exclusion_criteria: "Criterios de exclusión"
+        main_intervention: "Intervención principal"
+        sample_size: "Tamaño de la muestra"
+        sex: "Sexo"
+        started_at: "Fecha de inicio"
+        completed_at: "Fecha de finalización"
+        first_patient_at: "Primer paciente"
+        global_ending_at: "Finalización global"
+        reviewed: "Revisado"
+        sponsor: "Patrocinador"
+      patient:
+        firstname: "Nombre"
+        lastname: "Apellido"
+        fullname: "Nombre completo"
+        email: "Correo electrónico"
+        dob: "Fecha de nacimiento"
+        sex: "Sexo"
+        contact_number: "Número de contacto"
+        contact_address: "Dirección de contacto"
+        country: "País"
+        id_type: "Tipo de documento"
+        id_number: "Número de documento"
+        illness_description: "Descripción de la enfermedad"
+        notes: "Notas"
+        state: "Estado"
+        participant_code: "Código de participante"
+      criteria_profile:
+        name: "Nombre"
+        description: "Descripción"
+      criteria_variable:
+        name: "Nombre"
+        value_type: "Tipo de valor"
+        variable_type: "Tipo de regla"
+        comparison_type: "Comparación"
+        reference_value_1: "Valor de referencia 1"
+        reference_value_2: "Valor de referencia 2"
+        qualitative_scale: "Escala cualitativa"
+        qualitative_value: "Valor cualitativo"
+        criteria_order: "Orden"
+        enabled: "Habilitado"
+        shown: "Mostrado"
+        conditions: "Condiciones"
+      result:
+        name: "Nombre"
+        result_type: "Tipo de resultado"
+        description: "Descripción"
+      medication:
+        name: "Nombre"
+        description: "Descripción"
+      city:
+        name: "Nombre"
+      sponsor_rep:
+        title: "Cargo"
+        contact_number: "Número de contacto"
+        contact_address: "Dirección de contacto"
+      trial_center_branch_rep:
+        title: "Cargo"
+        contact_number: "Número de contacto"
+        contact_address: "Dirección de contacto"
+      trial_center_facility:
+        name: "Nombre"
+      trial_center_branch:
+        name: "Nombre"
+      contact:
+        name: "Nombre"
+        email: "Correo electrónico"
+        phone: "Teléfono"
+      article:
+        title: "Título"
+        url: "URL"
+      role:
+        name: "Nombre"

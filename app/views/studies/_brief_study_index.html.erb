@@ -14,8 +14,8 @@
       <td><%= link_to study.scientific_title, study %></td>
       <td><%= study.short_title %></td>
       <td><%= study.sponsor.name %></td>
-      <td><%= study.study_status %></td>
-      <td><%= study.reviewed %></td>
+      <td><%= t_enum(study, :study_status) %></td>
+      <td><%= study.reviewed ? t("common.yes") : t("common.no") %></td>
     </tr>
   <% end %>
   </tbody>

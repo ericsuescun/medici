@@ -187,9 +187,9 @@
             <h5>Informacion del patrocinador</h5>
           </div>
           <div class="card-body">
-            <p><strong>Sponsors: </strong><%= study.sponsor.name %></p>
-            <p><strong>Sponsor type: </strong><%= study.sponsor.sponsor_type %></p>
-            <p><strong>Study status: </strong><%= study.study_status %></p>
+            <p><strong><%= Sponsor.model_name.human %>: </strong><%= study.sponsor.name %></p>
+            <p><strong><%= Sponsor.human_attribute_name(:sponsor_type) %>: </strong><%= t_enum(study.sponsor, :sponsor_type) %></p>
+            <p><strong><%= Study.human_attribute_name(:study_status) %>: </strong><%= t_enum(study, :study_status) %></p>
           </div>
         </div>
       </div>
@@ -199,7 +199,7 @@
             <h5>Diseno del Estudio</h5>
           </div>
           <div class="card-body">
-            <p><strong>Study phase: </strong><%= study.study_phase %></p>
+            <p><strong><%= Study.human_attribute_name(:study_phase) %>: </strong><%= t_enum(study, :study_phase) %></p>
             <p><strong>Inclusion criteria: </strong><%= study.inclusion_criteria %></p>
             <p><strong>Exclusion criteria: </strong><%= study.exclusion_criteria %></p>
             <p><strong>Sample size: </strong><%= study.sample_size %></p>

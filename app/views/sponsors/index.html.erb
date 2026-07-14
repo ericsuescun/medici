@@ -34,7 +34,7 @@
                     <td><%= link_to sponsor.name, sponsor %></td>
                     <td><span class="badge bg-primary"><%= sponsor.studies.count %></span></td>
                     <td><%= sponsor.capitals %></td>
-                    <td><%= sponsor.sponsor_type.split('_').first %></td>
+                    <td><%= t_enum(sponsor, :sponsor_type) %></td>
                   </tr>
                 <% end %>
                 </tbody>
