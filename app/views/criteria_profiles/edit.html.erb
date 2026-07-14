@@ -1,11 +1,11 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-12">
-      <h1>Editar Perfil de Criterios</h1>
+      <h1><%= t("criteria_profiles.edit_title") %></h1>
       <%= render "form", criteria_profile: @criteria_profile %>
       <div class="mt-2">
-        <%= link_to "Mostrar", @criteria_profile %> |
-        <%= link_to "Retornar a Perfiles", criteria_profiles_path %>
+        <%= link_to t("common.show"), @criteria_profile %> |
+        <%= link_to t("criteria_profiles.back_to_profiles"), criteria_profiles_path %>
       </div>
     </div>
   </div>

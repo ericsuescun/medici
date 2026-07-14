@@ -22,7 +22,7 @@ class AdminsController < SecureApplicationController
 
     respond_to do |format|
       if @admin.save
-        format.html { redirect_to admin_url(@admin), notice: "Admin was successfully created." }
+        format.html { redirect_to admin_url(@admin), notice: t("admins.created") }
         format.json { render :show, status: :created, location: @admin }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -34,7 +34,7 @@ class AdminsController < SecureApplicationController
   def update
     respond_to do |format|
       if @admin.update(admin_params)
-        format.html { redirect_to admin_url(@admin), notice: "Admin was successfully updated." }
+        format.html { redirect_to admin_url(@admin), notice: t("admins.updated") }
         format.json { render :show, status: :ok, location: @admin }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -47,7 +47,7 @@ class AdminsController < SecureApplicationController
     @admin.destroy!
 
     respond_to do |format|
-      format.html { redirect_to admins_url, notice: "Admin was successfully destroyed." }
+      format.html { redirect_to admins_url, notice: t("admins.destroyed") }
       format.json { head :no_content }
     end
   end

@@ -1,0 +1,51 @@
+en:
+  criteria_profiles:
+    not_associated: "Not associated"
+    edit_title: "Edit Criteria Profile"
+    new_title: "New Criteria Profile"
+    back_to_profiles: "Back to Profiles"
+    new_profile: "New Profile"
+    change_control: "Change control"
+    variables_section: "Criteria Variables"
+    view_all_variables: "View all variables"
+    no_variables: "This profile has no variables yet."
+    form:
+      error_header:
+        one: "%{count} error prevented this profile from being saved:"
+        other: "%{count} errors prevented this profile from being saved:"
+      study_label: "Study (optional)"
+    index:
+      title: "Criteria Profiles"
+      created: "Created"
+      empty: "You do not have any criteria profiles yet. Create the first one."
+    flash:
+      created: "Criteria profile was successfully created."
+      updated: "Criteria profile was successfully updated."
+      destroyed: "Criteria profile was successfully deleted."
+
+  criteria_variables:
+    description: "Description"
+    new_variable: "New Variable"
+    edit_title: "Edit Variable: %{name}"
+    new_title: "New Variable for: %{name}"
+    back_to_variables: "Back to Variables"
+    back_to_profile: "Back to Profile"
+    change_control: "Change control"
+    form:
+      error_header:
+        one: "%{count} error prevented this variable from being saved:"
+        other: "%{count} errors prevented this variable from being saved:"
+      criteria_order_label: "Order within the group"
+      criteria_order_hint: "Automatically suggested based on the group (inclusion/exclusion). You can change it."
+      qualitative_scale_label: "Qualitative scale (comma-separated)"
+      qualitative_scale_placeholder: "High, Medium, Low"
+      qualitative_scale_hint: "Enter the qualitative values separated by commas."
+      qualitative_value_placeholder: "Medium"
+      conditions_label: "Conditions (text)"
+    index:
+      title: "Profile Variables: %{name}"
+      empty: "There are no variables for this profile yet. Create the first one."
+    flash:
+      created: "Criteria variable was successfully created."
+      updated: "Criteria variable was successfully updated."
+      destroyed: "Criteria variable was successfully deleted."

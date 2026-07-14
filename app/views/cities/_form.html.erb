@@ -1,7 +1,7 @@
 <%= form_with(model: city) do |form| %>
   <% if city.errors.any? %>
     <div style="color: red">
-      <h2><%= pluralize(city.errors.count, "error") %> prohibited this city from being saved:</h2>
+      <h2><%= t("cities.form_errors", count: city.errors.count) %></h2>
 
       <ul>
         <% city.errors.each do |error| %>
@@ -12,11 +12,11 @@
   <% end %>
 
   <div>
-    <%= form.label 'Nombre', style: "display: block" %>
+    <%= form.label :name, style: "display: block" %>
     <%= form.text_field :name, class: "form-control mb-3" %>
   </div>
 
   <div>
-    <%= form.submit 'Guardar', class: 'btn btn-primary btn-block' %>
+    <%= form.submit t("common.save"), class: 'btn btn-primary btn-block' %>
   </div>
 <% end %>

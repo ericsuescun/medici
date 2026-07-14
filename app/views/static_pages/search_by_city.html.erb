@@ -4,8 +4,8 @@
     <div class="col-md-10 mx-auto">
       <div class="card health-card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h4 class="mb-0">Estudios Clínicos en <%= @city_name %></h4>
-          <%= link_to "Volver a la búsqueda", static_pages_medici_home_path, class: "btn btn-outline-primary" %>
+          <h4 class="mb-0"><%= t("static_pages.search.title", city: @city_name) %></h4>
+          <%= link_to t("static_pages.search.back_to_search"), static_pages_medici_home_path, class: "btn btn-outline-primary" %>
         </div>
         <div class="card-body">
           <% if @studies.present? %>
@@ -13,11 +13,11 @@
               <table class="table table-striped">
                 <thead>
                   <tr>
-                    <th>Título Corto</th>
-                    <th>Título Científico</th>
-                    <th>Patrocinador</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
+                    <th><%= Study.human_attribute_name(:short_title) %></th>
+                    <th><%= Study.human_attribute_name(:scientific_title) %></th>
+                    <th><%= Study.human_attribute_name(:sponsor) %></th>
+                    <th><%= Study.human_attribute_name(:study_status) %></th>
+                    <th><%= t("common.actions") %></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -31,9 +31,9 @@
                       </span></td>
                       <td>
                         <% if user_signed_in? %>
-                          <%= link_to "Ver detalles", study_path(study), class: "btn btn-sm btn-primary" %>
+                          <%= link_to t("static_pages.search.view_details"), study_path(study), class: "btn btn-sm btn-primary" %>
                         <% else %>
-                          <%= link_to "Quiero participar", new_user_registration_path(study_id: study.id), class: "btn btn-sm btn-success" %>
+                          <%= link_to t("static_pages.search.participate"), new_user_registration_path(study_id: study.id), class: "btn btn-sm btn-success" %>
                         <% end %>
                       </td>
                     </tr>
@@ -43,12 +43,12 @@
             </div>
           <% else %>
             <div class="alert alert-info">
-              <p class="mb-0">No se encontraron estudios clínicos en <%= @city_name %>.</p>
+              <p class="mb-0"><%= t("static_pages.search.none", city: @city_name) %></p>
             </div>
           <% end %>
-          
+
           <div class="mt-4 text-center">
-            <%= link_to "Volver a la búsqueda", static_pages_medici_home_path, class: "btn btn-primary" %>
+            <%= link_to t("static_pages.search.back_to_search"), static_pages_medici_home_path, class: "btn btn-primary" %>
           </div>
         </div>
       </div>

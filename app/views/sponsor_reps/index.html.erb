@@ -2,17 +2,17 @@
   <p style="color: green"><%= notice %></p>
 
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Representantes de Patrocinadores</h1>
-    <%= link_to "Nuevo representante", new_sponsor_rep_path, class: "btn btn-primary" %>
+    <h1><%= t("sponsor_reps.index_title") %></h1>
+    <%= link_to t("sponsor_reps.new"), new_sponsor_rep_path, class: "btn btn-primary" %>
   </div>
 
   <table class="table table-striped">
     <thead>
     <tr>
-      <th>Nombre</th>
-      <th>Email</th>
-      <th>Telefono</th>
-      <th>Direccion</th>
+      <th><%= t("sponsor_reps.table_name") %></th>
+      <th><%= t("sponsor_reps.email") %></th>
+      <th><%= SponsorRep.human_attribute_name(:contact_number) %></th>
+      <th><%= SponsorRep.human_attribute_name(:contact_address) %></th>
       <th></th>
     </tr>
     </thead>
@@ -24,7 +24,7 @@
         <td><%= r.contact_number %></td>
         <td><%= r.contact_address %></td>
         <td>
-          <%= link_to 'Edit', edit_sponsor_rep_path(r), class: 'btn btn-sm btn-outline-secondary' %>
+          <%= link_to t("common.edit"), edit_sponsor_rep_path(r), class: 'btn btn-sm btn-outline-secondary' %>
         </td>
       </tr>
     <% end %>

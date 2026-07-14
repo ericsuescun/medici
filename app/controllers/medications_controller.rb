@@ -25,7 +25,7 @@ class MedicationsController < SecureApplicationController
 
     respond_to do |format|
       if @medication.save
-        format.html { redirect_to medication_url(@medication), notice: "Medication was successfully created." }
+        format.html { redirect_to medication_url(@medication), notice: t("medications.created") }
         format.json { render :show, status: :created, location: @medication }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -38,7 +38,7 @@ class MedicationsController < SecureApplicationController
   def update
     respond_to do |format|
       if @medication.update(medication_params)
-        format.html { redirect_to medication_url(@medication), notice: "Medication was successfully updated." }
+        format.html { redirect_to medication_url(@medication), notice: t("medications.updated") }
         format.json { render :show, status: :ok, location: @medication }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -52,7 +52,7 @@ class MedicationsController < SecureApplicationController
     @medication.destroy!
 
     respond_to do |format|
-      format.html { redirect_to medications_url, notice: "Medication was successfully destroyed." }
+      format.html { redirect_to medications_url, notice: t("medications.destroyed") }
       format.json { head :no_content }
     end
   end

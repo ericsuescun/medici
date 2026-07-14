@@ -3,27 +3,27 @@
     <div class="alert alert-success"><%= notice %></div>
   <% end %>
 
-  <% content_for :title, "Patients" %>
+  <% content_for :title, t("patients.index_title") %>
 
-  <h1 class="mb-4">Pacientes</h1>
+  <h1 class="mb-4"><%= t("patients.index_title") %></h1>
 
   <div class="mb-4">
-    <%= link_to "Retornar a Vitalia", static_pages_medici_home_path %> |
-    <%= link_to "Nuevo paciente", new_patient_path %>
+    <%= link_to t("patients.back_to_home"), static_pages_medici_home_path %> |
+    <%= link_to t("patients.new_patient"), new_patient_path %>
   </div>
 
   <div id="patients">
     <table class="table table-striped align-middle">
       <thead>
         <tr>
-          <th>Nombre</th>
-          <th>País</th>
-          <th>Tipo ID</th>
-          <th>Número ID</th>
-          <th>Enfermedad</th>
-          <th>Estudios</th>
-          <th>Estado</th>
-          <th>Acciones</th>
+          <th><%= Patient.human_attribute_name(:firstname) %></th>
+          <th><%= Patient.human_attribute_name(:country) %></th>
+          <th><%= Patient.human_attribute_name(:id_type) %></th>
+          <th><%= Patient.human_attribute_name(:id_number) %></th>
+          <th><%= Patient.human_attribute_name(:illness_description) %></th>
+          <th><%= t("patients.studies") %></th>
+          <th><%= Patient.human_attribute_name(:state) %></th>
+          <th><%= t("common.actions") %></th>
         </tr>
       </thead>
       <tbody>
@@ -37,7 +37,7 @@
             <td>
               <% if patient.user && patient.user.studies.any? %>
                 <% patient.user.studies.each do |study| %>
-                  <%= link_to (study.short_title.presence || study.public_title || "Ver estudio"), study, class: "badge bg-info text-white me-1" %>
+                  <%= link_to (study.short_title.presence || study.public_title || t("patients.view_study")), study, class: "badge bg-info text-white me-1" %>
                 <% end %>
               <% end %>
             </td>
@@ -50,16 +50,16 @@
               <%# Transition buttons shown only when permitted by policy and AASM %>
               <div class="btn-group" role="group">
                 <% if policy(patient).assess? %>
-                  <%= button_to 'Evaluar', transition_patient_path(patient, event: 'assess'), method: :post, class: 'btn btn-sm btn-outline-primary', form: { data: { turbo: true } } %>
+                  <%= button_to t("patients.assess"), transition_patient_path(patient, event: 'assess'), method: :post, class: 'btn btn-sm btn-outline-primary', form: { data: { turbo: true } } %>
                 <% end %>
                 <% if policy(patient).accept? %>
-                  <%= button_to 'Aceptar', transition_patient_path(patient, event: 'accept'), method: :post, class: 'btn btn-sm btn-outline-success', form: { data: { turbo: true } } %>
+                  <%= button_to t("patients.accept"), transition_patient_path(patient, event: 'accept'), method: :post, class: 'btn btn-sm btn-outline-success', form: { data: { turbo: true } } %>
                 <% end %>
                 <% if policy(patient).discard? %>
-                  <%= button_to 'Descartar', transition_patient_path(patient, event: 'discard'), method: :post, class: 'btn btn-sm btn-outline-warning', form: { data: { turbo: true } } %>
+                  <%= button_to t("patients.discard"), transition_patient_path(patient, event: 'discard'), method: :post, class: 'btn btn-sm btn-outline-warning', form: { data: { turbo: true } } %>
                 <% end %>
                 <% if policy(patient).reject? %>
-                  <%= button_to 'Rechazar', transition_patient_path(patient, event: 'reject'), method: :post, class: 'btn btn-sm btn-outline-danger', form: { data: { turbo: true } } %>
+                  <%= button_to t("patients.reject"), transition_patient_path(patient, event: 'reject'), method: :post, class: 'btn btn-sm btn-outline-danger', form: { data: { turbo: true } } %>
                 <% end %>
               </div>
             </td>
@@ -70,7 +70,7 @@
   </div>
 
   <div class="mt-4">
-    <%= link_to "Retornar a Vitalia", static_pages_medici_home_path %> |
-    <%= link_to "Nuevo paciente", new_patient_path %>
+    <%= link_to t("patients.back_to_home"), static_pages_medici_home_path %> |
+    <%= link_to t("patients.new_patient"), new_patient_path %>
   </div>
 </div>

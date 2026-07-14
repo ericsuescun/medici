@@ -1,16 +1,16 @@
 <div class="container-fluid mt-3">
   <div class="row">
     <div class="col-4 mx-auto">
-      <% content_for :title, "New sponsor" %>
+      <% content_for :title, t("sponsors.new_sponsor") %>
 
-      <h1>Nuevo patrocinador</h1>
+      <h1><%= t("sponsors.new_sponsor") %></h1>
 
       <%= render "form", sponsor: @sponsor %>
 
       <br>
 
       <div>
-        <%= link_to "Retornar a Patrocinadores", sponsors_path %>
+        <%= link_to t("sponsors.back_to_index"), sponsors_path %>
       </div>
     </div>
   </div>

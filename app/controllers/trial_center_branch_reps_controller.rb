@@ -23,7 +23,7 @@ class TrialCenterBranchRepsController < SecureApplicationController
 
     respond_to do |format|
       if @trial_center_branch_rep.save
-        format.html { redirect_to trial_center_branch_rep_url(@trial_center_branch_rep), notice: "Trial center branch representative was successfully created." }
+        format.html { redirect_to trial_center_branch_rep_url(@trial_center_branch_rep), notice: t("trial_center_branch_reps.created") }
         format.json { render :show, status: :created, location: @trial_center_branch_rep }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -35,7 +35,7 @@ class TrialCenterBranchRepsController < SecureApplicationController
   def update
     respond_to do |format|
       if @trial_center_branch_rep.update(trial_center_branch_rep_params)
-        format.html { redirect_to trial_center_branch_rep_url(@trial_center_branch_rep), notice: "Trial center branch representative was successfully updated." }
+        format.html { redirect_to trial_center_branch_rep_url(@trial_center_branch_rep), notice: t("trial_center_branch_reps.updated") }
         format.json { render :show, status: :ok, location: @trial_center_branch_rep }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -48,7 +48,7 @@ class TrialCenterBranchRepsController < SecureApplicationController
     @trial_center_branch_rep.destroy!
 
     respond_to do |format|
-      format.html { redirect_to trial_center_branch_reps_url, notice: "Trial center branch representative was successfully destroyed." }
+      format.html { redirect_to trial_center_branch_reps_url, notice: t("trial_center_branch_reps.destroyed") }
       format.json { head :no_content }
     end
   end

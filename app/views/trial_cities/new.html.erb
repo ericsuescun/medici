@@ -1,11 +1,11 @@
-<% content_for :title, "New trial city" %>
+<% content_for :title, t("trial_cities.new_title") %>
 
-<h1>New trial city</h1>
+<h1><%= t("trial_cities.new_title") %></h1>
 
 <%= render "form", trial_city: @trial_city %>
 
 <br>
 
 <div>
-  <%= link_to "Back to trial cities", trial_cities_path %>
+  <%= link_to t("trial_cities.back_to_index"), trial_cities_path %>
 </div>

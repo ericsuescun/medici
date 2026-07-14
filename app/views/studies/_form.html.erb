@@ -1,7 +1,7 @@
 <%= form_with(model: study) do |form| %>
   <% if study.errors.any? %>
     <div style="color: red">
-      <h2><%= pluralize(study.errors.count, "error") %> prohibited this study from being saved:</h2>
+      <h2><%= t("studies.errors_prohibited_save", count: study.errors.count) %></h2>
 
       <ul>
         <% study.errors.each do |error| %>
@@ -90,12 +90,12 @@
                       { include_blank: true }, class: "form-select mb-3") %>
     </div>
     <div class="form-group">
-      <%= form.label "Patrocinador" %>
+      <%= form.label :sponsor_id, Sponsor.model_name.human %>
       <%= form.select :sponsor_id, @sponsors.pluck(:name, :id), { }, class: "form-select mb-3" %>
     </div>
 
     <div class="form-group">
-      <%= form.label "Trial Center Branch" %>
+      <%= form.label :trial_center_branch_id, TrialCenterBranch.model_name.human %>
       <%= form.select :trial_center_branch_id, @trial_center_branches.pluck(:name, :id), { }, class: "form-select mb-3" %>
     </div>
     <div>
@@ -106,6 +106,6 @@
 
 </div>
   <div>
-    <%= form.submit 'Guardar', class: 'btn btn-primary btn-block' %>
+    <%= form.submit t("common.save"), class: 'btn btn-primary btn-block' %>
   </div>
 <% end %>

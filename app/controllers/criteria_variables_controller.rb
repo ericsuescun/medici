@@ -34,7 +34,7 @@ class CriteriaVariablesController < SecureApplicationController
 
     respond_to do |format|
       if @criteria_variable.save
-        format.html { redirect_to criteria_profile_criteria_variable_url(@criteria_profile, @criteria_variable), notice: "Criteria variable was successfully created." }
+        format.html { redirect_to criteria_profile_criteria_variable_url(@criteria_profile, @criteria_variable), notice: t("criteria_variables.flash.created") }
         format.json { render :show, status: :created, location: criteria_profile_criteria_variable_url(@criteria_profile, @criteria_variable) }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -51,7 +51,7 @@ class CriteriaVariablesController < SecureApplicationController
 
     respond_to do |format|
       if @criteria_variable.update(criteria_variable_params)
-        format.html { redirect_to criteria_profile_criteria_variable_url(@criteria_profile, @criteria_variable), notice: "Criteria variable was successfully updated." }
+        format.html { redirect_to criteria_profile_criteria_variable_url(@criteria_profile, @criteria_variable), notice: t("criteria_variables.flash.updated") }
         format.json { render :show, status: :ok, location: criteria_profile_criteria_variable_url(@criteria_profile, @criteria_variable) }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -65,7 +65,7 @@ class CriteriaVariablesController < SecureApplicationController
     @criteria_variable.destroy!
 
     respond_to do |format|
-      format.html { redirect_to criteria_profile_criteria_variables_url(@criteria_profile), notice: "Criteria variable was successfully destroyed." }
+      format.html { redirect_to criteria_profile_criteria_variables_url(@criteria_profile), notice: t("criteria_variables.flash.destroyed") }
       format.json { head :no_content }
     end
   end

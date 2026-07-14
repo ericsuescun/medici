@@ -186,6 +186,7 @@ en:
         conditions: "Conditions"
       result:
         name: "Name"
+        title: "Title"
         result_type: "Result type"
         description: "Description"
       medication:
@@ -207,10 +208,15 @@ en:
         name: "Name"
       contact:
         name: "Name"
+        firstname: "First name"
+        lastname: "Last name"
         email: "Email"
         phone: "Phone"
+        comments: "Comments"
+        url: "URL"
       article:
         title: "Title"
+        description: "Description"
         url: "URL"
       role:
         name: "Name"

@@ -25,7 +25,7 @@ class TrialCitiesController < SecureApplicationController
 
     respond_to do |format|
       if @trial_city.save
-        format.html { redirect_to trial_city_url(@trial_city), notice: "Trial city was successfully created." }
+        format.html { redirect_to trial_city_url(@trial_city), notice: t("trial_cities.flash.created") }
         format.json { render :show, status: :created, location: @trial_city }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -38,7 +38,7 @@ class TrialCitiesController < SecureApplicationController
   def update
     respond_to do |format|
       if @trial_city.update(trial_city_params)
-        format.html { redirect_to trial_city_url(@trial_city), notice: "Trial city was successfully updated." }
+        format.html { redirect_to trial_city_url(@trial_city), notice: t("trial_cities.flash.updated") }
         format.json { render :show, status: :ok, location: @trial_city }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -52,7 +52,7 @@ class TrialCitiesController < SecureApplicationController
     @trial_city.destroy!
 
     respond_to do |format|
-      format.html { redirect_to trial_cities_url, notice: "Trial city was successfully destroyed." }
+      format.html { redirect_to trial_cities_url, notice: t("trial_cities.flash.destroyed") }
       format.json { head :no_content }
     end
   end

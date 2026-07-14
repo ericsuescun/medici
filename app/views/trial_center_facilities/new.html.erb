@@ -1,16 +1,16 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-4 mx-auto">
-      <% content_for :title, "New trial center facility" %>
+      <% content_for :title, t("trial_center_facilities.new_title") %>
 
-      <h1>Nuevo Centro de Ensayos Clinicos</h1>
+      <h1><%= t("trial_center_facilities.new_title") %></h1>
 
       <%= render "form", trial_center_facility: @trial_center_facility %>
 
       <br>
 
       <div>
-        <%= link_to "Retornar Centros de Ensayo Clinicos", trial_center_facilities_path %>
+        <%= link_to t("trial_center_facilities.back_to_index"), trial_center_facilities_path %>
       </div>
     </div>
   </div>

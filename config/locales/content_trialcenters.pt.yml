@@ -1,0 +1,61 @@
+pt:
+  trial_center_facilities:
+    index_title: "Centros de Ensaios Clínicos"
+    new_title: "Novo Centro de Ensaios Clínicos"
+    edit_title: "Editar Centro de Ensaios Clínicos"
+    back_home: "Voltar para a Vitalia"
+    back_to_index: "Voltar aos Centros de Ensaios Clínicos"
+    add_branch: "Adicionar centro"
+    cities_label: "Centros"
+    studies_label: "Estudos"
+    form:
+      error_header:
+        one: "%{count} erro impediu que este centro de ensaios clínicos fosse salvo:"
+        other: "%{count} erros impediram que este centro de ensaios clínicos fosse salvo:"
+    flash:
+      created: "O centro de ensaios clínicos foi criado com sucesso."
+      updated: "O centro de ensaios clínicos foi atualizado com sucesso."
+      destroyed: "O centro de ensaios clínicos foi excluído com sucesso."
+
+  trial_center_branches:
+    index_title: "Centros"
+    new_title: "Novo Centro"
+    edit_title: "Editar Centro"
+    back_home: "Voltar para a Vitalia"
+    back_to_index: "Voltar aos Centros"
+    back_to_facility: "Voltar para %{name}"
+    sites_label: "Locais"
+    studies_label: "Estudos"
+    reps:
+      title_header: "Representantes do Centro"
+      new: "Novo representante"
+      name: "Nome"
+      email: "E-mail"
+      title: "Cargo"
+      phone: "Telefone"
+      confirm_delete: "Excluir este representante?"
+      empty: "Não há representantes neste centro."
+    form:
+      error_header:
+        one: "%{count} erro impediu que este centro fosse salvo:"
+        other: "%{count} erros impediram que este centro fosse salvo:"
+    flash:
+      created: "O centro foi criado com sucesso."
+      updated: "O centro foi atualizado com sucesso."
+      destroyed: "O centro foi excluído com sucesso."
+
+  trial_cities:
+    index_title: "Cidades de Ensaio"
+    new_title: "Nova Cidade de Ensaio"
+    edit_title: "Editar Cidade de Ensaio"
+    back_to_index: "Voltar às Cidades de Ensaio"
+    studies_label: "Estudos"
+    name_label: "Nome"
+    form:
+      error_header:
+        one: "%{count} erro impediu que esta cidade de ensaio fosse salva:"
+        other: "%{count} erros impediram que esta cidade de ensaio fosse salva:"
+    flash:
+      created: "A cidade de ensaio foi criada com sucesso."
+      updated: "A cidade de ensaio foi atualizada com sucesso."
+      destroyed: "A cidade de ensaio foi excluída com sucesso."

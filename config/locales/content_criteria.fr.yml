@@ -1,0 +1,51 @@
+fr:
+  criteria_profiles:
+    not_associated: "Non associé"
+    edit_title: "Modifier le profil de critères"
+    new_title: "Nouveau profil de critères"
+    back_to_profiles: "Retour aux profils"
+    new_profile: "Nouveau profil"
+    change_control: "Contrôle des modifications"
+    variables_section: "Variables de critères"
+    view_all_variables: "Voir toutes les variables"
+    no_variables: "Ce profil n'a pas encore de variables."
+    form:
+      error_header:
+        one: "%{count} erreur a empêché l'enregistrement du profil :"
+        other: "%{count} erreurs ont empêché l'enregistrement du profil :"
+      study_label: "Étude (facultatif)"
+    index:
+      title: "Profils de critères"
+      created: "Créé"
+      empty: "Vous n'avez pas encore de profils de critères. Créez le premier."
+    flash:
+      created: "Le profil de critères a été créé avec succès."
+      updated: "Le profil de critères a été mis à jour avec succès."
+      destroyed: "Le profil de critères a été supprimé avec succès."
+
+  criteria_variables:
+    description: "Description"
+    new_variable: "Nouvelle variable"
+    edit_title: "Modifier la variable : %{name}"
+    new_title: "Nouvelle variable pour : %{name}"
+    back_to_variables: "Retour aux variables"
+    back_to_profile: "Retour au profil"
+    change_control: "Contrôle des modifications"
+    form:
+      error_header:
+        one: "%{count} erreur a empêché l'enregistrement de la variable :"
+        other: "%{count} erreurs ont empêché l'enregistrement de la variable :"
+      criteria_order_label: "Ordre au sein du groupe"
+      criteria_order_hint: "Suggéré automatiquement selon le groupe (inclusion/exclusion). Vous pouvez le modifier."
+      qualitative_scale_label: "Échelle qualitative (séparée par des virgules)"
+      qualitative_scale_placeholder: "Élevé, Moyen, Bas"
+      qualitative_scale_hint: "Saisissez les valeurs qualitatives séparées par des virgules."
+      qualitative_value_placeholder: "Moyen"
+      conditions_label: "Conditions (texte)"
+    index:
+      title: "Variables du profil : %{name}"
+      empty: "Il n'y a pas encore de variables pour ce profil. Créez la première."
+    flash:
+      created: "La variable de critère a été créée avec succès."
+      updated: "La variable de critère a été mise à jour avec succès."
+      destroyed: "La variable de critère a été supprimée avec succès."

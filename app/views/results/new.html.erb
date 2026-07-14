@@ -1,11 +1,11 @@
-<% content_for :title, "New result" %>
+<% content_for :title, t("results.new") %>
 
-<h1>New result</h1>
+<h1><%= t("results.new") %></h1>
 
 <%= render "form", result: @result %>
 
 <br>
 
 <div>
-  <%= link_to "Back to results", results_path %>
+  <%= link_to t("results.back_to_list"), results_path %>
 </div>

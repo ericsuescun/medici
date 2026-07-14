@@ -1,16 +1,16 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-12">
-      <% content_for :title, "New study" %>
+      <% content_for :title, t("studies.new_study") %>
 
-      <h1>Nuevo estudio</h1>
+      <h1><%= t("studies.new_study") %></h1>
 
       <%= render "form", study: @study %>
 
       <br>
 
       <div>
-        <%= link_to "Retornar a estudios", studies_path %>
+        <%= link_to t("studies.return_to_studies"), studies_path %>
       </div>
     </div>
   </div>

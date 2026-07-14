@@ -5,15 +5,15 @@
     <h3><%= @admin.fullname %></h3>
   </div>
   <div class="card-body">
-    <p><strong>Email:</strong> <%= @admin.email %></p>
-    <p><strong>Telefono:</strong> <%= @admin.contact_number %></p>
-    <p><strong>Direccion:</strong> <%= @admin.contact_address %></p>
-    <p><strong>Titulo:</strong> <%= @admin.title %></p>
+    <p><strong><%= t("admins.email") %>:</strong> <%= @admin.email %></p>
+    <p><strong><%= t("admins.contact_number") %>:</strong> <%= @admin.contact_number %></p>
+    <p><strong><%= t("admins.contact_address") %>:</strong> <%= @admin.contact_address %></p>
+    <p><strong><%= t("admins.title") %>:</strong> <%= @admin.title %></p>
   </div>
 </div>
 
 <div class="mt-3">
-  <%= link_to "Edit this admin", edit_admin_path(@admin) %> |
-  <%= link_to "Back to admins", admins_path %>
-  <%= button_to "Destroy this admin", @admin, method: :delete, class: "btn btn-danger ms-2" %>
+  <%= link_to t("admins.show_edit"), edit_admin_path(@admin) %> |
+  <%= link_to t("admins.show_back"), admins_path %>
+  <%= button_to t("admins.show_destroy"), @admin, method: :delete, class: "btn btn-danger ms-2" %>
 </div>

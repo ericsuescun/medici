@@ -1,7 +1,7 @@
 <%= form_with(model: criteria_profile, class: "row g-3") do |form| %>
   <% if criteria_profile.errors.any? %>
     <div class="alert alert-danger">
-      <h4><%= pluralize(criteria_profile.errors.count, "error") %> impidieron guardar el perfil:</h4>
+      <h4><%= t("criteria_profiles.form.error_header", count: criteria_profile.errors.count) %></h4>
       <ul>
         <% criteria_profile.errors.full_messages.each do |message| %>
           <li><%= message %></li>
@@ -11,17 +11,17 @@
   <% end %>
 
   <div class="col-md-6">
-    <%= form.label :name, "Nombre" %>
+    <%= form.label :name, CriteriaProfile.human_attribute_name(:name) %>
     <%= form.text_field :name, class: "form-control", required: true %>
   </div>
 
   <div class="col-12">
-    <%= form.label :description, "Descripción" %>
+    <%= form.label :description, CriteriaProfile.human_attribute_name(:description) %>
     <%= form.text_area :description, class: "form-control", rows: 4 %>
   </div>
 
   <div class="col-md-6">
-    <%= form.label :study_id, "Estudio (opcional)" %>
+    <%= form.label :study_id, t("criteria_profiles.form.study_label") %>
     <%= form.collection_select :study_id, Study.all, :id, :short_title, include_blank: true, class: "form-select" %>
   </div>
 

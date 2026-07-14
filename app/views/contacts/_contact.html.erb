@@ -1,46 +1,46 @@
 <div id="<%= dom_id contact %>">
   <p>
-    <strong>Firstname:</strong>
+    <strong><%= Contact.human_attribute_name(:firstname) %>:</strong>
     <%= contact.firstname %>
   </p>
 
   <p>
-    <strong>Lastname:</strong>
+    <strong><%= Contact.human_attribute_name(:lastname) %>:</strong>
     <%= contact.lastname %>
   </p>
 
   <p>
-    <strong>Address1:</strong>
+    <strong><%= Contact.human_attribute_name(:address1) %>:</strong>
     <%= contact.address1 %>
   </p>
 
   <p>
-    <strong>Number1:</strong>
+    <strong><%= Contact.human_attribute_name(:number1) %>:</strong>
     <%= contact.number1 %>
   </p>
 
   <p>
-    <strong>Email1:</strong>
+    <strong><%= Contact.human_attribute_name(:email1) %>:</strong>
     <%= contact.email1 %>
   </p>
 
   <p>
-    <strong>Comments:</strong>
+    <strong><%= Contact.human_attribute_name(:comments) %>:</strong>
     <%= contact.comments %>
   </p>
 
   <p>
-    <strong>Title1:</strong>
+    <strong><%= Contact.human_attribute_name(:title1) %>:</strong>
     <%= contact.title1 %>
   </p>
 
   <p>
-    <strong>Url:</strong>
+    <strong><%= Contact.human_attribute_name(:url) %>:</strong>
     <%= contact.url %>
   </p>
 
   <p>
-    <strong>Studies:</strong>
+    <strong><%= Contact.human_attribute_name(:studies_id) %>:</strong>
     <%= contact.studies_id %>
   </p>
 

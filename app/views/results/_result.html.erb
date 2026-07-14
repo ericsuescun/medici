@@ -1,6 +1,6 @@
 <div id="<%= dom_id result %>">
   <p>
-    <strong>Studies:</strong>
+    <strong><%= Result.human_attribute_name(:studies_id) %>:</strong>
     <%= result.studies_id %>
   </p>
 
@@ -10,12 +10,12 @@
   </p>
 
   <p>
-    <strong>Title:</strong>
+    <strong><%= Result.human_attribute_name(:title) %>:</strong>
     <%= result.title %>
   </p>
 
   <p>
-    <strong>Description:</strong>
+    <strong><%= Result.human_attribute_name(:description) %>:</strong>
     <%= result.description %>
   </p>
 

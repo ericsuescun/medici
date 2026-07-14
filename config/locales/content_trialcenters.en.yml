@@ -1,0 +1,61 @@
+en:
+  trial_center_facilities:
+    index_title: "Clinical Trial Centers"
+    new_title: "New Clinical Trial Center"
+    edit_title: "Edit Clinical Trial Center"
+    back_home: "Back to Vitalia"
+    back_to_index: "Back to Clinical Trial Centers"
+    add_branch: "Add site"
+    cities_label: "Sites"
+    studies_label: "Studies"
+    form:
+      error_header:
+        one: "%{count} error prevented this clinical trial center from being saved:"
+        other: "%{count} errors prevented this clinical trial center from being saved:"
+    flash:
+      created: "Clinical trial center was successfully created."
+      updated: "Clinical trial center was successfully updated."
+      destroyed: "Clinical trial center was successfully deleted."
+
+  trial_center_branches:
+    index_title: "Sites"
+    new_title: "New Site"
+    edit_title: "Edit Site"
+    back_home: "Back to Vitalia"
+    back_to_index: "Back to Sites"
+    back_to_facility: "Back to %{name}"
+    sites_label: "Locations"
+    studies_label: "Studies"
+    reps:
+      title_header: "Site Representatives"
+      new: "New representative"
+      name: "Name"
+      email: "Email"
+      title: "Position"
+      phone: "Phone"
+      confirm_delete: "Delete this representative?"
+      empty: "There are no representatives at this site."
+    form:
+      error_header:
+        one: "%{count} error prevented this site from being saved:"
+        other: "%{count} errors prevented this site from being saved:"
+    flash:
+      created: "Site was successfully created."
+      updated: "Site was successfully updated."
+      destroyed: "Site was successfully deleted."
+
+  trial_cities:
+    index_title: "Trial Cities"
+    new_title: "New Trial City"
+    edit_title: "Edit Trial City"
+    back_to_index: "Back to Trial Cities"
+    studies_label: "Studies"
+    name_label: "Name"
+    form:
+      error_header:
+        one: "%{count} error prevented this trial city from being saved:"
+        other: "%{count} errors prevented this trial city from being saved:"
+    flash:
+      created: "Trial city was successfully created."
+      updated: "Trial city was successfully updated."
+      destroyed: "Trial city was successfully deleted."

@@ -1,4 +1,4 @@
-<h1>Editar Medicamento</h1>
+<h1><%= t("common.edit") %> <%= Medication.model_name.human %></h1>
 <%= render 'form', medication: @medication %>
-<%= link_to 'Volver', medications_path %> |
-<%= link_to 'Retornar a Vitalia', static_pages_medici_home_path %>
+<%= link_to t("common.back"), medications_path %> |
+<%= link_to t("medications.home_link"), static_pages_medici_home_path %>

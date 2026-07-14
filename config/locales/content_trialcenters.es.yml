@@ -1,0 +1,61 @@
+es:
+  trial_center_facilities:
+    index_title: "Centros de Ensayos Clínicos"
+    new_title: "Nuevo Centro de Ensayos Clínicos"
+    edit_title: "Edición de Centro de Ensayos Clínicos"
+    back_home: "Volver a Vitalia"
+    back_to_index: "Volver a los Centros de Ensayos Clínicos"
+    add_branch: "Agregar sede"
+    cities_label: "Sedes"
+    studies_label: "Estudios"
+    form:
+      error_header:
+        one: "%{count} error impidió guardar este centro de ensayos clínicos:"
+        other: "%{count} errores impidieron guardar este centro de ensayos clínicos:"
+    flash:
+      created: "El centro de ensayos clínicos se creó correctamente."
+      updated: "El centro de ensayos clínicos se actualizó correctamente."
+      destroyed: "El centro de ensayos clínicos se eliminó correctamente."
+
+  trial_center_branches:
+    index_title: "Sedes"
+    new_title: "Nueva Sede"
+    edit_title: "Edición de Sede"
+    back_home: "Volver a Vitalia"
+    back_to_index: "Volver a las Sedes"
+    back_to_facility: "Volver a %{name}"
+    sites_label: "Sitios"
+    studies_label: "Estudios"
+    reps:
+      title_header: "Representantes de Sede"
+      new: "Nuevo representante"
+      name: "Nombre"
+      email: "Correo electrónico"
+      title: "Cargo"
+      phone: "Teléfono"
+      confirm_delete: "¿Eliminar este representante?"
+      empty: "No hay representantes en esta sede."
+    form:
+      error_header:
+        one: "%{count} error impidió guardar esta sede:"
+        other: "%{count} errores impidieron guardar esta sede:"
+    flash:
+      created: "La sede se creó correctamente."
+      updated: "La sede se actualizó correctamente."
+      destroyed: "La sede se eliminó correctamente."
+
+  trial_cities:
+    index_title: "Ciudades de Ensayo"
+    new_title: "Nueva Ciudad de Ensayo"
+    edit_title: "Edición de Ciudad de Ensayo"
+    back_to_index: "Volver a las Ciudades de Ensayo"
+    studies_label: "Estudios"
+    name_label: "Nombre"
+    form:
+      error_header:
+        one: "%{count} error impidió guardar esta ciudad de ensayo:"
+        other: "%{count} errores impidieron guardar esta ciudad de ensayo:"
+    flash:
+      created: "La ciudad de ensayo se creó correctamente."
+      updated: "La ciudad de ensayo se actualizó correctamente."
+      destroyed: "La ciudad de ensayo se eliminó correctamente."

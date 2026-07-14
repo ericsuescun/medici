@@ -1,15 +1,15 @@
 <div class="container mt-4">
-  <h1 class="mb-2">Permisos: <%= @role.display_name %></h1>
-  <p class="text-muted">Define qué puede ver, editar y eliminar este rol en cada recurso.</p>
+  <h1 class="mb-2"><%= t("roles.permissions_for", role: @role.display_name) %></h1>
+  <p class="text-muted"><%= t("roles.edit_help") %></p>
 
   <%= form_with model: @role, url: role_path(@role), method: :patch do |form| %>
     <table class="table table-sm table-hover align-middle">
       <thead>
         <tr>
-          <th>Recurso</th>
-          <th class="text-center">Ver</th>
-          <th class="text-center">Editar</th>
-          <th class="text-center">Eliminar</th>
+          <th><%= t("roles.resource") %></th>
+          <th class="text-center"><%= t("common.show") %></th>
+          <th class="text-center"><%= t("common.edit") %></th>
+          <th class="text-center"><%= t("common.destroy") %></th>
         </tr>
       </thead>
       <tbody>
@@ -27,7 +27,7 @@
       </tbody>
     </table>
 
-    <%= form.submit "Guardar permisos", class: "btn btn-success" %>
-    <%= link_to "Cancelar", roles_path, class: "btn btn-link" %>
+    <%= form.submit t("roles.save_permissions"), class: "btn btn-success" %>
+    <%= link_to t("common.cancel"), roles_path, class: "btn btn-link" %>
   <% end %>
 </div>

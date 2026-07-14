@@ -18,7 +18,7 @@ class RolesController < SecureApplicationController
     clone_permissions_into(@role, params[:clone_from_role_id])
 
     if @role.save
-      redirect_to edit_role_path(@role), notice: "Rol creado. Ahora configura sus permisos."
+      redirect_to edit_role_path(@role), notice: t("roles.created")
     else
       @roles = Role.order(:name)
       render :new, status: :unprocessable_entity
@@ -31,7 +31,7 @@ class RolesController < SecureApplicationController
 
   def update
     if @role.update(role_params)
-      redirect_to roles_path, notice: "Permisos del rol actualizados correctamente."
+      redirect_to roles_path, notice: t("roles.updated")
     else
       build_missing_permissions
       render :edit, status: :unprocessable_entity

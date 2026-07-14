@@ -23,7 +23,7 @@ class SponsorRepsController < SecureApplicationController
 
     respond_to do |format|
       if @sponsor_rep.save
-        format.html { redirect_to sponsor_rep_url(@sponsor_rep), notice: "Sponsor representative was successfully created." }
+        format.html { redirect_to sponsor_rep_url(@sponsor_rep), notice: t("sponsor_reps.created") }
         format.json { render :show, status: :created, location: @sponsor_rep }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -35,7 +35,7 @@ class SponsorRepsController < SecureApplicationController
   def update
     respond_to do |format|
       if @sponsor_rep.update(sponsor_rep_params)
-        format.html { redirect_to sponsor_rep_url(@sponsor_rep), notice: "Sponsor representative was successfully updated." }
+        format.html { redirect_to sponsor_rep_url(@sponsor_rep), notice: t("sponsor_reps.updated") }
         format.json { render :show, status: :ok, location: @sponsor_rep }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -48,7 +48,7 @@ class SponsorRepsController < SecureApplicationController
     @sponsor_rep.destroy!
 
     respond_to do |format|
-      format.html { redirect_to sponsor_reps_url, notice: "Sponsor representative was successfully destroyed." }
+      format.html { redirect_to sponsor_reps_url, notice: t("sponsor_reps.destroyed") }
       format.json { head :no_content }
     end
   end

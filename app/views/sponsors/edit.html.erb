@@ -1,17 +1,17 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-4 mx-auto">
-      <% content_for :title, "Editing sponsor" %>
+      <% content_for :title, t("sponsors.edit_title") %>
 
-      <h1>Edicion de patrocinador</h1>
+      <h1><%= t("sponsors.edit_title") %></h1>
 
       <%= render "form", sponsor: @sponsor %>
 
       <br>
 
       <div>
-        <%= link_to "Mostrar", @sponsor %> |
-        <%= link_to "Retornar a Patrocinadores", sponsors_path %>
+        <%= link_to t("common.show"), @sponsor %> |
+        <%= link_to t("sponsors.back_to_index"), sponsors_path %>
       </div>
     </div>
   </div>

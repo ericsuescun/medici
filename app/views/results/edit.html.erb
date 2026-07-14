@@ -1,12 +1,12 @@
-<% content_for :title, "Editing result" %>
+<% content_for :title, t("results.edit_title") %>
 
-<h1>Editing result</h1>
+<h1><%= t("results.edit_title") %></h1>
 
 <%= render "form", result: @result %>
 
 <br>
 
 <div>
-  <%= link_to "Show this result", @result %> |
-  <%= link_to "Back to results", results_path %>
+  <%= link_to t("results.show_this"), @result %> |
+  <%= link_to t("results.back_to_list"), results_path %>
 </div>

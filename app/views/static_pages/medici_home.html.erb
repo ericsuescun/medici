@@ -4,25 +4,25 @@
     <div class="col-md-8 mx-auto">
       <div class="card health-card shadow-sm text-center">
         <div class="card-header">
-          <h4 class="mb-0">Vitalia - Plataforma de Estudios Clínicos</h4>
+          <h4 class="mb-0"><%= t("static_pages.home.header") %></h4>
         </div>
         <div class="card-body p-4">
           <div class="text-center mb-4">
-            <%= image_tag "logo/medici_logo.jpeg", alt: "Medici Logo", class: "img-fluid rounded", style: "max-height: 200px;" %>
+            <%= image_tag "logo/medici_logo.jpeg", alt: t("static_pages.home.logo_alt"), class: "img-fluid rounded", style: "max-height: 200px;" %>
           </div>
-          <h5 class="card-title mb-4">Te ayudamos a encontrar un estudio que pueda mejorar tu condición de salud</h5>
+          <h5 class="card-title mb-4"><%= t("static_pages.home.tagline") %></h5>
           
           <div class="row mb-4">
             <div class="col-md-6 mb-3 mb-md-0">
               <div class="stat-card">
                 <div class="stat-value"><%= Sponsor.count %></div>
-                <div class="stat-label">Patrocinadores</div>
+                <div class="stat-label"><%= t("static_pages.home.stat_sponsors") %></div>
               </div>
             </div>
             <div class="col-md-6">
               <div class="stat-card">
                 <div class="stat-value"><%= TrialCenterFacility.count %></div>
-                <div class="stat-label">Centros de Ensayos Clínicos</div>
+                <div class="stat-label"><%= t("static_pages.home.stat_facilities") %></div>
               </div>
             </div>
           </div>
@@ -31,23 +31,23 @@
             <div class="col-md-6 mb-3 mb-md-0">
               <div class="stat-card">
                 <div class="stat-value"><%= Study.count %></div>
-                <div class="stat-label">Estudios Clínicos</div>
+                <div class="stat-label"><%= t("static_pages.home.stat_studies") %></div>
               </div>
             </div>
             <div class="col-md-6">
               <div class="stat-card">
                 <div class="stat-value"><%= User.patients.count %></div>
-                <div class="stat-label">Pacientes Registrados</div>
+                <div class="stat-label"><%= t("static_pages.home.stat_patients") %></div>
               </div>
             </div>
           </div>
           
           <div class="mt-4 mb-4">
             <% if user_signed_in? %>
-              <%= button_to 'Salir', destroy_user_session_path, method: :delete, class: "btn btn-outline-primary btn-lg px-4" %>
+              <%= button_to t("static_pages.home.logout"), destroy_user_session_path, method: :delete, class: "btn btn-outline-primary btn-lg px-4" %>
             <% else %>
               <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                <%= link_to 'Ingresa', new_user_session_path, class: "btn btn-primary btn-lg px-4 me-md-2" %>
+                <%= link_to t("static_pages.home.login"), new_user_session_path, class: "btn btn-primary btn-lg px-4 me-md-2" %>
                 <%#= link_to 'Registrate', new_user_registration_path, class: "btn btn-outline-secondary btn-lg px-4" %>
               </div>
             <% end %>
@@ -56,21 +56,21 @@
           <% if policy(:static_page).search_by_city? %>
           <div class="card health-card shadow-sm mt-4">
             <div class="card-header">
-              <h5 class="mb-0">Buscar Estudios por Ciudad</h5>
+              <h5 class="mb-0"><%= t("static_pages.home.search_by_city_title") %></h5>
             </div>
             <div class="card-body">
               <%= form_with url: static_pages_search_by_city_path, method: :get, class: "row g-3 align-items-center" do |form| %>
                 <div class="col-md-8 mx-auto">
                   <div class="input-group">
-                    <%= form.collection_select :city_id, @cities, :id, :name, 
-                        { prompt: "Selecciona una ciudad" }, 
+                    <%= form.collection_select :city_id, @cities, :id, :name,
+                        { prompt: t("static_pages.home.select_city_prompt") },
                         { class: "form-select", required: true } %>
                     <button type="submit" class="btn btn-primary">
-                      <i class="bi bi-search"></i> Buscar
+                      <i class="bi bi-search"></i> <%= t("static_pages.home.search_button") %>
                     </button>
                   </div>
                   <div class="form-text text-center mt-2">
-                    Selecciona una ciudad para encontrar estudios clínicos disponibles en esa ubicación
+                    <%= t("static_pages.home.search_help") %>
                   </div>
                 </div>
               <% end %>
@@ -83,9 +83,9 @@
       <% if current_user.present? && policy(:static_page).home_navigation? %>
         <div class="d-flex justify-content-center mt-4">
           <div class="btn-group">
-            <%= link_to "Ver Estudios", studies_path, class: "btn btn-success me-2" %>
-            <%= link_to "Ver Patrocinadores", sponsors_path, class: "btn btn-info me-2" %>
-            <%= link_to "Ver Centros", trial_center_facilities_path, class: "btn btn-secondary" %>
+            <%= link_to t("static_pages.home.view_studies"), studies_path, class: "btn btn-success me-2" %>
+            <%= link_to t("static_pages.home.view_sponsors"), sponsors_path, class: "btn btn-info me-2" %>
+            <%= link_to t("static_pages.home.view_facilities"), trial_center_facilities_path, class: "btn btn-secondary" %>
           </div>
         </div>
       <% end %>

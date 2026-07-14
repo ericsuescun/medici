@@ -1,5 +1,5 @@
 <div class="container mt-4">
-  <h1 class="mb-3">Nuevo Rol</h1>
+  <h1 class="mb-3"><%= t("roles.new_title") %></h1>
 
   <%= form_with model: @role, url: roles_path, method: :post do |form| %>
     <% if @role.errors.any? %>
@@ -13,31 +13,31 @@
     <% end %>
 
     <div class="mb-3">
-      <%= form.label :name, "Nombre interno", class: "form-label" %>
-      <%= form.text_field :name, class: "form-control", placeholder: "p. ej. auditor" %>
-      <div class="form-text">Identificador en minúsculas, sin espacios. Único.</div>
+      <%= form.label :name, t("roles.internal_name"), class: "form-label" %>
+      <%= form.text_field :name, class: "form-control", placeholder: t("roles.name_placeholder") %>
+      <div class="form-text"><%= t("roles.name_hint") %></div>
     </div>
 
     <div class="mb-3">
-      <%= form.label :display_name, "Nombre visible", class: "form-label" %>
-      <%= form.text_field :display_name, class: "form-control", placeholder: "p. ej. Auditor" %>
+      <%= form.label :display_name, t("roles.display_name"), class: "form-label" %>
+      <%= form.text_field :display_name, class: "form-control", placeholder: t("roles.display_name_placeholder") %>
     </div>
 
     <div class="mb-3">
-      <%= form.label :description, "Descripción", class: "form-label" %>
+      <%= form.label :description, t("roles.description"), class: "form-label" %>
       <%= form.text_area :description, class: "form-control", rows: 3 %>
     </div>
 
     <div class="mb-3">
-      <%= label_tag :clone_from_role_id, "Clonar permisos de (opcional)", class: "form-label" %>
+      <%= label_tag :clone_from_role_id, t("roles.clone_from"), class: "form-label" %>
       <%= select_tag :clone_from_role_id,
                      options_from_collection_for_select(@roles, :id, :display_name),
-                     include_blank: "— Ninguno (empezar sin permisos) —",
+                     include_blank: t("roles.clone_none"),
                      class: "form-select" %>
-      <div class="form-text">Si eliges un rol, el nuevo rol copiará sus permisos actuales.</div>
+      <div class="form-text"><%= t("roles.clone_hint") %></div>
     </div>
 
-    <%= form.submit "Crear rol", class: "btn btn-success" %>
-    <%= link_to "Cancelar", roles_path, class: "btn btn-link" %>
+    <%= form.submit t("roles.create_role"), class: "btn btn-success" %>
+    <%= link_to t("common.cancel"), roles_path, class: "btn btn-link" %>
   <% end %>
 </div>

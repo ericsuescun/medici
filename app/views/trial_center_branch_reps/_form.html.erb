@@ -1,7 +1,7 @@
 <%= form_with(model: trial_center_branch_rep) do |f| %>
   <% if trial_center_branch_rep.errors.any? %>
     <div style="color: red">
-      <h2><%= pluralize(trial_center_branch_rep.errors.count, "error") %> prohibited this representative from being saved:</h2>
+      <h2><%= t("trial_center_branch_reps.errors_header", count: trial_center_branch_rep.errors.count) %></h2>
       <ul>
         <% trial_center_branch_rep.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -11,16 +11,16 @@
   <% end %>
 
   <fieldset class="mb-3">
-    <legend>Datos del Usuario</legend>
+    <legend><%= t("trial_center_branch_reps.form_user_data") %></legend>
     <div class="row">
       <div class="col-md-6">
         <%= f.fields_for :user do |u| %>
           <div class="mb-2">
-            <%= u.label :firstname, 'Nombre' %>
+            <%= u.label :firstname, t("trial_center_branch_reps.firstname") %>
             <%= u.text_field :firstname, class: 'form-control' %>
           </div>
           <div class="mb-2">
-            <%= u.label :lastname, 'Apellido' %>
+            <%= u.label :lastname, t("trial_center_branch_reps.lastname") %>
             <%= u.text_field :lastname, class: 'form-control' %>
           </div>
           <div class="mb-2">
@@ -47,19 +47,19 @@
   <% end %>
 
   <fieldset>
-    <legend>Perfil de Representante de Sede</legend>
+    <legend><%= t("trial_center_branch_reps.form_profile") %></legend>
     <div class="row">
       <div class="col-md-6">
         <div class="mb-2">
-          <%= f.label :title, 'Titulo' %>
+          <%= f.label :title, TrialCenterBranchRep.human_attribute_name(:title) %>
           <%= f.text_field :title, class: 'form-control' %>
         </div>
         <div class="mb-2">
-          <%= f.label :contact_number, 'Telefono' %>
+          <%= f.label :contact_number, TrialCenterBranchRep.human_attribute_name(:contact_number) %>
           <%= f.text_field :contact_number, class: 'form-control' %>
         </div>
         <div class="mb-2">
-          <%= f.label :contact_address, 'Direccion' %>
+          <%= f.label :contact_address, TrialCenterBranchRep.human_attribute_name(:contact_address) %>
           <%= f.text_field :contact_address, class: 'form-control' %>
         </div>
       </div>

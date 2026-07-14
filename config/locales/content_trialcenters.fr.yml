@@ -1,0 +1,61 @@
+fr:
+  trial_center_facilities:
+    index_title: "Centres d'essais cliniques"
+    new_title: "Nouveau centre d'essais cliniques"
+    edit_title: "Modifier le centre d'essais cliniques"
+    back_home: "Retour à Vitalia"
+    back_to_index: "Retour aux centres d'essais cliniques"
+    add_branch: "Ajouter un site"
+    cities_label: "Sites"
+    studies_label: "Études"
+    form:
+      error_header:
+        one: "%{count} erreur a empêché l'enregistrement de ce centre d'essais cliniques :"
+        other: "%{count} erreurs ont empêché l'enregistrement de ce centre d'essais cliniques :"
+    flash:
+      created: "Le centre d'essais cliniques a été créé avec succès."
+      updated: "Le centre d'essais cliniques a été mis à jour avec succès."
+      destroyed: "Le centre d'essais cliniques a été supprimé avec succès."
+
+  trial_center_branches:
+    index_title: "Sites"
+    new_title: "Nouveau site"
+    edit_title: "Modifier le site"
+    back_home: "Retour à Vitalia"
+    back_to_index: "Retour aux sites"
+    back_to_facility: "Retour à %{name}"
+    sites_label: "Emplacements"
+    studies_label: "Études"
+    reps:
+      title_header: "Représentants du site"
+      new: "Nouveau représentant"
+      name: "Nom"
+      email: "Adresse e-mail"
+      title: "Fonction"
+      phone: "Téléphone"
+      confirm_delete: "Supprimer ce représentant ?"
+      empty: "Aucun représentant sur ce site."
+    form:
+      error_header:
+        one: "%{count} erreur a empêché l'enregistrement de ce site :"
+        other: "%{count} erreurs ont empêché l'enregistrement de ce site :"
+    flash:
+      created: "Le site a été créé avec succès."
+      updated: "Le site a été mis à jour avec succès."
+      destroyed: "Le site a été supprimé avec succès."
+
+  trial_cities:
+    index_title: "Villes d'essai"
+    new_title: "Nouvelle ville d'essai"
+    edit_title: "Modifier la ville d'essai"
+    back_to_index: "Retour aux villes d'essai"
+    studies_label: "Études"
+    name_label: "Nom"
+    form:
+      error_header:
+        one: "%{count} erreur a empêché l'enregistrement de cette ville d'essai :"
+        other: "%{count} erreurs ont empêché l'enregistrement de cette ville d'essai :"
+    flash:
+      created: "La ville d'essai a été créée avec succès."
+      updated: "La ville d'essai a été mise à jour avec succès."
+      destroyed: "La ville d'essai a été supprimée avec succès."

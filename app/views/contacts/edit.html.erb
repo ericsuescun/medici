@@ -1,12 +1,12 @@
-<% content_for :title, "Editing contact" %>
+<% content_for :title, t("contacts.edit_title") %>
 
-<h1>Editing contact</h1>
+<h1><%= t("contacts.edit_title") %></h1>
 
 <%= render "form", contact: @contact %>
 
 <br>
 
 <div>
-  <%= link_to "Show this contact", @contact %> |
-  <%= link_to "Back to contacts", contacts_path %>
+  <%= link_to t("contacts.show_this"), @contact %> |
+  <%= link_to t("contacts.back_to_list"), contacts_path %>
 </div>

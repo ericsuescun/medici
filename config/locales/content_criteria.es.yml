@@ -1,0 +1,51 @@
+es:
+  criteria_profiles:
+    not_associated: "No asociado"
+    edit_title: "Editar Perfil de Criterios"
+    new_title: "Nuevo Perfil de Criterios"
+    back_to_profiles: "Retornar a Perfiles"
+    new_profile: "Nuevo Perfil"
+    change_control: "Control de cambios"
+    variables_section: "Variables de Criterios"
+    view_all_variables: "Ver todas las variables"
+    no_variables: "Este perfil no tiene variables aún."
+    form:
+      error_header:
+        one: "%{count} error impidió guardar el perfil:"
+        other: "%{count} errores impidieron guardar el perfil:"
+      study_label: "Estudio (opcional)"
+    index:
+      title: "Perfiles de Criterios"
+      created: "Creado"
+      empty: "Aún no tienes perfiles de criterios. Crea el primero."
+    flash:
+      created: "El perfil de criterios se creó correctamente."
+      updated: "El perfil de criterios se actualizó correctamente."
+      destroyed: "El perfil de criterios se eliminó correctamente."
+
+  criteria_variables:
+    description: "Descripción"
+    new_variable: "Nueva Variable"
+    edit_title: "Editar Variable: %{name}"
+    new_title: "Nueva Variable para: %{name}"
+    back_to_variables: "Retornar a Variables"
+    back_to_profile: "Volver al Perfil"
+    change_control: "Control de cambios"
+    form:
+      error_header:
+        one: "%{count} error impidió guardar la variable:"
+        other: "%{count} errores impidieron guardar la variable:"
+      criteria_order_label: "Orden dentro del grupo"
+      criteria_order_hint: "Sugerido automáticamente según el grupo (inclusión/exclusión). Puede cambiarlo."
+      qualitative_scale_label: "Escala cualitativa (separada por comas)"
+      qualitative_scale_placeholder: "Alto, Medio, Bajo"
+      qualitative_scale_hint: "Ingrese los valores cualitativos separados por comas."
+      qualitative_value_placeholder: "Medio"
+      conditions_label: "Condiciones (texto)"
+    index:
+      title: "Variables del Perfil: %{name}"
+      empty: "Aún no hay variables para este perfil. Crea la primera."
+    flash:
+      created: "La variable de criterio se creó correctamente."
+      updated: "La variable de criterio se actualizó correctamente."
+      destroyed: "La variable de criterio se eliminó correctamente."
