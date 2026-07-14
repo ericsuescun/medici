@@ -26,7 +26,7 @@ class PatientsController < SecureApplicationController
 
     respond_to do |format|
       if @patient.save
-        format.html { redirect_to patient_url(@patient), notice: "Patient was successfully created." }
+        format.html { redirect_to patient_url(@patient), notice: t("patients.created") }
         format.json { render :show, status: :created, location: @patient }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -39,7 +39,7 @@ class PatientsController < SecureApplicationController
   def update
     respond_to do |format|
       if @patient.update(patient_params)
-        format.html { redirect_to patient_url(@patient), notice: "Patient was successfully updated." }
+        format.html { redirect_to patient_url(@patient), notice: t("patients.updated") }
         format.json { render :show, status: :ok, location: @patient }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -61,14 +61,14 @@ class PatientsController < SecureApplicationController
     end
 
     if !allowed
-      redirect_back fallback_location: patient_url(@patient), alert: "No está autorizado para realizar esta acción." and return
+      redirect_back fallback_location: patient_url(@patient), alert: t("errors.not_authorized") and return
     end
 
     begin
       @patient.public_send("#{event}!")
-      redirect_back fallback_location: patient_url(@patient), notice: "Estado actualizado correctamente."
+      redirect_back fallback_location: patient_url(@patient), notice: t("patients.state_updated")
     rescue StandardError => e
-      redirect_back fallback_location: patient_url(@patient), alert: "No se pudo actualizar el estado: #{e.message}"
+      redirect_back fallback_location: patient_url(@patient), alert: t("patients.state_update_failed", message: e.message)
     end
   end
 
@@ -77,7 +77,7 @@ class PatientsController < SecureApplicationController
     @patient.destroy!
 
     respond_to do |format|
-      format.html { redirect_to patients_url, notice: "Patient was successfully destroyed." }
+      format.html { redirect_to patients_url, notice: t("patients.destroyed") }
       format.json { head :no_content }
     end
   end

@@ -3,8 +3,8 @@
 <%= render @result %>
 
 <div>
-  <%= link_to "Edit this result", edit_result_path(@result) %> |
-  <%= link_to "Back to results", results_path %>
+  <%= link_to t("results.edit_this"), edit_result_path(@result) %> |
+  <%= link_to t("results.back_to_list"), results_path %>
 
-  <%= button_to "Destroy this result", @result, method: :delete %>
+  <%= button_to t("results.delete_this"), @result, method: :delete %>
 </div>

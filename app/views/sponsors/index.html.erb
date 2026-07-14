@@ -5,13 +5,13 @@
         <div class="alert alert-success"><%= notice %></div>
       <% end %>
 
-      <% content_for :title, "Sponsors" %>
-      
+      <% content_for :title, t("sponsors.index_title") %>
+
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">Patrocinadores</h1>
+        <h1 class="mb-0"><%= t("sponsors.index_title") %></h1>
         <div>
-          <%= link_to "Retornar a Vitalia", static_pages_medici_home_path %> |
-          <%= link_to "Nuevo Patrocinador", new_sponsor_path%>
+          <%= link_to t("sponsors.back_to_home"), static_pages_medici_home_path %> |
+          <%= link_to t("sponsors.new_sponsor"), new_sponsor_path%>
         </div>
       </div>
 
@@ -22,10 +22,10 @@
               <table class="table table-striped">
                 <thead>
                 <tr>
-                  <th>Nombre</th>
-                  <th># Estudios</th>
-                  <th>Iniciales</th>
-                  <th>Sponsor type</th>
+                  <th><%= Sponsor.human_attribute_name(:name) %></th>
+                  <th><%= t("sponsors.studies_count") %></th>
+                  <th><%= Sponsor.human_attribute_name(:initials) %></th>
+                  <th><%= Sponsor.human_attribute_name(:sponsor_type) %></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -46,8 +46,8 @@
         <div class="d-flex justify-content-between align-items-center">
           <%= will_paginate @sponsors, :renderer => WillPaginate::ActionView::Bootstrap4LinkRenderer %>
           <div>
-            <%= link_to "Retornar a Vitalia", static_pages_medici_home_path %> |
-            <%= link_to "Nuevo Patrocinador", new_sponsor_path%>
+            <%= link_to t("sponsors.back_to_home"), static_pages_medici_home_path %> |
+            <%= link_to t("sponsors.new_sponsor"), new_sponsor_path%>
           </div>
         </div>
       </div>

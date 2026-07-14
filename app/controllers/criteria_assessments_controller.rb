@@ -13,7 +13,7 @@ class CriteriaAssessmentsController < SecureApplicationController
   def update
     save_values!
     redirect_to patient_criteria_assessment_path(@patient, criteria_profile_id: @profile.id),
-                notice: "Evaluación de criterios actualizada."
+                notice: t("criteria_assessments.updated")
   end
 
   private

@@ -187,6 +187,7 @@ es:
         conditions: "Condiciones"
       result:
         name: "Nombre"
+        title: "Título"
         result_type: "Tipo de resultado"
         description: "Descripción"
       medication:
@@ -208,10 +209,15 @@ es:
         name: "Nombre"
       contact:
         name: "Nombre"
+        firstname: "Nombre"
+        lastname: "Apellido"
         email: "Correo electrónico"
         phone: "Teléfono"
+        comments: "Comentarios"
+        url: "URL"
       article:
         title: "Título"
+        description: "Descripción"
         url: "URL"
       role:
         name: "Nombre"

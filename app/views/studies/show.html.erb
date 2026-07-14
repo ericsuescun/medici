@@ -3,22 +3,22 @@
     <div class="col-12">
       <p style="color: green"><%= notice %></p>
       <div>
-        <%= link_to "Editar este estudio", edit_study_path(@study) %> |
-        <%= link_to "Retornar a Estudios", studies_path %>
+        <%= link_to t("studies.edit_this_study"), edit_study_path(@study) %> |
+        <%= link_to t("studies.return_to_studies"), studies_path %>
         <% if current_user&.admin? %>
-          | <%= link_to "Control de cambios", change_control_path("Study", @study.id) %>
+          | <%= link_to t("studies.change_control"), change_control_path("Study", @study.id) %>
         <% end %>
 
-        <%= button_to "Borrar", @study, method: :delete, class: "btn btn-primary btn-block mt-3 mb-3" %>
+        <%= button_to t("common.delete"), @study, method: :delete, class: "btn btn-primary btn-block mt-3 mb-3" %>
       </div>
 
       <%= render @study %>
 
       <div class="card mt-4">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Perfil de Criterios</h5>
+          <h5 class="mb-0"><%= CriteriaProfile.model_name.human %></h5>
           <% if (profile = @study.criteria_profile) %>
-            <%= button_to 'Desasociar perfil', unset_criteria_profile_study_path(@study), method: :delete, class: 'btn btn-sm btn-outline-danger', data: { confirm: '¿Seguro que deseas desasociar el perfil?' } %>
+            <%= button_to t("studies.unset_profile"), unset_criteria_profile_study_path(@study), method: :delete, class: 'btn btn-sm btn-outline-danger', data: { confirm: t("studies.confirm_unset_profile") } %>
           <% end %>
         </div>
         <div class="card-body">
@@ -36,19 +36,19 @@
                 <table class="table table-striped">
                   <thead>
                   <tr>
-                    <th>Orden</th>
-                    <th>Nombre</th>
-                    <th>Descripcion</th>
-                    <th>Tipo</th>
-                    <th>Tipo de regla</th>
-                    <th>Comparación</th>
-                    <th>Ref 1</th>
-                    <th>Ref 2</th>
-                    <th>Condiciones</th>
-                    <th>Escala cualitativa</th>
-                    <th>Valor cualitativo</th>
-                    <th>Habilitada</th>
-                    <th>Visible</th>
+                    <th><%= CriteriaVariable.human_attribute_name(:criteria_order) %></th>
+                    <th><%= CriteriaVariable.human_attribute_name(:name) %></th>
+                    <th><%= CriteriaProfile.human_attribute_name(:description) %></th>
+                    <th><%= CriteriaVariable.human_attribute_name(:value_type) %></th>
+                    <th><%= CriteriaVariable.human_attribute_name(:variable_type) %></th>
+                    <th><%= CriteriaVariable.human_attribute_name(:comparison_type) %></th>
+                    <th><%= CriteriaVariable.human_attribute_name(:reference_value_1) %></th>
+                    <th><%= CriteriaVariable.human_attribute_name(:reference_value_2) %></th>
+                    <th><%= CriteriaVariable.human_attribute_name(:conditions) %></th>
+                    <th><%= CriteriaVariable.human_attribute_name(:qualitative_scale) %></th>
+                    <th><%= CriteriaVariable.human_attribute_name(:qualitative_value) %></th>
+                    <th><%= CriteriaVariable.human_attribute_name(:enabled) %></th>
+                    <th><%= CriteriaVariable.human_attribute_name(:shown) %></th>
                   </tr>
                   </thead>
                   <tbody>
@@ -73,16 +73,16 @@
                       <td><%= variable.qualitative_value %></td>
                       <td>
                         <% if variable.enabled? %>
-                          <span class="badge bg-success">Sí</span>
+                          <span class="badge bg-success"><%= t("common.yes") %></span>
                         <% else %>
-                          <span class="badge bg-secondary">No</span>
+                          <span class="badge bg-secondary"><%= t("common.no") %></span>
                         <% end %>
                       </td>
                       <td>
                         <% if variable.shown? %>
-                          <span class="badge bg-success">Sí</span>
+                          <span class="badge bg-success"><%= t("common.yes") %></span>
                         <% else %>
-                          <span class="badge bg-secondary">No</span>
+                          <span class="badge bg-secondary"><%= t("common.no") %></span>
                         <% end %>
                       </td>
                     </tr>
@@ -91,25 +91,25 @@
                 </table>
               </div>
             <% else %>
-              <div class="alert alert-info">Este perfil no tiene variables aún.</div>
+              <div class="alert alert-info"><%= t("studies.profile_no_variables") %></div>
             <% end %>
           <% else %>
             <% available_profiles = CriteriaProfile.order(:name) %>
             <% if available_profiles.any? %>
               <%= form_with url: set_criteria_profile_study_path(@study), method: :post, class: 'row g-3 align-items-end' do |f| %>
                 <div class="col-md-6">
-                  <label for="criteria_profile_id" class="form-label">Seleccionar perfil</label>
-                  <%= select_tag :criteria_profile_id, options_from_collection_for_select(available_profiles, :id, :name), include_blank: 'Seleccione un perfil', class: 'form-select' %>
+                  <label for="criteria_profile_id" class="form-label"><%= t("studies.select_profile") %></label>
+                  <%= select_tag :criteria_profile_id, options_from_collection_for_select(available_profiles, :id, :name), include_blank: t("studies.select_profile_prompt"), class: 'form-select' %>
                 </div>
                 <div class="col-md-3">
-                  <button type="submit" class="btn btn-primary">Asociar perfil</button>
+                  <button type="submit" class="btn btn-primary"><%= t("studies.associate_profile") %></button>
                 </div>
                 <div class="col-12">
-                  <small class="text-muted">Selecciona un perfil para asociarlo a este estudio. Solo un perfil puede estar asociado a la vez.</small>
+                  <small class="text-muted"><%= t("studies.select_profile_help") %></small>
                 </div>
               <% end %>
             <% else %>
-              <p class="text-muted mb-0">No hay perfiles disponibles para asociar. <%= link_to 'Crear un perfil', new_criteria_profile_path %>.</p>
+              <p class="text-muted mb-0"><%= t("studies.no_profiles_available") %> <%= link_to t("studies.create_profile"), new_criteria_profile_path %>.</p>
             <% end %>
           <% end %>
         </div>

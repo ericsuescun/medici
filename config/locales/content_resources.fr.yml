@@ -1,0 +1,72 @@
+fr:
+  medications:
+    created: "Le médicament a été créé avec succès."
+    updated: "Le médicament a été mis à jour avec succès."
+    destroyed: "Le médicament a été supprimé avec succès."
+    form_errors:
+      one: "%{count} erreur a empêché l’enregistrement de ce médicament :"
+      other: "%{count} erreurs ont empêché l’enregistrement de ce médicament :"
+    home_link: "Retourner à Vitalia"
+    new: "Nouveau médicament"
+    confirm_delete: "Supprimer ce médicament ?"
+    related_studies: "Études associées"
+    edit_this: "Modifier ce médicament"
+    delete_this: "Supprimer ce médicament"
+    back_to_list: "Retour aux médicaments"
+
+  cities:
+    created: "La ville a été créée avec succès."
+    updated: "La ville a été mise à jour avec succès."
+    destroyed: "La ville a été supprimée avec succès."
+    form_errors:
+      one: "%{count} erreur a empêché l’enregistrement de cette ville :"
+      other: "%{count} erreurs ont empêché l’enregistrement de cette ville :"
+    home_link: "Retourner à Vitalia"
+    new: "Nouvelle ville"
+    edit_title: "Modification de la ville"
+    back_to_list: "Retour aux villes"
+
+  contacts:
+    created: "Le contact a été créé avec succès."
+    updated: "Le contact a été mis à jour avec succès."
+    destroyed: "Le contact a été supprimé avec succès."
+    form_errors:
+      one: "%{count} erreur a empêché l’enregistrement de ce contact :"
+      other: "%{count} erreurs ont empêché l’enregistrement de ce contact :"
+    index_title: "Contacts"
+    new: "Nouveau contact"
+    edit_title: "Modification du contact"
+    show_this: "Afficher ce contact"
+    edit_this: "Modifier ce contact"
+    delete_this: "Supprimer ce contact"
+    back_to_list: "Retour aux contacts"
+
+  articles:
+    created: "L’article a été créé avec succès."
+    updated: "L’article a été mis à jour avec succès."
+    destroyed: "L’article a été supprimé avec succès."
+    form_errors:
+      one: "%{count} erreur a empêché l’enregistrement de cet article :"
+      other: "%{count} erreurs ont empêché l’enregistrement de cet article :"
+    index_title: "Articles"
+    new: "Nouvel article"
+    edit_title: "Modification de l’article"
+    show_this: "Afficher cet article"
+    edit_this: "Modifier cet article"
+    delete_this: "Supprimer cet article"
+    back_to_list: "Retour aux articles"
+
+  results:
+    created: "Le résultat a été créé avec succès."
+    updated: "Le résultat a été mis à jour avec succès."
+    destroyed: "Le résultat a été supprimé avec succès."
+    form_errors:
+      one: "%{count} erreur a empêché l’enregistrement de ce résultat :"
+      other: "%{count} erreurs ont empêché l’enregistrement de ce résultat :"
+    index_title: "Résultats"
+    new: "Nouveau résultat"
+    edit_title: "Modification du résultat"
+    show_this: "Afficher ce résultat"
+    edit_this: "Modifier ce résultat"
+    delete_this: "Supprimer ce résultat"
+    back_to_list: "Retour aux résultats"

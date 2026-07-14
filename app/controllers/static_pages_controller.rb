@@ -18,7 +18,7 @@ class StaticPagesController < ApplicationController
       @city_name = @city.name
     else
       @studies = []
-      @city_name = "No city selected"
+      @city_name = t("static_pages.no_city_selected")
     end
   end
 end

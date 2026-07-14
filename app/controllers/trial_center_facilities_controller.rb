@@ -28,7 +28,7 @@ class TrialCenterFacilitiesController < SecureApplicationController
     respond_to do |format|
       if @trial_center_facility.save
         @trial_center_facility.cities << City.find(params[:trial_center_facility][:city_id])
-        format.html { redirect_to trial_center_facility_url(@trial_center_facility), notice: "Trial center facility was successfully created." }
+        format.html { redirect_to trial_center_facility_url(@trial_center_facility), notice: t("trial_center_facilities.flash.created") }
         format.json { render :show, status: :created, location: @trial_center_facility }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -45,7 +45,7 @@ class TrialCenterFacilitiesController < SecureApplicationController
         @trial_center_facility.cities.destroy_all
         @trial_center_facility.cities << City.find(params[:trial_center_facility][:city_id])
 
-        format.html { redirect_to trial_center_facility_url(@trial_center_facility), notice: "Trial center facility was successfully updated." }
+        format.html { redirect_to trial_center_facility_url(@trial_center_facility), notice: t("trial_center_facilities.flash.updated") }
         format.json { render :show, status: :ok, location: @trial_center_facility }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -59,7 +59,7 @@ class TrialCenterFacilitiesController < SecureApplicationController
     @trial_center_facility.destroy!
 
     respond_to do |format|
-      format.html { redirect_to trial_center_facilities_url, notice: "Trial center facility was successfully destroyed." }
+      format.html { redirect_to trial_center_facilities_url, notice: t("trial_center_facilities.flash.destroyed") }
       format.json { head :no_content }
     end
   end

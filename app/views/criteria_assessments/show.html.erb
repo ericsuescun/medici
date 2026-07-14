@@ -1,28 +1,28 @@
 <div class="container mt-4">
   <% if notice %><div class="alert alert-success"><%= notice %></div><% end %>
 
-  <h1 class="mb-1">Evaluación de criterios</h1>
+  <h1 class="mb-1"><%= t("criteria_assessments.evaluation_title") %></h1>
   <p class="text-muted mb-4">
-    <%= @profile.name %><% if @profile.study %> · Estudio: <%= @profile.study.public_title %><% end %>
+    <%= @profile.name %><% if @profile.study %> · <%= Study.model_name.human %>: <%= @profile.study.public_title %><% end %>
   </p>
 
   <% if @result.eligible? %>
-    <div class="alert alert-success mb-4"><strong>Elegible</strong> — el paciente cumple todos los criterios.</div>
+    <div class="alert alert-success mb-4"><strong><%= t("criteria_assessments.eligible") %></strong> — <%= t("criteria_assessments.eligible_detail") %></div>
   <% elsif !@result.complete? %>
-    <div class="alert alert-warning mb-4"><strong>Evaluación incompleta</strong> — faltan <%= @result.missing.count %> valor(es) por registrar.</div>
+    <div class="alert alert-warning mb-4"><strong><%= t("criteria_assessments.incomplete") %></strong> — <%= t("criteria_assessments.incomplete_detail", count: @result.missing.count) %></div>
   <% else %>
-    <div class="alert alert-danger mb-4"><strong>No elegible</strong> — <%= @result.failing.count %> criterio(s) no se cumplen.</div>
+    <div class="alert alert-danger mb-4"><strong><%= t("criteria_assessments.not_eligible") %></strong> — <%= t("criteria_assessments.not_eligible_detail", count: @result.failing.count) %></div>
   <% end %>
 
   <% checks_by_var = @result.checks.index_by { |c| c.variable.id } %>
 
   <%= form_with url: patient_criteria_assessment_path(@patient, criteria_profile_id: @profile.id), method: :patch do %>
     <% @variables.group_by(&:variable_type).each do |variable_type, vars| %>
-      <h4 class="mt-4"><%= variable_type == "inclusion" ? "Criterios de inclusión" : "Criterios de exclusión" %></h4>
+      <h4 class="mt-4"><%= variable_type == "inclusion" ? Study.human_attribute_name(:inclusion_criteria) : Study.human_attribute_name(:exclusion_criteria) %></h4>
       <div class="table-responsive">
         <table class="table align-middle">
           <thead>
-            <tr><th>Criterio</th><th>Regla</th><th>Valor del paciente</th><th>Estado</th></tr>
+            <tr><th><%= t("criteria_assessments.criterion") %></th><th><%= t("criteria_assessments.rule") %></th><th><%= t("criteria_assessments.patient_value") %></th><th><%= t("criteria_assessments.status") %></th></tr>
           </thead>
           <tbody>
             <% vars.each do |cv| %>
@@ -33,20 +33,20 @@
                 <td><span class="text-muted"><%= cv.rule_summary %></span></td>
                 <td style="max-width: 220px">
                   <% if cv.value_type == "boolean" %>
-                    <%= select_tag "values[#{cv.id}]", options_for_select([["—", ""], ["Sí", "true"], ["No", "false"]], current), class: "form-select form-select-sm" %>
+                    <%= select_tag "values[#{cv.id}]", options_for_select([[t("common.none"), ""], [t("common.yes"), "true"], [t("common.no"), "false"]], current), class: "form-select form-select-sm" %>
                   <% elsif cv.value_type == "qualitative" %>
-                    <%= select_tag "values[#{cv.id}]", options_for_select([["—", ""]] + Array(cv.qualitative_scale).map { |o| [o, o] }, current), class: "form-select form-select-sm" %>
+                    <%= select_tag "values[#{cv.id}]", options_for_select([[t("common.none"), ""]] + Array(cv.qualitative_scale).map { |o| [o, o] }, current), class: "form-select form-select-sm" %>
                   <% else %>
                     <%= number_field_tag "values[#{cv.id}]", current, step: :any, class: "form-control form-control-sm" %>
                   <% end %>
                 </td>
                 <td>
                   <% if status == :pass %>
-                    <span class="badge bg-success">Cumple</span>
+                    <span class="badge bg-success"><%= t("criteria_assessments.pass") %></span>
                   <% elsif status == :fail %>
-                    <span class="badge bg-danger">No cumple</span>
+                    <span class="badge bg-danger"><%= t("criteria_assessments.fail") %></span>
                   <% else %>
-                    <span class="badge bg-secondary">Sin dato</span>
+                    <span class="badge bg-secondary"><%= t("criteria_assessments.no_data") %></span>
                   <% end %>
                 </td>
               </tr>
@@ -56,7 +56,7 @@
       </div>
     <% end %>
 
-    <%= submit_tag "Guardar y evaluar", class: "btn btn-success" %>
-    <%= link_to "Volver al paciente", patient_path(@patient), class: "btn btn-link" %>
+    <%= submit_tag t("criteria_assessments.save_and_evaluate"), class: "btn btn-success" %>
+    <%= link_to t("criteria_assessments.back_to_patient"), patient_path(@patient), class: "btn btn-link" %>
   <% end %>
 </div>

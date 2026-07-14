@@ -1,11 +1,11 @@
 <table class="table table-striped">
   <thead>
   <tr>
-    <th>Titulo Cientifico</th>
-    <th>Titulo Corto</th>
-    <th>Patrocinador</th>
-    <th>Estado</th>
-    <th>Revisado</th>
+    <th><%= Study.human_attribute_name(:scientific_title) %></th>
+    <th><%= Study.human_attribute_name(:short_title) %></th>
+    <th><%= Study.human_attribute_name(:sponsor) %></th>
+    <th><%= Study.human_attribute_name(:study_status) %></th>
+    <th><%= Study.human_attribute_name(:reviewed) %></th>
   </tr>
   </thead>
   <tbody>

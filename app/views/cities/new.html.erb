@@ -1,16 +1,16 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-4 mx-auto">
-      <% content_for :title, "New city" %>
+      <% content_for :title, t("cities.new") %>
 
-      <h1>Nueva ciudad</h1>
+      <h1><%= t("cities.new") %></h1>
 
       <%= render "form", city: @city %>
 
       <br>
 
       <div>
-        <%= link_to "Retornar a ciudades", cities_path %>
+        <%= link_to t("cities.back_to_list"), cities_path %>
       </div>
     </div>
   </div>

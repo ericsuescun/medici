@@ -37,7 +37,7 @@ class StudiesController < SecureApplicationController
       if @study.save
         trial_center_branch.studies << @study
 
-        format.html { redirect_to study_url(@study), notice: "Study was successfully created." }
+        format.html { redirect_to study_url(@study), notice: t("studies.created") }
         format.json { render :show, status: :created, location: @study }
       else
         # @trial_center_branches = TrialCenterBranch.all
@@ -52,7 +52,7 @@ class StudiesController < SecureApplicationController
   def update
     respond_to do |format|
       if @study.update(study_params)
-        format.html { redirect_to study_url(@study), notice: "Study was successfully updated." }
+        format.html { redirect_to study_url(@study), notice: t("studies.updated") }
         format.json { render :show, status: :ok, location: @study }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -66,7 +66,7 @@ class StudiesController < SecureApplicationController
     @study.destroy!
 
     respond_to do |format|
-      format.html { redirect_to studies_url, notice: "Study was successfully destroyed." }
+      format.html { redirect_to studies_url, notice: t("studies.destroyed") }
       format.json { head :no_content }
     end
   end
@@ -77,9 +77,9 @@ class StudiesController < SecureApplicationController
 
     unless @study.trial_center_branches.include?(trial_center_branch)
       @study.trial_center_branches << trial_center_branch
-      notice = "Trial center branch was successfully added."
+      notice = t("studies.branch_added")
     else
-      notice = "Trial center branch was already associated with this study."
+      notice = t("studies.branch_already_associated")
     end
 
     redirect_to study_url(@study), notice: notice
@@ -91,9 +91,9 @@ class StudiesController < SecureApplicationController
 
     if @study.trial_center_branches.count > 1
       @study.trial_center_branches.delete(trial_center_branch)
-      notice = "Trial center branch was successfully removed."
+      notice = t("studies.branch_removed")
     else
-      notice = "Cannot remove the last trial center branch from this study."
+      notice = t("studies.branch_cannot_remove_last")
     end
 
     redirect_to study_url(@study), notice: notice
@@ -104,12 +104,12 @@ class StudiesController < SecureApplicationController
     medication = Medication.find(params[:medication_id])
 
     if @study.medications.include?(medication)
-      notice = "Medication was already associated with this study."
+      notice = t("studies.medication_already_associated")
     elsif @study.medications.count >= 3
-      notice = "A study can have a maximum of 3 medications."
+      notice = t("studies.medication_max_reached")
     else
       @study.medications << medication
-      notice = "Medication was successfully added."
+      notice = t("studies.medication_added")
     end
 
     redirect_to study_url(@study), notice: notice
@@ -121,9 +121,9 @@ class StudiesController < SecureApplicationController
 
     if @study.medications.count > 1
       @study.medications.delete(medication)
-      notice = "Medication was successfully removed."
+      notice = t("studies.medication_removed")
     else
-      notice = "Cannot remove the last medication from this study."
+      notice = t("studies.medication_cannot_remove_last")
     end
 
     redirect_to study_url(@study), notice: notice
@@ -139,7 +139,7 @@ class StudiesController < SecureApplicationController
     # Associate the selected one
     profile.update!(study: @study)
 
-    redirect_to study_url(@study), notice: "Perfil de criterios asociado exitosamente."
+    redirect_to study_url(@study), notice: t("studies.profile_associated")
   end
 
   # DELETE /studies/1/unset_criteria_profile
@@ -147,9 +147,9 @@ class StudiesController < SecureApplicationController
     profile = CriteriaProfile.find_by(study_id: @study.id)
     if profile
       profile.update!(study_id: nil)
-      notice = "Perfil de criterios desasociado."
+      notice = t("studies.profile_unset")
     else
-      notice = "Este estudio no tiene un perfil de criterios asociado."
+      notice = t("studies.profile_none_associated")
     end
     redirect_to study_url(@study), notice: notice
   end

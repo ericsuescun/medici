@@ -1,0 +1,72 @@
+pt:
+  medications:
+    created: "O medicamento foi criado com sucesso."
+    updated: "O medicamento foi atualizado com sucesso."
+    destroyed: "O medicamento foi excluído com sucesso."
+    form_errors:
+      one: "%{count} erro impediu que este medicamento fosse salvo:"
+      other: "%{count} erros impediram que este medicamento fosse salvo:"
+    home_link: "Voltar para Vitalia"
+    new: "Novo medicamento"
+    confirm_delete: "Excluir este medicamento?"
+    related_studies: "Estudos relacionados"
+    edit_this: "Editar este medicamento"
+    delete_this: "Excluir este medicamento"
+    back_to_list: "Voltar para medicamentos"
+
+  cities:
+    created: "A cidade foi criada com sucesso."
+    updated: "A cidade foi atualizada com sucesso."
+    destroyed: "A cidade foi excluída com sucesso."
+    form_errors:
+      one: "%{count} erro impediu que esta cidade fosse salva:"
+      other: "%{count} erros impediram que esta cidade fosse salva:"
+    home_link: "Voltar para Vitalia"
+    new: "Nova cidade"
+    edit_title: "Edição de cidade"
+    back_to_list: "Voltar para cidades"
+
+  contacts:
+    created: "O contato foi criado com sucesso."
+    updated: "O contato foi atualizado com sucesso."
+    destroyed: "O contato foi excluído com sucesso."
+    form_errors:
+      one: "%{count} erro impediu que este contato fosse salvo:"
+      other: "%{count} erros impediram que este contato fosse salvo:"
+    index_title: "Contatos"
+    new: "Novo contato"
+    edit_title: "Editar contato"
+    show_this: "Ver este contato"
+    edit_this: "Editar este contato"
+    delete_this: "Excluir este contato"
+    back_to_list: "Voltar para contatos"
+
+  articles:
+    created: "O artigo foi criado com sucesso."
+    updated: "O artigo foi atualizado com sucesso."
+    destroyed: "O artigo foi excluído com sucesso."
+    form_errors:
+      one: "%{count} erro impediu que este artigo fosse salvo:"
+      other: "%{count} erros impediram que este artigo fosse salvo:"
+    index_title: "Artigos"
+    new: "Novo artigo"
+    edit_title: "Editar artigo"
+    show_this: "Ver este artigo"
+    edit_this: "Editar este artigo"
+    delete_this: "Excluir este artigo"
+    back_to_list: "Voltar para artigos"
+
+  results:
+    created: "O resultado foi criado com sucesso."
+    updated: "O resultado foi atualizado com sucesso."
+    destroyed: "O resultado foi excluído com sucesso."
+    form_errors:
+      one: "%{count} erro impediu que este resultado fosse salvo:"
+      other: "%{count} erros impediram que este resultado fosse salvo:"
+    index_title: "Resultados"
+    new: "Novo resultado"
+    edit_title: "Editar resultado"
+    show_this: "Ver este resultado"
+    edit_this: "Editar este resultado"
+    delete_this: "Excluir este resultado"
+    back_to_list: "Voltar para resultados"

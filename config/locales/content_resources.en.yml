@@ -1,0 +1,72 @@
+en:
+  medications:
+    created: "Medication was successfully created."
+    updated: "Medication was successfully updated."
+    destroyed: "Medication was successfully deleted."
+    form_errors:
+      one: "%{count} error prohibited this medication from being saved:"
+      other: "%{count} errors prohibited this medication from being saved:"
+    home_link: "Return to Vitalia"
+    new: "New medication"
+    confirm_delete: "Delete this medication?"
+    related_studies: "Related studies"
+    edit_this: "Edit this medication"
+    delete_this: "Delete this medication"
+    back_to_list: "Back to medications"
+
+  cities:
+    created: "City was successfully created."
+    updated: "City was successfully updated."
+    destroyed: "City was successfully deleted."
+    form_errors:
+      one: "%{count} error prohibited this city from being saved:"
+      other: "%{count} errors prohibited this city from being saved:"
+    home_link: "Return to Vitalia"
+    new: "New city"
+    edit_title: "Edit city"
+    back_to_list: "Back to cities"
+
+  contacts:
+    created: "Contact was successfully created."
+    updated: "Contact was successfully updated."
+    destroyed: "Contact was successfully deleted."
+    form_errors:
+      one: "%{count} error prohibited this contact from being saved:"
+      other: "%{count} errors prohibited this contact from being saved:"
+    index_title: "Contacts"
+    new: "New contact"
+    edit_title: "Editing contact"
+    show_this: "Show this contact"
+    edit_this: "Edit this contact"
+    delete_this: "Destroy this contact"
+    back_to_list: "Back to contacts"
+
+  articles:
+    created: "Article was successfully created."
+    updated: "Article was successfully updated."
+    destroyed: "Article was successfully deleted."
+    form_errors:
+      one: "%{count} error prohibited this article from being saved:"
+      other: "%{count} errors prohibited this article from being saved:"
+    index_title: "Articles"
+    new: "New article"
+    edit_title: "Editing article"
+    show_this: "Show this article"
+    edit_this: "Edit this article"
+    delete_this: "Destroy this article"
+    back_to_list: "Back to articles"
+
+  results:
+    created: "Result was successfully created."
+    updated: "Result was successfully updated."
+    destroyed: "Result was successfully deleted."
+    form_errors:
+      one: "%{count} error prohibited this result from being saved:"
+      other: "%{count} errors prohibited this result from being saved:"
+    index_title: "Results"
+    new: "New result"
+    edit_title: "Editing result"
+    show_this: "Show this result"
+    edit_this: "Edit this result"
+    delete_this: "Destroy this result"
+    back_to_list: "Back to results"

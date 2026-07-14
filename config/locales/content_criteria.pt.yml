@@ -1,0 +1,51 @@
+pt:
+  criteria_profiles:
+    not_associated: "Não associado"
+    edit_title: "Editar perfil de critérios"
+    new_title: "Novo perfil de critérios"
+    back_to_profiles: "Voltar aos perfis"
+    new_profile: "Novo perfil"
+    change_control: "Controle de alterações"
+    variables_section: "Variáveis de critérios"
+    view_all_variables: "Ver todas as variáveis"
+    no_variables: "Este perfil ainda não tem variáveis."
+    form:
+      error_header:
+        one: "%{count} erro impediu salvar o perfil:"
+        other: "%{count} erros impediram salvar o perfil:"
+      study_label: "Estudo (opcional)"
+    index:
+      title: "Perfis de critérios"
+      created: "Criado"
+      empty: "Você ainda não tem perfis de critérios. Crie o primeiro."
+    flash:
+      created: "O perfil de critérios foi criado com sucesso."
+      updated: "O perfil de critérios foi atualizado com sucesso."
+      destroyed: "O perfil de critérios foi excluído com sucesso."
+
+  criteria_variables:
+    description: "Descrição"
+    new_variable: "Nova variável"
+    edit_title: "Editar variável: %{name}"
+    new_title: "Nova variável para: %{name}"
+    back_to_variables: "Voltar às variáveis"
+    back_to_profile: "Voltar ao perfil"
+    change_control: "Controle de alterações"
+    form:
+      error_header:
+        one: "%{count} erro impediu salvar a variável:"
+        other: "%{count} erros impediram salvar a variável:"
+      criteria_order_label: "Ordem dentro do grupo"
+      criteria_order_hint: "Sugerido automaticamente conforme o grupo (inclusão/exclusão). Você pode alterá-lo."
+      qualitative_scale_label: "Escala qualitativa (separada por vírgulas)"
+      qualitative_scale_placeholder: "Alto, Médio, Baixo"
+      qualitative_scale_hint: "Insira os valores qualitativos separados por vírgulas."
+      qualitative_value_placeholder: "Médio"
+      conditions_label: "Condições (texto)"
+    index:
+      title: "Variáveis do perfil: %{name}"
+      empty: "Ainda não há variáveis para este perfil. Crie a primeira."
+    flash:
+      created: "A variável de critério foi criada com sucesso."
+      updated: "A variável de critério foi atualizada com sucesso."
+      destroyed: "A variável de critério foi excluída com sucesso."

@@ -4,19 +4,19 @@
   </div>
   <div class="card-body">
     <p>
-      <strong>Descripción:</strong>
+      <strong><%= CriteriaProfile.human_attribute_name(:description) %>:</strong>
       <%= criteria_profile.description.presence || '-' %>
     </p>
     <p>
-      <strong>Estudio:</strong>
+      <strong><%= Study.model_name.human %>:</strong>
       <% if criteria_profile.study.present? %>
         <%= link_to criteria_profile.study.short_title, criteria_profile.study %>
       <% else %>
-        <span class="text-muted">No asociado</span>
+        <span class="text-muted"><%= t("criteria_profiles.not_associated") %></span>
       <% end %>
     </p>
     <p>
-      <strong>Usuario:</strong>
+      <strong><%= User.model_name.human %>:</strong>
       <%= criteria_profile.user.fullname.presence || criteria_profile.user.email %>
     </p>
   </div>

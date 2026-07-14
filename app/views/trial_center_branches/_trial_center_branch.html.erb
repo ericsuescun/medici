@@ -5,18 +5,18 @@
     <div class="card-text">
       <div class="row">
         <div class="col-md-6">
-          <p><strong>Initials: </strong><%= trial_center_branch.initials %></p>
-          <p><strong>Email: </strong><%= trial_center_branch.email %></p>
-          <p><strong>Contact number: </strong><%= trial_center_branch.contact_number %></p>
+          <p><strong><%= TrialCenterBranch.human_attribute_name(:initials) %>: </strong><%= trial_center_branch.initials %></p>
+          <p><strong><%= TrialCenterBranch.human_attribute_name(:email) %>: </strong><%= trial_center_branch.email %></p>
+          <p><strong><%= TrialCenterBranch.human_attribute_name(:contact_number) %>: </strong><%= trial_center_branch.contact_number %></p>
         </div>
         <div class="col-md-6">
-          <p><strong>Contact address: </strong><%= trial_center_branch.contact_address %></p>
-          <p><strong>URL: </strong><%= link_to trial_center_branch.url, trial_center_branch.url, target: "_blank" if trial_center_branch.url.present? %></p>
-          <p><strong>Sitios: </strong><span class="badge bg-info text-dark"><%= trial_center_branch.cities.pluck(:name).join('</span> <span class="badge bg-info text-dark">') %></span></p>
+          <p><strong><%= TrialCenterBranch.human_attribute_name(:contact_address) %>: </strong><%= trial_center_branch.contact_address %></p>
+          <p><strong><%= TrialCenterBranch.human_attribute_name(:url) %>: </strong><%= link_to trial_center_branch.url, trial_center_branch.url, target: "_blank" if trial_center_branch.url.present? %></p>
+          <p><strong><%= t("trial_center_branches.sites_label") %>: </strong><span class="badge bg-info text-dark"><%= trial_center_branch.cities.pluck(:name).join('</span> <span class="badge bg-info text-dark">') %></span></p>
         </div>
       </div>
       <div class="mt-3">
-        <p><strong>Estudios: </strong></p>
+        <p><strong><%= t("trial_center_branches.studies_label") %>: </strong></p>
         <div class="d-flex flex-wrap gap-2">
           <% trial_center_branch.studies.each do |study| %>
             <%= link_to "#{study.short_title.present? ? study.short_title : study.public_title}", study, class: "badge bg-info text-white" %>

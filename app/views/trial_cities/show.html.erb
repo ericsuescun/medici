@@ -3,8 +3,8 @@
 <%= render @trial_city %>
 
 <div>
-  <%= link_to "Edit this trial city", edit_trial_city_path(@trial_city) %> |
-  <%= link_to "Back to trial cities", trial_cities_path %>
+  <%= link_to t("common.edit"), edit_trial_city_path(@trial_city) %> |
+  <%= link_to t("trial_cities.back_to_index"), trial_cities_path %>
 
-  <%= button_to "Destroy this trial city", @trial_city, method: :delete %>
+  <%= button_to t("common.destroy"), @trial_city, method: :delete %>
 </div>

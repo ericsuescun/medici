@@ -1,7 +1,7 @@
 <%= form_with(model: [@criteria_profile, @criteria_variable], class: "row g-3") do |form| %>
   <% if @criteria_variable.errors.any? %>
     <div class="alert alert-danger">
-      <h4><%= pluralize(@criteria_variable.errors.count, "error") %> impidieron guardar la variable:</h4>
+      <h4><%= t("criteria_variables.form.error_header", count: @criteria_variable.errors.count) %></h4>
       <ul>
         <% @criteria_variable.errors.full_messages.each do |message| %>
           <li><%= message %></li>
@@ -11,70 +11,70 @@
   <% end %>
 
   <div class="col-md-3">
-    <%= form.label :criteria_order, "Orden dentro del grupo" %>
+    <%= form.label :criteria_order, t("criteria_variables.form.criteria_order_label") %>
     <%= form.number_field :criteria_order, class: "form-control", min: 0, step: 1 %>
-    <div class="form-text">Sugerido automáticamente según el grupo (inclusión/exclusión). Puede cambiarlo.</div>
+    <div class="form-text"><%= t("criteria_variables.form.criteria_order_hint") %></div>
   </div>
 
   <div class="col-md-6">
-    <%= form.label :name, "Nombre" %>
+    <%= form.label :name, CriteriaVariable.human_attribute_name(:name) %>
     <%= form.text_field :name, class: "form-control", required: true %>
   </div>
 
   <div class="col-12">
-    <%= form.label :description, "Descripción" %>
+    <%= form.label :description, t("criteria_variables.description") %>
     <%= form.text_area :description, class: "form-control", rows: 3 %>
   </div>
 
   <div class="col-md-4">
-    <%= form.label :value_type, "Tipo de variable" %>
+    <%= form.label :value_type, CriteriaVariable.human_attribute_name(:value_type) %>
     <%= form.select :value_type, CriteriaVariable.value_types.keys.map { |k| [k.humanize, k] }, {}, class: "form-select", required: true %>
   </div>
 
   <div class="col-md-4">
-    <%= form.label :variable_type, "Tipo de regla" %>
+    <%= form.label :variable_type, CriteriaVariable.human_attribute_name(:variable_type) %>
     <%= form.select :variable_type, CriteriaVariable.variable_types.keys.map { |k| [k.humanize, k] }, {}, class: "form-select", required: true %>
   </div>
 
   <div class="col-md-4">
-    <%= form.label :comparison_type, "Tipo de comparación" %>
+    <%= form.label :comparison_type, CriteriaVariable.human_attribute_name(:comparison_type) %>
     <%= form.select :comparison_type, CriteriaVariable.comparison_types.keys.map { |k| [k.humanize, k] }, {}, class: "form-select", required: true %>
   </div>
 
   <div class="col-md-4">
-    <%= form.label :reference_value_1, "Valor de referencia 1" %>
+    <%= form.label :reference_value_1, CriteriaVariable.human_attribute_name(:reference_value_1) %>
     <%= form.number_field :reference_value_1, step: :any, class: "form-control" %>
   </div>
 
   <div class="col-md-4">
-    <%= form.label :reference_value_2, "Valor de referencia 2" %>
+    <%= form.label :reference_value_2, CriteriaVariable.human_attribute_name(:reference_value_2) %>
     <%= form.number_field :reference_value_2, step: :any, class: "form-control" %>
   </div>
 
   <div class="col-md-6">
-    <%= form.label :qualitative_scale, "Escala cualitativa (separada por comas)" %>
-    <%= form.text_field :qualitative_scale, value: @criteria_variable.qualitative_scale&.join(', '), class: "form-control", placeholder: "Alto, Medio, Bajo" %>
-    <div class="form-text">Ingrese los valores cualitativos separados por comas.</div>
+    <%= form.label :qualitative_scale, t("criteria_variables.form.qualitative_scale_label") %>
+    <%= form.text_field :qualitative_scale, value: @criteria_variable.qualitative_scale&.join(', '), class: "form-control", placeholder: t("criteria_variables.form.qualitative_scale_placeholder") %>
+    <div class="form-text"><%= t("criteria_variables.form.qualitative_scale_hint") %></div>
   </div>
 
   <div class="col-md-6">
-    <%= form.label :qualitative_value, "Valor cualitativo" %>
-    <%= form.text_field :qualitative_value, class: "form-control", placeholder: "Medio" %>
+    <%= form.label :qualitative_value, CriteriaVariable.human_attribute_name(:qualitative_value) %>
+    <%= form.text_field :qualitative_value, class: "form-control", placeholder: t("criteria_variables.form.qualitative_value_placeholder") %>
   </div>
 
   <div class="col-12">
-    <%= form.label :conditions, "Condiciones (texto)" %>
+    <%= form.label :conditions, t("criteria_variables.form.conditions_label") %>
     <%= form.text_area :conditions, class: "form-control", rows: 3 %>
   </div>
 
   <div class="col-md-3 form-check">
     <%= form.check_box :enabled, class: "form-check-input", id: "criteria_variable_enabled" %>
-    <%= form.label :enabled, "Habilitada", class: "form-check-label" %>
+    <%= form.label :enabled, CriteriaVariable.human_attribute_name(:enabled), class: "form-check-label" %>
   </div>
 
   <div class="col-md-3 form-check">
     <%= form.check_box :shown, class: "form-check-input", id: "criteria_variable_shown" %>
-    <%= form.label :shown, "Visible", class: "form-check-label" %>
+    <%= form.label :shown, CriteriaVariable.human_attribute_name(:shown), class: "form-check-label" %>
   </div>
 
   <div class="col-12">

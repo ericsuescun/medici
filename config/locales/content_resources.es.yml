@@ -1,0 +1,72 @@
+es:
+  medications:
+    created: "El medicamento se creó correctamente."
+    updated: "El medicamento se actualizó correctamente."
+    destroyed: "El medicamento se eliminó correctamente."
+    form_errors:
+      one: "%{count} error impidió guardar este medicamento:"
+      other: "%{count} errores impidieron guardar este medicamento:"
+    home_link: "Retornar a Vitalia"
+    new: "Nuevo medicamento"
+    confirm_delete: "¿Eliminar este medicamento?"
+    related_studies: "Estudios relacionados"
+    edit_this: "Editar este medicamento"
+    delete_this: "Eliminar este medicamento"
+    back_to_list: "Volver a medicamentos"
+
+  cities:
+    created: "La ciudad se creó correctamente."
+    updated: "La ciudad se actualizó correctamente."
+    destroyed: "La ciudad se eliminó correctamente."
+    form_errors:
+      one: "%{count} error impidió guardar esta ciudad:"
+      other: "%{count} errores impidieron guardar esta ciudad:"
+    home_link: "Retornar a Vitalia"
+    new: "Nueva ciudad"
+    edit_title: "Edición de ciudad"
+    back_to_list: "Retornar a ciudades"
+
+  contacts:
+    created: "El contacto se creó correctamente."
+    updated: "El contacto se actualizó correctamente."
+    destroyed: "El contacto se eliminó correctamente."
+    form_errors:
+      one: "%{count} error impidió guardar este contacto:"
+      other: "%{count} errores impidieron guardar este contacto:"
+    index_title: "Contactos"
+    new: "Nuevo contacto"
+    edit_title: "Editar contacto"
+    show_this: "Ver este contacto"
+    edit_this: "Editar este contacto"
+    delete_this: "Eliminar este contacto"
+    back_to_list: "Volver a contactos"
+
+  articles:
+    created: "El artículo se creó correctamente."
+    updated: "El artículo se actualizó correctamente."
+    destroyed: "El artículo se eliminó correctamente."
+    form_errors:
+      one: "%{count} error impidió guardar este artículo:"
+      other: "%{count} errores impidieron guardar este artículo:"
+    index_title: "Artículos"
+    new: "Nuevo artículo"
+    edit_title: "Editar artículo"
+    show_this: "Ver este artículo"
+    edit_this: "Editar este artículo"
+    delete_this: "Eliminar este artículo"
+    back_to_list: "Volver a artículos"
+
+  results:
+    created: "El resultado se creó correctamente."
+    updated: "El resultado se actualizó correctamente."
+    destroyed: "El resultado se eliminó correctamente."
+    form_errors:
+      one: "%{count} error impidió guardar este resultado:"
+      other: "%{count} errores impidieron guardar este resultado:"
+    index_title: "Resultados"
+    new: "Nuevo resultado"
+    edit_title: "Editar resultado"
+    show_this: "Ver este resultado"
+    edit_this: "Editar este resultado"
+    delete_this: "Eliminar este resultado"
+    back_to_list: "Volver a resultados"

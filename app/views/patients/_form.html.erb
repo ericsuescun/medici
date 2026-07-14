@@ -1,7 +1,7 @@
 <%= form_with(model: patient) do |form| %>
   <% if patient.errors.any? %>
     <div style="color: red">
-      <h2><%= pluralize(patient.errors.count, "error") %> prohibited this patient from being saved:</h2>
+      <h2><%= t("patients.errors_header", count: patient.errors.count) %></h2>
 
       <ul>
         <% patient.errors.each do |error| %>
@@ -13,7 +13,7 @@
 
   <% if patient.persisted? && policy(patient).show_state? %>
     <div class="alert alert-info">
-      Estado actual: <span class="badge bg-secondary"><%= patient.state %></span>
+      <%= t("patients.current_state") %> <span class="badge bg-secondary"><%= patient.state %></span>
     </div>
   <% end %>
 
@@ -68,6 +68,6 @@
   </div>
 
   <div>
-    <%= form.submit 'Guardar', class: 'btn btn-primary btn-block' %>
+    <%= form.submit t("common.save"), class: 'btn btn-primary btn-block' %>
   </div>
 <% end %>

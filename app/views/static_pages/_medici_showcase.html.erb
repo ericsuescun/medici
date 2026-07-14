@@ -1,5 +1,5 @@
 <div class="container-fluid mt-5 mb-5">
-  <h2 class="text-center mb-4">Estudios Clínicos Disponibles</h2>
+  <h2 class="text-center mb-4"><%= t("static_pages.showcase.title") %></h2>
   <div class="row">
     <% Study.all.each do |study| %>
       <div class="col-md-3 mb-4">
@@ -8,11 +8,11 @@
             <%= study.public_title %>
           </div>
           <div class="card-body d-flex flex-column">
-            <h5 class="card-title">Scientific title: <%= study.scientific_title %></h5>
-            <h6 class="card-subtitle mb-2 text-muted">Short title: <%= study.short_title %></h6>
-            <p class="card-text">Status: <%= study.study_status.capitalize %></p>
+            <h5 class="card-title"><%= Study.human_attribute_name(:scientific_title) %>: <%= study.scientific_title %></h5>
+            <h6 class="card-subtitle mb-2 text-muted"><%= Study.human_attribute_name(:short_title) %>: <%= study.short_title %></h6>
+            <p class="card-text"><%= Study.human_attribute_name(:study_status) %>: <%= study.study_status.capitalize %></p>
             <div class="mt-auto">
-              <%= link_to "Quiero participar!", new_user_registration_path(study_id: study.id), class: "btn btn-success w-100" %>
+              <%= link_to t("static_pages.showcase.participate"), new_user_registration_path(study_id: study.id), class: "btn btn-success w-100" %>
             </div>
           </div>
         </div>

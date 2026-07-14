@@ -1,7 +1,7 @@
 <%= form_with(model: admin) do |f| %>
   <% if admin.errors.any? %>
     <div style="color: red">
-      <h2><%= pluralize(admin.errors.count, "error") %> prohibited this admin from being saved:</h2>
+      <h2><%= t("admins.errors_header", count: admin.errors.count) %></h2>
       <ul>
         <% admin.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -11,16 +11,16 @@
   <% end %>
 
   <fieldset class="mb-3">
-    <legend>Datos del Usuario</legend>
+    <legend><%= t("admins.form_user_data") %></legend>
     <div class="row">
       <div class="col-md-6">
         <%= f.fields_for :user do |u| %>
           <div class="mb-2">
-            <%= u.label :firstname, 'Nombre' %>
+            <%= u.label :firstname, t("admins.firstname") %>
             <%= u.text_field :firstname, class: 'form-control' %>
           </div>
           <div class="mb-2">
-            <%= u.label :lastname, 'Apellido' %>
+            <%= u.label :lastname, t("admins.lastname") %>
             <%= u.text_field :lastname, class: 'form-control' %>
           </div>
           <div class="mb-2">
@@ -43,19 +43,19 @@
   </fieldset>
 
   <fieldset>
-    <legend>Perfil de Admin</legend>
+    <legend><%= t("admins.form_profile") %></legend>
     <div class="row">
       <div class="col-md-6">
         <div class="mb-2">
-          <%= f.label :title, 'Titulo' %>
+          <%= f.label :title, t("admins.title") %>
           <%= f.text_field :title, class: 'form-control' %>
         </div>
         <div class="mb-2">
-          <%= f.label :contact_number, 'Telefono' %>
+          <%= f.label :contact_number, t("admins.contact_number") %>
           <%= f.text_field :contact_number, class: 'form-control' %>
         </div>
         <div class="mb-2">
-          <%= f.label :contact_address, 'Direccion' %>
+          <%= f.label :contact_address, t("admins.contact_address") %>
           <%= f.text_field :contact_address, class: 'form-control' %>
         </div>
       </div>

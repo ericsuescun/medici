@@ -5,10 +5,10 @@
 <% studies_with_profiles = Array(@patient.user&.studies).select(&:criteria_profile) %>
 <% if studies_with_profiles.any? && policy(@patient).update? %>
   <div class="mt-3">
-    <h5>Evaluación de elegibilidad</h5>
+    <h5><%= t("patients.eligibility_assessment") %></h5>
     <div class="d-flex flex-column align-items-start gap-2">
       <% studies_with_profiles.each do |study| %>
-        <%= link_to "Evaluar criterios — #{study.public_title}",
+        <%= link_to t("patients.assess_criteria", title: study.public_title),
                     patient_criteria_assessment_path(@patient, criteria_profile_id: study.criteria_profile.id),
                     class: "btn btn-sm btn-outline-primary" %>
       <% end %>
@@ -17,11 +17,11 @@
 <% end %>
 
 <div>
-  <%= link_to "Edit this patient", edit_patient_path(@patient) %> |
-  <%= link_to "Back to patients", patients_path %>
+  <%= link_to t("common.edit"), edit_patient_path(@patient) %> |
+  <%= link_to t("patients.back_to_index"), patients_path %>
   <% if current_user&.admin? %>
-    | <%= link_to "Control de cambios", change_control_path("Patient", @patient.id) %>
+    | <%= link_to t("patients.change_control"), change_control_path("Patient", @patient.id) %>
   <% end %>
 
-  <%= button_to "Destroy this patient", @patient, method: :delete %>
+  <%= button_to t("common.destroy"), @patient, method: :delete %>
 </div>

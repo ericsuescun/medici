@@ -3,10 +3,10 @@
     <div class="col-12 mx-auto">
       <p style="color: green"><%= notice %></p>
 
-      <% content_for :title, "Ciudades" %>
-      <%= link_to "Nueva ciudad", new_city_path %> |
-      <%= link_to "Retornar a Vitalia", static_pages_medici_home_path %>
-      <h1>Ciudades</h1>
+      <% content_for :title, t("nav.cities") %>
+      <%= link_to t("cities.new"), new_city_path %> |
+      <%= link_to t("cities.home_link"), static_pages_medici_home_path %>
+      <h1><%= t("nav.cities") %></h1>
 
 
         <div class="row">
@@ -18,8 +18,8 @@
 
             <% end %>
         </div>
-      <%= link_to "Nueva ciudad", new_city_path %> |
-      <%= link_to "Retornar a Vitalia", static_pages_medici_home_path %>
+      <%= link_to t("cities.new"), new_city_path %> |
+      <%= link_to t("cities.home_link"), static_pages_medici_home_path %>
     </div>
   </div>
 </div>

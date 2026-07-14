@@ -3,13 +3,13 @@
     <div class="alert alert-success"><%= notice %></div>
   <% end %>
 
-  <% content_for :title, "Trial center branches" %>
+  <% content_for :title, t("trial_center_branches.index_title") %>
 
-  <h1 class="mb-4">Sedes</h1>
+  <h1 class="mb-4"><%= t("trial_center_branches.index_title") %></h1>
 
   <div class="mb-4">
-    <%= link_to "Retornar a Vitalia", static_pages_medici_home_path %> |
-    <%= link_to "Nueva Sede", new_trial_center_branch_path %>
+    <%= link_to t("trial_center_branches.back_home"), static_pages_medici_home_path %> |
+    <%= link_to t("trial_center_branches.new_title"), new_trial_center_branch_path %>
   </div>
 
   <div id="trial_center_branches" class="row">
@@ -17,14 +17,14 @@
       <div class="col-md-6 mb-4">
         <%= render trial_center_branch %>
         <div class="mt-2">
-          <%= link_to "Mostrar", trial_center_branch, class: "btn btn-primary" %>
+          <%= link_to t("common.show"), trial_center_branch, class: "btn btn-primary" %>
         </div>
       </div>
     <% end %>
   </div>
 
   <div class="mt-4">
-    <%= link_to "Retornar a Vitalia", static_pages_medici_home_path %> |
-    <%= link_to "Nueva sede", new_trial_center_branch_path %>
+    <%= link_to t("trial_center_branches.back_home"), static_pages_medici_home_path %> |
+    <%= link_to t("trial_center_branches.new_title"), new_trial_center_branch_path %>
   </div>
 </div>

@@ -1,12 +1,12 @@
-<% content_for :title, "Editing trial city" %>
+<% content_for :title, t("trial_cities.edit_title") %>
 
-<h1>Editing trial city</h1>
+<h1><%= t("trial_cities.edit_title") %></h1>
 
 <%= render "form", trial_city: @trial_city %>
 
 <br>
 
 <div>
-  <%= link_to "Show this trial city", @trial_city %> |
-  <%= link_to "Back to trial cities", trial_cities_path %>
+  <%= link_to t("common.show"), @trial_city %> |
+  <%= link_to t("trial_cities.back_to_index"), trial_cities_path %>
 </div>

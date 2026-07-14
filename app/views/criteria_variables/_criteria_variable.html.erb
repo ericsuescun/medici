@@ -4,55 +4,55 @@
   </div>
   <div class="card-body">
     <p>
-      <strong>Descripción:</strong>
+      <strong><%= t("criteria_variables.description") %>:</strong>
       <%= criteria_variable.description.presence || '-' %>
     </p>
     <p>
-      <strong>Tipo de variable:</strong>
+      <strong><%= CriteriaVariable.human_attribute_name(:value_type) %>:</strong>
       <%= criteria_variable.value_type %>
     </p>
     <p>
-      <strong>Tipo de regla:</strong>
+      <strong><%= CriteriaVariable.human_attribute_name(:variable_type) %>:</strong>
       <% if criteria_variable.variable_type == "inclusion" %>
-        <span class="badge bg-success">inclusion</span>
+        <span class="badge bg-success"><%= t_enum(criteria_variable, :variable_type) %></span>
       <% else %>
-        <span class="badge bg-danger">exclusion</span>
+        <span class="badge bg-danger"><%= t_enum(criteria_variable, :variable_type) %></span>
       <% end %>
     </p>
     <p>
-      <strong>Tipo de comparación:</strong>
+      <strong><%= CriteriaVariable.human_attribute_name(:comparison_type) %>:</strong>
       <%= criteria_variable.comparison_type %>
     </p>
     <p>
-      <strong>Valor referencia 1:</strong>
+      <strong><%= CriteriaVariable.human_attribute_name(:reference_value_1) %>:</strong>
       <%= criteria_variable.reference_value_1 %>
     </p>
     <p>
-      <strong>Valor referencia 2:</strong>
+      <strong><%= CriteriaVariable.human_attribute_name(:reference_value_2) %>:</strong>
       <%= criteria_variable.reference_value_2 %>
     </p>
 
     <p>
-      <strong>Escala cualitativa:</strong>
+      <strong><%= CriteriaVariable.human_attribute_name(:qualitative_scale) %>:</strong>
       <%= (criteria_variable.qualitative_scale || []).join(', ').presence || '-' %>
     </p>
     <p>
-      <strong>Valor cualitativo:</strong>
+      <strong><%= CriteriaVariable.human_attribute_name(:qualitative_value) %>:</strong>
       <%= criteria_variable.qualitative_value.presence || '-' %>
     </p>
 
     <p>
-      <strong>Condiciones:</strong>
+      <strong><%= CriteriaVariable.human_attribute_name(:conditions) %>:</strong>
       <%= criteria_variable.conditions.presence || '-' %>
     </p>
 
     <p>
-      <strong>Habilitada:</strong>
-      <%= criteria_variable.enabled? ? 'Sí' : 'No' %>
+      <strong><%= CriteriaVariable.human_attribute_name(:enabled) %>:</strong>
+      <%= criteria_variable.enabled? ? t("common.yes") : t("common.no") %>
     </p>
     <p>
-      <strong>Visible:</strong>
-      <%= criteria_variable.shown? ? 'Sí' : 'No' %>
+      <strong><%= CriteriaVariable.human_attribute_name(:shown) %>:</strong>
+      <%= criteria_variable.shown? ? t("common.yes") : t("common.no") %>
     </p>
   </div>
 </div>

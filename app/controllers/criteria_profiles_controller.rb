@@ -26,7 +26,7 @@ class CriteriaProfilesController < SecureApplicationController
 
     respond_to do |format|
       if @criteria_profile.save
-        format.html { redirect_to criteria_profile_url(@criteria_profile), notice: "Criteria profile was successfully created." }
+        format.html { redirect_to criteria_profile_url(@criteria_profile), notice: t("criteria_profiles.flash.created") }
         format.json { render :show, status: :created, location: @criteria_profile }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -39,7 +39,7 @@ class CriteriaProfilesController < SecureApplicationController
   def update
     respond_to do |format|
       if @criteria_profile.update(criteria_profile_params)
-        format.html { redirect_to criteria_profile_url(@criteria_profile), notice: "Criteria profile was successfully updated." }
+        format.html { redirect_to criteria_profile_url(@criteria_profile), notice: t("criteria_profiles.flash.updated") }
         format.json { render :show, status: :ok, location: @criteria_profile }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -53,7 +53,7 @@ class CriteriaProfilesController < SecureApplicationController
     @criteria_profile.destroy!
 
     respond_to do |format|
-      format.html { redirect_to criteria_profiles_url, notice: "Criteria profile was successfully destroyed." }
+      format.html { redirect_to criteria_profiles_url, notice: t("criteria_profiles.flash.destroyed") }
       format.json { head :no_content }
     end
   end

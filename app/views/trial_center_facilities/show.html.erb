@@ -6,10 +6,10 @@
       <%= render @trial_center_facility %>
 
       <div>
-        <%= link_to "Editar", edit_trial_center_facility_path(@trial_center_facility) %> |
-        <%= link_to "Retornar a Centros de Ensayo Clinicos", trial_center_facilities_path %>
+        <%= link_to t("common.edit"), edit_trial_center_facility_path(@trial_center_facility) %> |
+        <%= link_to t("trial_center_facilities.back_to_index"), trial_center_facilities_path %>
 
-        <%= button_to "Borrar", @trial_center_facility, method: :delete, class: "btn btn-primary btn-block mt-3 mb-3" %>
+        <%= button_to t("common.delete"), @trial_center_facility, method: :delete, class: "btn btn-primary btn-block mt-3 mb-3" %>
       </div>
     </div>
   </div>

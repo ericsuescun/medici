@@ -6,34 +6,34 @@
       <%= render @criteria_profile %>
 
       <div class="mt-3">
-        <%= link_to "Editar", edit_criteria_profile_path(@criteria_profile) %> |
-        <%= link_to "Retornar a Perfiles", criteria_profiles_path %>
+        <%= link_to t("common.edit"), edit_criteria_profile_path(@criteria_profile) %> |
+        <%= link_to t("criteria_profiles.back_to_profiles"), criteria_profiles_path %>
         <% if current_user&.admin? %>
-          | <%= link_to "Control de cambios", change_control_path("CriteriaProfile", @criteria_profile.id) %>
+          | <%= link_to t("criteria_profiles.change_control"), change_control_path("CriteriaProfile", @criteria_profile.id) %>
         <% end %>
 
-        <%= button_to "Borrar", @criteria_profile, method: :delete, class: "btn btn-primary btn-block mt-3 mb-3" %>
+        <%= button_to t("common.delete"), @criteria_profile, method: :delete, class: "btn btn-primary btn-block mt-3 mb-3" %>
       </div>
 
       <hr/>
       <div class="d-flex justify-content-between align-items-center mb-2">
-        <h3>Variables de Criterios</h3>
-        <%= link_to 'Nueva Variable', new_criteria_profile_criteria_variable_path(@criteria_profile), class: 'btn btn-primary' %>
+        <h3><%= t("criteria_profiles.variables_section") %></h3>
+        <%= link_to t("criteria_variables.new_variable"), new_criteria_profile_criteria_variable_path(@criteria_profile), class: 'btn btn-primary' %>
       </div>
 
       <% if @criteria_profile.criteria_variables.any? %>
         <table class="table table-striped">
           <thead>
           <tr>
-            <th>Orden</th>
-            <th>Nombre</th>
-            <th>Tipo</th>
-            <th>Tipo de regla</th>
-            <th>Comparación</th>
-            <th>Ref 1</th>
-            <th>Ref 2</th>
-            <th>Escala cualitativa</th>
-            <th>Valor cualitativo</th>
+            <th><%= CriteriaVariable.human_attribute_name(:criteria_order) %></th>
+            <th><%= CriteriaVariable.human_attribute_name(:name) %></th>
+            <th><%= CriteriaVariable.human_attribute_name(:value_type) %></th>
+            <th><%= CriteriaVariable.human_attribute_name(:variable_type) %></th>
+            <th><%= CriteriaVariable.human_attribute_name(:comparison_type) %></th>
+            <th><%= CriteriaVariable.human_attribute_name(:reference_value_1) %></th>
+            <th><%= CriteriaVariable.human_attribute_name(:reference_value_2) %></th>
+            <th><%= CriteriaVariable.human_attribute_name(:qualitative_scale) %></th>
+            <th><%= CriteriaVariable.human_attribute_name(:qualitative_value) %></th>
             <th></th>
           </tr>
           </thead>
@@ -62,9 +62,9 @@
           <% end %>
           </tbody>
         </table>
-        <%= link_to 'Ver todas las variables', criteria_profile_criteria_variables_path(@criteria_profile) %>
+        <%= link_to t("criteria_profiles.view_all_variables"), criteria_profile_criteria_variables_path(@criteria_profile) %>
       <% else %>
-        <div class="alert alert-info">Este perfil no tiene variables aún.</div>
+        <div class="alert alert-info"><%= t("criteria_profiles.no_variables") %></div>
       <% end %>
     </div>
   </div>

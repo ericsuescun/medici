@@ -1,21 +1,21 @@
 <div id="<%= dom_id article %>">
   <p>
-    <strong>Title:</strong>
+    <strong><%= Article.human_attribute_name(:title) %>:</strong>
     <%= article.title %>
   </p>
 
   <p>
-    <strong>Description:</strong>
+    <strong><%= Article.human_attribute_name(:description) %>:</strong>
     <%= article.description %>
   </p>
 
   <p>
-    <strong>Url:</strong>
+    <strong><%= Article.human_attribute_name(:url) %>:</strong>
     <%= article.url %>
   </p>
 
   <p>
-    <strong>Studies:</strong>
+    <strong><%= Article.human_attribute_name(:studies_id) %>:</strong>
     <%= article.studies_id %>
   </p>
 

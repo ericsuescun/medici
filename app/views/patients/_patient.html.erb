@@ -5,65 +5,65 @@
   <div class="card-body">
     <% if policy(patient).show_state? %>
       <p>
-        <strong>State:</strong>
+        <strong><%= Patient.human_attribute_name(:state) %>:</strong>
         <%= patient.state %>
       </p>
 
       <div class="mb-3">
         <div class="btn-group" role="group">
           <% if policy(patient).assess? %>
-            <%= button_to 'Evaluar', transition_patient_path(patient, event: 'assess'), method: :post, class: 'btn btn-sm btn-outline-primary', form: { data: { turbo: true } } %>
+            <%= button_to t("patients.assess"), transition_patient_path(patient, event: 'assess'), method: :post, class: 'btn btn-sm btn-outline-primary', form: { data: { turbo: true } } %>
           <% end %>
           <% if policy(patient).accept? %>
-            <%= button_to 'Aceptar', transition_patient_path(patient, event: 'accept'), method: :post, class: 'btn btn-sm btn-outline-success', form: { data: { turbo: true } } %>
+            <%= button_to t("patients.accept"), transition_patient_path(patient, event: 'accept'), method: :post, class: 'btn btn-sm btn-outline-success', form: { data: { turbo: true } } %>
           <% end %>
           <% if policy(patient).discard? %>
-            <%= button_to 'Descartar', transition_patient_path(patient, event: 'discard'), method: :post, class: 'btn btn-sm btn-outline-warning', form: { data: { turbo: true } } %>
+            <%= button_to t("patients.discard"), transition_patient_path(patient, event: 'discard'), method: :post, class: 'btn btn-sm btn-outline-warning', form: { data: { turbo: true } } %>
           <% end %>
           <% if policy(patient).reject? %>
-            <%= button_to 'Rechazar', transition_patient_path(patient, event: 'reject'), method: :post, class: 'btn btn-sm btn-outline-danger', form: { data: { turbo: true } } %>
+            <%= button_to t("patients.reject"), transition_patient_path(patient, event: 'reject'), method: :post, class: 'btn btn-sm btn-outline-danger', form: { data: { turbo: true } } %>
           <% end %>
         </div>
       </div>
     <% end %>
 
     <p>
-      <strong>Country:</strong>
+      <strong><%= Patient.human_attribute_name(:country) %>:</strong>
       <%= patient.country %>
     </p>
 
     <p>
-      <strong>ID Type:</strong>
+      <strong><%= Patient.human_attribute_name(:id_type) %>:</strong>
       <%= patient.id_type %>
     </p>
 
     <p>
-      <strong>ID Number:</strong>
+      <strong><%= Patient.human_attribute_name(:id_number) %>:</strong>
       <%= patient.id_number %>
     </p>
 
     <p>
-      <strong>Illness Description:</strong>
+      <strong><%= Patient.human_attribute_name(:illness_description) %>:</strong>
       <%= patient.illness_description %>
     </p>
 
     <p>
-      <strong>Date of Birth:</strong>
+      <strong><%= Patient.human_attribute_name(:dob) %>:</strong>
       <%= patient.dob %>
     </p>
 
     <p>
-      <strong>Contact number:</strong>
+      <strong><%= Patient.human_attribute_name(:contact_number) %>:</strong>
       <%= patient.contact_number %>
     </p>
 
     <p>
-      <strong>Contact address:</strong>
+      <strong><%= Patient.human_attribute_name(:contact_address) %>:</strong>
       <%= patient.contact_address %>
     </p>
 
     <p>
-      <strong>Email:</strong>
+      <strong><%= Patient.human_attribute_name(:email) %>:</strong>
       <%= patient.email %>
     </p>
   </div>

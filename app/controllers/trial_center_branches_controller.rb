@@ -31,7 +31,7 @@ class TrialCenterBranchesController < SecureApplicationController
 
         @cities = City.all.order(name: :asc).uniq
 
-        format.html { redirect_to trial_center_branch_url(@trial_center_branch), notice: "Trial center branch was successfully created." }
+        format.html { redirect_to trial_center_branch_url(@trial_center_branch), notice: t("trial_center_branches.flash.created") }
         format.json { render :show, status: :created, location: @trial_center_branch }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -51,7 +51,7 @@ class TrialCenterBranchesController < SecureApplicationController
           @trial_center_branch.cities << City.find(params[:trial_center_branch][:city_id])
         end
 
-        format.html { redirect_to trial_center_branch_url(@trial_center_branch), notice: "Trial center branch was successfully updated." }
+        format.html { redirect_to trial_center_branch_url(@trial_center_branch), notice: t("trial_center_branches.flash.updated") }
         format.json { render :show, status: :ok, location: @trial_center_branch }
       else
         @cities = City.all.order(name: :asc).uniq
@@ -66,7 +66,7 @@ class TrialCenterBranchesController < SecureApplicationController
     @trial_center_branch.destroy!
 
     respond_to do |format|
-      format.html { redirect_to trial_center_branches_url, notice: "Trial center branch was successfully destroyed." }
+      format.html { redirect_to trial_center_branches_url, notice: t("trial_center_branches.flash.destroyed") }
       format.json { head :no_content }
     end
   end
