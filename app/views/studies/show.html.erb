@@ -57,15 +57,15 @@
                       <td><%= variable.criteria_order.present? ? variable.criteria_order : '-' %></td>
                       <td><%= link_to variable.name, [profile, variable] %></td>
                       <td><%= variable.description %></td>
-                      <td><%= variable.value_type %></td>
+                      <td><%= t_enum(variable, :value_type) %></td>
                       <td>
                         <% if variable.variable_type == "inclusion" %>
-                          <span class="badge bg-success">inclusion</span>
+                          <span class="badge bg-success"><%= t_enum(variable, :variable_type) %></span>
                         <% else %>
-                          <span class="badge bg-danger">exclusion</span>
+                          <span class="badge bg-danger"><%= t_enum(variable, :variable_type) %></span>
                         <% end %>
                       </td>
-                      <td><%= variable.comparison_type %></td>
+                      <td><%= t_enum(variable, :comparison_type) %></td>
                       <td><%= variable.reference_value_1 %></td>
                       <td><%= variable.reference_value_2 %></td>
                       <td><%= variable.conditions.presence || '-' %></td>

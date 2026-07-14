@@ -1,0 +1,8 @@
+<div class="d-flex gap-1 align-items-center me-3" aria-label="<%= t("languages.selector_label") %>">
+  <% I18n.available_locales.each do |loc| %>
+    <%= link_to loc.to_s.upcase, locale_switch_url(loc),
+                class: "badge text-decoration-none #{I18n.locale == loc ? 'bg-primary' : 'bg-secondary'}",
+                title: t("languages.#{loc}"),
+                "aria-current": (I18n.locale == loc ? "true" : nil) %>
+  <% end %>
+</div>

@@ -4,26 +4,24 @@
   </div>
   <div class="card-body">
     <p>
-      <strong>Inicales:</strong>
+      <strong><%= Sponsor.human_attribute_name(:initials) %>:</strong>
       <%= sponsor.capitals %>
     </p>
 
     <p>
-      <strong>Tipo de patrocinador:</strong>
-      <%= sponsor.sponsor_type %>
+      <strong><%= Sponsor.human_attribute_name(:sponsor_type) %>:</strong>
+      <%= t_enum(sponsor, :sponsor_type) %>
     </p>
-  <h1>Estudios asociados</h1>
+  <h1><%= t("sponsors.associated_studies") %></h1>
   <table class="table table-striped">
     <thead>
     <tr>
-      <th>Short title</th>
-      <th>Scientific title</th>
-      <th>CEC asociados</th>
-      <th>Study status</th>
-
-      <th>Completed at</th>
-
-      <th>Reviewed</th>
+      <th><%= Study.human_attribute_name(:short_title) %></th>
+      <th><%= Study.human_attribute_name(:scientific_title) %></th>
+      <th><%= t("studies.associated_facilities") %></th>
+      <th><%= Study.human_attribute_name(:study_status) %></th>
+      <th><%= Study.human_attribute_name(:completed_at) %></th>
+      <th><%= t("studies.reviewed") %></th>
     </tr>
     </thead>
     <tbody>
@@ -32,10 +30,9 @@
         <td><%= link_to study.short_title, study %></td>
         <td><%= link_to study.scientific_title, study %></td>
         <td><%= study.trial_center_facilities.pluck(:name).join(', ') %></td>
-        <td><%= study.study_status %></td>
-
+        <td><%= t_enum(study, :study_status) %></td>
         <td><%= study.completed_at %></td>
-        <td><%= study.reviewed %></td>
+        <td><%= study.reviewed ? t("common.yes") : t("common.no") %></td>
       </tr>
     <% end %>
     </tbody>

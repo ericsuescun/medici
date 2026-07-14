@@ -40,7 +40,7 @@
                                       when "recruiting" then "bg-primary"
                                       else "bg-warning" 
                                       end %>
-                    <span class="badge <%= status_class %>"><%= study.study_status %></span>
+                    <span class="badge <%= status_class %>"><%= t_enum(study, :study_status) %></span>
                   </td>
                   <td><%= study.completed_at&.strftime("%d/%m/%Y") %></td>
                 </tr>

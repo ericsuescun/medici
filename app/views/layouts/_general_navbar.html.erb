@@ -1,50 +1,51 @@
 <nav class="navbar navbar-expand-lg fixed-top">
   <div class="container-fluid">
     <a class="navbar-brand" href="/static_pages/medici_home">Vitalia</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="<%= t("nav.toggle") %>">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <%= link_to 'Patrocinadores', sponsors_path, class: "nav-link" %>
+          <%= link_to t("nav.sponsors"), sponsors_path, class: "nav-link" %>
         </li>
         <li class="nav-item">
-          <%= link_to 'Estudios', studies_path, class: "nav-link" %>
+          <%= link_to t("nav.studies"), studies_path, class: "nav-link" %>
         </li>
         <li class="nav-item">
-          <%= link_to 'Centros de Ensayos Clinicos', trial_center_facilities_path, class: "nav-link" %>
+          <%= link_to t("nav.facilities"), trial_center_facilities_path, class: "nav-link" %>
         </li>
         <li class="nav-item">
-          <%= link_to 'Medicamentos', medications_path, class: "nav-link" %>
+          <%= link_to t("nav.medications"), medications_path, class: "nav-link" %>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Usuarios
+            <%= t("nav.users") %>
           </a>
           <ul class="dropdown-menu">
-            <li><%= link_to 'Administradores', admins_path, class: 'dropdown-item' %></li>
-            <li><%= link_to 'Representantes de Patrocinadores', sponsor_reps_path, class: 'dropdown-item' %></li>
-            <li><%= link_to 'Representantes de Sedes', trial_center_branch_reps_path, class: 'dropdown-item' %></li>
-            <li><%= link_to 'Pacientes', patients_path, class: 'dropdown-item' %></li>
+            <li><%= link_to t("nav.admins"), admins_path, class: 'dropdown-item' %></li>
+            <li><%= link_to t("nav.sponsor_reps"), sponsor_reps_path, class: 'dropdown-item' %></li>
+            <li><%= link_to t("nav.branch_reps"), trial_center_branch_reps_path, class: 'dropdown-item' %></li>
+            <li><%= link_to t("nav.patients"), patients_path, class: 'dropdown-item' %></li>
             <% if current_user&.admin? %>
               <li><hr class="dropdown-divider"></li>
-              <li><%= link_to 'Gestionar Roles', roles_path, class: 'dropdown-item' %></li>
+              <li><%= link_to t("nav.roles"), roles_path, class: 'dropdown-item' %></li>
             <% end %>
           </ul>
         </li>
         <li class="nav-item">
-          <%= link_to 'Perfiles', criteria_profiles_path, class: "nav-link" %>
+          <%= link_to t("nav.profiles"), criteria_profiles_path, class: "nav-link" %>
         </li>
         <li class="nav-item">
-          <%= link_to 'Ciudades', cities_path, class: "nav-link" %>
+          <%= link_to t("nav.cities"), cities_path, class: "nav-link" %>
         </li>
       </ul>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search"/>
-        <button class="btn btn-outline-primary" type="submit">Search</button>
+      <form class="d-flex me-3" role="search">
+        <input class="form-control me-2" type="search" placeholder="<%= t("nav.search") %>" aria-label="<%= t("nav.search") %>"/>
+        <button class="btn btn-outline-primary" type="submit"><%= t("nav.search") %></button>
       </form>
-      <%= "user: #{current_user.email}" if user_signed_in? %>
+      <%= render "layouts/locale_selector" %>
+      <span class="navbar-text small text-muted"><%= current_user.email if user_signed_in? %></span>
     </div>
   </div>
 </nav>

@@ -1,31 +1,216 @@
-# Files in the config/locales directory are used for internationalization and
-# are automatically loaded by Rails. If you want to use locales other than
-# English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more about the API, please read the Rails Internationalization guide
-# at https://guides.rubyonrails.org/i18n.html.
-#
-# Be aware that YAML interprets the following case-insensitive strings as
-# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
-# must be quoted to be interpreted as strings. For example:
-#
-#     en:
-#       "yes": yup
-#       enabled: "ON"
-
 en:
-  hello: "Hello world"
+  # ---- Language selector ----
+  languages:
+    selector_label: "Select language"
+    es: "Spanish"
+    en: "English"
+    fr: "French"
+    pt: "Portuguese"
+
+  # ---- Navigation / menus ----
+  nav:
+    toggle: "Toggle navigation"
+    sponsors: "Sponsors"
+    studies: "Studies"
+    facilities: "Clinical Trial Centers"
+    medications: "Medications"
+    users: "Users"
+    admins: "Administrators"
+    sponsor_reps: "Sponsor Representatives"
+    branch_reps: "Site Representatives"
+    patients: "Patients"
+    roles: "Manage Roles"
+    profiles: "Profiles"
+    cities: "Cities"
+    my_data: "My data"
+    search: "Search"
+
+  # ---- Shared UI ----
+  common:
+    edit: "Edit"
+    back: "Back"
+    show: "View"
+    new: "New"
+    create: "Create"
+    save: "Save"
+    update: "Update"
+    destroy: "Delete"
+    delete: "Delete"
+    cancel: "Cancel"
+    actions: "Actions"
+    confirm: "Are you sure?"
+    filter: "Filter"
+    clear: "Clear"
+    "yes": "Yes"
+    "no": "No"
+    none: "—"
+    export_csv: "Export CSV"
+    age:
+      years:
+        one: "%{count} year"
+        other: "%{count} years"
+      months:
+        one: "%{count} month"
+        other: "%{count} months"
+      days:
+        one: "%{count} day"
+        other: "%{count} days"
+
+  errors:
+    not_authorized: "You are not authorized to perform this action."
+
+  sponsors:
+    associated_studies: "Associated studies"
+  studies:
+    associated_facilities: "Associated clinical trial centers"
+
+  # ---- Enum value labels (used via t_enum helper) ----
+  enums:
+    sponsor:
+      sponsor_type:
+        private_type: "Private"
+        public_type: "Public"
+        mixed_type: "Mixed"
+    study:
+      study_status:
+        completed: "Completed"
+        recruiting: "Recruiting"
+      study_phase:
+        I: "Phase I"
+        II: "Phase II"
+        III: "Phase III"
+        IV: "Phase IV"
+    result:
+      result_type:
+        primary: "Primary"
+        secondary: "Secondary"
+        empty: "—"
+    criteria_variable: &criteria_enums
+      value_type:
+        boolean: "Boolean"
+        quantitative: "Quantitative"
+        qualitative: "Qualitative"
+      variable_type:
+        inclusion: "Inclusion"
+        exclusion: "Exclusion"
+      comparison_type:
+        less_than: "Less than"
+        less_than_or_equal: "Less than or equal to"
+        more_than: "Greater than"
+        more_than_or_equal: "Greater than or equal to"
+        between_range: "Within range"
+        out_of_range: "Out of range"
+        equal: "Equal to"
+        different: "Different from"
+        "true": "True"
+        "false": "False"
+    variable_value: *criteria_enums
+
+  # ---- Model & attribute names (auto-translates form labels & human_attribute_name) ----
+  activerecord:
+    models:
+      sponsor: "Sponsor"
+      study: "Study"
+      patient: "Patient"
+      medication: "Medication"
+      city: "City"
+      result: "Result"
+      criteria_profile: "Criteria Profile"
+      criteria_variable: "Criteria Variable"
+      variable_value: "Variable Value"
+      trial_center_facility: "Clinical Trial Center"
+      trial_center_branch: "Site"
+      sponsor_rep: "Sponsor Representative"
+      trial_center_branch_rep: "Site Representative"
+      admin: "Administrator"
+      contact: "Contact"
+      article: "Article"
+      role: "Role"
+      consent: "Authorization"
+      user: "User"
+    attributes:
+      sponsor:
+        name: "Name"
+        initials: "Initials"
+        shortname: "Short name"
+        sponsor_type: "Sponsor type"
+        international: "International"
+      study:
+        public_title: "Public title"
+        scientific_title: "Scientific title"
+        short_title: "Short title"
+        study_status: "Study status"
+        study_phase: "Study phase"
+        inclusion_criteria: "Inclusion criteria"
+        exclusion_criteria: "Exclusion criteria"
+        main_intervention: "Main intervention"
+        sample_size: "Sample size"
+        sex: "Sex"
+        started_at: "Start date"
+        completed_at: "Completion date"
+        first_patient_at: "First patient"
+        global_ending_at: "Global end"
+        reviewed: "Reviewed"
+        sponsor: "Sponsor"
+      patient:
+        firstname: "First name"
+        lastname: "Last name"
+        fullname: "Full name"
+        email: "Email"
+        dob: "Date of birth"
+        sex: "Sex"
+        contact_number: "Contact number"
+        contact_address: "Contact address"
+        country: "Country"
+        id_type: "Document type"
+        id_number: "Document number"
+        illness_description: "Illness description"
+        notes: "Notes"
+        state: "State"
+        participant_code: "Participant code"
+      criteria_profile:
+        name: "Name"
+        description: "Description"
+      criteria_variable:
+        name: "Name"
+        value_type: "Value type"
+        variable_type: "Rule type"
+        comparison_type: "Comparison"
+        reference_value_1: "Reference value 1"
+        reference_value_2: "Reference value 2"
+        qualitative_scale: "Qualitative scale"
+        qualitative_value: "Qualitative value"
+        criteria_order: "Order"
+        enabled: "Enabled"
+        shown: "Shown"
+        conditions: "Conditions"
+      result:
+        name: "Name"
+        result_type: "Result type"
+        description: "Description"
+      medication:
+        name: "Name"
+        description: "Description"
+      city:
+        name: "Name"
+      sponsor_rep:
+        title: "Title"
+        contact_number: "Contact number"
+        contact_address: "Contact address"
+      trial_center_branch_rep:
+        title: "Title"
+        contact_number: "Contact number"
+        contact_address: "Contact address"
+      trial_center_facility:
+        name: "Name"
+      trial_center_branch:
+        name: "Name"
+      contact:
+        name: "Name"
+        email: "Email"
+        phone: "Phone"
+      article:
+        title: "Title"
+        url: "URL"
+      role:
+        name: "Name"

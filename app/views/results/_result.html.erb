@@ -5,8 +5,8 @@
   </p>
 
   <p>
-    <strong>Result type:</strong>
-    <%= result.result_type %>
+    <strong><%= Result.human_attribute_name(:result_type) %>:</strong>
+    <%= t_enum(result, :result_type) %>
   </p>
 
   <p>
