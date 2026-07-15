@@ -9,6 +9,54 @@
     </div>
     <div class="card-body">
       <div class="row">
+        <div class="col-lg-4 mb-4 mb-lg-0">
+          <div class="card stat-card mb-3">
+            <div class="card-body">
+              <p class="mb-3">
+                <strong><%= Study.human_attribute_name(:started_at) %>:</strong><br>
+                <%= @study.started_at ? l(@study.started_at, format: :long) : t("static_pages.study_details.none") %>
+              </p>
+
+              <p class="mb-3">
+                <strong><%= t("static_pages.study_details.has_participants") %>:</strong>
+                <% if @study.any_patient_enrolled? %>
+                  <span class="badge bg-success"><%= t("common.yes") %></span>
+                <% else %>
+                  <span class="badge bg-secondary"><%= t("common.no") %></span>
+                <% end %>
+              </p>
+
+              <p class="mb-0">
+                <strong><%= Study.human_attribute_name(:study_status) %>:</strong>
+                <%= t_enum(@study, :study_status) %>
+              </p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><%= t("static_pages.study_details.contact") %></div>
+            <div class="card-body">
+              <% if @study.contacts.any? %>
+                <% @study.contacts.each do |contact| %>
+                  <div class="mb-3">
+                    <p class="mb-1"><strong><%= contact.fullname %></strong></p>
+                    <% if contact.email1.present? %><p class="mb-1 small">✉️ <%= mail_to contact.email1 %></p><% end %>
+                    <% if contact.number1.present? %><p class="mb-1 small">📞 <%= contact.number1 %></p><% end %>
+                    <% if contact.address1.present? %><p class="mb-1 small">📍 <%= contact.address1 %></p><% end %>
+                    <% if (href = safe_external_url(contact.url)) %><p class="mb-0 small">🔗 <%= link_to contact.url, href, target: "_blank", rel: "noopener" %></p><% end %>
+                  </div>
+                <% end %>
+              <% else %>
+                <p class="text-muted mb-0"><%= t("static_pages.study_details.none") %></p>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="mt-3 d-grid">
+            <%= link_to t("static_pages.showcase.participate"), new_user_registration_path(study_id: @study.id), class: "btn btn-success" %>
+          </div>
+        </div>
+
         <div class="col-lg-8">
           <h5><%= t("static_pages.study_details.description") %></h5>
           <p><%= @study.main_intervention.presence || t("static_pages.study_details.no_description") %></p>
@@ -62,54 +110,6 @@
           <% else %>
             <p class="text-muted"><%= t("static_pages.study_details.none") %></p>
           <% end %>
-        </div>
-
-        <div class="col-lg-4">
-          <div class="card stat-card mb-3">
-            <div class="card-body">
-              <p class="mb-3">
-                <strong><%= Study.human_attribute_name(:started_at) %>:</strong><br>
-                <%= @study.started_at ? l(@study.started_at, format: :long) : t("static_pages.study_details.none") %>
-              </p>
-
-              <p class="mb-3">
-                <strong><%= t("static_pages.study_details.has_participants") %>:</strong>
-                <% if @study.any_patient_enrolled? %>
-                  <span class="badge bg-success"><%= t("common.yes") %></span>
-                <% else %>
-                  <span class="badge bg-secondary"><%= t("common.no") %></span>
-                <% end %>
-              </p>
-
-              <p class="mb-0">
-                <strong><%= Study.human_attribute_name(:study_status) %>:</strong>
-                <%= t_enum(@study, :study_status) %>
-              </p>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header"><%= t("static_pages.study_details.contact") %></div>
-            <div class="card-body">
-              <% if @study.contacts.any? %>
-                <% @study.contacts.each do |contact| %>
-                  <div class="mb-3">
-                    <p class="mb-1"><strong><%= contact.fullname %></strong></p>
-                    <% if contact.email1.present? %><p class="mb-1 small">✉️ <%= mail_to contact.email1 %></p><% end %>
-                    <% if contact.number1.present? %><p class="mb-1 small">📞 <%= contact.number1 %></p><% end %>
-                    <% if contact.address1.present? %><p class="mb-1 small">📍 <%= contact.address1 %></p><% end %>
-                    <% if (href = safe_external_url(contact.url)) %><p class="mb-0 small">🔗 <%= link_to contact.url, href, target: "_blank", rel: "noopener" %></p><% end %>
-                  </div>
-                <% end %>
-              <% else %>
-                <p class="text-muted mb-0"><%= t("static_pages.study_details.none") %></p>
-              <% end %>
-            </div>
-          </div>
-
-          <div class="mt-3 d-grid">
-            <%= link_to t("static_pages.showcase.participate"), new_user_registration_path(study_id: @study.id), class: "btn btn-success" %>
-          </div>
         </div>
       </div>
     </div>
