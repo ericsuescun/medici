@@ -9,8 +9,24 @@
     </div>
     <div class="card-body">
       <div class="row">
-        <div class="col-lg-4 mb-4 mb-lg-0">
-          <div class="card stat-card mb-3">
+        <%# d-flex flex-column so the CTA below can be reordered per breakpoint. %>
+        <div class="col-lg-4 mb-4 mb-lg-0 d-flex flex-column">
+          <%# The participate CTA leads on mobile: it is the whole point of this
+              page for a prospective patient, and stacked below two cards it fell
+              well off the first screen. `order-lg-last` returns it to the bottom
+              of the column on desktop, which is where it was. DOM order matches
+              the mobile order so tab order follows the visual one on phones. %>
+          <div class="d-grid mb-3 mb-lg-0 mt-lg-3 order-lg-last">
+            <%= link_to t("static_pages.showcase.participate"), new_user_registration_path(study_id: @study.id), class: "btn btn-success" %>
+          </div>
+
+          <%# h-auto is load-bearing: .stat-card sets height:100% for the
+              equal-height tiles on the home page, where each is the only child
+              of its column. Here it is one of three stacked panels, so 100%
+              resolved to the full column height — the card ballooned and pushed
+              the contact card and the CTA outside the column, overlapping the
+              card below. %>
+          <div class="card stat-card h-auto mb-3">
             <div class="card-body">
               <p class="mb-3">
                 <strong><%= Study.human_attribute_name(:started_at) %>:</strong><br>
@@ -52,9 +68,6 @@
             </div>
           </div>
 
-          <div class="mt-3 d-grid">
-            <%= link_to t("static_pages.showcase.participate"), new_user_registration_path(study_id: @study.id), class: "btn btn-success" %>
-          </div>
         </div>
 
         <div class="col-lg-8">
