@@ -72,7 +72,7 @@ group :development, :test do
   gem "dotenv-rails", "~> 2.7", ">= 2.7.6"
 
   # RSpec for testing
-  gem "rspec-rails", "~> 6.1.0"
+  gem "rspec-rails", "~> 8.0.4"
   gem "shoulda-matchers", "~> 6.0"
 end
 
