@@ -26,6 +26,7 @@ es:
     cities: "Ciudades"
     my_data: "Mis datos"
     search: "Buscar"
+    about: "Acerca de"
 
   # ---- Shared UI ----
   common:

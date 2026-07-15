@@ -1,0 +1,215 @@
+<%#
+  Operation manual. Content comes from OperationManual; see that file for why
+  this page is written in Spanish rather than run through i18n.
+%>
+<% content_for :title, "Acerca de — Vitalia" %>
+
+<%
+  flag = ->(on) do
+    if on
+      tag.span("✓", class: "text-success fw-bold", title: "Sí", aria: { label: "Sí" })
+    else
+      tag.span("—", class: "text-muted", title: "No", aria: { label: "No" })
+    end
+  end
+
+  status_badge = {
+    done: [ "Implementado", "bg-success" ],
+    partial: [ "Parcial", "bg-info text-dark" ],
+    pending: [ "Pendiente", "bg-secondary" ],
+    blocked: [ "Bloqueado", "bg-warning text-dark" ]
+  }
+%>
+
+<div class="container my-5">
+  <div class="mb-4">
+    <h1 class="h2 mb-2">Acerca de Vitalia</h1>
+    <p class="lead mb-0">
+      Manual de operación de la plataforma: qué puede hacer cada tipo de usuario, sobre qué
+      marco normativo colombiano se apoya la operación, y qué está construido y qué falta.
+    </p>
+  </div>
+
+  <%#
+    No in-page anchor nav here on purpose: the layout sets body padding from JS
+    after paint, which triggers Chrome's scroll anchoring and drifts an anchor
+    jump a non-deterministic ~200px past its target. Until that layout hack is
+    replaced, the three sections below are simply read in order.
+  %>
+
+  <%# ---------------------------------------------------------------- Manual %>
+  <section id="manual" class="mb-5">
+    <h2 class="h3 mb-3">Manual de operación por rol</h2>
+
+    <div class="card health-card shadow-sm mb-4">
+      <div class="card-body">
+        <p class="mb-2">
+          Cada usuario tiene exactamente un rol, y el rol decide qué recursos ve y qué puede
+          hacer con ellos. Los permisos se traducen así a las acciones de la plataforma:
+        </p>
+        <ul class="mb-2">
+          <% OperationManual::ACTION_LEGEND.each_value do |description| %>
+            <li><%= description %></li>
+          <% end %>
+        </ul>
+        <p class="mb-0 small text-muted">
+          La tabla de cada rol muestra los permisos <strong>por defecto</strong>, que son con los
+          que se crea la plataforma. Un administrador puede ajustarlos en cualquier momento desde
+          <em>Usuarios → Gestionar roles</em>, así que ante una diferencia manda siempre lo
+          configurado allí. Todo recurso que no aparece en la tabla de un rol le está negado:
+          el permiso se concede de forma explícita y lo no concedido queda cerrado.
+        </p>
+      </div>
+    </div>
+
+    <% @roles.each do |role| %>
+      <div class="card health-card shadow-sm mb-4">
+        <div class="card-header">
+          <h3 class="h5 mb-0"><%= role.display_name %></h3>
+        </div>
+        <div class="card-body">
+          <p><%= role.summary %></p>
+
+          <h4 class="h6 text-uppercase text-muted mt-4">Responsabilidades</h4>
+          <ul>
+            <% role.responsibilities.each do |responsibility| %>
+              <li><%= responsibility %></li>
+            <% end %>
+          </ul>
+
+          <h4 class="h6 text-uppercase text-muted mt-4">Permisos por defecto</h4>
+          <% if role.full_access? %>
+            <p class="mb-2">
+              Acceso completo — ver, editar y eliminar — sobre todos los recursos de la plataforma:
+            </p>
+            <p class="mb-0">
+              <% role.permissions.keys.sort_by { |r| OperationManual.resource_label(r) }.each do |resource| %>
+                <span class="badge bg-light text-dark border me-1 mb-1"><%= OperationManual.resource_label(resource) %></span>
+              <% end %>
+            </p>
+          <% else %>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col">Recurso</th>
+                    <th scope="col" class="text-center">Ver</th>
+                    <th scope="col" class="text-center">Editar</th>
+                    <th scope="col" class="text-center">Eliminar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% role.permissions.sort_by { |resource, _| OperationManual.resource_label(resource) }.each do |resource, (can_show, can_edit, can_delete)| %>
+                    <tr>
+                      <th scope="row" class="fw-normal"><%= OperationManual.resource_label(resource) %></th>
+                      <td class="text-center"><%= flag.call(can_show) %></td>
+                      <td class="text-center"><%= flag.call(can_edit) %></td>
+                      <td class="text-center"><%= flag.call(can_delete) %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </section>
+
+  <%# ------------------------------------------------------------- Normativa %>
+  <section id="normativa" class="mb-5">
+    <h2 class="h3 mb-3">Marco normativo colombiano</h2>
+    <p>
+      Estas son las normas sobre las que se sustenta la operación en Colombia. Cada una se
+      consultó en su fuente oficial y se conserva una copia en el repositorio, porque los
+      enlaces de gobierno cambian. Los enlaces de abajo apuntan a la fuente original.
+    </p>
+
+    <div class="alert alert-warning" role="alert">
+      <strong>Esta página no es asesoría legal.</strong> Resume el análisis hecho sobre las
+      normas y distingue de forma deliberada lo confirmado de lo que sigue abierto. Los puntos
+      abiertos están señalados como tales tanto aquí como en el estado de la plataforma.
+    </div>
+
+    <% @documents.each do |document| %>
+      <div class="card health-card shadow-sm mb-3">
+        <div class="card-body">
+          <h3 class="h6 mb-1">
+            <% if document.url.present? %>
+              <%= link_to document.title, document.url, target: "_blank", rel: "noopener noreferrer" %>
+            <% else %>
+              <%= document.title %>
+              <span class="badge bg-secondary ms-1">Sin enlace verificado</span>
+            <% end %>
+          </h3>
+          <p class="small text-muted mb-2"><%= document.issuer %></p>
+          <p class="mb-0"><%= document.note %></p>
+        </div>
+      </div>
+    <% end %>
+
+    <h3 class="h5 mt-4 mb-3">Documentos internos de análisis</h3>
+    <p class="small text-muted">
+      Producidos sobre las fuentes anteriores. Viven en el repositorio y no se publican desde
+      la plataforma, por lo que se listan por su ubicación.
+    </p>
+    <ul class="list-group mb-0">
+      <% @internal_documents.each do |document| %>
+        <li class="list-group-item">
+          <code><%= document.title %></code>
+          <p class="mb-0 small text-muted"><%= document.note %></p>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+
+  <%# ---------------------------------------------------------------- Estado %>
+  <section id="estado" class="mb-5">
+    <h2 class="h3 mb-3">Estado de la plataforma</h2>
+    <p>
+      Inventario honesto de lo construido y lo que falta. Lo pendiente se enumera con el mismo
+      detalle que lo hecho: varios de los puntos abiertos son obligaciones normativas y no
+      mejoras opcionales.
+    </p>
+
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="card health-card shadow-sm h-100">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="h5 mb-0">Lo que tenemos</h3>
+            <span class="badge bg-success"><%= @shipped.size %></span>
+          </div>
+          <ul class="list-group list-group-flush">
+            <% @shipped.each do |feature| %>
+              <li class="list-group-item">
+                <p class="mb-1 fw-semibold"><%= feature.name %></p>
+                <p class="mb-0 small text-muted"><%= feature.detail %></p>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="card health-card shadow-sm h-100">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="h5 mb-0">Lo que falta</h3>
+            <span class="badge bg-secondary"><%= @outstanding.size %></span>
+          </div>
+          <ul class="list-group list-group-flush">
+            <% @outstanding.each do |feature| %>
+              <% label, badge_class = status_badge.fetch(feature.status) %>
+              <li class="list-group-item">
+                <p class="mb-1">
+                  <span class="fw-semibold"><%= feature.name %></span>
+                  <span class="badge <%= badge_class %> ms-1"><%= label %></span>
+                </p>
+                <p class="mb-0 small text-muted"><%= feature.detail %></p>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

@@ -26,6 +26,7 @@ pt:
     cities: "Cidades"
     my_data: "Meus dados"
     search: "Buscar"
+    about: "Sobre"
 
   # ---- Shared UI ----
   common:

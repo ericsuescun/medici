@@ -12,6 +12,11 @@
       </ul>
       <%= render "layouts/locale_selector" %>
       <span class="navbar-text small text-muted"><%= current_user.email if user_signed_in? %></span>
+      <ul class="navbar-nav ms-3">
+        <li class="nav-item">
+          <%= link_to t("nav.about"), about_path, class: "nav-link text-nowrap" %>
+        </li>
+      </ul>
     </div>
   </div>
 </nav>

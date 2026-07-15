@@ -26,6 +26,9 @@ en:
     cities: "Cities"
     my_data: "My data"
     search: "Search"
+    # The About page itself is Spanish-only (see OperationManual); only the
+    # navbar label is localized.
+    about: "About"
 
   # ---- Shared UI ----
   common:

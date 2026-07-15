@@ -6,6 +6,9 @@ Rails.application.routes.draw do
   # Public, no-login "More about this study" info card (see StaticPagesController).
   get "studies/:id/about", to: "static_pages#study_details", as: :study_about
 
+  # Operation manual / regulatory sources / feature inventory (signed-in only).
+  get "about", to: "static_pages#about", as: :about
+
   # devise_for :users
 
   devise_for :users, controllers: {
