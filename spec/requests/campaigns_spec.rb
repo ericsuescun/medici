@@ -101,6 +101,22 @@ RSpec.describe "Campaigns", type: :request do
     end
   end
 
+  context "global campaigns index (navbar)" do
+    it "lists campaigns across studies for platform_staff" do
+      c1 = create(:campaign, study: create(:study))
+      c2 = create(:campaign, study: create(:study))
+      sign_in create(:user, :platform_staff), scope: :user
+      get campaigns_path
+      expect(response).to be_successful
+      expect(response.body).to include(c1.title, c2.title)
+    end
+
+    it "is blocked when not signed in" do
+      get campaigns_path
+      expect(response).to have_http_status(:redirect)
+    end
+  end
+
   context "when not signed in" do
     it "does not allow listing campaigns" do
       get study_campaigns_path(study)

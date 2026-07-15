@@ -1,11 +1,19 @@
 class CampaignsController < SecureApplicationController
-  before_action :set_study, only: %i[ index new create ]
+  before_action :set_study, only: %i[ new create ]
   before_action :set_campaign, only: %i[ show edit update destroy ]
 
   def index
-    # Preload documents so the per-card count (campaign_documents.size) doesn't
-    # fire one COUNT query per campaign.
-    @campaigns = @study.campaigns.includes(:campaign_documents).order(created_at: :desc)
+    # Preload documents so the per-card/row count (campaign_documents.size)
+    # doesn't fire one COUNT query per campaign.
+    if params[:study_id].present?
+      @study = Study.find(params[:study_id])
+      @campaigns = @study.campaigns.includes(:campaign_documents).order(created_at: :desc)
+    else
+      # Global list reachable from the navbar — campaigns are otherwise buried
+      # under each individual study.
+      @campaigns = Campaign.includes(:study, :campaign_documents).order(created_at: :desc)
+      render :index_all
+    end
   end
 
   def show

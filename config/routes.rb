@@ -38,6 +38,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # Global campaigns list (navbar) — campaigns are otherwise buried under studies.
+  resources :campaigns, only: :index
+
   resources :patients do
     member do
       post :transition

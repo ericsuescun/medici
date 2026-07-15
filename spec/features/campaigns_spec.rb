@@ -45,6 +45,19 @@ RSpec.feature "Campaign module", type: :feature do
     expect(campaign.campaign_documents.last.file).to be_attached
   end
 
+  scenario "staff reach the global campaigns table from the navbar" do
+    campaign = create(:campaign, study: study)
+    login_as create(:user, :platform_staff), scope: :user
+
+    visit root_path
+    click_link I18n.t("nav.campaigns")
+
+    expect(page).to have_content(I18n.t("campaigns.all_title"))
+    expect(page).to have_content(campaign.title)
+    expect(page).to have_content(campaign.study.public_title)
+    expect(page).to have_content(I18n.t("enums.campaign.status.#{campaign.status}"))
+  end
+
   scenario "a patient sees campaigns read-only (no management controls)" do
     campaign = create(:campaign, study: study)
     login_as create(:user, :patient), scope: :user

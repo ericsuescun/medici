@@ -1,0 +1,39 @@
+<div class="container">
+  <p class="text-success"><%= notice %></p>
+
+  <h1 class="mb-3"><%= t("campaigns.all_title") %></h1>
+
+  <% if @campaigns.any? %>
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th><%= Campaign.human_attribute_name(:title) %></th>
+            <th><%= Study.model_name.human %></th>
+            <th><%= Campaign.human_attribute_name(:status) %></th>
+            <th><%= t("campaigns.documents") %></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @campaigns.each do |campaign| %>
+            <tr>
+              <td><%= link_to campaign.title, campaign_path(campaign) %></td>
+              <td><%= link_to campaign.study.public_title, study_campaigns_path(campaign.study) %></td>
+              <td><span class="badge bg-secondary"><%= t("enums.campaign.status.#{campaign.status}") %></span></td>
+              <td><%= campaign.campaign_documents.size %></td>
+              <td class="text-end">
+                <%= link_to t("common.show"), campaign_path(campaign), class: "btn btn-sm btn-outline-primary" %>
+                <% if policy(campaign).edit? %>
+                  <%= link_to t("common.edit"), edit_campaign_path(campaign), class: "btn btn-sm btn-outline-secondary" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <p class="text-muted"><%= t("campaigns.none_any") %></p>
+  <% end %>
+</div>

@@ -1,6 +1,8 @@
 pt:
   campaigns:
     index_title: "Campanhas"
+    all_title: "Todas as campanhas"
+    none_any: "Ainda não há campanhas."
     new: "Nova campanha"
     new_title: "Nova campanha"
     edit_title: "Editar campanha"
