@@ -92,7 +92,7 @@ State lives in the `state` column. Use `patient.assess!` / `patient.accept!` / `
 - **Result** — belongs to Study, `result_type` enum (Primary/Secondary).
 - Geography: **Country → City / TrialCity**, referenced by facilities, branches, and studies.
 
-### Eligibility criteria engine (analyzed 2026-07-13)
+### Eligibility criteria engine (analyzed 2026-07-13; evaluator re-verified against the code 2026-07-15)
 
 How the inclusion/exclusion rules engine is modeled — three tables, `app/models/{criteria_profile,criteria_variable,variable_value}.rb`:
 
@@ -100,9 +100,16 @@ How the inclusion/exclusion rules engine is modeled — three tables, `app/model
 - **`CriteriaVariable`** — ONE atomic rule. Its "grammar": `name` + `value_type` (the datatype: `boolean` / `quantitative` / `qualitative`) + `variable_type` (the polarity: `inclusion` = patient must satisfy / `exclusion` = patient must NOT satisfy) + `comparison_type` (the operator: `less_than`, `less_than_or_equal`, `more_than`, `more_than_or_equal`, `between_range`, `out_of_range`, `equal`, `different`, `true`, `false`) + operands: `reference_value_1`/`reference_value_2` (decimals; two are used for `between_range`/`out_of_range`), or `qualitative_scale` (array of allowed categories) + `qualitative_value` (the category to compare against). Plus `criteria_order`, `enabled`, `shown`, free-text `conditions`.
 - **`VariableValue`** — same column shape as `CriteriaVariable` but `belongs_to :patient` and adds `value` (the patient's actual measured value). It is the per-patient snapshot meant to be checked against a profile's variables (`Patient has_many :variable_values`).
 
-**Key limitations (important — the engine is a rule *representation*, not yet an evaluator):**
-- **No evaluation/matching code exists.** Nothing compares a patient's `VariableValue.value` against a `CriteriaVariable`'s `comparison_type` + reference values to decide eligibility. "All inclusion pass AND no exclusion triggers" is implied but unimplemented. So today it stores criteria and patient values; it does not compute eligibility.
-- **Atomic only — no boolean composition.** Each variable is a single comparison. There is no AND/OR/grouping/nesting, so a compound rule ("severe = score ≥ 20 AND BSA ≥ 10%") must be split into several separate variables, and an OR ("candidate due to A *or* B") cannot be represented — only flattened to one boolean.
+**Evaluation — implemented (this section previously claimed it was not; corrected 2026-07-15 by reading the code):**
+- **`CriteriaComparable`** (`app/models/concerns/criteria_comparable.rb`) — the atomic comparison, shared by `CriteriaVariable` (the rule) and `VariableValue` (the snapshot), since both carry the same comparison columns. `satisfied_by?(raw)` dispatches on `value_type` and implements every `comparison_type`. It is **polarity-agnostic** (knows nothing about inclusion/exclusion) and returns **`nil`** — not `false` — when the value is blank or unparseable, so callers can tell "unknown" from "fails". Also provides `rule_summary` (a short Spanish description, e.g. `"entre 18 y 40"`, `"≥ 20"`).
+- **`CriteriaProfile#evaluate(patient)` → `EligibilityResult`** — the entry point. Considers only `enabled` variables, ordered by `criteria_order`. Applies polarity: `inclusion` passes when `met == true`, `exclusion` passes when `met == false`; an **unmeasured exclusion (`nil`) does not pass** and surfaces as incomplete rather than as a silent pass.
+- **`EligibilityResult`** (`app/models/eligibility_result.rb`, a PORO — not an AR model) — wraps per-variable `Check` structs and answers two distinct questions: `eligible?` (every variable answered **and** passing) and `complete?` (nothing left to measure). Also `missing` and `failing`. Each `Check` reports `status` as `:pass` / `:fail` / `:missing`.
+- **UI:** `CriteriaAssessmentsController` (`show`/`update`) at `/patients/:patient_id/criteria_assessment` captures a patient's values and renders the verdict. `update` upserts one `VariableValue` per variable, copying the rule onto the value (the snapshot design) and attributing the first capture via `entered_by`.
+
+**Gotcha — answers are matched to rules by `name`, not by FK.** `evaluate` does `patient.variable_values.index_by(&:name)` and looks up `cv.name`; the denormalized snapshot design has no foreign key linking the two. **Renaming a `CriteriaVariable` silently orphans every existing patient answer.** Verified 2026-07-15 by test, not inferred: a patient reading `eligible=true, complete=true, status=[:pass]` flips to `eligible=false, complete=false, status=[:missing]` the moment the rule is renamed — the answer row still holds the old name and the correct value, nothing raises, and the patient just quietly reads as unmeasured. Treat variable `name` as an identifier, not display text; renaming needs a data migration of the matching `VariableValue.name` rows. Unfixed as of 2026-07-15.
+
+**Key limitations (still true — the engine evaluates atomic rules only):**
+- **Atomic only — no boolean composition.** Each variable is a single comparison, and `evaluate` implicitly ANDs them all. There is no AND/OR/grouping/nesting, so a compound rule ("severe = score ≥ 20 AND BSA ≥ 10%") must be split into several separate variables, and an OR ("candidate due to A *or* B") cannot be represented — only flattened to one boolean.
 - **No temporal semantics.** "in the last 2 / 6 / 24 weeks" is descriptive text baked into the variable `name`; the engine compares a static value, never a date window.
 - **No investigator-judgment / free-text criteria** as first-class — clinical catch-alls ("any condition that, in the investigator's opinion, …") can only be modeled as a single boolean flag the investigator toggles.
 
