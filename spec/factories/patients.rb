@@ -32,6 +32,19 @@ FactoryBot.define do
     sequence(:email) { |n| "patient#{n}@example.com" }
     dob { Faker::Date.birthday(min_age: 18, max_age: 80) }
     sex { %w[male female].sample }
+    contact_number { Faker::PhoneNumber.cell_phone }
+    # A patient exists to be considered for exactly one study.
+    study
     # state defaults to "prospect" (DB default); AASM manages transitions.
+
+    # As the public participation form creates them: contact details only, no
+    # clinical data, no account.
+    trait :lead do
+      firstname { nil }
+      lastname { nil }
+      dob { nil }
+      sex { nil }
+      email { nil }
+    end
   end
 end

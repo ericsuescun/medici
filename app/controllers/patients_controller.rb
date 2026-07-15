@@ -3,8 +3,14 @@ class PatientsController < SecureApplicationController
   before_action -> { authorize(@patient, :update_state?) }, only: :transition
 
   # GET /patients or /patients.json
+  #
+  # Grouped by study. `policy_scope` is what keeps a trial centre rep to the
+  # patients of their own centre — see PatientPolicy::Scope.
   def index
-    @patients = Patient.all
+    @patients_by_study = policy_scope(Patient)
+                         .includes(:study)
+                         .order(:state)
+                         .group_by(&:study)
   end
 
   # GET /patients/1 or /patients/1.json
@@ -23,6 +29,14 @@ class PatientsController < SecureApplicationController
   # POST /patients or /patients.json
   def create
     @patient = Patient.new(patient_params)
+
+    # A rep may only enrol into a study that runs at their own centre. The form
+    # only offers those, but the check has to live here too — the select is not
+    # a security boundary.
+    unless policy(Patient).enrol_into?(@patient.study)
+      @patient.errors.add(:study_id, t("patients.study_not_enrollable"))
+      render :new, status: :unprocessable_entity and return
+    end
 
     respond_to do |format|
       if @patient.save
@@ -83,10 +97,28 @@ class PatientsController < SecureApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
+    # Loading through `policy_scope` is the row-level access control: a trial
+    # centre rep reaching for a patient outside their centre gets a 404 instead
+    # of the record. 404 rather than 403 on purpose — a 403 would confirm that
+    # the patient exists, which is itself a disclosure about an identifiable
+    # person. This also covers the custom `transition` action for free.
     def set_patient
-      @patient = Patient.find(params[:id])
+      @patient = policy_scope(Patient).find(params[:id])
     end
+
+    # Studies this user may enrol a patient into: their own centre's for a rep,
+    # all of them for an admin. Used for the form's select AND re-checked on
+    # write, so a hand-crafted POST cannot smuggle in another centre's study.
+    def enrollable_studies
+      @enrollable_studies ||=
+        if current_user.admin?
+          Study.order(:public_title)
+        else
+          branch = current_user.userable&.trial_center_branch
+          branch ? branch.studies.order(:public_title) : Study.none
+        end
+    end
+    helper_method :enrollable_studies
 
     # Only allow a list of trusted parameters through.
     # NOTE: :state is intentionally NOT permitted here — patient state changes
@@ -103,6 +135,7 @@ class PatientsController < SecureApplicationController
                                       :country,
                                       :illness_description,
                                       :id_type,
-                                      :id_number)
+                                      :id_number,
+                                      :study_id)
     end
 end

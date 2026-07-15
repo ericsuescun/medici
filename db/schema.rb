@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_15_021800) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_15_140200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -109,7 +109,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_15_021800) do
   end
 
   create_table "consents", force: :cascade do |t|
-    t.bigint "user_id", null: false
     t.string "document_type", null: false
     t.string "document_version", null: false
     t.string "purpose", null: false
@@ -117,8 +116,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_15_021800) do
     t.string "ip_address"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id", "document_type"], name: "index_consents_on_user_id_and_document_type"
-    t.index ["user_id"], name: "index_consents_on_user_id"
+    t.bigint "patient_id", null: false
+    t.index ["patient_id"], name: "index_consents_on_patient_id"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -229,8 +228,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_15_021800) do
     t.string "country", default: ""
     t.string "state", default: "prospect", null: false
     t.string "participant_code"
+    t.bigint "study_id"
     t.index ["participant_code"], name: "index_patients_on_participant_code", unique: true
     t.index ["state"], name: "index_patients_on_state"
+    t.index ["study_id"], name: "index_patients_on_study_id"
   end
 
   create_table "platform_staffs", force: :cascade do |t|
@@ -435,11 +436,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_15_021800) do
   add_foreign_key "articles", "studies"
   add_foreign_key "campaign_documents", "campaigns"
   add_foreign_key "campaigns", "studies"
-  add_foreign_key "consents", "users"
+  add_foreign_key "consents", "patients"
   add_foreign_key "contacts", "studies"
   add_foreign_key "criteria_profiles", "studies"
   add_foreign_key "criteria_profiles", "users"
   add_foreign_key "criteria_variables", "criteria_profiles"
+  add_foreign_key "patients", "studies"
   add_foreign_key "results", "studies"
   add_foreign_key "role_permissions", "roles"
   add_foreign_key "sponsor_reps", "sponsors"

@@ -1,0 +1,75 @@
+<%# Public "¡Quiero participar!" form. Contact details only — no account, no
+    password, nothing clinical. A trial centre rep calls the person back and
+    builds the real record. The habeas-data authorization is a hard gate: see
+    ParticipationRequestsController#create. Spanish copy, matching the sign-up
+    form it replaces. %>
+<% content_for :title, t("participation_requests.title") %>
+
+<div class="container my-5">
+  <div class="row">
+    <div class="col-lg-6 mx-auto">
+      <div class="mb-3">
+        <%= link_to t("static_pages.study_details.back_home"), study_about_path(@study), class: "btn btn-link ps-0" %>
+      </div>
+
+      <div class="card health-card shadow-sm">
+        <div class="card-header">
+          <h1 class="h4 mb-0"><%= t("participation_requests.title") %></h1>
+        </div>
+        <div class="card-body">
+          <p class="mb-1"><strong><%= @study.public_title %></strong></p>
+          <p class="text-muted small"><%= @study.scientific_title %></p>
+
+          <p><%= t("participation_requests.intro") %></p>
+
+          <%= form_with(model: @patient, url: participation_requests_path(study_id: @study.id), method: :post) do |f| %>
+            <% if @patient.errors.any? %>
+              <div class="alert alert-danger">
+                <ul class="mb-0">
+                  <% @patient.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+
+            <div class="mb-3">
+              <%= f.label :contact_number, t("participation_requests.contact_number"), class: "form-label" %>
+              <%= f.telephone_field :contact_number, class: "form-control", autocomplete: "tel" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :email, t("participation_requests.email"), class: "form-label" %>
+              <%= f.email_field :email, class: "form-control", autocomplete: "email" %>
+            </div>
+
+            <p class="text-muted small"><%= t("participation_requests.contact_hint") %></p>
+
+            <div class="form-check mt-4 mb-2 p-3 border rounded bg-light">
+              <%= f.check_box :data_processing_authorization, class: "form-check-input" %>
+              <%= f.label :data_processing_authorization, class: "form-check-label" do %>
+                Autorizo de manera libre, previa, expresa e informada el tratamiento de mis
+                <strong>datos personales sensibles de salud</strong> con la finalidad de que un
+                representante del centro de investigación me contacte para evaluar mi
+                elegibilidad y participación en el estudio clínico, conforme a la
+                <strong>Ley 1581 de 2012</strong> (Habeas Data).
+                Entiendo que mis datos podrán ser almacenados y procesados por
+                <strong>operadores tecnológicos (encargados) que pueden estar ubicados fuera de Colombia</strong>,
+                bajo un contrato de transmisión que garantiza su seguridad y confidencialidad.
+                <% if @study.international_sponsor? %>
+                  Autorizo asimismo la <strong>transferencia de mis datos a un patrocinador
+                  internacional</strong> ubicado fuera de Colombia, conforme al Art. 26 de la Ley 1581 de 2012.
+                <% end %>
+                <span class="text-muted d-block small mt-1">Versión <%= Consent::LEY_1581_CURRENT_VERSION %></span>
+              <% end %>
+            </div>
+
+            <div class="d-grid mt-3">
+              <%= f.submit t("participation_requests.submit"), class: "btn btn-success" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

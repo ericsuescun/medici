@@ -262,3 +262,13 @@ en:
         title: "Position"
         contact_number: "Contact number"
         contact_address: "Contact address"
+
+  participation_requests:
+    title: "I want to participate"
+    intro: "Leave us a phone number or an email and a trial centre representative will contact you to assess your eligibility. No account needed."
+    contact_number: "Contact phone"
+    email: "Email"
+    contact_hint: "You can leave a phone, an email, or both. We need at least one to reach you."
+    submit: "Send my details"
+    thanks: "Thank you! A centre representative will contact you soon."
+    authorization_required: "You must authorize the processing of sensitive personal data so that we can contact you."

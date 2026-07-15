@@ -261,3 +261,13 @@ es:
         title: "Cargo"
         contact_number: "Número de contacto"
         contact_address: "Dirección de contacto"
+
+  participation_requests:
+    title: "Quiero participar"
+    intro: "Déjanos un teléfono o un correo y un representante del centro de investigación te contactará para evaluar tu elegibilidad. No necesitas crear una cuenta."
+    contact_number: "Teléfono de contacto"
+    email: "Correo electrónico"
+    contact_hint: "Puedes dejar el teléfono, el correo o ambos. Necesitamos al menos uno para poder contactarte."
+    submit: "Enviar mis datos"
+    thanks: "¡Gracias! Un representante del centro te contactará pronto."
+    authorization_required: "Debe autorizar el tratamiento de datos personales sensibles para que podamos contactarle."

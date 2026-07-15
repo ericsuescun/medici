@@ -36,7 +36,8 @@
             </div>
             <div class="col-md-6">
               <div class="stat-card">
-                <div class="stat-value"><%= User.patients.count %></div>
+                <%# Patients have no accounts, so counting Users would always say 0. %>
+                <div class="stat-value"><%= Patient.count %></div>
                 <div class="stat-label"><%= t("static_pages.home.stat_patients") %></div>
               </div>
             </div>

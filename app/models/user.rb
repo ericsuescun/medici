@@ -37,11 +37,12 @@ class User < ApplicationRecord
   has_many :consents, dependent: :destroy
   belongs_to :role, optional: true
 
-  # Virtual: the Ley 1581 habeas-data authorization checkbox on the sign-up form.
-  # Enforced (and persisted as a Consent) in Users::RegistrationsController.
-  attr_accessor :data_processing_authorization
-
-  devise :database_authenticatable, :registerable,
+  # NOT :registerable — nobody self-registers. Patients no longer have accounts
+  # at all (they are records created from the public participation form or by a
+  # centre rep); staff accounts are created by an admin through the role-specific
+  # controllers. Dropping the module also removes the sign-up routes and makes
+  # `devise_mapping.registerable?` false, which hides the "Registrarse" links.
+  devise :database_authenticatable,
          :recoverable, :rememberable, :validatable
 
   delegated_type :userable, types: %w[SponsorRep Admin Patient TrialCenterBranchRep PlatformStaff], dependent: :destroy

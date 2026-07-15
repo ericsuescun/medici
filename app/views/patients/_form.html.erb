@@ -67,6 +67,17 @@
     <%= form.text_area :illness_description, class: "form-control mb-3" %>
   </div>
 
+  <%# Which study this patient is being considered for. Only the studies the
+      current user may enrol into are offered — their own centre's for a trial
+      centre rep, all of them for an admin. PatientsController#create re-checks
+      it, because a select is not a security boundary. %>
+  <div>
+    <%= form.label :study_id, Study.model_name.human, style: "display: block" %>
+    <%= form.collection_select :study_id, enrollable_studies, :id,
+                               ->(s) { s.public_title.presence || s.short_title.presence || "##{s.id}" },
+                               { include_blank: true }, class: "form-select mb-3" %>
+  </div>
+
   <div>
     <%= form.submit t("common.save"), class: 'btn btn-primary btn-block' %>
   </div>

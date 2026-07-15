@@ -6,13 +6,21 @@ Rails.application.routes.draw do
   # Public, no-login "More about this study" info card (see StaticPagesController).
   get "studies/:id/about", to: "static_pages#study_details", as: :study_about
 
+  # Public "¡Quiero participar!" — leaves contact details against a study so a
+  # trial centre rep can call back. Creates no account (see
+  # ParticipationRequestsController).
+  get "studies/:study_id/participate", to: "participation_requests#new", as: :new_participation_request
+  post "studies/:study_id/participate", to: "participation_requests#create", as: :participation_requests
+
   # Operation manual / regulatory sources / feature inventory (signed-in only).
   get "about", to: "static_pages#about", as: :about
 
   # devise_for :users
 
+  # No registrations: User is not :registerable (see the model). Expressing
+  # interest in a study goes through ParticipationRequestsController, which
+  # creates a Patient record and no account.
   devise_for :users, controllers: {
-    registrations: "users/registrations",
     sessions: "users/sessions"
   }
 

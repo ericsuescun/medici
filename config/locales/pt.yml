@@ -260,3 +260,13 @@ pt:
         title: "Cargo"
         contact_number: "Número de contato"
         contact_address: "Endereço de contato"
+
+  participation_requests:
+    title: "Quero participar"
+    intro: "Deixe-nos um telefone ou um e-mail e um representante do centro entrará em contato para avaliar sua elegibilidade. Não é necessário criar conta."
+    contact_number: "Telefone de contato"
+    email: "E-mail"
+    contact_hint: "Pode deixar o telefone, o e-mail ou ambos. Precisamos de pelo menos um para contatá-lo."
+    submit: "Enviar meus dados"
+    thanks: "Obrigado! Um representante do centro entrará em contato em breve."
+    authorization_required: "Deve autorizar o tratamento de dados pessoais sensíveis para que possamos contatá-lo."

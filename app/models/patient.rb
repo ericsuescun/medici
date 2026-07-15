@@ -28,6 +28,11 @@
 class Patient < ApplicationRecord
   include Userable
 
+  # Backs the habeas-data checkbox on the public participation form. Not a
+  # column: what was agreed is persisted as an immutable Consent record, never
+  # as a mutable boolean on the patient.
+  attr_accessor :data_processing_authorization
+
   # Pseudonymization (INVIMA Anexo Técnico Tabla 7): the patient owns its own
   # identity/clinical columns (it does NOT delegate identity to the shared User —
   # see DelegatesIdentityToUser), and those columns are encrypted at rest.
@@ -53,14 +58,36 @@ class Patient < ApplicationRecord
 
   has_many :variable_values, dependent: :destroy
 
+  # A patient exists to be considered for one study. This used to live on the
+  # patient's User account (User has_and_belongs_to_many :studies) because a
+  # patient could only be created by signing up; patients are records now, so the
+  # study belongs to the patient.
+  belongs_to :study
+
+  # The habeas-data authorizations this patient granted (Ley 1581 de 2012).
+  has_many :consents, dependent: :destroy
+
   # A non-identifying code linking research/eligibility data back to the patient
   # by code rather than identity.
   before_create :assign_participant_code
   validates :participant_code, uniqueness: true, allow_nil: true
 
+  # Neither contact field is mandatory on its own — a prospective patient may
+  # leave a phone, an email, or both. But a lead with no way to reach them is
+  # useless: the whole point is that a centre rep calls them back.
+  validate :some_way_to_make_contact
+
   def fullname
     [ firstname, lastname ].compact_blank.join(" ")
   end
+
+  # Patients whose study runs at one of `branches` — the scoping rule for a
+  # trial centre rep, who must only ever see the patients of their own centre.
+  scope :for_trial_center_branches, ->(branches) {
+    joins(study: :trial_center_branches)
+      .where(trial_center_branches: { id: branches })
+      .distinct
+  }
 
   include AASM
 
@@ -87,6 +114,12 @@ class Patient < ApplicationRecord
   end
 
   private
+
+  def some_way_to_make_contact
+    return if contact_number.present? || email.present?
+
+    errors.add(:base, I18n.t("patients.contact_method_required"))
+  end
 
   def assign_participant_code
     return if participant_code.present?

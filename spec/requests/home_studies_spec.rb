@@ -9,6 +9,8 @@ RSpec.describe "Home page study showcase", type: :request do
     expect(response).to be_successful
     expect(response.body).to include("Estudios Clínicos Disponibles")
     expect(response.body).to include(study.public_title)
-    expect(response.body).to include(new_user_registration_path(study_id: study.id))
+    # The CTA now goes to the participation form (contact details, no account),
+    # not to Devise sign-up — that route no longer exists.
+    expect(response.body).to include(new_participation_request_path(study_id: study.id))
   end
 end

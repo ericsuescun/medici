@@ -260,3 +260,13 @@ fr:
         title: "Fonction"
         contact_number: "Numéro de contact"
         contact_address: "Adresse de contact"
+
+  participation_requests:
+    title: "Je veux participer"
+    intro: "Laissez-nous un téléphone ou un e-mail et un représentant du centre vous contactera pour évaluer votre éligibilité. Aucun compte n'est nécessaire."
+    contact_number: "Téléphone de contact"
+    email: "E-mail"
+    contact_hint: "Vous pouvez laisser un téléphone, un e-mail ou les deux. Il nous en faut au moins un pour vous joindre."
+    submit: "Envoyer mes coordonnées"
+    thanks: "Merci ! Un représentant du centre vous contactera bientôt."
+    authorization_required: "Vous devez autoriser le traitement des données personnelles sensibles pour que nous puissions vous contacter."

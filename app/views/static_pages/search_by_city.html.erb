@@ -33,7 +33,7 @@
                         <% if user_signed_in? %>
                           <%= link_to t("static_pages.search.view_details"), study_path(study), class: "btn btn-sm btn-primary" %>
                         <% else %>
-                          <%= link_to t("static_pages.search.participate"), new_user_registration_path(study_id: study.id), class: "btn btn-sm btn-success" %>
+                          <%= link_to t("static_pages.search.participate"), new_participation_request_path(study_id: study.id), class: "btn btn-sm btn-success" %>
                         <% end %>
                       </td>
                     </tr>

@@ -65,7 +65,7 @@ class ApplicationPolicy
     end
 
     def resolve
-      if user&.role&.permits?(scope.klass, :can_show)
+      if user&.role&.permits?(model_class, :can_show)
         scope.all
       else
         scope.none
@@ -73,6 +73,14 @@ class ApplicationPolicy
     end
 
     private
+
+    # `scope` is the model CLASS when called as `policy_scope(Patient)` (the
+    # common Pundit form) and a RELATION when called as `policy_scope(Patient.all)`.
+    # Only the relation responds to `klass`, so asking for it unconditionally blew
+    # up on the class form — latent until the first policy_scope call site existed.
+    def model_class
+      scope.respond_to?(:klass) ? scope.klass : scope
+    end
 
     attr_reader :user, :scope
   end

@@ -30,7 +30,12 @@
             <li><%= link_to t("nav.platform_staffs"), platform_staffs_path, class: 'dropdown-item' %></li>
             <li><%= link_to t("nav.sponsor_reps"), sponsor_reps_path, class: 'dropdown-item' %></li>
             <li><%= link_to t("nav.branch_reps"), trial_center_branch_reps_path, class: 'dropdown-item' %></li>
-            <li><%= link_to t("nav.patients"), patients_path, class: 'dropdown-item' %></li>
+            <%# Patients are clinical records: only offer the menu to roles whose
+                permissions actually allow it (admins and trial centre reps).
+                Sponsor reps and platform staff got a link that only 403'd. %>
+            <% if policy(Patient).index? %>
+              <li><%= link_to t("nav.patients"), patients_path, class: 'dropdown-item' %></li>
+            <% end %>
             <% if current_user&.admin? %>
               <li><hr class="dropdown-divider"></li>
               <li><%= link_to t("nav.roles"), roles_path, class: 'dropdown-item' %></li>

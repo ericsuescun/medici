@@ -41,14 +41,17 @@ class Consent < ApplicationRecord
 
   has_paper_trail
 
-  belongs_to :user
+  # The authorization belongs to the person it is about. It used to hang off User
+  # because it was captured during Devise sign-up; patients have no accounts now,
+  # and every consent ever written was a patient's habeas-data authorization.
+  belongs_to :patient
 
   validates :document_type, :document_version, :purpose, :granted_at, presence: true
 
-  # Record the Ley 1581 sensitive-health-data authorization for a user.
-  def self.record_ley_1581!(user, ip_address: nil)
+  # Record the Ley 1581 sensitive-health-data authorization for a patient.
+  def self.record_ley_1581!(patient, ip_address: nil)
     create!(
-      user: user,
+      patient: patient,
       document_type: LEY_1581_HABEAS_DATA,
       document_version: LEY_1581_CURRENT_VERSION,
       purpose: PURPOSE_SENSITIVE_HEALTH,
@@ -59,9 +62,9 @@ class Consent < ApplicationRecord
 
   # Record the Ley 1581 Art. 26 authorization to transfer data to a foreign
   # sponsor. Only applicable when the study's sponsor is international.
-  def self.record_cross_border_transfer!(user, ip_address: nil)
+  def self.record_cross_border_transfer!(patient, ip_address: nil)
     create!(
-      user: user,
+      patient: patient,
       document_type: LEY_1581_CROSS_BORDER,
       document_version: LEY_1581_CURRENT_VERSION,
       purpose: PURPOSE_CROSS_BORDER_TRANSFER,

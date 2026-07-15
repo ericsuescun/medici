@@ -1,5 +1,10 @@
 en:
   patients:
+    contact_method_required: "Provide at least a contact phone number or an email address."
+    study_not_enrollable: "is not a study at your trial centre"
+    grouped_by_study: "Patients by study"
+    no_patients: "No patients for this study."
+    no_study: "No study assigned"
     index_title: "Patients"
     back_to_home: "Return to Vitalia"
     new_patient: "New patient"

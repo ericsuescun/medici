@@ -1,5 +1,10 @@
 es:
   patients:
+    contact_method_required: "Debe indicar al menos un teléfono de contacto o un correo electrónico."
+    study_not_enrollable: "no corresponde a un estudio de su centro de investigación"
+    grouped_by_study: "Pacientes por estudio"
+    no_patients: "No hay pacientes para este estudio."
+    no_study: "Sin estudio asignado"
     index_title: "Pacientes"
     back_to_home: "Retornar a Vitalia"
     new_patient: "Nuevo paciente"
