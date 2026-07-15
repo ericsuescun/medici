@@ -1,4 +1,8 @@
-<h1><%= t("common.edit") %> <%= Medication.model_name.human %></h1>
-<%= render 'form', medication: @medication %>
-<%= link_to t("common.back"), medications_path %> |
-<%= link_to t("medications.home_link"), static_pages_medici_home_path %>
+<%# Same as new.html.erb: the form's .row needs a container to offset its
+    negative gutter margins, otherwise the page scrolls sideways. %>
+<div class="container-fluid">
+  <h1><%= t("common.edit") %> <%= Medication.model_name.human %></h1>
+  <%= render 'form', medication: @medication %>
+  <%= link_to t("common.back"), medications_path %> |
+  <%= link_to t("medications.home_link"), static_pages_medici_home_path %>
+</div>

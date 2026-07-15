@@ -318,12 +318,22 @@ a {
     width: 100%;
   }
 
+  // Fields span the screen. Bootstrap only stretches `.form-control` /
+  // `.form-select`, but four forms (articles, contacts, results, trial_cities)
+  // render bare `form.text_field` with no class at all and so fall back to the
+  // browser's default ~170px input — a tiny box to type into on a phone. Style
+  // the raw controls too rather than leaving those forms unusable on mobile.
+  // Checkboxes and radios keep their intrinsic size.
+  input:not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select {
+    width: 100%;
+  }
+
   // Actions span the screen. Bootstrap's `.btn` is inline-block, and the
   // `btn-block` class 18 views ask for is a Bootstrap 4 leftover that BS5
-  // removed — it has never had any effect here. `input[type=submit]` is listed
-  // because several forms call `form.submit` with no class at all.
-  .btn,
-  input[type="submit"] {
+  // removed — it has never had any effect here.
+  .btn {
     width: 100%;
   }
 
