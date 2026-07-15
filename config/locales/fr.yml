@@ -262,6 +262,7 @@ fr:
         contact_address: "Adresse de contact"
 
   participation_requests:
+    accept: "J'autorise le traitement de mes données personnelles sensibles de santé."
     title: "Je veux participer"
     intro: "Laissez-nous un téléphone ou un e-mail et un représentant du centre vous contactera pour évaluer votre éligibilité. Aucun compte n'est nécessaire."
     contact_number: "Téléphone de contact"

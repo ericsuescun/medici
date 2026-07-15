@@ -22,9 +22,15 @@
                 </thead>
                 <tbody>
                   <% @studies.each do |study| %>
+                    <%# "I want to read about it, not sign up yet". Anonymous
+                        visitors previously had only the participate button, so
+                        the only way to learn anything was to hand over their
+                        details first. Signed-in staff go to the full study page;
+                        everyone else to the public, read-only card. %>
+                    <% detail_path = user_signed_in? ? study_path(study) : study_about_path(study) %>
                     <tr>
                       <td><%= study.short_title %></td>
-                      <td><%= study.scientific_title %></td>
+                      <td><%= link_to study.scientific_title, detail_path %></td>
                       <td><%= study.sponsor.name %></td>
                       <td><span class="badge bg-<%= study.study_status == 'approved' ? 'success' : (study.study_status == 'finished' ? 'info' : 'warning') %>">
                         <%= study.study_status %>

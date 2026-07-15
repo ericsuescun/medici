@@ -22,18 +22,21 @@
     <%= render 'layouts/general_navbar' if current_user.present? && !current_user.patient? %>
     <%= render 'layouts/patient_navbar' if current_user.present? && current_user.patient? %>
 
-    <% if user_signed_in? %>
-      <% if flash[:notice] %>
-        <div class="alert alert-warning mt-2"><%= flash[:notice] %></div>
-      <% end %>
+    <%# Flashes render for everyone, signed in or not. They used to be wrapped in
+        `if user_signed_in?`, which silently swallowed every message shown to an
+        anonymous visitor — including the "thank you, a rep will contact you"
+        confirmation after submitting the public participation form, so people
+        had no idea their details had gone through. %>
+    <% if flash[:notice] %>
+      <div class="alert alert-warning mt-2"><%= flash[:notice] %></div>
+    <% end %>
 
-      <% if flash[:alert] %>
-        <div class="alert alert-danger mt-2"><%= flash[:alert] %></div>
-      <% end %>
+    <% if flash[:alert] %>
+      <div class="alert alert-danger mt-2"><%= flash[:alert] %></div>
+    <% end %>
 
-      <% if flash[:message] %>
-        <div class="alert alert-info mt-2"><%= flash[:message] %></div>
-      <% end %>
+    <% if flash[:message] %>
+      <div class="alert alert-info mt-2"><%= flash[:message] %></div>
     <% end %>
 
     <%= yield %>

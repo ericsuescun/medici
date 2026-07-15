@@ -22,7 +22,8 @@
 
           <p><%= t("participation_requests.intro") %></p>
 
-          <%= form_with(model: @patient, url: participation_requests_path(study_id: @study.id), method: :post) do |f| %>
+          <%= form_with(model: @patient, url: participation_requests_path(study_id: @study.id), method: :post,
+                        data: { controller: "consent-gate" }) do |f| %>
             <% if @patient.errors.any? %>
               <div class="alert alert-danger">
                 <ul class="mb-0">
@@ -45,9 +46,13 @@
 
             <p class="text-muted small"><%= t("participation_requests.contact_hint") %></p>
 
-            <div class="form-check mt-4 mb-2 p-3 border rounded bg-light">
-              <%= f.check_box :data_processing_authorization, class: "form-check-input" %>
-              <%= f.label :data_processing_authorization, class: "form-check-label" do %>
+            <div class="mt-4 mb-2 p-3 border rounded bg-light">
+              <%# The authorization text, read first — the checkbox sits under it.
+                  The wording is verbatim: Consent::LEY_1581_CURRENT_VERSION is
+                  stored on every Consent so we know exactly which text a patient
+                  accepted, so changing these words means bumping that version.
+                  Re-laying it out does not. %>
+              <div class="mb-3">
                 Autorizo de manera libre, previa, expresa e informada el tratamiento de mis
                 <strong>datos personales sensibles de salud</strong> con la finalidad de que un
                 representante del centro de investigación me contacte para evaluar mi
@@ -61,11 +66,23 @@
                   internacional</strong> ubicado fuera de Colombia, conforme al Art. 26 de la Ley 1581 de 2012.
                 <% end %>
                 <span class="text-muted d-block small mt-1">Versión <%= Consent::LEY_1581_CURRENT_VERSION %></span>
-              <% end %>
+              </div>
+
+              <div class="form-check">
+                <%= f.check_box :data_processing_authorization, class: "form-check-input",
+                                data: { consent_gate_target: "checkbox", action: "change->consent-gate#toggle" } %>
+                <%= f.label :data_processing_authorization, t("participation_requests.accept"),
+                            class: "form-check-label fw-semibold" %>
+              </div>
             </div>
 
+            <%# Not `disabled` here on purpose — the Stimulus controller disables it
+                on connect. With no JS the button stays usable and the server still
+                refuses an unauthorized submission, rather than stranding the user
+                with a button that can never enable. %>
             <div class="d-grid mt-3">
-              <%= f.submit t("participation_requests.submit"), class: "btn btn-success" %>
+              <%= f.submit t("participation_requests.submit"), class: "btn btn-success",
+                           data: { consent_gate_target: "submit" } %>
             </div>
           <% end %>
         </div>

@@ -263,6 +263,7 @@ es:
         contact_address: "Dirección de contacto"
 
   participation_requests:
+    accept: "Autorizo el tratamiento de mis datos personales sensibles de salud."
     title: "Quiero participar"
     intro: "Déjanos un teléfono o un correo y un representante del centro de investigación te contactará para evaluar tu elegibilidad. No necesitas crear una cuenta."
     contact_number: "Teléfono de contacto"

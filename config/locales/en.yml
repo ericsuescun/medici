@@ -264,6 +264,7 @@ en:
         contact_address: "Contact address"
 
   participation_requests:
+    accept: "I authorize the processing of my sensitive personal health data."
     title: "I want to participate"
     intro: "Leave us a phone number or an email and a trial centre representative will contact you to assess your eligibility. No account needed."
     contact_number: "Contact phone"
