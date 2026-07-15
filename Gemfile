@@ -44,6 +44,11 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
+# S3 backend for Active Storage. Required in production: Heroku's filesystem is
+# ephemeral, so CampaignDocument uploads cannot use the Disk service. Only the
+# Active Storage adapter loads it, hence require: false. See config/storage.yml.
+gem "aws-sdk-s3", "~> 1.0", require: false
+
 gem "devise", "~> 4.9"
 
 gem "bootstrap", "~> 5.3.3"

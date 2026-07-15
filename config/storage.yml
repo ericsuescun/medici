@@ -6,13 +6,31 @@ local:
   service: Disk
   root: <%= Rails.root.join("storage") %>
 
-# Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
-# amazon:
-#   service: S3
-#   access_key_id: <%= Rails.application.credentials.dig(:aws, :access_key_id) %>
-#   secret_access_key: <%= Rails.application.credentials.dig(:aws, :secret_access_key) %>
-#   region: us-east-1
-#   bucket: your_own_bucket-<%= Rails.env %>
+# Production file storage (CampaignDocument uploads). Heroku's filesystem is
+# ephemeral — anything the Disk service writes is destroyed on the next dyno
+# restart — so production MUST use S3. See config/environments/production.rb.
+#
+# Credentials come from Heroku config vars, matching the convention the
+# ActiveRecord::Encryption keys already use (config/initializers/active_record_encryption.rb):
+#
+#   heroku config:set --app medici \
+#     AWS_ACCESS_KEY_ID=... AWS_SECRET_ACCESS_KEY=... \
+#     AWS_REGION=us-east-1 AWS_S3_BUCKET=medici-production
+#
+# These vars are REQUIRED for production to boot at all — eager loading resolves
+# the S3 service at startup. config/initializers/active_storage_s3.rb checks for
+# them and fails with an actionable message; without it the AWS SDK raises an
+# opaque MissingRegionError instead.
+#
+# Deliberately ENV[...] rather than ENV.fetch: this file is rendered in every
+# environment, so a fetch on an unset production var would break `rails console`
+# and the test suite locally. The initializer does the enforcing, production-only.
+amazon:
+  service: S3
+  access_key_id: <%= ENV["AWS_ACCESS_KEY_ID"] %>
+  secret_access_key: <%= ENV["AWS_SECRET_ACCESS_KEY"] %>
+  region: <%= ENV["AWS_REGION"] %>
+  bucket: <%= ENV["AWS_S3_BUCKET"] %>
 
 # Remember not to checkin your GCS keyfile to a repository
 # google:
