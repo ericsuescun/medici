@@ -293,8 +293,53 @@ body {
 // Links
 a {
   color: $medici-primary;
-  
+
   &:hover {
     color: darken($medici-primary, 15%);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Mobile layout — below Bootstrap's `md` breakpoint (i.e. phones).
+//
+// Desktop is deliberately left exactly as it is: every rule below lives inside
+// this media query, so nothing above 768px changes.
+// ---------------------------------------------------------------------------
+@media (max-width: 767.98px) {
+  // The real reason fields looked cramped on a phone. Pages here are wrapped in
+  // breakpoint-less grid columns (`col-4 mx-auto`, `col-3 mx-auto`, `col-6`),
+  // and a column with no breakpoint keeps its fraction at EVERY viewport width.
+  // Sign-in is `col-3`, so on a phone the whole form rendered inside a quarter
+  // of the screen — the fields were already width:100%, just of a tiny box.
+  // Below md, every column owns the full row: what `col-md-*` would have done
+  // had it been used. 38 wrappers across the app depend on this.
+  .row > [class*="col-"] {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  // Actions span the screen. Bootstrap's `.btn` is inline-block, and the
+  // `btn-block` class 18 views ask for is a Bootstrap 4 leftover that BS5
+  // removed — it has never had any effect here. `input[type=submit]` is listed
+  // because several forms call `form.submit` with no class at all.
+  .btn,
+  input[type="submit"] {
+    width: 100%;
+  }
+
+  // ...except the navbar's search button, which sits inline in the collapsed
+  // menu next to its input.
+  .navbar .btn {
+    width: auto;
+  }
+
+  // `button_to` renders each action inside its own <form>, so the forms — not
+  // just the buttons — have to stretch for a row of actions to fill the screen.
+  .btn-group {
+    width: 100%;
+
+    > form {
+      flex: 1 1 0;
+    }
   }
 }
