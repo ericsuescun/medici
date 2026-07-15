@@ -112,6 +112,17 @@ en:
     showcase:
       title: "Available Clinical Studies"
       participate: "I want to participate!"
+      more_about: "More about this study"
+    study_details:
+      back_home: "Back to home"
+      description: "Description"
+      no_description: "No description available."
+      cities: "Cities"
+      centers: "Associated centers"
+      links: "Related links"
+      none: "—"
+      has_participants: "Patients enrolled?"
+      contact: "Contact information"
     search:
       title: "Clinical Studies in %{city}"
       back_to_search: "Back to search"

@@ -114,6 +114,17 @@ es:
     showcase:
       title: "Estudios Clínicos Disponibles"
       participate: "¡Quiero participar!"
+      more_about: "Más sobre este estudio"
+    study_details:
+      back_home: "Volver al inicio"
+      description: "Descripción"
+      no_description: "Sin descripción disponible."
+      cities: "Ciudades"
+      centers: "Centros asociados"
+      links: "Enlaces relacionados"
+      none: "—"
+      has_participants: "¿Pacientes inscritos?"
+      contact: "Información de contacto"
     search:
       title: "Estudios Clínicos en %{city}"
       back_to_search: "Volver a la búsqueda"

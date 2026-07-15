@@ -1,0 +1,8 @@
+<div class="container mt-3">
+  <h1><%= t("campaigns.edit_title") %></h1>
+  <p class="text-muted"><%= @campaign.study.public_title %></p>
+  <%= render "form", campaign: @campaign, form_url: campaign_path(@campaign) %>
+  <div class="mt-2">
+    <%= link_to t("common.back"), campaign_path(@campaign) %>
+  </div>
+</div>

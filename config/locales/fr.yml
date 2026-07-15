@@ -16,6 +16,7 @@ fr:
     medications: "Médicaments"
     users: "Utilisateurs"
     admins: "Administrateurs"
+    platform_staffs: "Personnel de la plateforme"
     sponsor_reps: "Représentants des promoteurs"
     branch_reps: "Représentants des sites"
     patients: "Patients"
@@ -85,6 +86,15 @@ fr:
         primary: "Primaire"
         secondary: "Secondaire"
         empty: "—"
+    campaign:
+      status:
+        draft: "Brouillon"
+        ready: "Prête"
+        archived: "Archivée"
+    campaign_document:
+      document_type:
+        file: "Fichier"
+        external_link: "Lien externe"
     criteria_variable: &criteria_enums
       value_type:
         boolean: "Booléen"
@@ -128,6 +138,9 @@ fr:
       role: "Rôle"
       consent: "Autorisation"
       user: "Utilisateur"
+      campaign: "Campagne"
+      campaign_document: "Document de campagne"
+      platform_staff: "Personnel de la plateforme"
     attributes:
       sponsor:
         name: "Nom"
@@ -220,3 +233,28 @@ fr:
         url: "URL"
       role:
         name: "Nom"
+      campaign:
+        title: "Titre"
+        description: "Description"
+        call_to_action: "Appel à l’action"
+        status: "Statut"
+        target_instagram: "Instagram"
+        target_facebook: "Facebook"
+        target_twitter: "X (Twitter)"
+        instagram_user_id: "ID utilisateur Instagram"
+        instagram_access_token: "Jeton d’accès Instagram"
+        facebook_page_id: "ID de page Facebook"
+        facebook_page_access_token: "Jeton d’accès de page Facebook"
+        twitter_api_key: "Clé API X"
+        twitter_api_secret: "Secret API X"
+        twitter_access_token: "Jeton d’accès X"
+        twitter_access_token_secret: "Secret du jeton d’accès X"
+      campaign_document:
+        title: "Titre"
+        document_type: "Type de document"
+        external_url: "Lien externe"
+        file: "Fichier"
+      platform_staff:
+        title: "Fonction"
+        contact_number: "Numéro de contact"
+        contact_address: "Adresse de contact"

@@ -1,0 +1,93 @@
+<div class="container">
+  <p class="text-success"><%= notice %></p>
+  <% if alert.present? %><p class="text-danger"><%= alert %></p><% end %>
+
+  <div class="card health-card shadow-sm mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h3 class="mb-0"><%= @campaign.title %></h3>
+      <span class="badge bg-secondary"><%= t("enums.campaign.status.#{@campaign.status}") %></span>
+    </div>
+    <div class="card-body">
+      <p class="text-muted mb-3">
+        <%= link_to @campaign.study.public_title, study_campaigns_path(@campaign.study) %>
+      </p>
+
+      <% if @campaign.description.present? %>
+        <div class="mb-3"><%= simple_format(@campaign.description) %></div>
+      <% end %>
+
+      <% if @campaign.call_to_action.present? %>
+        <p><strong><%= Campaign.human_attribute_name(:call_to_action) %>:</strong> <%= @campaign.call_to_action %></p>
+      <% end %>
+
+      <h5 class="mt-4"><%= t("campaigns.channels") %></h5>
+      <% if @campaign.targeted_platforms.any? %>
+        <% @campaign.targeted_platforms.each do |platform| %>
+          <span class="badge bg-primary me-1"><%= t("campaigns.platform.#{platform}") %></span>
+        <% end %>
+      <% else %>
+        <span class="text-muted"><%= t("campaigns.no_channels") %></span>
+      <% end %>
+
+      <p class="small text-muted mt-3 mb-0">
+        <% if @campaign.publishing_configured? %>
+          <%= t("campaigns.publishing_configured") %>
+        <% else %>
+          <%= t("campaigns.publishing_not_configured") %>
+        <% end %>
+      </p>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-header"><h5 class="mb-0"><%= t("campaigns.documents") %></h5></div>
+    <div class="card-body">
+      <% if @documents.any? %>
+        <ul class="list-group mb-3">
+          <% @documents.each do |doc| %>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>
+                <% if doc.external_link? %>
+                  🔗 <% if (href = safe_external_url(doc.external_url)) %>
+                    <%= link_to doc.display_name, href, target: "_blank", rel: "noopener" %>
+                  <% else %>
+                    <%= doc.display_name %>
+                  <% end %>
+                <% elsif doc.file.attached? %>
+                  📄 <%= link_to doc.display_name, rails_blob_path(doc.file, disposition: "attachment") %>
+                <% else %>
+                  <%= doc.display_name %>
+                <% end %>
+              </span>
+              <% if policy(doc).destroy? %>
+                <%= button_to t("common.destroy"), campaign_document_path(doc), method: :delete,
+                      class: "btn btn-sm btn-outline-danger",
+                      form: { data: { turbo_confirm: t("campaign_documents.confirm_delete") } } %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-muted"><%= t("campaigns.no_documents") %></p>
+      <% end %>
+
+      <% if policy(CampaignDocument).new? %>
+        <hr>
+        <h6><%= t("campaign_documents.add_title") %></h6>
+        <%= render "campaign_documents/form", campaign: @campaign %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mt-3 d-flex gap-2 flex-wrap">
+    <% if policy(@campaign).edit? %>
+      <%= link_to t("common.edit"), edit_campaign_path(@campaign), class: "btn btn-outline-secondary" %>
+    <% end %>
+    <% if policy(@campaign).destroy? %>
+      <%= button_to t("common.destroy"), campaign_path(@campaign), method: :delete,
+            class: "btn btn-outline-danger",
+            form: { data: { turbo_confirm: t("campaigns.confirm_delete") } } %>
+    <% end %>
+    <%= link_to t("campaigns.back_to_list"), study_campaigns_path(@campaign.study), class: "btn btn-link" %>
+  </div>
+</div>

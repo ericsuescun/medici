@@ -1,0 +1,51 @@
+<div class="container">
+  <p class="text-success"><%= notice %></p>
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h1><%= t("campaigns.index_title") %></h1>
+      <p class="text-muted mb-0"><%= @study.public_title %></p>
+    </div>
+    <% if policy(Campaign).new? %>
+      <%= link_to t("campaigns.new"), new_study_campaign_path(@study), class: "btn btn-primary" %>
+    <% end %>
+  </div>
+
+  <% if @campaigns.any? %>
+    <div class="row">
+      <% @campaigns.each do |campaign| %>
+        <div class="col-md-4 mb-4">
+          <div class="card health-card shadow-sm h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span><%= link_to campaign.title, campaign_path(campaign) %></span>
+              <span class="badge bg-secondary"><%= t("enums.campaign.status.#{campaign.status}") %></span>
+            </div>
+            <div class="card-body d-flex flex-column">
+              <p class="card-text"><%= truncate(campaign.description, length: 120) %></p>
+              <p class="small text-muted mb-2">
+                <%= t("campaigns.documents_count", count: campaign.campaign_documents.size) %>
+              </p>
+              <div class="mt-auto d-flex gap-2 flex-wrap">
+                <%= link_to t("common.show"), campaign_path(campaign), class: "btn btn-sm btn-outline-primary" %>
+                <% if policy(campaign).edit? %>
+                  <%= link_to t("common.edit"), edit_campaign_path(campaign), class: "btn btn-sm btn-outline-secondary" %>
+                <% end %>
+                <% if policy(campaign).destroy? %>
+                  <%= button_to t("common.destroy"), campaign_path(campaign), method: :delete,
+                        class: "btn btn-sm btn-outline-danger",
+                        form: { data: { turbo_confirm: t("campaigns.confirm_delete") } } %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-muted"><%= t("campaigns.none") %></p>
+  <% end %>
+
+  <div class="mt-2">
+    <%= link_to t("campaigns.back_to_study"), study_path(@study) %>
+  </div>
+</div>

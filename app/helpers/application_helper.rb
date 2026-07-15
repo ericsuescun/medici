@@ -27,6 +27,16 @@ module ApplicationHelper
     url_for(request.query_parameters.merge(locale: locale))
   end
 
+  # Returns a user-supplied URL only if it uses a safe http(s) scheme, otherwise
+  # nil. Guards `link_to` hrefs against `javascript:`/`data:` URI injection when
+  # the URL comes from a record (campaign document, article, contact).
+  def safe_external_url(url)
+    return if url.blank?
+
+    normalized = url.to_s.strip
+    normalized if normalized.match?(%r{\Ahttps?://}i)
+  end
+
   # Returns [ [name, code], ... ] for use in selects, ordered by country_priority then name
   # If no selected value is provided, defaults to 'CO' (Colombia)
   def country_options_for_select(selected = nil)

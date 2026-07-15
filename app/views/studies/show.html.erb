@@ -5,6 +5,9 @@
       <div>
         <%= link_to t("studies.edit_this_study"), edit_study_path(@study) %> |
         <%= link_to t("studies.return_to_studies"), studies_path %>
+        <% if policy(Campaign).index? %>
+          | <%= link_to t("campaigns.index_title"), study_campaigns_path(@study) %>
+        <% end %>
         <% if current_user&.admin? %>
           | <%= link_to t("studies.change_control"), change_control_path("Study", @study.id) %>
         <% end %>

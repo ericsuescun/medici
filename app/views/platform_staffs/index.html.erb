@@ -1,0 +1,35 @@
+<div class="container">
+  <p class="text-success"><%= notice %></p>
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1><%= t("platform_staffs.index_title") %></h1>
+    <%= link_to t("platform_staffs.new"), new_platform_staff_path, class: "btn btn-primary" %>
+  </div>
+
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th><%= t("platform_staffs.table_name") %></th>
+      <th><%= t("platform_staffs.email") %></th>
+      <th><%= PlatformStaff.human_attribute_name(:title) %></th>
+      <th><%= PlatformStaff.human_attribute_name(:contact_number) %></th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <% @platform_staffs.each do |staff| %>
+      <tr>
+        <td><%= link_to staff.fullname, platform_staff_path(staff) %></td>
+        <td><%= staff.email %></td>
+        <td><%= staff.title %></td>
+        <td><%= staff.contact_number %></td>
+        <td>
+          <%= link_to t("common.edit"), edit_platform_staff_path(staff), class: 'btn btn-sm btn-outline-secondary' %>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+
+  <%= will_paginate @platform_staffs %>
+</div>

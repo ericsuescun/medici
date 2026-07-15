@@ -44,7 +44,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  delegated_type :userable, types: %w[SponsorRep Admin Patient TrialCenterBranchRep], dependent: :destroy
+  delegated_type :userable, types: %w[SponsorRep Admin Patient TrialCenterBranchRep PlatformStaff], dependent: :destroy
 
   # Authorization role is derived once from the userable (data) type at creation.
   # Every user-creation path sets `userable` before save, so this single callback
@@ -53,7 +53,8 @@ class User < ApplicationRecord
     "SponsorRep" => "sponsor_rep",
     "Admin" => "admin",
     "Patient" => "patient",
-    "TrialCenterBranchRep" => "trial_center_branch_rep"
+    "TrialCenterBranchRep" => "trial_center_branch_rep",
+    "PlatformStaff" => "platform_staff"
   }.freeze
 
   before_save :assign_default_role, if: -> { role_id.nil? && userable_type.present? }
@@ -76,6 +77,7 @@ class User < ApplicationRecord
   scope :sponsors, -> { where(userable_type: "SponsorRep") }
   scope :admins,   -> { where(userable_type: "Admin") }
   scope :trial_center_branch_reps, -> { where(userable_type: "TrialCenterBranchRep") }
+  scope :platform_staffs, -> { where(userable_type: "PlatformStaff") }
 
   # Convenience predicate methods to keep API compatible with previous enum
   def patient?
@@ -92,6 +94,10 @@ class User < ApplicationRecord
 
   def trial_center_branch_rep?
     userable_type == "TrialCenterBranchRep"
+  end
+
+  def platform_staff?
+    userable_type == "PlatformStaff"
   end
 
   def fullname

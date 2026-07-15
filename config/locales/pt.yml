@@ -16,6 +16,7 @@ pt:
     medications: "Medicamentos"
     users: "Usuários"
     admins: "Administradores"
+    platform_staffs: "Equipe da Plataforma"
     sponsor_reps: "Representantes de Patrocinadores"
     branch_reps: "Representantes de Centros"
     patients: "Pacientes"
@@ -85,6 +86,15 @@ pt:
         primary: "Primário"
         secondary: "Secundário"
         empty: "—"
+    campaign:
+      status:
+        draft: "Rascunho"
+        ready: "Pronta"
+        archived: "Arquivada"
+    campaign_document:
+      document_type:
+        file: "Arquivo"
+        external_link: "Link externo"
     criteria_variable: &criteria_enums
       value_type:
         boolean: "Booleano"
@@ -128,6 +138,9 @@ pt:
       role: "Perfil"
       consent: "Autorização"
       user: "Usuário"
+      campaign: "Campanha"
+      campaign_document: "Documento de campanha"
+      platform_staff: "Integrante da plataforma"
     attributes:
       sponsor:
         name: "Nome"
@@ -220,3 +233,28 @@ pt:
         url: "URL"
       role:
         name: "Nome"
+      campaign:
+        title: "Título"
+        description: "Descrição"
+        call_to_action: "Chamada para ação"
+        status: "Status"
+        target_instagram: "Instagram"
+        target_facebook: "Facebook"
+        target_twitter: "X (Twitter)"
+        instagram_user_id: "ID de usuário do Instagram"
+        instagram_access_token: "Token de acesso do Instagram"
+        facebook_page_id: "ID da página do Facebook"
+        facebook_page_access_token: "Token de acesso da página do Facebook"
+        twitter_api_key: "Chave de API do X"
+        twitter_api_secret: "Segredo de API do X"
+        twitter_access_token: "Token de acesso do X"
+        twitter_access_token_secret: "Segredo do token de acesso do X"
+      campaign_document:
+        title: "Título"
+        document_type: "Tipo de documento"
+        external_url: "Link externo"
+        file: "Arquivo"
+      platform_staff:
+        title: "Cargo"
+        contact_number: "Número de contato"
+        contact_address: "Endereço de contato"

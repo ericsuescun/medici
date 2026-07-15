@@ -1,0 +1,29 @@
+<%= form_with(url: campaign_campaign_documents_path(campaign), scope: :campaign_document, method: :post, multipart: true) do |f| %>
+  <div class="row g-2 align-items-start">
+    <div class="col-md-3">
+      <%= f.label :title, CampaignDocument.human_attribute_name(:title), class: "form-label" %>
+      <%= f.text_field :title, class: "form-control" %>
+    </div>
+    <div class="col-md-3">
+      <%= f.label :document_type, CampaignDocument.human_attribute_name(:document_type), class: "form-label" %>
+      <%= f.select :document_type,
+            CampaignDocument::DOCUMENT_TYPES.map { |dt| [ t("enums.campaign_document.document_type.#{dt}"), dt ] },
+            {}, class: "form-select" %>
+    </div>
+    <div class="col-md-4">
+      <div class="mb-2">
+        <%= f.label :file, CampaignDocument.human_attribute_name(:file), class: "form-label" %>
+        <%= f.file_field :file, class: "form-control" %>
+      </div>
+      <div>
+        <%= f.label :external_url, CampaignDocument.human_attribute_name(:external_url), class: "form-label" %>
+        <%= f.url_field :external_url, class: "form-control", placeholder: "https://docs.google.com/..." %>
+      </div>
+    </div>
+    <div class="col-md-2 d-grid">
+      <%= f.label :submit_spacer, "&nbsp;".html_safe, class: "form-label d-none d-md-block" %>
+      <%= f.submit t("campaign_documents.add"), class: "btn btn-primary" %>
+    </div>
+  </div>
+  <div class="form-text mt-1"><%= t("campaign_documents.form_hint") %></div>
+<% end %>

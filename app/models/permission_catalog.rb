@@ -4,12 +4,15 @@
 module PermissionCatalog
   RESOURCES = %w[
     Article
+    Campaign
+    CampaignDocument
     City
     Contact
     CriteriaProfile
     CriteriaVariable
     Medication
     Patient
+    PlatformStaff
     Result
     SponsorRep
     Sponsor

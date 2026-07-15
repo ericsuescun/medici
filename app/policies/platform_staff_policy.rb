@@ -1,0 +1,2 @@
+class PlatformStaffPolicy < ApplicationPolicy
+end

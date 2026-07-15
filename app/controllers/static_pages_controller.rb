@@ -6,6 +6,13 @@ class StaticPagesController < ApplicationController
   def medici_showcase
   end
 
+  # Public, read-only "More about this study" info card reachable from the home
+  # showcase without logging in (the authenticated StudiesController#show is
+  # behind Devise + Pundit, so anonymous visitors need this separate action).
+  def study_details
+    @study = Study.find(params[:id])
+  end
+
   def search_by_city
     @city = City.find(params[:city_id]) if params[:city_id].present?
 

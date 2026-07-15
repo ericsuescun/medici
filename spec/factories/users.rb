@@ -53,5 +53,9 @@ FactoryBot.define do
     trait :trial_center_branch_rep do
       association :userable, factory: :trial_center_branch_rep
     end
+
+    trait :platform_staff do
+      association :userable, factory: :platform_staff
+    end
   end
 end

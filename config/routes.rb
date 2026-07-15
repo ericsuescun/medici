@@ -3,6 +3,9 @@ Rails.application.routes.draw do
   get "static_pages/search_by_city"
   root to: "static_pages#medici_home"
 
+  # Public, no-login "More about this study" info card (see StaticPagesController).
+  get "studies/:id/about", to: "static_pages#study_details", as: :study_about
+
   # devise_for :users
 
   devise_for :users, controllers: {
@@ -26,6 +29,13 @@ Rails.application.routes.draw do
       post :set_criteria_profile
       delete :unset_criteria_profile
     end
+
+    # Promotional campaigns for a study (Campaign module). Shallow so campaigns
+    # are edited/shown at /campaigns/:id; documents attach at
+    # /campaigns/:campaign_id/documents and delete at /campaign_documents/:id.
+    resources :campaigns, shallow: true do
+      resources :campaign_documents, only: %i[ create destroy ], path: "documents"
+    end
   end
 
   resources :patients do
@@ -39,6 +49,7 @@ Rails.application.routes.draw do
   # Admin-only role/permission manager.
   resources :roles, only: %i[index new create edit update]
   resources :admins
+  resources :platform_staffs
   resources :sponsor_reps
   resources :trial_center_branch_reps
   resources :results

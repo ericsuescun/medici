@@ -52,6 +52,7 @@ class Study < ApplicationRecord
   has_many :results, dependent: :destroy
   has_many :trial_cities, dependent: :destroy
   has_many :contacts, dependent: :destroy
+  has_many :campaigns, dependent: :destroy
   has_one :criteria_profile, dependent: :destroy
 
   enum :study_status, completed: "completed", recruiting: "recruiting"
@@ -68,5 +69,11 @@ class Study < ApplicationRecord
   end
   def current_criteria_profile
     CriteriaProfile.find_by(study_id: id)
+  end
+
+  # Whether ANY patient is enrolled (used by the public info card, which shows a
+  # yes/no badge — never a count — to avoid disclosing enrollment numbers).
+  def any_patient_enrolled?
+    users.patients.exists?
   end
 end

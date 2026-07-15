@@ -10,9 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_13_205844) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_15_021800) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "active_storage_attachments", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
 
   create_table "admins", force: :cascade do |t|
     t.string "contact_number"
@@ -30,6 +58,38 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_13_205844) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["study_id"], name: "index_articles_on_study_id"
+  end
+
+  create_table "campaign_documents", force: :cascade do |t|
+    t.bigint "campaign_id", null: false
+    t.string "title"
+    t.string "document_type", default: "file", null: false
+    t.string "external_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id"], name: "index_campaign_documents_on_campaign_id"
+  end
+
+  create_table "campaigns", force: :cascade do |t|
+    t.bigint "study_id", null: false
+    t.string "title", null: false
+    t.text "description"
+    t.string "call_to_action"
+    t.string "status", default: "draft", null: false
+    t.boolean "target_instagram", default: false, null: false
+    t.boolean "target_facebook", default: false, null: false
+    t.boolean "target_twitter", default: false, null: false
+    t.text "instagram_user_id"
+    t.text "instagram_access_token"
+    t.text "facebook_page_id"
+    t.text "facebook_page_access_token"
+    t.text "twitter_api_key"
+    t.text "twitter_api_secret"
+    t.text "twitter_access_token"
+    t.text "twitter_access_token_secret"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["study_id"], name: "index_campaigns_on_study_id"
   end
 
   create_table "cities", force: :cascade do |t|
@@ -171,6 +231,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_13_205844) do
     t.string "participant_code"
     t.index ["participant_code"], name: "index_patients_on_participant_code", unique: true
     t.index ["state"], name: "index_patients_on_state"
+  end
+
+  create_table "platform_staffs", force: :cascade do |t|
+    t.string "contact_number"
+    t.string "contact_address"
+    t.string "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "results", force: :cascade do |t|
@@ -362,7 +430,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_13_205844) do
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "articles", "studies"
+  add_foreign_key "campaign_documents", "campaigns"
+  add_foreign_key "campaigns", "studies"
   add_foreign_key "consents", "users"
   add_foreign_key "contacts", "studies"
   add_foreign_key "criteria_profiles", "studies"

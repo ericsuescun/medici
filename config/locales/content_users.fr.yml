@@ -112,6 +112,17 @@ fr:
     showcase:
       title: "Études cliniques disponibles"
       participate: "Je veux participer !"
+      more_about: "En savoir plus sur cette étude"
+    study_details:
+      back_home: "Retour à l’accueil"
+      description: "Description"
+      no_description: "Aucune description disponible."
+      cities: "Villes"
+      centers: "Centres associés"
+      links: "Liens associés"
+      none: "—"
+      has_participants: "Patients inscrits ?"
+      contact: "Coordonnées"
     search:
       title: "Études cliniques à %{city}"
       back_to_search: "Retour à la recherche"

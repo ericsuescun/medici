@@ -11,7 +11,8 @@
             <h5 class="card-title"><%= Study.human_attribute_name(:scientific_title) %>: <%= study.scientific_title %></h5>
             <h6 class="card-subtitle mb-2 text-muted"><%= Study.human_attribute_name(:short_title) %>: <%= study.short_title %></h6>
             <p class="card-text"><%= Study.human_attribute_name(:study_status) %>: <%= study.study_status.capitalize %></p>
-            <div class="mt-auto">
+            <div class="mt-auto d-grid gap-2">
+              <%= link_to t("static_pages.showcase.more_about"), study_about_path(study), class: "btn btn-primary w-100" %>
               <%= link_to t("static_pages.showcase.participate"), new_user_registration_path(study_id: study.id), class: "btn btn-success w-100" %>
             </div>
           </div>

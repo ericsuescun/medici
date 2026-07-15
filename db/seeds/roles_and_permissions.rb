@@ -7,7 +7,8 @@ module RolesAndPermissionsSeeder
     "admin" => "Administrador",
     "trial_center_branch_rep" => "Representante de Centro",
     "sponsor_rep" => "Representante de Patrocinador",
-    "patient" => "Paciente"
+    "patient" => "Paciente",
+    "platform_staff" => "Personal de Plataforma"
   }.freeze
 
   # role => { "Resource" => [can_show, can_edit, can_delete] }.
@@ -27,7 +28,10 @@ module RolesAndPermissionsSeeder
       "City" => [ true, false, false ],
       "Article" => [ true, false, false ],
       "Medication" => [ true, false, false ],
-      "User" => [ true, false, false ]
+      "User" => [ true, false, false ],
+      # Campaign module: trial-center reps can view promotional content only.
+      "Campaign" => [ true, false, false ],
+      "CampaignDocument" => [ true, false, false ]
     },
     "sponsor_rep" => {
       "Study" => [ true, true, false ],
@@ -36,9 +40,25 @@ module RolesAndPermissionsSeeder
       "Sponsor" => [ true, false, false ],
       "SponsorRep" => [ true, false, false ],
       "Medication" => [ true, false, false ],
-      "User" => [ true, false, false ]
+      "User" => [ true, false, false ],
+      # Campaign module: sponsor reps own their study's promotion — view + edit,
+      # but not delete (deletion stays with platform staff / admins).
+      "Campaign" => [ true, true, false ],
+      "CampaignDocument" => [ true, true, false ]
     },
     "patient" => {
+      "Study" => [ true, false, false ],
+      "Article" => [ true, false, false ],
+      "Medication" => [ true, false, false ],
+      # Campaign module: patients can view promotional content only.
+      "Campaign" => [ true, false, false ],
+      "CampaignDocument" => [ true, false, false ]
+    },
+    # Platform staff run the Campaign module: full view/edit/delete on campaign
+    # content, plus read access to the studies they promote.
+    "platform_staff" => {
+      "Campaign" => [ true, true, true ],
+      "CampaignDocument" => [ true, true, true ],
       "Study" => [ true, false, false ],
       "Article" => [ true, false, false ],
       "Medication" => [ true, false, false ]

@@ -16,6 +16,7 @@ en:
     medications: "Medications"
     users: "Users"
     admins: "Administrators"
+    platform_staffs: "Platform Staff"
     sponsor_reps: "Sponsor Representatives"
     branch_reps: "Site Representatives"
     patients: "Patients"
@@ -85,6 +86,15 @@ en:
         primary: "Primary"
         secondary: "Secondary"
         empty: "—"
+    campaign:
+      status:
+        draft: "Draft"
+        ready: "Ready"
+        archived: "Archived"
+    campaign_document:
+      document_type:
+        file: "File"
+        external_link: "External link"
     criteria_variable: &criteria_enums
       value_type:
         boolean: "Boolean"
@@ -128,6 +138,9 @@ en:
       role: "Role"
       consent: "Authorization"
       user: "User"
+      campaign: "Campaign"
+      campaign_document: "Campaign document"
+      platform_staff: "Platform staff"
     attributes:
       sponsor:
         name: "Name"
@@ -220,3 +233,28 @@ en:
         url: "URL"
       role:
         name: "Name"
+      campaign:
+        title: "Title"
+        description: "Description"
+        call_to_action: "Call to action"
+        status: "Status"
+        target_instagram: "Instagram"
+        target_facebook: "Facebook"
+        target_twitter: "X (Twitter)"
+        instagram_user_id: "Instagram user ID"
+        instagram_access_token: "Instagram access token"
+        facebook_page_id: "Facebook page ID"
+        facebook_page_access_token: "Facebook page access token"
+        twitter_api_key: "X API key"
+        twitter_api_secret: "X API secret"
+        twitter_access_token: "X access token"
+        twitter_access_token_secret: "X access token secret"
+      campaign_document:
+        title: "Title"
+        document_type: "Document type"
+        external_url: "External link"
+        file: "File"
+      platform_staff:
+        title: "Position"
+        contact_number: "Contact number"
+        contact_address: "Contact address"

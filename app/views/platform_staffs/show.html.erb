@@ -1,0 +1,20 @@
+<p class="text-success"><%= notice %></p>
+
+<div class="card">
+  <div class="card-header">
+    <h3><%= @platform_staff.fullname %></h3>
+  </div>
+  <div class="card-body">
+    <p><strong><%= t("platform_staffs.email") %>:</strong> <%= @platform_staff.email %></p>
+    <p><strong><%= PlatformStaff.human_attribute_name(:contact_number) %>:</strong> <%= @platform_staff.contact_number %></p>
+    <p><strong><%= PlatformStaff.human_attribute_name(:contact_address) %>:</strong> <%= @platform_staff.contact_address %></p>
+    <p><strong><%= PlatformStaff.human_attribute_name(:title) %>:</strong> <%= @platform_staff.title %></p>
+  </div>
+</div>
+
+<div class="mt-3">
+  <%= link_to t("platform_staffs.show_edit"), edit_platform_staff_path(@platform_staff) %> |
+  <%= link_to t("platform_staffs.show_back"), platform_staffs_path %>
+  <%= button_to t("platform_staffs.show_destroy"), @platform_staff, method: :delete,
+        class: "btn btn-danger ms-2", form: { data: { turbo_confirm: t("platform_staffs.confirm_delete") } } %>
+</div>
