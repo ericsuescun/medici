@@ -68,11 +68,14 @@
                 <span class="text-muted d-block small mt-1">Versión <%= Consent::LEY_1581_CURRENT_VERSION %></span>
               </div>
 
-              <div class="form-check">
-                <%= f.check_box :data_processing_authorization, class: "form-check-input",
+              <%# Flex rather than Bootstrap's .form-check: .form-check floats the
+                  input with a fixed -1.5em margin sized for a 1em box, which the
+                  enlarged checkbox overlaps. %>
+              <div class="consent-row d-flex align-items-center gap-3" data-consent-gate-target="row">
+                <%= f.check_box :data_processing_authorization, class: "form-check-input flex-shrink-0",
                                 data: { consent_gate_target: "checkbox", action: "change->consent-gate#toggle" } %>
                 <%= f.label :data_processing_authorization, t("participation_requests.accept"),
-                            class: "form-check-label fw-semibold" %>
+                            class: "form-check-label fw-semibold mb-0" %>
               </div>
             </div>
 
@@ -84,6 +87,13 @@
               <%= f.submit t("participation_requests.submit"), class: "btn btn-success",
                            data: { consent_gate_target: "submit" } %>
             </div>
+
+            <%# Says why the button is dead. Without this the disabled state is just
+                a mystery — the checkbox is the last thing you'd suspect. Hidden by
+                the controller once authorization is given. %>
+            <p class="small text-muted text-center mt-2 mb-0" data-consent-gate-target="hint">
+              <%= t("participation_requests.check_to_continue") %>
+            </p>
           <% end %>
         </div>
       </div>

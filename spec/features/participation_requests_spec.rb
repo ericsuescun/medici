@@ -19,7 +19,7 @@ RSpec.feature "Participation request consent gate", type: :feature, js: true do
     positions = page.evaluate_script(<<~JS)
       (() => {
         const box = document.querySelector('#patient_data_processing_authorization');
-        const copy = document.querySelector('.form-check').previousElementSibling;
+        const copy = document.querySelector('.consent-row').previousElementSibling;
         return {
           copyBottom: copy.getBoundingClientRect().bottom,
           checkboxTop: box.getBoundingClientRect().top
@@ -42,6 +42,38 @@ RSpec.feature "Participation request consent gate", type: :feature, js: true do
     uncheck "patient_data_processing_authorization"
 
     expect(submit_disabled?).to be(true)
+  end
+
+  # The authorization is a legal act, so its state has to be readable at a glance
+  # rather than hidden in a 16px dot.
+  it "marks the consent row as granted once ticked" do
+    expect(page).to have_css(".consent-row")
+    expect(page).not_to have_css(".consent-row.consent-row--granted")
+
+    check "patient_data_processing_authorization"
+
+    expect(page).to have_css(".consent-row.consent-row--granted")
+  end
+
+  it "gives the checkbox a real tap target" do
+    size = page.evaluate_script(
+      "(() => { const r = document.querySelector('#patient_data_processing_authorization')" \
+      ".getBoundingClientRect(); return Math.round(Math.min(r.width, r.height)); })()"
+    )
+
+    expect(size).to be >= 20
+  end
+
+  describe "the disabled-button hint" do
+    it "explains why the button is dead" do
+      expect(page).to have_content(I18n.t("participation_requests.check_to_continue"))
+    end
+
+    it "goes away once authorization is given" do
+      check "patient_data_processing_authorization"
+
+      expect(page).not_to have_content(I18n.t("participation_requests.check_to_continue"))
+    end
   end
 
   it "submits once authorized, recording the patient and the consent" do

@@ -12,7 +12,7 @@ import { Controller } from "@hotwired/stimulus"
 // unticked submission. Failing that way round means a broken script can never
 // lock someone out of the form.
 export default class extends Controller {
-  static targets = ["checkbox", "submit"]
+  static targets = ["checkbox", "submit", "row", "hint"]
 
   // Also runs on Turbo cache restore, so a restored page can't come back with a
   // stale enabled button next to an unticked box.
@@ -21,6 +21,16 @@ export default class extends Controller {
   }
 
   toggle() {
-    this.submitTarget.disabled = !this.checkboxTarget.checked
+    const granted = this.checkboxTarget.checked
+
+    this.submitTarget.disabled = !granted
+    // Read the authorization state at a glance: the row goes green once given.
+    if (this.hasRowTarget) {
+      this.rowTarget.classList.toggle("consent-row--granted", granted)
+    }
+    // The hint only explains the disabled button, so it goes once enabled.
+    if (this.hasHintTarget) {
+      this.hintTarget.hidden = granted
+    }
   }
 }

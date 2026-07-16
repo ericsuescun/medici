@@ -285,6 +285,41 @@ $dark: $medici-dark;
   box-shadow: 0 0 0 0.25rem rgba($medici-primary, 0.25);
 }
 
+// Habeas-data authorization row (public participation form).
+//
+// This is a legal act, not a preference, so it gets a target you cannot miss and
+// a state you can read at a glance. A default 1em checkbox was carrying the
+// whole weight of a Ley 1581 authorization and disappeared into the copy above
+// it. Deliberately NOT pre-tickable or styled to look already-accepted:
+// authorization for sensitive health data has to be a conscious opt-in.
+.consent-row {
+  background-color: $medici-bg-light;
+  border: 1px solid rgba($medici-warning, 0.5);
+  border-left: 4px solid $medici-warning;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+
+  // ~24px: readable, and a real tap target on a phone rather than a 16px dot.
+  .form-check-input {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin: 0;
+  }
+
+  .form-check-label {
+    cursor: pointer;
+  }
+
+  // Authorized — unmistakable without reading a word.
+  &.consent-row--granted {
+    background-color: rgba($medici-success, 0.08);
+    border-color: rgba($medici-success, 0.5);
+    border-left-color: $medici-success;
+  }
+}
+
 // Global layout tweaks for fixed navbar
 body {
   padding-top: 70px; // accommodate fixed-top navbar height
