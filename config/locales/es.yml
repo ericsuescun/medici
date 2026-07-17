@@ -26,9 +26,24 @@ es:
     cities: "Ciudades"
     my_data: "Mis datos"
     search: "Buscar"
-    about: "Acerca de"
+    about: "Acerca de..."
+    logout: "Cerrar sesión"
 
   # ---- Shared UI ----
+  search:
+    title: "Búsqueda"
+    prompt: "Escribe un nombre o título para buscar."
+    results_for: "Resultados para «%{query}»"
+    no_results: "Sin resultados para «%{query}»."
+    unnamed: "(sin nombre)"
+    no_studies_in_city: "No hay estudios asociados en esta ciudad."
+    types:
+      studies: "Estudios"
+      trial_centers: "Centros de investigación"
+      reps: "Representantes"
+      patients: "Pacientes"
+      cities: "Ciudades"
+
   common:
     edit: "Editar"
     back: "Volver"

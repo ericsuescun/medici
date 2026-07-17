@@ -32,17 +32,21 @@ class CriteriaProfile < ApplicationRecord
 
   validates :name, presence: true
 
-  # Evaluate `patient` against this profile's enabled variables. Patient answers
-  # (VariableValues) are matched to variables by `name` — the app's denormalized
-  # snapshot design has no FK linking the two. Returns an EligibilityResult.
+  # Evaluate `patient` against this profile's enabled variables. Answers
+  # (VariableValues) are matched to rules by FK (criteria_variable_id), so a rule
+  # can be renamed without orphaning the patient's answer. `name` is only a
+  # fallback for legacy rows written before the FK existed. Returns an
+  # EligibilityResult.
   def evaluate(patient)
-    answers = patient.variable_values.index_by(&:name)
+    values = patient.variable_values.to_a
+    by_id = values.index_by(&:criteria_variable_id)
+    by_name = values.reject(&:criteria_variable_id).index_by(&:name)
 
     checks = criteria_variables
              .select(&:enabled)
              .sort_by { |cv| cv.criteria_order || 0 }
              .map do |cv|
-      answer = answers[cv.name]
+      answer = by_id[cv.id] || by_name[cv.name]
       met = answer ? cv.satisfied_by?(answer.value) : nil
       EligibilityResult::Check.new(variable: cv, value: answer&.value, met: met)
     end

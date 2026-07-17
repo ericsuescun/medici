@@ -20,6 +20,10 @@ en:
     change_control: "Change control"
     edit_title: "Editing patient"
     current_state: "Current state:"
+    states:
+      prospect: "Prospect"
+      candidate: "Candidate"
+      participant: "Participant"
     errors_header:
       one: "%{count} error prohibited this patient from being saved:"
       other: "%{count} errors prohibited this patient from being saved:"
@@ -28,6 +32,79 @@ en:
     destroyed: "Patient was successfully deleted."
     state_updated: "State updated successfully."
     state_update_failed: "Could not update the state: %{message}"
+
+  patient_briefings:
+    title: "Patient briefing"
+    eligibility: "Eligibility"
+    open_assessment: "Open assessment"
+    no_profile: "This patient's study has no criteria profile."
+    open_notes: "View all"
+    open_information: "Open"
+    open_briefing: "View briefing"
+
+  complementary_informations:
+    index_title: "Complementary information"
+    show_title: "Complementary information"
+    edit_title: "Edit complementary information"
+    view_link: "View complementary information"
+    edit_link: "Edit"
+    empty: "No complementary information recorded yet."
+    notes: "Notes"
+    documents: "Documents (PDF)"
+    documents_hint: "Previous exams as PDFs."
+    images: "Images"
+    images_hint: "Pictures of previous exams."
+    upload_hint: "Files upload straight to the AWS bucket on save; they are not stored in the database."
+    remove_file: "Remove"
+    confirm_remove: "Remove this file?"
+    file_removed: "File removed."
+    updated: "Complementary information updated."
+    back_to_patient: "Back to patient"
+    errors:
+      not_a_pdf: "“%{filename}” is not a PDF."
+      not_an_image: "“%{filename}” is not a valid image."
+      too_large: "“%{filename}” exceeds the %{limit} MB limit."
+
+  soap_notes:
+    index_title: "SOAP notes"
+    show_title: "SOAP note"
+    new_title: "New SOAP note"
+    edit_title: "Edit SOAP note"
+    new_note: "New note"
+    view_notes:
+      zero: "View SOAP notes"
+      one: "View SOAP notes (%{count})"
+      other: "View SOAP notes (%{count})"
+    none: "This patient has no SOAP notes yet."
+    unknown_author: "Unknown author"
+    encounter_date: "Encounter date"
+    save: "Save note"
+    attachment_hint: "Images upload as you drop them into a field; they are stored in the AWS bucket, not the database."
+    section_empty: "No content."
+    blank_note: "A note must have content in at least one section."
+    confirm_delete: "Delete this SOAP note?"
+    back_to_patient: "Back to patient"
+    back_to_list: "Back to notes"
+    created: "SOAP note created."
+    updated: "SOAP note updated."
+    destroyed: "SOAP note deleted."
+    sections:
+      subjective:
+        label: "Subjective"
+        short: "S"
+        hint: "What the patient reports: symptoms, history, chief complaint."
+      objective:
+        label: "Objective"
+        short: "O"
+        hint: "Measurable findings: vital signs, physical exam, labs, imaging."
+      assessment:
+        label: "Assessment"
+        short: "A"
+        hint: "The clinician's synthesis: impression, differential diagnosis."
+      plan:
+        label: "Plan"
+        short: "P"
+        hint: "Treatment, medication, follow-up, referrals, patient education."
 
   sponsors:
     index_title: "Sponsors"

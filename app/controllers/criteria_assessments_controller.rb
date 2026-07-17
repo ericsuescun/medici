@@ -6,7 +6,11 @@ class CriteriaAssessmentsController < SecureApplicationController
 
   def show
     @variables = ordered_variables
-    @values_by_name = @patient.variable_values.index_by(&:name)
+    # Prefill by FK (falls back to name for legacy rows), so a renamed rule still
+    # shows the value the patient already has for it.
+    values = @patient.variable_values.to_a
+    @values_by_var = values.index_by(&:criteria_variable_id)
+    @values_by_name = values.reject(&:criteria_variable_id).index_by(&:name)
     @result = @profile.evaluate(@patient)
   end
 
@@ -30,19 +34,22 @@ class CriteriaAssessmentsController < SecureApplicationController
     @profile.criteria_variables.select(&:enabled).sort_by { |cv| [ cv.variable_type, cv.criteria_order || 0 ] }
   end
 
-  # Upsert one VariableValue per submitted variable (keyed by variable id, since
-  # names contain spaces/parens). Copies the rule onto the value (the snapshot
-  # design), matched to the profile by name.
+  # Upsert one VariableValue per submitted variable, keyed by the rule's FK so a
+  # renamed rule updates the same answer row instead of orphaning it. Copies the
+  # rule onto the value (the snapshot design), refreshing the snapshot `name` to
+  # the rule's current name on every capture.
   def save_values!
     @profile.criteria_variables.each do |cv|
       raw = params.dig(:values, cv.id.to_s)
       next if raw.blank?
 
-      record = @patient.variable_values.find_or_initialize_by(name: cv.name)
+      record = find_or_init_value(cv)
       # Attribute the first capture to the acting user; later edits are tracked by
       # PaperTrail's whodunnit, so we don't overwrite the original recorder here.
       record.entered_by ||= current_user
       record.assign_attributes(
+        criteria_variable: cv,
+        name: cv.name,
         value: raw.to_s,
         value_type: cv.value_type, comparison_type: cv.comparison_type, variable_type: cv.variable_type,
         reference_value_1: cv.reference_value_1, reference_value_2: cv.reference_value_2,
@@ -51,5 +58,13 @@ class CriteriaAssessmentsController < SecureApplicationController
       )
       record.save!
     end
+  end
+
+  # Prefer the FK match; adopt a legacy name-matched row (and stamp its FK) if the
+  # answer predates the FK; otherwise start a fresh answer.
+  def find_or_init_value(cv)
+    @patient.variable_values.find_by(criteria_variable_id: cv.id) ||
+      @patient.variable_values.where(criteria_variable_id: nil).find_by(name: cv.name) ||
+      @patient.variable_values.build
   end
 end

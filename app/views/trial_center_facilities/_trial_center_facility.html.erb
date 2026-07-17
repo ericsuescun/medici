@@ -18,7 +18,8 @@
       <% trial_center_facility.trial_center_branches.each do |tcb| %>
         <div class="col-4">
           <div class="card branch-card mb-3">
-            <h5 class="card-header"><%= TrialCenterBranch.model_name.human %> <%= tcb.cities.pluck(:name).first %>: <%= link_to tcb.name, tcb %></h5>
+            <% branch_city = tcb.cities.pluck(:name).first %>
+            <h5 class="card-header"><%= link_to tcb.name, tcb %><% if branch_city.present? %> (<%= branch_city %>)<% end %></h5>
             <div class="card-body">
               <h5 class="card-title"><%= tcb.description %></h5>
               <p class="card-text">

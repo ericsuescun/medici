@@ -26,9 +26,24 @@ fr:
     cities: "Villes"
     my_data: "Mes données"
     search: "Rechercher"
-    about: "À propos"
+    about: "À propos..."
+    logout: "Se déconnecter"
 
   # ---- Shared UI ----
+  search:
+    title: "Recherche"
+    prompt: "Saisissez un nom ou un titre à rechercher."
+    results_for: "Résultats pour « %{query} »"
+    no_results: "Aucun résultat pour « %{query} »."
+    unnamed: "(sans nom)"
+    no_studies_in_city: "Aucune étude associée dans cette ville."
+    types:
+      studies: "Études"
+      trial_centers: "Centres d'essais"
+      reps: "Représentants"
+      patients: "Patients"
+      cities: "Villes"
+
   common:
     edit: "Modifier"
     back: "Retour"

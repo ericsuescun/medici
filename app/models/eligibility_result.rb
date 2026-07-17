@@ -43,11 +43,41 @@ class EligibilityResult
     checks.none?(&:missing?)
   end
 
+  # Criteria the patient satisfies.
+  def passing
+    checks.select { |c| c.status == :pass }
+  end
+
+  # Criteria still to be measured ("pending"). Alias kept for the brief's vocabulary.
   def missing
     checks.select(&:missing?)
   end
+  alias_method :pending, :missing
 
+  # Criteria the patient measurably does NOT meet ("out of reach").
   def failing
     checks.select { |c| c.status == :fail }
+  end
+
+  # A single symbol summarizing the verdict, for banners/badges:
+  #   :eligible     — every criterion answered and passing
+  #   :not_eligible — at least one criterion measurably fails
+  #   :incomplete   — nothing failing yet, but values still missing
+  #   :empty        — no criteria to evaluate
+  def verdict
+    return :empty if checks.none?
+    return :eligible if eligible?
+    return :not_eligible if failing.any?
+
+    :incomplete
+  end
+
+  # Count of criteria answered so far, out of the total — for a progress read.
+  def answered_count
+    checks.count { |c| !c.missing? }
+  end
+
+  def total_count
+    checks.size
   end
 end

@@ -1,0 +1,60 @@
+<div class="container mt-4">
+  <% if notice %><div class="alert alert-success"><%= notice %></div><% end %>
+
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-1">
+    <h1 class="mb-0"><%= t("complementary_informations.show_title") %></h1>
+    <% if policy(@patient).update? %>
+      <%= link_to t("complementary_informations.edit_link"), edit_patient_complementary_information_path(@patient), class: "btn btn-sm btn-outline-primary" %>
+    <% end %>
+  </div>
+  <p class="text-muted mb-4"><%= @patient.fullname.presence || @patient.participant_code %></p>
+
+  <% unless @information.any_content? %>
+    <p class="text-muted"><%= t("complementary_informations.empty") %></p>
+  <% end %>
+
+  <% if @information.notes.present? %>
+    <div class="card mb-3">
+      <div class="card-header"><strong><%= t("complementary_informations.notes") %></strong></div>
+      <div class="card-body"><div class="trix-content"><%= @information.notes %></div></div>
+    </div>
+  <% end %>
+
+  <% if @information.documents.attached? %>
+    <div class="card mb-3">
+      <div class="card-header"><strong><%= t("complementary_informations.documents") %></strong></div>
+      <div class="card-body">
+        <ul class="list-group">
+          <% @information.documents.each do |doc| %>
+            <li class="list-group-item">
+              <i class="bi bi-file-earmark-pdf"></i>
+              <%= link_to doc.blob.filename, rails_blob_path(doc, disposition: "inline"), target: "_blank", rel: "noopener" %>
+              <span class="text-muted small">(<%= number_to_human_size doc.blob.byte_size %>)</span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @information.images.attached? %>
+    <div class="card mb-3">
+      <div class="card-header"><strong><%= t("complementary_informations.images") %></strong></div>
+      <div class="card-body">
+        <div class="row g-3">
+          <% @information.images.each do |img| %>
+            <div class="col-6 col-md-3">
+              <%= link_to rails_blob_path(img, disposition: "inline"), target: "_blank", rel: "noopener" do %>
+                <%= image_tag img.representable? ? img.representation(resize_to_limit: [ 400, 400 ]) : img, class: "img-fluid rounded border" %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="mt-4">
+    <%= link_to t("complementary_informations.back_to_patient"), patient_path(@patient), class: "btn btn-link" %>
+  </div>
+</div>

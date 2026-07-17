@@ -58,6 +58,12 @@ class Patient < ApplicationRecord
 
   has_many :variable_values, dependent: :destroy
 
+  # Clinical SOAP notes accumulated over the course of the research.
+  has_many :soap_notes, dependent: :destroy
+
+  # Patient-contributed complementary information (prior exams: PDFs, images, notes).
+  has_one :complementary_information, dependent: :destroy
+
   # A patient exists to be considered for one study. This used to live on the
   # patient's User account (User has_and_belongs_to_many :studies) because a
   # patient could only be created by signing up; patients are records now, so the

@@ -19,9 +19,15 @@
     pending: [ "Pendiente", "bg-secondary" ],
     blocked: [ "Bloqueado", "bg-warning text-dark" ]
   }
+
+  # "Volver al índice" link, reused under each section heading. Uses the
+  # smooth-anchor controller so it doesn't drift past #indice.
+  back_to_index = link_to("↑ Volver al índice", "#indice",
+                          class: "small text-decoration-none d-inline-block mb-3",
+                          data: { action: "click->smooth-anchor#jump" })
 %>
 
-<div class="container my-5">
+<div class="container my-5" data-controller="smooth-anchor">
   <div class="mb-4">
     <h1 class="h2 mb-2">Acerca de Vitalia</h1>
     <p class="lead mb-0">
@@ -30,16 +36,24 @@
     </p>
   </div>
 
-  <%#
-    No in-page anchor nav here on purpose: the layout sets body padding from JS
-    after paint, which triggers Chrome's scroll anchoring and drifts an anchor
-    jump a non-deterministic ~200px past its target. Until that layout hack is
-    replaced, the three sections below are simply read in order.
-  %>
+  <%# Clickable index. Native #anchor jumps drift here (the layout adjusts body
+      padding from JS after paint), so each link is handled by the smooth-anchor
+      Stimulus controller, which scrolls with the navbar height subtracted. %>
+  <nav id="indice" class="card health-card shadow-sm mb-5" aria-label="Índice">
+    <div class="card-body">
+      <h2 class="h6 text-uppercase text-muted mb-3">Índice</h2>
+      <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-4">
+        <%= link_to "Manual de operación por rol", "#manual", class: "text-decoration-none", data: { action: "click->smooth-anchor#jump" } %>
+        <%= link_to "Marco normativo colombiano", "#normativa", class: "text-decoration-none", data: { action: "click->smooth-anchor#jump" } %>
+        <%= link_to "Estado de la plataforma", "#estado", class: "text-decoration-none", data: { action: "click->smooth-anchor#jump" } %>
+      </div>
+    </div>
+  </nav>
 
   <%# ---------------------------------------------------------------- Manual %>
   <section id="manual" class="mb-5">
-    <h2 class="h3 mb-3">Manual de operación por rol</h2>
+    <h2 class="h3 mb-1">Manual de operación por rol</h2>
+    <%= back_to_index %>
 
     <div class="card health-card shadow-sm mb-4">
       <div class="card-body">
@@ -118,7 +132,8 @@
 
   <%# ------------------------------------------------------------- Normativa %>
   <section id="normativa" class="mb-5">
-    <h2 class="h3 mb-3">Marco normativo colombiano</h2>
+    <h2 class="h3 mb-1">Marco normativo colombiano</h2>
+    <%= back_to_index %>
     <p>
       Estas son las normas sobre las que se sustenta la operación en Colombia. Cada una se
       consultó en su fuente oficial y se conserva una copia en el repositorio, porque los
@@ -165,7 +180,8 @@
 
   <%# ---------------------------------------------------------------- Estado %>
   <section id="estado" class="mb-5">
-    <h2 class="h3 mb-3">Estado de la plataforma</h2>
+    <h2 class="h3 mb-1">Estado de la plataforma</h2>
+    <%= back_to_index %>
     <p>
       Inventario honesto de lo construido y lo que falta. Lo pendiente se enumera con el mismo
       detalle que lo hecho: varios de los puntos abiertos son obligaciones normativas y no

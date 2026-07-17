@@ -1,0 +1,38 @@
+<div class="container mt-4">
+  <% if notice %><div class="alert alert-success"><%= notice %></div><% end %>
+
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-1">
+    <h1 class="mb-0"><%= t("soap_notes.show_title") %></h1>
+    <% if policy(@patient).update? %>
+      <div class="d-flex gap-2">
+        <%= link_to t("common.edit"), edit_patient_soap_note_path(@patient, @soap_note), class: "btn btn-sm btn-outline-primary" %>
+        <%= button_to t("common.destroy"), patient_soap_note_path(@patient, @soap_note), method: :delete,
+                      class: "btn btn-sm btn-outline-danger", form: { data: { turbo_confirm: t("soap_notes.confirm_delete") } } %>
+      </div>
+    <% end %>
+  </div>
+  <p class="text-muted mb-4">
+    <%= @patient.fullname.presence || @patient.participant_code %> ·
+    <%= l(@soap_note.encounter_date, format: :long) %> ·
+    <%= @soap_note.author&.fullname || t("soap_notes.unknown_author") %>
+  </p>
+
+  <% SoapNote::SECTIONS.each do |section| %>
+    <div class="card mb-3">
+      <div class="card-header">
+        <strong><%= t("soap_notes.sections.#{section}.label") %></strong>
+      </div>
+      <div class="card-body">
+        <% if @soap_note.section_present?(section) %>
+          <div class="trix-content"><%= @soap_note.public_send(section) %></div>
+        <% else %>
+          <span class="text-muted fst-italic"><%= t("soap_notes.section_empty") %></span>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="mt-4">
+    <%= link_to t("soap_notes.back_to_list"), patient_soap_notes_path(@patient), class: "btn btn-link" %>
+  </div>
+</div>

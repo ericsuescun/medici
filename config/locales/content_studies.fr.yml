@@ -86,3 +86,22 @@ fr:
     save_and_evaluate: "Enregistrer et évaluer"
     back_to_patient: "Retour au patient"
     updated: "Évaluation des critères mise à jour."
+    no_criteria: "Ce profil n'a pas encore de critères définis."
+    brief:
+      passing: "Remplis"
+      out_of_reach: "Hors de portée"
+      pending: "À mesurer"
+      answered: "Enregistrés"
+      required: "Requis"
+      measured: "Mesuré"
+      out_of_reach_heading:
+        one: "%{count} critère hors de portée"
+        other: "%{count} critères hors de portée"
+      pending_heading:
+        one: "%{count} critère encore à mesurer"
+        other: "%{count} critères encore à mesurer"
+      take_action: "Agir"
+      promote_hint_eligible: "Le patient remplit tous les critères — vous pouvez le promouvoir avec « %{event} »."
+      promote_hint_incomplete: "Certaines valeurs restent à enregistrer avant de confirmer l'éligibilité."
+      promote_hint_not_eligible: "Le patient ne remplit pas tous les critères ; vérifiez ce qui est hors de portée avant de promouvoir."
+      promote_hint_generic: "Mettez à jour l'état du patient dans le cycle de l'étude."

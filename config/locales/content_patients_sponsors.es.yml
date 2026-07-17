@@ -20,6 +20,10 @@ es:
     change_control: "Control de cambios"
     edit_title: "Edición de paciente"
     current_state: "Estado actual:"
+    states:
+      prospect: "Prospecto"
+      candidate: "Candidato"
+      participant: "Participante"
     errors_header:
       one: "%{count} error impidió guardar este paciente:"
       other: "%{count} errores impidieron guardar este paciente:"
@@ -28,6 +32,79 @@ es:
     destroyed: "El paciente se eliminó correctamente."
     state_updated: "Estado actualizado correctamente."
     state_update_failed: "No se pudo actualizar el estado: %{message}"
+
+  patient_briefings:
+    title: "Resumen del paciente"
+    eligibility: "Elegibilidad"
+    open_assessment: "Abrir evaluación"
+    no_profile: "El estudio de este paciente no tiene un perfil de criterios."
+    open_notes: "Ver todas"
+    open_information: "Abrir"
+    open_briefing: "Ver resumen"
+
+  complementary_informations:
+    index_title: "Información complementaria"
+    show_title: "Información complementaria"
+    edit_title: "Editar información complementaria"
+    view_link: "Ver información complementaria"
+    edit_link: "Editar"
+    empty: "Aún no se ha registrado información complementaria."
+    notes: "Notas"
+    documents: "Documentos (PDF)"
+    documents_hint: "Exámenes previos en PDF."
+    images: "Imágenes"
+    images_hint: "Fotografías de exámenes previos."
+    upload_hint: "Los archivos se suben directamente al bucket de AWS al guardar; no se almacenan en la base de datos."
+    remove_file: "Quitar"
+    confirm_remove: "¿Quitar este archivo?"
+    file_removed: "Archivo eliminado."
+    updated: "Información complementaria actualizada."
+    back_to_patient: "Volver al paciente"
+    errors:
+      not_a_pdf: "«%{filename}» no es un PDF."
+      not_an_image: "«%{filename}» no es una imagen válida."
+      too_large: "«%{filename}» supera el límite de %{limit} MB."
+
+  soap_notes:
+    index_title: "Notas SOAP"
+    show_title: "Nota SOAP"
+    new_title: "Nueva nota SOAP"
+    edit_title: "Editar nota SOAP"
+    new_note: "Nueva nota"
+    view_notes:
+      zero: "Ver notas SOAP"
+      one: "Ver notas SOAP (%{count})"
+      other: "Ver notas SOAP (%{count})"
+    none: "Este paciente aún no tiene notas SOAP."
+    unknown_author: "Autor desconocido"
+    encounter_date: "Fecha de la consulta"
+    save: "Guardar nota"
+    attachment_hint: "Las imágenes se suben al guardarlas en el campo; no se almacenan en la base de datos sino en el bucket de AWS."
+    section_empty: "Sin contenido."
+    blank_note: "La nota debe tener contenido en al menos una sección."
+    confirm_delete: "¿Eliminar esta nota SOAP?"
+    back_to_patient: "Volver al paciente"
+    back_to_list: "Volver a las notas"
+    created: "Nota SOAP creada correctamente."
+    updated: "Nota SOAP actualizada correctamente."
+    destroyed: "Nota SOAP eliminada correctamente."
+    sections:
+      subjective:
+        label: "Subjetivo"
+        short: "S"
+        hint: "Lo que refiere el paciente: síntomas, antecedentes, motivo de consulta."
+      objective:
+        label: "Objetivo"
+        short: "O"
+        hint: "Hallazgos medibles: signos vitales, examen físico, laboratorio, imágenes."
+      assessment:
+        label: "Análisis"
+        short: "A"
+        hint: "Síntesis del clínico: impresión diagnóstica, diagnóstico diferencial."
+      plan:
+        label: "Plan"
+        short: "P"
+        hint: "Tratamiento, medicación, seguimiento, remisiones, educación al paciente."
 
   sponsors:
     index_title: "Patrocinadores"

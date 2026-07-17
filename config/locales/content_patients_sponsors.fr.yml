@@ -20,6 +20,10 @@ fr:
     change_control: "Contrôle des modifications"
     edit_title: "Modification du patient"
     current_state: "État actuel :"
+    states:
+      prospect: "Prospect"
+      candidate: "Candidat"
+      participant: "Participant"
     errors_header:
       one: "%{count} erreur a empêché l'enregistrement de ce patient :"
       other: "%{count} erreurs ont empêché l'enregistrement de ce patient :"
@@ -28,6 +32,79 @@ fr:
     destroyed: "Le patient a été supprimé avec succès."
     state_updated: "État mis à jour avec succès."
     state_update_failed: "Impossible de mettre à jour l'état : %{message}"
+
+  patient_briefings:
+    title: "Synthèse du patient"
+    eligibility: "Éligibilité"
+    open_assessment: "Ouvrir l'évaluation"
+    no_profile: "L'étude de ce patient n'a pas de profil de critères."
+    open_notes: "Tout voir"
+    open_information: "Ouvrir"
+    open_briefing: "Voir la synthèse"
+
+  complementary_informations:
+    index_title: "Informations complémentaires"
+    show_title: "Informations complémentaires"
+    edit_title: "Modifier les informations complémentaires"
+    view_link: "Voir les informations complémentaires"
+    edit_link: "Modifier"
+    empty: "Aucune information complémentaire enregistrée pour l'instant."
+    notes: "Notes"
+    documents: "Documents (PDF)"
+    documents_hint: "Examens antérieurs au format PDF."
+    images: "Images"
+    images_hint: "Photos d'examens antérieurs."
+    upload_hint: "Les fichiers sont téléversés directement dans le bucket AWS à l'enregistrement ; ils ne sont pas stockés dans la base de données."
+    remove_file: "Retirer"
+    confirm_remove: "Retirer ce fichier ?"
+    file_removed: "Fichier supprimé."
+    updated: "Informations complémentaires mises à jour."
+    back_to_patient: "Retour au patient"
+    errors:
+      not_a_pdf: "« %{filename} » n'est pas un PDF."
+      not_an_image: "« %{filename} » n'est pas une image valide."
+      too_large: "« %{filename} » dépasse la limite de %{limit} Mo."
+
+  soap_notes:
+    index_title: "Notes SOAP"
+    show_title: "Note SOAP"
+    new_title: "Nouvelle note SOAP"
+    edit_title: "Modifier la note SOAP"
+    new_note: "Nouvelle note"
+    view_notes:
+      zero: "Voir les notes SOAP"
+      one: "Voir les notes SOAP (%{count})"
+      other: "Voir les notes SOAP (%{count})"
+    none: "Ce patient n'a pas encore de notes SOAP."
+    unknown_author: "Auteur inconnu"
+    encounter_date: "Date de la consultation"
+    save: "Enregistrer la note"
+    attachment_hint: "Les images sont téléversées dès leur dépôt dans un champ ; elles sont stockées dans le bucket AWS, pas dans la base de données."
+    section_empty: "Aucun contenu."
+    blank_note: "Une note doit avoir du contenu dans au moins une section."
+    confirm_delete: "Supprimer cette note SOAP ?"
+    back_to_patient: "Retour au patient"
+    back_to_list: "Retour aux notes"
+    created: "Note SOAP créée."
+    updated: "Note SOAP mise à jour."
+    destroyed: "Note SOAP supprimée."
+    sections:
+      subjective:
+        label: "Subjectif"
+        short: "S"
+        hint: "Ce que rapporte le patient : symptômes, antécédents, motif de consultation."
+      objective:
+        label: "Objectif"
+        short: "O"
+        hint: "Constatations mesurables : signes vitaux, examen physique, analyses, imagerie."
+      assessment:
+        label: "Évaluation"
+        short: "A"
+        hint: "La synthèse du clinicien : impression, diagnostic différentiel."
+      plan:
+        label: "Plan"
+        short: "P"
+        hint: "Traitement, médication, suivi, orientations, éducation du patient."
 
   sponsors:
     index_title: "Promoteurs"

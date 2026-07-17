@@ -18,19 +18,22 @@
 #  value_type        :string           not null
 #  variable_type     :string           default("inclusion"), not null
 #  created_at        :datetime         not null
-#  updated_at        :datetime         not null
-#  patient_id        :bigint           not null
-#  entered_by_id     :bigint
+#  updated_at           :datetime         not null
+#  criteria_variable_id :bigint
+#  patient_id           :bigint           not null
+#  entered_by_id        :bigint
 #
 # Indexes
 #
-#  index_variable_values_on_entered_by_id        (entered_by_id)
-#  index_variable_values_on_patient_id           (patient_id)
-#  index_variable_values_on_patient_id_and_name  (patient_id,name)
-#  index_vv_on_patient_type_order                (patient_id,variable_type,criteria_order)
+#  index_variable_values_on_criteria_variable_id  (criteria_variable_id)
+#  index_variable_values_on_entered_by_id         (entered_by_id)
+#  index_variable_values_on_patient_id            (patient_id)
+#  index_variable_values_on_patient_id_and_name   (patient_id,name)
+#  index_vv_on_patient_type_order                 (patient_id,variable_type,criteria_order)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (criteria_variable_id => criteria_variables.id)
 #  fk_rails_...  (entered_by_id => users.id)
 #  fk_rails_...  (patient_id => patients.id)
 #
@@ -42,6 +45,11 @@ class VariableValue < ApplicationRecord
   has_paper_trail
 
   belongs_to :patient
+  # The rule this answer is measuring. Optional and nullify-on-delete: the answer
+  # keeps its own snapshot columns, so it stays a truthful record even if the rule
+  # is later deleted. Matching answers to rules by this FK (not by `name`) is what
+  # lets a rule be renamed without orphaning the patient's answer.
+  belongs_to :criteria_variable, optional: true
   # The user (physician) who captured this value. Optional: existing/seeded rows
   # may have none. PaperTrail's whodunnit tracks *every* change; entered_by is the
   # convenient "who first recorded it" reference on the row itself.

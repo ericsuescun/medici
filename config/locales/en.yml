@@ -28,9 +28,24 @@ en:
     search: "Search"
     # The About page itself is Spanish-only (see OperationManual); only the
     # navbar label is localized.
-    about: "About"
+    about: "About..."
+    logout: "Log out"
 
   # ---- Shared UI ----
+  search:
+    title: "Search"
+    prompt: "Type a name or title to search."
+    results_for: "Results for “%{query}”"
+    no_results: "No results for “%{query}”."
+    unnamed: "(unnamed)"
+    no_studies_in_city: "No associated studies in this city."
+    types:
+      studies: "Studies"
+      trial_centers: "Trial centers"
+      reps: "Representatives"
+      patients: "Patients"
+      cities: "Cities"
+
   common:
     edit: "Edit"
     back: "Back"

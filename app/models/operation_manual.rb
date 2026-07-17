@@ -250,9 +250,9 @@ module OperationManual
 
   FEATURES = [
     Feature.new(
-      name: "Autenticación y registro de pacientes por estudio",
+      name: "Autenticación del personal y solicitud pública de participación",
       status: :done,
-      detail: "Devise con registro acoplado a un estudio concreto: no existe alta genérica. La cuenta y el paciente se crean juntos."
+      detail: "Devise autentica solo al personal; nadie se registra por su cuenta. Los pacientes no tienen cuenta: desde la ficha pública de un estudio dejan una solicitud de contacto (teléfono o correo) que crea el registro del paciente como prospecto, y el representante del centro construye después la historia clínica."
     ),
     Feature.new(
       name: "Roles y permisos por recurso",
@@ -282,7 +282,27 @@ module OperationManual
     Feature.new(
       name: "Motor de criterios de elegibilidad",
       status: :done,
-      detail: "Representa las reglas de inclusión y exclusión y las evalúa: compara los valores capturados del paciente contra el perfil del estudio y entrega un veredicto que distingue elegible, no elegible e incompleto."
+      detail: "Representa las reglas de inclusión y exclusión y las evalúa: compara los valores capturados del paciente contra el perfil del estudio y entrega un veredicto que distingue elegible, no elegible e incompleto. Las respuestas del paciente quedan ligadas a cada regla por identificador, de modo que renombrar una regla ya no desvincula lo capturado."
+    ),
+    Feature.new(
+      name: "Resumen de elegibilidad y promoción del paciente",
+      status: :done,
+      detail: "La evaluación se presenta como un informe: veredicto, conteos de criterios cumplidos, fuera de alcance y por medir, con el detalle de lo que falta o no se cumple. Desde ahí el representante o investigador promueve al paciente en el ciclo del estudio."
+    ),
+    Feature.new(
+      name: "Notas clínicas SOAP",
+      status: :done,
+      detail: "Notas en formato SOAP (Subjetivo, Objetivo, Análisis, Plan) — el estándar de documentación clínica estadounidense. Cada paciente acumula todas las que requiera la investigación, con campos de texto enriquecido; las imágenes se suben directamente al bucket de AWS al insertarlas, no a la base de datos."
+    ),
+    Feature.new(
+      name: "Información complementaria del paciente",
+      status: :done,
+      detail: "Exámenes previos del paciente: documentos en PDF, fotografías y notas en texto enriquecido, subidos directamente al bucket de AWS. Visible para el representante del centro y los administradores."
+    ),
+    Feature.new(
+      name: "Resumen de tratamiento del paciente",
+      status: :done,
+      detail: "Página única para representantes y administradores que consolida el estado del paciente, el veredicto de elegibilidad con lo pendiente y fuera de alcance, las últimas notas SOAP y la información complementaria, con las acciones de promoción a la mano."
     ),
     Feature.new(
       name: "Ciclo de vida del paciente",

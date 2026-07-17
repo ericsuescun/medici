@@ -49,16 +49,27 @@
           <%= link_to t("nav.cities"), cities_path, class: "nav-link" %>
         </li>
       </ul>
-      <form class="d-flex me-3" role="search">
-        <input class="form-control me-2" type="search" placeholder="<%= t("nav.search") %>" aria-label="<%= t("nav.search") %>"/>
+      <%= form_with url: search_path, method: :get, class: "d-flex me-3", role: "search" do |f| %>
+        <%= f.search_field :q, value: params[:q], class: "form-control me-2", placeholder: t("nav.search"), aria: { label: t("nav.search") } %>
         <button class="btn btn-outline-primary" type="submit"><%= t("nav.search") %></button>
-      </form>
+      <% end %>
       <%= render "layouts/locale_selector" %>
-      <span class="navbar-text small text-muted"><%= current_user.email if user_signed_in? %></span>
       <ul class="navbar-nav ms-3">
         <li class="nav-item">
           <%= link_to t("nav.about"), about_path, class: "nav-link text-nowrap" %>
         </li>
+        <% if user_signed_in? %>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-nowrap" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <%= current_user.email %>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <%= button_to t("nav.logout"), destroy_user_session_path, method: :delete, class: "dropdown-item" %>
+              </li>
+            </ul>
+          </li>
+        <% end %>
       </ul>
     </div>
   </div>

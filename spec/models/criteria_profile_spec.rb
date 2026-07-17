@@ -54,5 +54,40 @@ RSpec.describe CriteriaProfile, type: :model do
       expect(result).not_to be_eligible
       expect(result.missing.map { |c| c.variable.name }).to include("Edad")
     end
+
+    # Regression: answers used to be matched to rules by `name`, so renaming a
+    # rule silently orphaned every answer. They are matched by FK now.
+    it "keeps the answer linked when the rule is renamed (FK, not name)" do
+      cv = rule(name: "Edad", variable_type: "inclusion", comparison_type: "between_range", ref1: 18, ref2: 40)
+      patient.variable_values.create!(
+        criteria_variable: cv, name: cv.name, value: "30",
+        value_type: "quantitative", comparison_type: "between_range"
+      )
+      expect(profile.evaluate(patient.reload)).to be_eligible
+
+      cv.update!(name: "Edad (años)")
+
+      result = profile.evaluate(patient.reload)
+      expect(result).to be_eligible, "rename orphaned the answer"
+      expect(result).to be_complete
+    end
+
+    describe "the brief" do
+      it "reports passing / failing / pending and a verdict symbol" do
+        pass = rule(name: "Edad", variable_type: "inclusion", comparison_type: "between_range", ref1: 18, ref2: 40)
+        fail_rule = rule(name: "Peso", variable_type: "inclusion", comparison_type: "more_than", ref1: 50)
+        rule(name: "Talla", variable_type: "inclusion", comparison_type: "more_than", ref1: 150)
+        patient.variable_values.create!(criteria_variable: pass, name: pass.name, value: "30", value_type: "quantitative", comparison_type: "between_range")
+        patient.variable_values.create!(criteria_variable: fail_rule, name: fail_rule.name, value: "40", value_type: "quantitative", comparison_type: "more_than")
+
+        result = profile.evaluate(patient.reload)
+        expect(result.passing.map { |c| c.variable.name }).to eq([ "Edad" ])
+        expect(result.failing.map { |c| c.variable.name }).to eq([ "Peso" ])
+        expect(result.pending.map { |c| c.variable.name }).to eq([ "Talla" ])
+        expect(result.answered_count).to eq(2)
+        expect(result.total_count).to eq(3)
+        expect(result.verdict).to eq(:not_eligible)
+      end
+    end
   end
 end

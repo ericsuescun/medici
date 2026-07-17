@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_15_140200) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_16_161000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "action_text_rich_texts", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "body"
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -106,6 +116,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_15_140200) do
   create_table "cities_trial_center_facilities", id: false, force: :cascade do |t|
     t.bigint "city_id", null: false
     t.bigint "trial_center_facility_id", null: false
+  end
+
+  create_table "complementary_informations", force: :cascade do |t|
+    t.bigint "patient_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["patient_id"], name: "index_complementary_informations_on_patient_id", unique: true
   end
 
   create_table "consents", force: :cascade do |t|
@@ -273,6 +290,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_15_140200) do
     t.index ["name"], name: "index_roles_on_name", unique: true
   end
 
+  create_table "soap_notes", force: :cascade do |t|
+    t.bigint "patient_id", null: false
+    t.bigint "author_id"
+    t.date "encounter_date", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["author_id"], name: "index_soap_notes_on_author_id"
+    t.index ["patient_id"], name: "index_soap_notes_on_patient_id"
+  end
+
   create_table "sponsor_reps", force: :cascade do |t|
     t.string "contact_number"
     t.string "contact_address"
@@ -414,6 +441,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_15_140200) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "entered_by_id"
+    t.bigint "criteria_variable_id"
+    t.index ["criteria_variable_id"], name: "index_variable_values_on_criteria_variable_id"
     t.index ["entered_by_id"], name: "index_variable_values_on_entered_by_id"
     t.index ["patient_id", "name"], name: "index_variable_values_on_patient_id_and_name"
     t.index ["patient_id", "variable_type", "criteria_order"], name: "index_vv_on_patient_type_order"
@@ -436,6 +465,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_15_140200) do
   add_foreign_key "articles", "studies"
   add_foreign_key "campaign_documents", "campaigns"
   add_foreign_key "campaigns", "studies"
+  add_foreign_key "complementary_informations", "patients"
   add_foreign_key "consents", "patients"
   add_foreign_key "contacts", "studies"
   add_foreign_key "criteria_profiles", "studies"
@@ -444,12 +474,15 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_15_140200) do
   add_foreign_key "patients", "studies"
   add_foreign_key "results", "studies"
   add_foreign_key "role_permissions", "roles"
+  add_foreign_key "soap_notes", "patients"
+  add_foreign_key "soap_notes", "users", column: "author_id", on_delete: :nullify
   add_foreign_key "sponsor_reps", "sponsors"
   add_foreign_key "studies", "sponsors"
   add_foreign_key "trial_center_branch_reps", "trial_center_branches"
   add_foreign_key "trial_center_branches", "trial_center_facilities"
   add_foreign_key "trial_cities", "studies"
   add_foreign_key "users", "roles"
+  add_foreign_key "variable_values", "criteria_variables", on_delete: :nullify
   add_foreign_key "variable_values", "patients"
   add_foreign_key "variable_values", "users", column: "entered_by_id"
 end

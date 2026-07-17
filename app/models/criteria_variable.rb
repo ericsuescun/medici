@@ -38,6 +38,10 @@ class CriteriaVariable < ApplicationRecord
 
   belongs_to :criteria_profile
 
+  # Patient answers captured against this rule. nullify (not destroy): deleting a
+  # rule leaves each answer's snapshot intact as a historical record.
+  has_many :variable_values, dependent: :nullify
+
   attribute :value_type, :string
   attribute :variable_type, :string
   attribute :comparison_type, :string

@@ -41,6 +41,31 @@ RSpec.describe "Criteria assessments", type: :request do
       # PaperTrail records the change with the acting user as whodunnit.
       expect(value.versions.last.whodunnit).to eq(admin_user.id.to_s)
     end
+
+    it "links the captured value to the rule by FK" do
+      patch assessment_path, params: { values: { age.id.to_s => "30" } }
+
+      expect(patient.variable_values.find_by(name: "Edad").criteria_variable).to eq(age)
+    end
+
+    it "shows the brief's out-of-reach and pending sections" do
+      profile.criteria_variables.create!(
+        name: "Peso", variable_type: "inclusion", value_type: "quantitative",
+        comparison_type: "more_than", reference_value_1: 50
+      )
+      patient.variable_values.create!(criteria_variable: age, name: "Edad", value: "50", value_type: "quantitative", comparison_type: "between_range")
+
+      get assessment_path
+      expect(response.body).to include("fuera de alcance") # Edad = 50 fails the 18–40 range
+      expect(response.body).to include("por medir")        # Peso not yet measured
+    end
+
+    it "offers a promote action that transitions the patient's state" do
+      # A prospect is promoted to candidate via the AASM `assess` event.
+      expect {
+        post transition_patient_path(patient, event: "assess")
+      }.to change { patient.reload.state }.from("prospect").to("candidate")
+    end
   end
 
   context "as a patient (cannot edit patients)" do

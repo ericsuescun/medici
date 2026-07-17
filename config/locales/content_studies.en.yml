@@ -86,3 +86,22 @@ en:
     save_and_evaluate: "Save and evaluate"
     back_to_patient: "Back to patient"
     updated: "Criteria assessment updated."
+    no_criteria: "This profile has no criteria defined yet."
+    brief:
+      passing: "Met"
+      out_of_reach: "Out of reach"
+      pending: "To measure"
+      answered: "Recorded"
+      required: "Required"
+      measured: "Measured"
+      out_of_reach_heading:
+        one: "%{count} criterion out of reach"
+        other: "%{count} criteria out of reach"
+      pending_heading:
+        one: "%{count} criterion still to measure"
+        other: "%{count} criteria still to measure"
+      take_action: "Take action"
+      promote_hint_eligible: "The patient meets every criterion — you can promote them with “%{event}”."
+      promote_hint_incomplete: "Some values still need recording before eligibility can be confirmed."
+      promote_hint_not_eligible: "The patient does not meet every criterion; review what is out of reach before promoting."
+      promote_hint_generic: "Update the patient's state in the study lifecycle."

@@ -1,0 +1,44 @@
+<div class="container mt-4">
+  <h1 class="mb-1"><%= t("complementary_informations.edit_title") %></h1>
+  <p class="text-muted mb-4"><%= @patient.fullname.presence || @patient.participant_code %></p>
+
+  <% if @information.errors.any? %>
+    <div class="alert alert-danger">
+      <ul class="mb-0">
+        <% @information.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form_with model: @information, url: patient_complementary_information_path(@patient), method: :patch do |f| %>
+    <div class="card mb-3">
+      <div class="card-header"><strong><%= t("complementary_informations.notes") %></strong></div>
+      <div class="card-body"><%= f.rich_text_area :notes %></div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-header"><strong><%= t("complementary_informations.documents") %></strong> <span class="text-muted small"><%= t("complementary_informations.documents_hint") %></span></div>
+      <div class="card-body">
+        <%= render "attachments", attachments: @information.documents, icon: "bi-file-earmark-pdf" %>
+        <%= f.file_field :documents, multiple: true, accept: "application/pdf", direct_upload: true, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-header"><strong><%= t("complementary_informations.images") %></strong> <span class="text-muted small"><%= t("complementary_informations.images_hint") %></span></div>
+      <div class="card-body">
+        <%= render "attachments", attachments: @information.images, icon: "bi-image" %>
+        <%= f.file_field :images, multiple: true, accept: "image/*", direct_upload: true, class: "form-control" %>
+      </div>
+    </div>
+
+    <p class="text-muted small">
+      <i class="bi bi-cloud-arrow-up"></i> <%= t("complementary_informations.upload_hint") %>
+    </p>
+
+    <div class="d-flex gap-2">
+      <%= f.submit t("common.save"), class: "btn btn-success" %>
+      <%= link_to t("common.cancel"), patient_complementary_information_path(@patient), class: "btn btn-link" %>
+    </div>
+  <% end %>
+</div>

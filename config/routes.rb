@@ -49,6 +49,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # Global navbar search across studies, trial centers, reps, patients, cities.
+  get "search", to: "search#index", as: :search
+
   # Global campaigns list (navbar) — campaigns are otherwise buried under studies.
   resources :campaigns, only: :index
 
@@ -58,6 +61,14 @@ Rails.application.routes.draw do
     end
     # Capture a patient's values for a study's criteria profile + see the verdict.
     resource :criteria_assessment, only: %i[show update]
+    # Clinical SOAP notes accumulated over the research (rich text + S3 images).
+    resources :soap_notes
+    # Patient-contributed prior exams: PDFs + pictures + notes (one bundle each).
+    resource :complementary_information, only: %i[show edit update] do
+      delete :purge_attachment
+    end
+    # One-page treatment briefing for reps/admins (eligibility + notes + info).
+    resource :briefing, only: :show, controller: :patient_briefings
   end
 
   # Admin-only role/permission manager.

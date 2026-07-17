@@ -86,3 +86,22 @@ es:
     save_and_evaluate: "Guardar y evaluar"
     back_to_patient: "Volver al paciente"
     updated: "Evaluación de criterios actualizada."
+    no_criteria: "Este perfil aún no tiene criterios definidos."
+    brief:
+      passing: "Cumplidos"
+      out_of_reach: "Fuera de alcance"
+      pending: "Por medir"
+      answered: "Registrados"
+      required: "Requerido"
+      measured: "Medido"
+      out_of_reach_heading:
+        one: "%{count} criterio fuera de alcance"
+        other: "%{count} criterios fuera de alcance"
+      pending_heading:
+        one: "%{count} criterio por medir"
+        other: "%{count} criterios por medir"
+      take_action: "Tomar acción"
+      promote_hint_eligible: "El paciente cumple todos los criterios: puede promoverlo con «%{event}»."
+      promote_hint_incomplete: "Aún faltan valores por registrar antes de confirmar la elegibilidad."
+      promote_hint_not_eligible: "El paciente no cumple todos los criterios; revise lo que está fuera de alcance antes de promover."
+      promote_hint_generic: "Actualice el estado del paciente en el ciclo del estudio."

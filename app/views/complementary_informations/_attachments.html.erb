@@ -1,0 +1,23 @@
+<%# Existing attached files, each with a remove button. `attachments` is an
+    Active Storage has_many_attached collection; `icon` a bootstrap-icon class. %>
+<%# Only already-saved attachments can be linked/removed; a validation failure
+    may leave new, unpersisted ones assigned in memory (no signed_id yet). %>
+<% saved = attachments.select { |a| a.blob&.persisted? && a.persisted? } %>
+<% if saved.any? %>
+  <ul class="list-group mb-3">
+    <% saved.each do |att| %>
+      <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
+        <span class="text-truncate">
+          <i class="bi <%= icon %>"></i>
+          <%= link_to att.blob.filename, rails_blob_path(att, disposition: "inline"), target: "_blank", rel: "noopener" %>
+          <span class="text-muted small">(<%= number_to_human_size att.blob.byte_size %>)</span>
+        </span>
+        <%= button_to t("complementary_informations.remove_file"),
+                      purge_attachment_patient_complementary_information_path(@patient, attachment_id: att.id),
+                      method: :delete,
+                      class: "btn btn-sm btn-outline-danger",
+                      form: { data: { turbo_confirm: t("complementary_informations.confirm_remove") } } %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
