@@ -27,6 +27,11 @@ Rails.application.configure do
   # that no longer exist. Requires the AWS_* config vars.
   config.active_storage.service = :amazon
 
+  # Generate image variants (thumbnails for complementary-info images and Action
+  # Text previews) with ImageMagick. The Heroku-24 dyno ships the ImageMagick
+  # binary but NOT libvips, so the Rails 8 default (:vips) would fail at runtime.
+  config.active_storage.variant_processor = :mini_magick
+
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   config.assume_ssl = true
 
