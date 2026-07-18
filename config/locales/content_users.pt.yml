@@ -129,6 +129,7 @@ pt:
     search:
       title: "Estudos Clínicos em %{city}"
       back_to_search: "Voltar para a busca"
+      centers: "Centros onde o estudo é realizado"
       view_details: "Ver detalhes"
       participate: "Quero participar"
       none: "Nenhum estudo clínico foi encontrado em %{city}."

@@ -129,6 +129,7 @@ fr:
     search:
       title: "Études cliniques à %{city}"
       back_to_search: "Retour à la recherche"
+      centers: "Centres où se déroule l'étude"
       view_details: "Voir les détails"
       participate: "Je veux participer"
       none: "Aucune étude clinique n'a été trouvée à %{city}."

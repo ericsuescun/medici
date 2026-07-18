@@ -44,9 +44,17 @@ class StaticPagesController < ApplicationController
                       .where("cities_trial_center_branches.city_id = ?", @city.id)
                       .distinct
 
+      # Which of the city's branches run each study, for the result cards.
+      # One query up front instead of walking branch↔study per card.
+      @branches_by_study = Hash.new { |h, k| h[k] = [] }
+      @city.trial_center_branches.includes(:trial_center_facility, :studies).each do |branch|
+        branch.studies.each { |study| @branches_by_study[study.id] << branch }
+      end
+
       @city_name = @city.name
     else
       @studies = []
+      @branches_by_study = {}
       @city_name = t("static_pages.no_city_selected")
     end
   end
