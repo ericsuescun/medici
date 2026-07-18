@@ -18,5 +18,9 @@
     <% RecruitmentProgress::STATES.each do |state| %>
       <div class="seg seg-<%= state %>" style="width: <%= progress.percent(state) %>%"><%= progress.count(state) if labeled && progress.count(state).positive? %></div>
     <% end %>
+    <%# The white region carries the still-wanted count in the labeled variant. %>
+    <% if labeled && progress.missing.positive? %>
+      <div class="seg seg-missing" style="width: <%= progress.remainder_percent %>%"><%= progress.missing %></div>
+    <% end %>
   </div>
 <% end %>

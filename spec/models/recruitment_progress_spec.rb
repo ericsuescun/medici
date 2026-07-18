@@ -35,6 +35,24 @@ RSpec.describe RecruitmentProgress do
     expect(progress.percent(:prospect)).to eq(0.0)
   end
 
+  it "reports the still-wanted patients and the white remainder width" do
+    study = study_with(goal: 10, participants: 3, candidates: 2, prospects: 1)
+
+    progress = study.recruitment_progress
+
+    expect(progress.missing).to eq(4)
+    expect(progress.remainder_percent).to eq(40.0)
+  end
+
+  it "reports zero missing when enrollment meets or exceeds the goal" do
+    study = study_with(goal: 4, participants: 3, candidates: 2)
+
+    progress = study.recruitment_progress
+
+    expect(progress.missing).to eq(0)
+    expect(progress.remainder_percent).to eq(0.0)
+  end
+
   it "is not renderable without a positive goal" do
     study = FactoryBot.create(:study, sample_size: nil)
     FactoryBot.create(:patient, :participant, study: study)

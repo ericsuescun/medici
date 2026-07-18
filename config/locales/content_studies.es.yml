@@ -1,5 +1,9 @@
 es:
   studies:
+    criteria_profile_review: "Revisión del perfil de criterios"
+    go_to_criteria_profile: "Ver perfil de criterios"
+    inclusion_variables: "Variables de inclusión"
+    exclusion_variables: "Variables de exclusión"
     sections:
       demographic: "Demográfico"
       scientific: "Científico"

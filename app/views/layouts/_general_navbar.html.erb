@@ -5,55 +5,62 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <%# Grouped to keep the bar short: Estudios stays top-level; the rest
+          fold into Entidades / Clínico / Administración, each alphabetical. %>
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <%= link_to t("nav.sponsors"), sponsors_path, class: "nav-link" %>
-        </li>
         <li class="nav-item">
           <%= link_to t("nav.studies"), studies_path, class: "nav-link" %>
         </li>
-        <li class="nav-item">
-          <%= link_to t("nav.campaigns"), campaigns_path, class: "nav-link" %>
-        </li>
-        <li class="nav-item">
-          <%= link_to t("nav.facilities"), trial_center_facilities_path, class: "nav-link" %>
-        </li>
-        <li class="nav-item">
-          <%= link_to t("nav.medications"), medications_path, class: "nav-link" %>
-        </li>
-        <%# Categories are admin-only: the seeder grants Category permissions
-            to no role but admin, and this pill follows the permission. %>
-        <% if policy(Category).index? %>
-          <li class="nav-item">
-            <%= link_to t("nav.categories"), categories_path, class: "nav-link" %>
-          </li>
-        <% end %>
+
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <%= t("nav.users") %>
+            <%= t("nav.entities") %>
           </a>
           <ul class="dropdown-menu">
+            <li><%= link_to t("nav.facilities"), trial_center_facilities_path, class: 'dropdown-item' %></li>
+            <li><%= link_to t("nav.sponsors"), sponsors_path, class: 'dropdown-item' %></li>
+          </ul>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <%= t("nav.clinical") %>
+          </a>
+          <ul class="dropdown-menu">
+            <%# Categories are admin-only: the seeder grants Category
+                permissions to no role but admin; the item follows the permission. %>
+            <% if policy(Category).index? %>
+              <li><%= link_to t("nav.categories"), categories_path, class: 'dropdown-item' %></li>
+            <% end %>
+            <li><%= link_to t("nav.medications"), medications_path, class: 'dropdown-item' %></li>
+            <li><%= link_to t("nav.profiles"), criteria_profiles_path, class: 'dropdown-item' %></li>
+          </ul>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <%= t("nav.admin") %>
+          </a>
+          <ul class="dropdown-menu">
+            <li><%= link_to t("nav.campaigns"), campaigns_path, class: 'dropdown-item' %></li>
+            <li><%= link_to t("nav.cities"), cities_path, class: 'dropdown-item' %></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h6 class="dropdown-header"><%= t("nav.users") %></h6></li>
             <li><%= link_to t("nav.admins"), admins_path, class: 'dropdown-item' %></li>
-            <li><%= link_to t("nav.platform_staffs"), platform_staffs_path, class: 'dropdown-item' %></li>
-            <li><%= link_to t("nav.sponsor_reps"), sponsor_reps_path, class: 'dropdown-item' %></li>
-            <li><%= link_to t("nav.branch_reps"), trial_center_branch_reps_path, class: 'dropdown-item' %></li>
             <%# Patients are clinical records: only offer the menu to roles whose
                 permissions actually allow it (admins and trial centre reps).
                 Sponsor reps and platform staff got a link that only 403'd. %>
             <% if policy(Patient).index? %>
               <li><%= link_to t("nav.patients"), patients_path, class: 'dropdown-item' %></li>
             <% end %>
+            <li><%= link_to t("nav.platform_staffs"), platform_staffs_path, class: 'dropdown-item' %></li>
+            <li><%= link_to t("nav.sponsor_reps"), sponsor_reps_path, class: 'dropdown-item' %></li>
+            <li><%= link_to t("nav.branch_reps"), trial_center_branch_reps_path, class: 'dropdown-item' %></li>
             <% if current_user&.admin? %>
               <li><hr class="dropdown-divider"></li>
               <li><%= link_to t("nav.roles"), roles_path, class: 'dropdown-item' %></li>
             <% end %>
           </ul>
-        </li>
-        <li class="nav-item">
-          <%= link_to t("nav.profiles"), criteria_profiles_path, class: "nav-link" %>
-        </li>
-        <li class="nav-item">
-          <%= link_to t("nav.cities"), cities_path, class: "nav-link" %>
         </li>
       </ul>
       <%= form_with url: search_path, method: :get, class: "d-flex me-3", role: "search" do |f| %>
