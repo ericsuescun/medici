@@ -42,10 +42,16 @@ class SoapNote < ApplicationRecord
   # nullifies the reference rather than destroying the clinical record.
   belongs_to :author, class_name: "User", optional: true
 
-  has_rich_text :subjective
-  has_rich_text :objective
-  has_rich_text :assessment
-  has_rich_text :plan
+  # store_if_blank: false destroys the RichText row when a section is set to
+  # "" or nil, releasing its embedded images to the unattached-blob sweep.
+  # NOTE the browser path differs: Trix submits a cleared editor as
+  # "<div><br></div>" (present), so the row survives — there the embed
+  # re-sync in RichText#before_save detaches the images instead. Both paths
+  # end with the blobs unattached; neither may be weakened without the other.
+  has_rich_text :subjective, store_if_blank: false
+  has_rich_text :objective, store_if_blank: false
+  has_rich_text :assessment, store_if_blank: false
+  has_rich_text :plan, store_if_blank: false
 
   validates :encounter_date, presence: true
   # A note with all four sections empty carries no clinical information.
@@ -55,9 +61,12 @@ class SoapNote < ApplicationRecord
 
   SECTIONS = %i[subjective objective assessment plan].freeze
 
-  # True when the given section has any rich-text content.
+  # True when the given section has any rich-text content. Reads the
+  # association directly: the `subjective`-style getter auto-builds a blank
+  # RichText, which autosave would then persist as an empty row for every
+  # section this predicate touches during validation.
   def section_present?(section)
-    public_send(section).present?
+    public_send("rich_text_#{section}").present?
   end
 
   private

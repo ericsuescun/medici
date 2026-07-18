@@ -8,10 +8,9 @@ development:
 test:
   adapter: test
 
+# Nothing in the app broadcasts over Action Cable today (no turbo_stream_from,
+# no broadcasts_to). The async adapter serves the single-process Heroku dyno;
+# the previous solid_cable config pointed at a database that cannot exist on
+# the essential-0 plan.
 production:
-  adapter: solid_cable
-  connects_to:
-    database:
-      writing: cable
-  polling_interval: 0.1.seconds
-  message_retention: 1.day
+  adapter: async

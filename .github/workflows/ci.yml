@@ -90,6 +90,19 @@ jobs:
       - name: Install Chrome
         uses: browser-actions/setup-chrome@v1
 
+      # Trix, @rails/actiontext, @rails/activestorage, bootstrap and
+      # bootstrap-icons are served out of node_modules via Propshaft asset
+      # paths (config/initializers/assets.rb). Without them the importmap
+      # module graph fails in the browser and every `js: true` spec breaks.
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: Install JS dependencies
+        run: yarn install --frozen-lockfile
+
       # Feature specs render the real layout, which links `application.css`.
       # dartsass:build resolves @import "bootstrap" via the gem (no Node needed).
       - name: Build CSS
