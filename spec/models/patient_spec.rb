@@ -8,7 +8,7 @@ require 'rails_helper'
 #  contact_address     :string
 #  contact_number      :string
 #  country             :string           default("")
-#  dob                 :date
+#  dob                 :string
 #  email               :string
 #  firstname           :string
 #  id_number           :string           default("")
@@ -16,14 +16,22 @@ require 'rails_helper'
 #  illness_description :text             default("")
 #  lastname            :string
 #  notes               :string
+#  participant_code    :string
 #  sex                 :string
 #  state               :string           default("prospect"), not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
+#  study_id            :bigint
 #
 # Indexes
 #
-#  index_patients_on_state  (state)
+#  index_patients_on_participant_code  (participant_code) UNIQUE
+#  index_patients_on_state             (state)
+#  index_patients_on_study_id          (study_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (study_id => studies.id)
 #
 RSpec.describe Patient, type: :model do
   subject(:patient) { FactoryBot.create(:patient) }

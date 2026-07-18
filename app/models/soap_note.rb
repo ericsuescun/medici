@@ -16,7 +16,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (author_id => users.id)
+#  fk_rails_...  (author_id => users.id) ON DELETE => nullify
 #  fk_rails_...  (patient_id => patients.id)
 #
 # A SOAP note: the Subjective / Objective / Assessment / Plan format that is the

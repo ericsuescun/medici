@@ -1,97 +1,63 @@
+<%# Mobile-first landing: logo → tagline → stat pills → city search → topic
+    pills + study cards (anonymous showcase) → login at the very end. The same
+    order reads naturally on desktop; widths are only constrained per section. %>
+<div class="container py-4 py-md-5">
+  <div class="text-center">
+    <%= image_tag "logo/medici_logo.jpeg", alt: t("static_pages.home.logo_alt"), class: "img-fluid rounded shadow-sm home-hero-logo" %>
+    <h1 class="home-tagline mx-auto mt-4 mb-3"><%= t("static_pages.home.tagline") %></h1>
 
-<div class="container py-5">
-  <div class="row">
-    <div class="col-md-8 mx-auto">
-      <div class="card health-card shadow-sm text-center">
+    <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+      <span class="stat-pill"><span class="stat-pill-value"><%= Study.count %></span> <%= t("static_pages.home.stat_studies") %></span>
+      <span class="stat-pill"><span class="stat-pill-value"><%= TrialCenterFacility.count %></span> <%= t("static_pages.home.stat_facilities") %></span>
+      <span class="stat-pill"><span class="stat-pill-value"><%= Sponsor.count %></span> <%= t("static_pages.home.stat_sponsors") %></span>
+      <span class="stat-pill"><span class="stat-pill-value"><%= Patient.count %></span> <%= t("static_pages.home.stat_patients") %></span>
+    </div>
+  </div>
+
+  <% if policy(:static_page).search_by_city? %>
+    <div class="col-lg-8 mx-auto">
+      <div class="card health-card shadow-sm">
         <div class="card-header">
-          <h4 class="mb-0"><%= t("static_pages.home.header") %></h4>
+          <h5 class="mb-0"><%= t("static_pages.home.search_by_city_title") %></h5>
         </div>
-        <div class="card-body p-4">
-          <div class="text-center mb-4">
-            <%= image_tag "logo/medici_logo.jpeg", alt: t("static_pages.home.logo_alt"), class: "img-fluid rounded", style: "max-height: 200px;" %>
-          </div>
-          <h5 class="card-title mb-4"><%= t("static_pages.home.tagline") %></h5>
-          
-          <div class="row mb-4">
-            <div class="col-md-6 mb-3 mb-md-0">
-              <div class="stat-card">
-                <div class="stat-value"><%= Sponsor.count %></div>
-                <div class="stat-label"><%= t("static_pages.home.stat_sponsors") %></div>
+        <div class="card-body">
+          <%= form_with url: static_pages_search_by_city_path, method: :get, class: "row g-3 align-items-center" do |form| %>
+            <div class="col-md-10 mx-auto">
+              <div class="input-group">
+                <%= form.collection_select :city_id, @cities, :id, :name,
+                    { prompt: t("static_pages.home.select_city_prompt") },
+                    { class: "form-select", required: true } %>
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-search"></i> <%= t("static_pages.home.search_button") %>
+                </button>
+              </div>
+              <div class="form-text text-center mt-2">
+                <%= t("static_pages.home.search_help") %>
               </div>
             </div>
-            <div class="col-md-6">
-              <div class="stat-card">
-                <div class="stat-value"><%= TrialCenterFacility.count %></div>
-                <div class="stat-label"><%= t("static_pages.home.stat_facilities") %></div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="row mb-4">
-            <div class="col-md-6 mb-3 mb-md-0">
-              <div class="stat-card">
-                <div class="stat-value"><%= Study.count %></div>
-                <div class="stat-label"><%= t("static_pages.home.stat_studies") %></div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="stat-card">
-                <%# Patients have no accounts, so counting Users would always say 0. %>
-                <div class="stat-value"><%= Patient.count %></div>
-                <div class="stat-label"><%= t("static_pages.home.stat_patients") %></div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="mt-4 mb-4">
-            <% if user_signed_in? %>
-              <%= button_to t("static_pages.home.logout"), destroy_user_session_path, method: :delete, class: "btn btn-outline-primary btn-lg px-4" %>
-            <% else %>
-              <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                <%= link_to t("static_pages.home.login"), new_user_session_path, class: "btn btn-primary btn-lg px-4 me-md-2" %>
-                <%#= link_to 'Registrate', new_user_registration_path, class: "btn btn-outline-secondary btn-lg px-4" %>
-              </div>
-            <% end %>
-          </div>
-          
-          <% if policy(:static_page).search_by_city? %>
-          <div class="card health-card shadow-sm mt-4">
-            <div class="card-header">
-              <h5 class="mb-0"><%= t("static_pages.home.search_by_city_title") %></h5>
-            </div>
-            <div class="card-body">
-              <%= form_with url: static_pages_search_by_city_path, method: :get, class: "row g-3 align-items-center" do |form| %>
-                <div class="col-md-8 mx-auto">
-                  <div class="input-group">
-                    <%= form.collection_select :city_id, @cities, :id, :name,
-                        { prompt: t("static_pages.home.select_city_prompt") },
-                        { class: "form-select", required: true } %>
-                    <button type="submit" class="btn btn-primary">
-                      <i class="bi bi-search"></i> <%= t("static_pages.home.search_button") %>
-                    </button>
-                  </div>
-                  <div class="form-text text-center mt-2">
-                    <%= t("static_pages.home.search_help") %>
-                  </div>
-                </div>
-              <% end %>
-            </div>
-          </div>
           <% end %>
         </div>
       </div>
-      
-      <% if current_user.present? && policy(:static_page).home_navigation? %>
-        <div class="d-flex justify-content-center mt-4">
-          <div class="btn-group">
-            <%= link_to t("static_pages.home.view_studies"), studies_path, class: "btn btn-success me-2" %>
-            <%= link_to t("static_pages.home.view_sponsors"), sponsors_path, class: "btn btn-info me-2" %>
-            <%= link_to t("static_pages.home.view_facilities"), trial_center_facilities_path, class: "btn btn-secondary" %>
-          </div>
-        </div>
-      <% end %>
     </div>
-  </div>
+  <% end %>
+
+  <% if current_user.present? && policy(:static_page).home_navigation? %>
+    <div class="d-flex justify-content-center mt-4">
+      <div class="btn-group">
+        <%= link_to t("static_pages.home.view_studies"), studies_path, class: "btn btn-success me-2" %>
+        <%= link_to t("static_pages.home.view_sponsors"), sponsors_path, class: "btn btn-info me-2" %>
+        <%= link_to t("static_pages.home.view_facilities"), trial_center_facilities_path, class: "btn btn-secondary" %>
+      </div>
+    </div>
+  <% end %>
 </div>
 
-<%= render partial: 'medici_showcase' if current_user.blank? %>
+<%= render "medici_showcase" if current_user.blank? %>
+
+<div class="container pb-5 mt-2 text-center">
+  <% if user_signed_in? %>
+    <%= button_to t("static_pages.home.logout"), destroy_user_session_path, method: :delete, class: "btn btn-outline-primary btn-lg px-4 mx-auto" %>
+  <% else %>
+    <%= link_to t("static_pages.home.login"), new_user_session_path, class: "btn btn-outline-primary btn-lg px-5" %>
+  <% end %>
+</div>

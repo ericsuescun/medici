@@ -2,9 +2,9 @@
 #
 # Table name: sponsors
 #
-#  id           :bigint           not null, primary key
+#  id            :bigint           not null, primary key
 #  initials      :string
-#  international  :boolean          default(FALSE), not null
+#  international :boolean          default(FALSE), not null
 #  name          :string
 #  shortname     :string
 #  sponsor_type  :string

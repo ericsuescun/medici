@@ -101,7 +101,7 @@ pt:
       stat_studies: "Estudos Clínicos"
       stat_patients: "Pacientes Registrados"
       logout: "Sair"
-      login: "Entrar"
+      login: "Acesso para usuário"
       search_by_city_title: "Buscar Estudos por Cidade"
       select_city_prompt: "Selecione uma cidade"
       search_button: "Buscar"
@@ -113,6 +113,9 @@ pt:
       title: "Estudos Clínicos Disponíveis"
       participate: "Quero participar!"
       more_about: "Mais sobre este estudo"
+      all_studies: "Todos os estudos"
+      filter_label: "Explore por tema de saúde"
+      none_for_topic: "Ainda não há estudos neste tema."
     study_details:
       back_home: "Voltar ao início"
       description: "Descrição"
