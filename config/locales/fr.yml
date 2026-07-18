@@ -43,6 +43,11 @@ fr:
       reps: "Représentants"
       patients: "Patients"
       cities: "Villes"
+      categories: "Catégories"
+    studies_count:
+      zero: "0 études"
+      one: "1 étude"
+      other: "%{count} études"
 
   common:
     edit: "Modifier"
@@ -138,6 +143,9 @@ fr:
     models:
       sponsor: "Promoteur"
       study: "Étude"
+      category:
+        one: "Catégorie"
+        other: "Catégories"
       patient: "Patient"
       medication: "Médicament"
       city: "Ville"
@@ -169,7 +177,6 @@ fr:
         public_title: "Titre public"
         scientific_title: "Titre scientifique"
         short_title: "Titre court"
-        topic: "Thème de santé"
         study_status: "Statut de l'étude"
         study_phase: "Phase de l'étude"
         inclusion_criteria: "Critères d'inclusion"

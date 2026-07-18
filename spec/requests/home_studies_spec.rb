@@ -22,42 +22,51 @@ RSpec.describe "Home page study showcase", type: :request do
     expect(response.body).to include("Ingreso para usuario")
   end
 
-  it "offers a pill per topic in use plus an all-studies pill" do
-    FactoryBot.create(:study, topic: "Dermatología")
-    FactoryBot.create(:study, topic: "Oncología")
+  it "offers a pill per category in use plus an all-studies pill" do
+    derm = FactoryBot.create(:category, name: "Dermatología")
+    onco = FactoryBot.create(:category, name: "Oncología")
+    FactoryBot.create(:study).categories << derm
+    FactoryBot.create(:study).categories << onco
+    FactoryBot.create(:category, name: "Sin estudios aún")
 
     get root_path
 
     expect(response.body).to include("Todos los estudios")
     expect(response.body).to include("Dermatología")
     expect(response.body).to include("Oncología")
+    # A category no study uses yet gets no pill.
+    expect(response.body).not_to include("Sin estudios aún")
   end
 
-  it "filters the showcase when a topic pill is followed" do
-    derm = FactoryBot.create(:study, topic: "Dermatología")
-    onco = FactoryBot.create(:study, topic: "Oncología")
+  it "filters the showcase when a category pill is followed" do
+    derm = FactoryBot.create(:category, name: "Dermatología")
+    onco = FactoryBot.create(:category, name: "Oncología")
+    derm_study = FactoryBot.create(:study)
+    onco_study = FactoryBot.create(:study)
+    derm_study.categories << derm
+    onco_study.categories << onco
 
-    get root_path(topic: "Dermatología")
+    get root_path(category: derm.id)
 
     expect(response).to be_successful
-    expect(response.body).to include(derm.public_title)
-    expect(response.body).not_to include(onco.public_title)
+    expect(response.body).to include(derm_study.public_title)
+    expect(response.body).not_to include(onco_study.public_title)
   end
 
-  it "keeps topicless studies visible in the unfiltered showcase, without a pill" do
-    bare = FactoryBot.create(:study, topic: nil)
+  it "keeps categoryless studies visible in the unfiltered showcase" do
+    bare = FactoryBot.create(:study)
 
     get root_path
 
     expect(response.body).to include(bare.public_title)
   end
 
-  it "shows an empty state instead of erroring on an unknown topic" do
-    FactoryBot.create(:study, topic: "Dermatología")
+  it "falls back to all studies on an unknown category id" do
+    study = FactoryBot.create(:study, :with_categories)
 
-    get root_path(topic: "No existe")
+    get root_path(category: 999_999)
 
     expect(response).to be_successful
-    expect(response.body).to include("Por ahora no hay estudios en este tema.")
+    expect(response.body).to include(study.public_title)
   end
 end

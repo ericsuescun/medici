@@ -45,6 +45,11 @@ en:
       reps: "Representatives"
       patients: "Patients"
       cities: "Cities"
+      categories: "Categories"
+    studies_count:
+      zero: "0 studies"
+      one: "1 study"
+      other: "%{count} studies"
 
   common:
     edit: "Edit"
@@ -140,6 +145,9 @@ en:
     models:
       sponsor: "Sponsor"
       study: "Study"
+      category:
+        one: "Category"
+        other: "Categories"
       patient: "Patient"
       medication: "Medication"
       city: "City"

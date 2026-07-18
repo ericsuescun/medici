@@ -101,7 +101,7 @@ en:
       stat_studies: "Clinical Studies"
       stat_patients: "Registered Patients"
       logout: "Log out"
-      login: "Log in"
+      login: "User sign-in"
       search_by_city_title: "Search Studies by City"
       select_city_prompt: "Select a city"
       search_button: "Search"
@@ -113,6 +113,9 @@ en:
       title: "Available Clinical Studies"
       participate: "I want to participate!"
       more_about: "More about this study"
+      all_studies: "All studies"
+      filter_label: "Browse by health topic"
+      none_for_topic: "No studies in this topic yet."
     study_details:
       back_home: "Back to home"
       description: "Description"
@@ -126,6 +129,10 @@ en:
     search:
       title: "Clinical Studies in %{city}"
       back_to_search: "Back to search"
+      centers: "Centers running this study"
       view_details: "View details"
       participate: "I want to participate"
       none: "No clinical studies were found in %{city}."
+  studies:
+    form:
+      categories_help: "Select 1-3 therapeutic areas (Ctrl/Cmd + click for multiple)."

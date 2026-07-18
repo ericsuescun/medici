@@ -16,6 +16,11 @@ require 'factory_bot'
 require_relative 'seeds/roles_and_permissions'
 RolesAndPermissionsSeeder.seed!
 
+# Study categories (therapeutic areas) — reference data for the study form's
+# dropdown, the public home-page filter, and the navbar search.
+require_relative 'seeds/categories'
+CategoriesSeeder.seed!
+
 # ---------------------------------------------------------------------------
 # All sample data below is intentionally DISABLED (commented out).
 #
@@ -78,6 +83,8 @@ RolesAndPermissionsSeeder.seed!
 #   end
 #   FactoryBot.create_list(:study, (1..5).to_a.sample, sponsor: sponsor) do |study|
 #     study.trial_center_branches << TrialCenterBranch.find(TrialCenterBranch.ids.sample((1..3).to_a.sample))
+#     # Every study belongs to 1..3 therapeutic areas (the seeded Category list).
+#     study.categories << Category.order("RANDOM()").limit(rand(1..3))
 #     FactoryBot.create_list(:article, (1..3).to_a.sample, study: study)
 #     FactoryBot.create_list(:contact, (1..2).to_a.sample, study: study)
 #     FactoryBot.create_list(:result, (1..4).to_a.sample, study: study)

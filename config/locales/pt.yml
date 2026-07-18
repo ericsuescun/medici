@@ -43,6 +43,11 @@ pt:
       reps: "Representantes"
       patients: "Pacientes"
       cities: "Cidades"
+      categories: "Categorias"
+    studies_count:
+      zero: "0 estudos"
+      one: "1 estudo"
+      other: "%{count} estudos"
 
   common:
     edit: "Editar"
@@ -138,6 +143,9 @@ pt:
     models:
       sponsor: "Patrocinador"
       study: "Estudo"
+      category:
+        one: "Categoria"
+        other: "Categorias"
       patient: "Paciente"
       medication: "Medicamento"
       city: "Cidade"
@@ -169,7 +177,6 @@ pt:
         public_title: "Título público"
         scientific_title: "Título científico"
         short_title: "Título curto"
-        topic: "Tema de saúde"
         study_status: "Situação do estudo"
         study_phase: "Fase do estudo"
         inclusion_criteria: "Critérios de inclusão"

@@ -135,3 +135,6 @@ es:
       view_details: "Ver detalles"
       participate: "Quiero participar"
       none: "No se encontraron estudios clínicos en %{city}."
+  studies:
+    form:
+      categories_help: "Selecciona de 1 a 3 áreas terapéuticas (Ctrl/Cmd + clic para varias)."

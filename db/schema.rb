@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_18_181554) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_18_195018) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -100,6 +100,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_18_181554) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["study_id"], name: "index_campaigns_on_study_id"
+  end
+
+  create_table "categories", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_categories_on_name", unique: true
+  end
+
+  create_table "categories_studies", id: false, force: :cascade do |t|
+    t.bigint "category_id", null: false
+    t.bigint "study_id", null: false
+    t.index ["category_id", "study_id"], name: "index_categories_studies_on_category_id_and_study_id", unique: true
+    t.index ["study_id"], name: "index_categories_studies_on_study_id"
   end
 
   create_table "cities", force: :cascade do |t|
@@ -340,7 +354,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_18_181554) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "short_title", default: ""
-    t.string "topic"
     t.index ["sponsor_id"], name: "index_studies_on_sponsor_id"
   end
 

@@ -133,3 +133,6 @@ fr:
       view_details: "Voir les détails"
       participate: "Je veux participer"
       none: "Aucune étude clinique n'a été trouvée à %{city}."
+  studies:
+    form:
+      categories_help: "Sélectionnez 1 à 3 aires thérapeutiques (Ctrl/Cmd + clic pour plusieurs)."

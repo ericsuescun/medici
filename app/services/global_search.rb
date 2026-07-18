@@ -16,6 +16,8 @@ class GlobalSearch
   Group = Struct.new(:type, :records, keyword_init: true)
   # A city plus the studies (already user-scoped) that run in it.
   CityResult = Struct.new(:city, :studies, keyword_init: true)
+  # A therapeutic area plus how many user-scoped studies belong to it.
+  CategoryResult = Struct.new(:category, :studies_count, keyword_init: true)
 
   LIMIT = 10
 
@@ -29,6 +31,7 @@ class GlobalSearch
 
     [
       studies_group,
+      categories_group,
       trial_centers_group,
       reps_group,
       patients_group,
@@ -49,6 +52,20 @@ class GlobalSearch
               .where("public_title ILIKE :q OR short_title ILIKE :q OR scientific_title ILIKE :q", q: ilike)
               .order(:public_title).limit(LIMIT)
     Group.new(type: :studies, records: records.to_a)
+  end
+
+  # Therapeutic areas matching by name, each with the number of studies in
+  # THIS user's scope — a branch rep sees their branch's count, an admin the
+  # platform's. Categories are study metadata, so the Study permission gates
+  # them, and a match with zero in-scope studies still shows (count 0) rather
+  # than pretending the category doesn't exist.
+  def categories_group
+    return unless can_show?(Study)
+
+    records = Category.where("name ILIKE ?", ilike).order(:name).limit(LIMIT).map do |category|
+      CategoryResult.new(category: category, studies_count: category_study_count(category))
+    end
+    Group.new(type: :categories, records: records)
   end
 
   def trial_centers_group
@@ -157,6 +174,10 @@ class GlobalSearch
       .joins(:trial_center_branches)
       .where(trial_center_branches: { id: city.trial_center_branch_ids })
       .distinct.order(:public_title).limit(LIMIT).to_a
+  end
+
+  def category_study_count(category)
+    study_scope.joins(:categories).where(categories: { id: category.id }).distinct.count
   end
 
   def reps_matching(scope)

@@ -34,6 +34,32 @@ RSpec.describe "Search", type: :request do
     end
   end
 
+  describe "category results" do
+    let!(:cardiologia) { FactoryBot.create(:category, name: "Cardiología") }
+
+    before { cardiologia.studies << [ study_a, study_b ] }
+
+    it "shows matched categories with the platform-wide study count for admins" do
+      sign_in FactoryBot.create(:user, :admin)
+
+      get search_path(q: "Cardiología")
+
+      expect(response.body).to include(I18n.t("search.types.categories"))
+      expect(response.body).to include("Cardiología")
+      expect(response.body).to include("2 estudios")
+    end
+
+    it "counts only the rep's own branch's studies" do
+      rep = FactoryBot.create(:user, userable: FactoryBot.create(:trial_center_branch_rep, trial_center_branch: branch_a))
+      sign_in rep
+
+      get search_path(q: "Cardiología")
+
+      expect(response.body).to include("Cardiología")
+      expect(response.body).to include(">1 estudio<")
+    end
+  end
+
   describe "as a trial centre rep on branch A" do
     before do
       rep = FactoryBot.create(:user, userable: FactoryBot.create(:trial_center_branch_rep, trial_center_branch: branch_a))

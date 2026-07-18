@@ -1,14 +1,14 @@
 <div class="container-fluid mb-5" id="estudios">
   <h2 class="text-center mb-3"><%= t("static_pages.showcase.title") %></h2>
 
-  <%# Topic filter: one pill per topic in use, plus "all". Plain links back to
-      the home page (?topic=), so no JS is involved. %>
+  <%# Category filter: one pill per therapeutic area in use, plus "all".
+      Plain links back to the home page (?category=<id>), so no JS involved. %>
   <nav class="d-flex flex-wrap justify-content-center gap-2 mb-4 px-3" aria-label="<%= t("static_pages.showcase.filter_label") %>">
     <%= link_to t("static_pages.showcase.all_studies"), root_path(anchor: "estudios"),
-        class: "btn btn-sm rounded-pill px-3 #{@selected_topic ? 'btn-outline-primary' : 'btn-primary'}" %>
-    <% @topics.each do |topic| %>
-      <%= link_to topic, root_path(topic: topic, anchor: "estudios"),
-          class: "btn btn-sm rounded-pill px-3 #{@selected_topic == topic ? 'btn-primary' : 'btn-outline-primary'}" %>
+        class: "btn btn-sm rounded-pill px-3 #{@selected_category ? 'btn-outline-primary' : 'btn-primary'}" %>
+    <% @categories.each do |category| %>
+      <%= link_to category.name, root_path(category: category.id, anchor: "estudios"),
+          class: "btn btn-sm rounded-pill px-3 #{@selected_category == category ? 'btn-primary' : 'btn-outline-primary'}" %>
     <% end %>
   </nav>
 
