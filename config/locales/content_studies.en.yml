@@ -1,5 +1,8 @@
 en:
   studies:
+    recruitment:
+      aria: "Recruitment: %{total} of %{goal} patients"
+      tooltip: "Participants: %{participants} · Candidates: %{candidates} · Prospects: %{prospects} · Goal: %{goal}"
     age: "Age"
     interested_subjects: "Subjects interested in the study"
     clinical_trials: "Clinical trials"

@@ -16,7 +16,7 @@
     <div class="row">
       <% @studies.each do |study| %>
         <div class="col-md-3 mb-4">
-          <%= render "static_pages/study_card", study: study %>
+          <%= render "static_pages/study_card", study: study, recruitment: @recruitment[study.id] %>
         </div>
       <% end %>
     </div>

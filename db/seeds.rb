@@ -85,6 +85,15 @@ CategoriesSeeder.seed!
 #     study.trial_center_branches << TrialCenterBranch.find(TrialCenterBranch.ids.sample((1..3).to_a.sample))
 #     # Every study belongs to 1..3 therapeutic areas (the seeded Category list).
 #     study.categories << Category.order("RANDOM()").limit(rand(1..3))
+#     # Mostly recruiting, a few completed (completed reads as "disabled"), with
+#     # a small recruitment goal so the progress bar shows meaningful fill...
+#     study.update!(study_status: rand < 0.8 ? "recruiting" : "completed",
+#                   sample_size: rand(8..20))
+#     # ...and patients spread across the lifecycle states that fill it:
+#     # participants (green), candidates (yellow), prospects (red).
+#     rand(1..4).times { FactoryBot.create(:patient, :participant, study: study) }
+#     rand(0..4).times { FactoryBot.create(:patient, :candidate, study: study) }
+#     rand(0..5).times { FactoryBot.create(:patient, study: study) }
 #     FactoryBot.create_list(:article, (1..3).to_a.sample, study: study)
 #     FactoryBot.create_list(:contact, (1..2).to_a.sample, study: study)
 #     FactoryBot.create_list(:result, (1..4).to_a.sample, study: study)

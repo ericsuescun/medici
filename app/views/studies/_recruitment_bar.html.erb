@@ -1,0 +1,19 @@
+<%# Stacked recruitment bar: participants → candidates → prospects in pastel
+    tones, white remainder = patients still to recruit. Pass `progress:` from
+    a RecruitmentProgress.for bulk map on listings; falls back to a per-study
+    query otherwise. Hidden entirely when the study has no goal. %>
+<% progress = local_assigns[:progress] || study.recruitment_progress %>
+<% if progress.renderable? %>
+  <div class="recruitment-bar"
+       role="img"
+       aria-label="<%= t("studies.recruitment.aria", total: progress.total, goal: progress.goal) %>"
+       title="<%= t("studies.recruitment.tooltip",
+                    participants: progress.count(:participant),
+                    candidates: progress.count(:candidate),
+                    prospects: progress.count(:prospect),
+                    goal: progress.goal) %>">
+    <div class="seg seg-participant" style="width: <%= progress.percent(:participant) %>%"></div>
+    <div class="seg seg-candidate" style="width: <%= progress.percent(:candidate) %>%"></div>
+    <div class="seg seg-prospect" style="width: <%= progress.percent(:prospect) %>%"></div>
+  </div>
+<% end %>
