@@ -29,7 +29,10 @@
               <tbody>
               <% @studies.order(:study_status).each do |study| %>
                 <tr>
-                  <td><strong><%= link_to study.scientific_title, study %></strong></td>
+                  <td>
+                    <%= render "studies/recruitment_bar", study: study, progress: @recruitment&.fetch(study.id, nil) %>
+                    <strong><%= link_to study.scientific_title, study %></strong>
+                  </td>
                   <td><%= link_to study.sponsor.name, study.sponsor %></td>
                   <td><%= study.trial_center_facilities.count %></td>
                   <td><%= study.cities_names.count %></td>

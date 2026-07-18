@@ -97,6 +97,36 @@ $dark: $medici-dark;
   }
 }
 
+// Recruitment progress bar (shown above study titles): pastel tints of the
+// palette's semantic colors so the bar informs without shouting. Fills in
+// seniority order — participants, candidates, prospects — and the white
+// remainder reads as the unmet part of the goal.
+.recruitment-bar {
+  display: flex;
+  height: 10px;
+  margin-bottom: 0.5rem;
+  border: 1px solid rgba($medici-dark, 0.2);
+  border-radius: 50rem;
+  overflow: hidden;
+  background-color: #fff;
+
+  .seg {
+    height: 100%;
+  }
+
+  .seg-participant {
+    background-color: mix($medici-success, #fff, 40%);
+  }
+
+  .seg-candidate {
+    background-color: mix($medici-warning, #fff, 40%);
+  }
+
+  .seg-prospect {
+    background-color: mix($medici-danger, #fff, 40%);
+  }
+}
+
 // Model-specific card styling with colors matching the logo
 // Study card with green styling
 .study-card {

@@ -1,5 +1,8 @@
 pt:
   studies:
+    recruitment:
+      aria: "Recrutamento: %{total} de %{goal} pacientes"
+      tooltip: "Participantes: %{participants} · Candidatos: %{candidates} · Prospectos: %{prospects} · Meta: %{goal}"
     age: "Idade"
     interested_subjects: "Sujeitos interessados no estudo"
     clinical_trials: "Ensaios clínicos"

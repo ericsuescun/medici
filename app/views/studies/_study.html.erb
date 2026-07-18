@@ -1,5 +1,6 @@
 <div class="card study-card">
   <div class="card-header">
+    <%= render "studies/recruitment_bar", study: study %>
     <h1 class="card-title"><strong><%= study.public_title %></strong></h1>
     <h2 class="card-subtitle mb-2 text-body-secondary"><strong><%= study.scientific_title %></strong></h2>
     <h3 class="card-subtitle mb-2 text-body-secondary"><strong><%= Study.human_attribute_name(:short_title) %>: <%= study.short_title %></strong></h3>

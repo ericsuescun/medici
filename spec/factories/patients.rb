@@ -45,6 +45,16 @@ FactoryBot.define do
     study
     # state defaults to "prospect" (DB default); AASM manages transitions.
 
+    # Lifecycle states (AASM manages transitions in the app; for test/seed
+    # data writing the column directly is fine).
+    trait :candidate do
+      state { "candidate" }
+    end
+
+    trait :participant do
+      state { "participant" }
+    end
+
     # As the public participation form creates them: contact details only, no
     # clinical data, no account.
     trait :lead do

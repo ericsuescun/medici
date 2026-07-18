@@ -8,6 +8,7 @@ class StudiesController < SecureApplicationController
   # GET /studies or /studies.json
   def index
     @studies = Study.all.paginate(page: params[:page], per_page: RECORDS_PER_PAGE)
+    @recruitment = RecruitmentProgress.for(@studies)
   end
 
   # GET /studies/1 or /studies/1.json

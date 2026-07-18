@@ -19,7 +19,7 @@
             <div class="row">
               <% @studies.each do |study| %>
                 <div class="col-md-4 mb-4">
-                  <%= render "static_pages/study_card", study: study, centers: @branches_by_study.fetch(study.id, []) %>
+                  <%= render "static_pages/study_card", study: study, centers: @branches_by_study.fetch(study.id, []), recruitment: @recruitment[study.id] %>
                 </div>
               <% end %>
             </div>

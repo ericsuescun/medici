@@ -4,6 +4,10 @@
 <% centers = local_assigns[:centers] %>
 <% detail_path = user_signed_in? ? study_path(study) : study_about_path(study) %>
 <div class="card health-card shadow-sm h-100">
+  <%# Recruitment progress sits at the very top of every study caption. %>
+  <div class="px-2 pt-2">
+    <%= render "studies/recruitment_bar", study: study, progress: local_assigns[:recruitment] %>
+  </div>
   <div class="card-header">
     <%= study.public_title %>
   </div>

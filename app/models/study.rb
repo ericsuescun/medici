@@ -51,6 +51,13 @@ class Study < ApplicationRecord
   has_and_belongs_to_many :categories
   has_many :trial_center_facilities, through: :trial_center_branches
 
+  # The study's enrollment (patients.study_id) — Patient has owned the inverse
+  # since patients stopped being Users, but this side was never declared.
+  # restrict, not destroy: patients are clinical records; a study with
+  # enrollment must not be deletable in one stroke (the DB's FK already
+  # blocked it — this surfaces the rule at the model layer).
+  has_many :patients, dependent: :restrict_with_error
+
   has_many :articles, dependent: :destroy
   has_many :results, dependent: :destroy
   has_many :trial_cities, dependent: :destroy
@@ -62,6 +69,16 @@ class Study < ApplicationRecord
   enum :study_phase, I: "I", II: "II", III: "III", IV: "IV"
 
   validates :public_title, :scientific_title, :short_title, presence: true
+  validates :sample_size, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
+
+  # The recruitment goal — how many patients the study needs — IS the study's
+  # sample size; aliased so the recruitment-bar code reads as domain language.
+  alias_attribute :recruitment_goal, :sample_size
+
+  # Prefer RecruitmentProgress.for(studies) when rendering a whole listing.
+  def recruitment_progress
+    RecruitmentProgress.for(self).fetch(id)
+  end
 
   # Home-page category filter: studies attached to the given therapeutic area.
   # A study with no category only appears under "Todos los estudios".

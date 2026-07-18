@@ -12,6 +12,7 @@ class StaticPagesController < ApplicationController
     @categories = Category.in_use
     @selected_category = Category.find_by(id: params[:category])
     @studies = @selected_category ? Study.by_category(@selected_category.id).distinct : Study.all
+    @recruitment = RecruitmentProgress.for(@studies)
   end
 
   # Operation manual: what each role may do, the Colombian regulatory sources the
@@ -57,5 +58,7 @@ class StaticPagesController < ApplicationController
       @branches_by_study = {}
       @city_name = t("static_pages.no_city_selected")
     end
+
+    @recruitment = RecruitmentProgress.for(@studies)
   end
 end
