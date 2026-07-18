@@ -131,6 +131,7 @@ es:
     search:
       title: "Estudios Clínicos en %{city}"
       back_to_search: "Volver a la búsqueda"
+      centers: "Centros donde se realiza"
       view_details: "Ver detalles"
       participate: "Quiero participar"
       none: "No se encontraron estudios clínicos en %{city}."

@@ -5,47 +5,23 @@
       <div class="card health-card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h4 class="mb-0"><%= t("static_pages.search.title", city: @city_name) %></h4>
-          <%= link_to t("static_pages.search.back_to_search"), static_pages_medici_home_path, class: "btn btn-outline-primary" %>
+          <%# btn-light, not btn-outline-primary: the outline variant is blue
+              on the blue .health-card header — invisible. %>
+          <%= link_to t("static_pages.search.back_to_search"), static_pages_medici_home_path, class: "btn btn-light btn-sm" %>
         </div>
         <div class="card-body">
           <% if @studies.present? %>
-            <div class="table-responsive">
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th><%= Study.human_attribute_name(:short_title) %></th>
-                    <th><%= Study.human_attribute_name(:scientific_title) %></th>
-                    <th><%= Study.human_attribute_name(:sponsor) %></th>
-                    <th><%= Study.human_attribute_name(:study_status) %></th>
-                    <th><%= t("common.actions") %></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% @studies.each do |study| %>
-                    <%# "I want to read about it, not sign up yet". Anonymous
-                        visitors previously had only the participate button, so
-                        the only way to learn anything was to hand over their
-                        details first. Signed-in staff go to the full study page;
-                        everyone else to the public, read-only card. %>
-                    <% detail_path = user_signed_in? ? study_path(study) : study_about_path(study) %>
-                    <tr>
-                      <td><%= study.short_title %></td>
-                      <td><%= link_to study.scientific_title, detail_path %></td>
-                      <td><%= study.sponsor.name %></td>
-                      <td><span class="badge bg-<%= study.study_status == 'approved' ? 'success' : (study.study_status == 'finished' ? 'info' : 'warning') %>">
-                        <%= study.study_status %>
-                      </span></td>
-                      <td>
-                        <% if user_signed_in? %>
-                          <%= link_to t("static_pages.search.view_details"), study_path(study), class: "btn btn-sm btn-primary" %>
-                        <% else %>
-                          <%= link_to t("static_pages.search.participate"), new_participation_request_path(study_id: study.id), class: "btn btn-sm btn-success" %>
-                        <% end %>
-                      </td>
-                    </tr>
-                  <% end %>
-                </tbody>
-              </table>
+            <%# Same cards as the home showcase (shared partial), plus the
+                trial centres in the searched city where each study runs.
+                The signed-in/anonymous split lives inside the partial:
+                staff get the full study page, everyone else the public
+                read-only card and the participate CTA. %>
+            <div class="row">
+              <% @studies.each do |study| %>
+                <div class="col-md-4 mb-4">
+                  <%= render "static_pages/study_card", study: study, centers: @branches_by_study.fetch(study.id, []) %>
+                </div>
+              <% end %>
             </div>
           <% else %>
             <div class="alert alert-info">
