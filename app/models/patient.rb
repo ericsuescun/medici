@@ -19,11 +19,17 @@
 #  state               :string           default("prospect"), not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
+#  study_id            :bigint
 #
 # Indexes
 #
 #  index_patients_on_participant_code  (participant_code) UNIQUE
 #  index_patients_on_state             (state)
+#  index_patients_on_study_id          (study_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (study_id => studies.id)
 #
 class Patient < ApplicationRecord
   include Userable

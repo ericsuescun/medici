@@ -18,6 +18,7 @@
 #  started_at         :date
 #  study_phase        :string
 #  study_status       :string
+#  topic              :string
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #  review_user_id     :integer
@@ -59,6 +60,15 @@ class Study < ApplicationRecord
   enum :study_phase, I: "I", II: "II", III: "III", IV: "IV"
 
   validates :public_title, :scientific_title, :short_title, presence: true
+
+  # Health-topic filter for the public home page. Free text entered by staff
+  # on the study form; a study with no topic simply never gets a pill and only
+  # appears under "Todos los estudios".
+  scope :by_topic, ->(topic) { where(topic: topic) }
+
+  def self.topics
+    where.not(topic: [ nil, "" ]).distinct.order(:topic).pluck(:topic)
+  end
 
   def cities_names
     cities = []

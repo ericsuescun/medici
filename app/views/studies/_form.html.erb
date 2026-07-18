@@ -29,6 +29,18 @@
     </div>
 
     <div>
+      <%= form.label :topic, style: "display: block" %>
+      <%= form.text_field :topic, class: "form-control mb-3", list: "study-topic-options" %>
+      <%# Suggest existing topics so the same condition isn't spelled 3 ways,
+          splitting one home-page pill into several. %>
+      <datalist id="study-topic-options">
+        <% Study.topics.each do |topic| %>
+          <option value="<%= topic %>"></option>
+        <% end %>
+      </datalist>
+    </div>
+
+    <div>
       <%= form.label :study_status, style: "display: block" %>
       <%= form.select(:study_status,
                       [['Completed', 'completed'], ['Recruiting', 'recruiting']],

@@ -7,6 +7,11 @@ class StaticPagesController < ApplicationController
 
   def medici_home
     @cities = City.all.order(:name)
+    # Public topic filter: pills on the showcase link back here with ?topic=.
+    # An unknown topic just yields an empty (not erroring) study list.
+    @topics = Study.topics
+    @selected_topic = params[:topic].presence
+    @studies = @selected_topic ? Study.by_topic(@selected_topic) : Study.all
   end
 
   # Operation manual: what each role may do, the Colombian regulatory sources the

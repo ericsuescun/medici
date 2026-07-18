@@ -18,6 +18,7 @@
 #  started_at         :date
 #  study_phase        :string
 #  study_status       :string
+#  topic              :string
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #  review_user_id     :integer

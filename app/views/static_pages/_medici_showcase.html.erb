@@ -1,23 +1,39 @@
-<div class="container-fluid mt-5 mb-5">
-  <h2 class="text-center mb-4"><%= t("static_pages.showcase.title") %></h2>
-  <div class="row">
-    <% Study.all.each do |study| %>
-      <div class="col-md-3 mb-4">
-        <div class="card health-card shadow-sm h-100">
-          <div class="card-header">
-            <%= study.public_title %>
-          </div>
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title"><%= Study.human_attribute_name(:scientific_title) %>: <%= study.scientific_title %></h5>
-            <h6 class="card-subtitle mb-2 text-muted"><%= Study.human_attribute_name(:short_title) %>: <%= study.short_title %></h6>
-            <p class="card-text"><%= Study.human_attribute_name(:study_status) %>: <%= study.study_status.capitalize %></p>
-            <div class="mt-auto d-grid gap-2">
-              <%= link_to t("static_pages.showcase.more_about"), study_about_path(study), class: "btn btn-primary w-100" %>
-              <%= link_to t("static_pages.showcase.participate"), new_participation_request_path(study_id: study.id), class: "btn btn-success w-100" %>
+<div class="container-fluid mb-5" id="estudios">
+  <h2 class="text-center mb-3"><%= t("static_pages.showcase.title") %></h2>
+
+  <%# Topic filter: one pill per topic in use, plus "all". Plain links back to
+      the home page (?topic=), so no JS is involved. %>
+  <nav class="d-flex flex-wrap justify-content-center gap-2 mb-4 px-3" aria-label="<%= t("static_pages.showcase.filter_label") %>">
+    <%= link_to t("static_pages.showcase.all_studies"), root_path(anchor: "estudios"),
+        class: "btn btn-sm rounded-pill px-3 #{@selected_topic ? 'btn-outline-primary' : 'btn-primary'}" %>
+    <% @topics.each do |topic| %>
+      <%= link_to topic, root_path(topic: topic, anchor: "estudios"),
+          class: "btn btn-sm rounded-pill px-3 #{@selected_topic == topic ? 'btn-primary' : 'btn-outline-primary'}" %>
+    <% end %>
+  </nav>
+
+  <% if @studies.any? %>
+    <div class="row">
+      <% @studies.each do |study| %>
+        <div class="col-md-3 mb-4">
+          <div class="card health-card shadow-sm h-100">
+            <div class="card-header">
+              <%= study.public_title %>
+            </div>
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title"><%= Study.human_attribute_name(:scientific_title) %>: <%= study.scientific_title %></h5>
+              <h6 class="card-subtitle mb-2 text-muted"><%= Study.human_attribute_name(:short_title) %>: <%= study.short_title %></h6>
+              <p class="card-text"><%= Study.human_attribute_name(:study_status) %>: <%= study.study_status.capitalize %></p>
+              <div class="mt-auto d-grid gap-2">
+                <%= link_to t("static_pages.showcase.more_about"), study_about_path(study), class: "btn btn-primary w-100" %>
+                <%= link_to t("static_pages.showcase.participate"), new_participation_request_path(study_id: study.id), class: "btn btn-success w-100" %>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    <% end %>
-  </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-center text-muted my-5"><%= t("static_pages.showcase.none_for_topic") %></p>
+  <% end %>
 </div>
