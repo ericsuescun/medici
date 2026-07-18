@@ -18,7 +18,6 @@
 #  started_at         :date
 #  study_phase        :string
 #  study_status       :string
-#  topic              :string
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #  review_user_id     :integer
@@ -47,6 +46,9 @@ class Study < ApplicationRecord
   has_and_belongs_to_many :trial_center_branches
   has_and_belongs_to_many :users
   has_and_belongs_to_many :medications
+  # Therapeutic areas (reference data, see Category). 1..3 per study by
+  # convention; powers the public home filter and search category counts.
+  has_and_belongs_to_many :categories
   has_many :trial_center_facilities, through: :trial_center_branches
 
   has_many :articles, dependent: :destroy
@@ -61,14 +63,9 @@ class Study < ApplicationRecord
 
   validates :public_title, :scientific_title, :short_title, presence: true
 
-  # Health-topic filter for the public home page. Free text entered by staff
-  # on the study form; a study with no topic simply never gets a pill and only
-  # appears under "Todos los estudios".
-  scope :by_topic, ->(topic) { where(topic: topic) }
-
-  def self.topics
-    where.not(topic: [ nil, "" ]).distinct.order(:topic).pluck(:topic)
-  end
+  # Home-page category filter: studies attached to the given therapeutic area.
+  # A study with no category only appears under "Todos los estudios".
+  scope :by_category, ->(category_id) { joins(:categories).where(categories: { id: category_id }) }
 
   def cities_names
     cities = []

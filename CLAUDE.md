@@ -142,11 +142,12 @@ How the inclusion/exclusion rules engine is modeled — three tables, `app/model
 
 ### Global navbar search (added 2026-07-16)
 
-The navbar search box posts to `GET /search` (`SearchController#index`). The logic lives in `GlobalSearch` (`app/services/global_search.rb`, a PORO — `app/services/` is Zeitwerk-autoloaded). It returns results **grouped by record type** (`Group` structs: `:studies`, `:trial_centers`, `:reps`, `:patients`, `:cities`) and is gated the same two ways the rest of the app is:
+The navbar search box posts to `GET /search` (`SearchController#index`). The logic lives in `GlobalSearch` (`app/services/global_search.rb`, a PORO — `app/services/` is Zeitwerk-autoloaded). It returns results **grouped by record type** (`Group` structs: `:studies`, `:categories`, `:trial_centers`, `:reps`, `:patients`, `:cities`) and is gated the same two ways the rest of the app is:
 
 - **Permission** — each group only appears if the role has `can_show` on that resource (`Role#permits?`, the same flag the policies use). So a role with no `Patient` permission never gets a Patients group.
 - **Scope** — a trial centre rep is limited to **their branch's** records (studies, patients via `PatientPolicy::Scope`, the branch/facility itself, its reps, its cities). Admins see everything. Other permitted roles see all rows of what they may view (no branch to scope by), matching the inherited Pundit scope.
 - **Cities** carry the **user-scoped studies that run in them** (`CityResult` struct): studies of the branches located in that city, narrowed to the rep's branch. Note the city↔study link goes **through branches** (`City ↔ TrialCenterBranch ↔ Study`) — `Study` has no direct `cities` HABTM (it has `trial_cities`, a different thing).
+- **Categories** (added 2026-07-18): therapeutic areas (`Category` HABTM `Study`, seeded by `CategoriesSeeder` — reference data like roles) matched by name; each result carries the **user-scoped study count** (`CategoryResult` struct — a rep's count covers only their branch's studies) and links to the public home-page filter (`/?category=<id>`). Gated by the `Study` permission, since categories are study metadata.
 - **`SearchController` `skip_after_action :verify_authorized`** — there's no single resource to `authorize`; GlobalSearch enforces authorization per record type instead. This is the one sanctioned exception to the deny-by-default rule.
 - **Patient search caveat:** `Patient` name/email are deterministically encrypted, so search matches them by **exact value only** (ciphertext can't be `ILIKE`'d). `participant_code` is plaintext and matches partially. All other types match partially on their name/title columns.
 
