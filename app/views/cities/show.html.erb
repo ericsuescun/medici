@@ -1,14 +1,48 @@
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-4 mx-auto">
-      <p style="color: green"><%= notice %></p>
+<div class="container">
+  <p style="color: green"><%= notice %></p>
 
-      <%= render @city %>
-
-      <div>
-        <%= link_to t("common.edit"), edit_city_path(@city) %> |
-        <%= link_to t("cities.back_to_list"), cities_path %>
-      </div>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1><%= @city.name %></h1>
+    <div>
+      <% if policy(@city).edit? %>
+        <%= link_to t("common.edit"), edit_city_path(@city), class: "btn btn-outline-secondary" %>
+      <% end %>
+      <%= link_to t("cities.back_to_list"), cities_path, class: "btn btn-link" %>
     </div>
   </div>
+
+  <%# The signed-in user's branches located in this city, with the studies
+      each one runs — a branch rep sees only their own branch here. %>
+  <h5 class="mb-3"><%= t("cities.your_branches") %></h5>
+
+  <% if @branches.any? %>
+    <table class="table table-striped align-middle">
+      <thead>
+        <tr>
+          <th><%= TrialCenterBranch.model_name.human %></th>
+          <th><%= TrialCenterFacility.model_name.human %></th>
+          <th><%= t("cities.branch_studies") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @branches.each do |branch| %>
+          <tr>
+            <td><%= link_to branch.name, branch, class: "fw-semibold text-decoration-none" %></td>
+            <td><%= branch.trial_center_facility.name %></td>
+            <td>
+              <% if branch.studies.any? %>
+                <% branch.studies.each do |study| %>
+                  <%= link_to study.public_title, study_path(study), class: "badge bg-light text-primary border text-decoration-none me-1" %>
+                <% end %>
+              <% else %>
+                <span class="text-muted small"><%= t("cities.no_studies") %></span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="text-muted"><%= t("cities.no_branches") %></p>
+  <% end %>
 </div>

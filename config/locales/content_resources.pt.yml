@@ -37,6 +37,12 @@ pt:
     new: "Nova cidade"
     edit_title: "Edição de cidade"
     back_to_list: "Voltar para cidades"
+    your_studies: "Estudos (conforme seu papel)"
+    your_branches: "Sedes relacionadas a você nesta cidade"
+    branch_studies: "Estudos da sede"
+    no_studies: "Sem estudos"
+    no_branches: "Não há sedes relacionadas a você nesta cidade."
+    view_details: "Ver detalhes"
 
   contacts:
     created: "O contato foi criado com sucesso."

@@ -37,6 +37,12 @@ fr:
     new: "Nouvelle ville"
     edit_title: "Modification de la ville"
     back_to_list: "Retour aux villes"
+    your_studies: "Études (selon votre rôle)"
+    your_branches: "Sites liés à vous dans cette ville"
+    branch_studies: "Études du site"
+    no_studies: "Aucune étude"
+    no_branches: "Aucun site lié à vous dans cette ville."
+    view_details: "Voir les détails"
 
   contacts:
     created: "Le contact a été créé avec succès."
