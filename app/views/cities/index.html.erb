@@ -37,7 +37,6 @@
             <% end %>
           </td>
           <td class="text-end">
-            <%= link_to t("cities.view_details"), city_path(city), class: "btn btn-sm btn-outline-primary" %>
             <% if policy(city).edit? %>
               <%= link_to t("common.edit"), edit_city_path(city), class: "btn btn-sm btn-outline-secondary" %>
             <% end %>

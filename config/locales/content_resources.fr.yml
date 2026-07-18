@@ -42,7 +42,6 @@ fr:
     branch_studies: "Études du site"
     no_studies: "Aucune étude"
     no_branches: "Aucun site lié à vous dans cette ville."
-    view_details: "Voir les détails"
 
   contacts:
     created: "Le contact a été créé avec succès."

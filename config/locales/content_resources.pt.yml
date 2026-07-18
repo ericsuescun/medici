@@ -42,7 +42,6 @@ pt:
     branch_studies: "Estudos da sede"
     no_studies: "Sem estudos"
     no_branches: "Não há sedes relacionadas a você nesta cidade."
-    view_details: "Ver detalhes"
 
   contacts:
     created: "O contato foi criado com sucesso."
