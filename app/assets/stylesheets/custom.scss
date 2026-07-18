@@ -125,6 +125,36 @@ $dark: $medici-dark;
   .seg-prospect {
     background-color: mix($medici-danger, #fff, 40%);
   }
+
+  // Tall variant for the study page's side column: wide enough segments show
+  // their patient count inline.
+  &.recruitment-bar--labeled {
+    height: 1.5rem;
+
+    .seg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: rgba($medici-dark, 0.75);
+    }
+  }
+}
+
+.recruitment-legend {
+  .dot {
+    display: inline-block;
+    width: 0.7rem;
+    height: 0.7rem;
+    border: 1px solid rgba($medici-dark, 0.15);
+    border-radius: 50%;
+    margin-right: 0.25rem;
+  }
+
+  .dot-participant { background-color: mix($medici-success, #fff, 40%); }
+  .dot-candidate { background-color: mix($medici-warning, #fff, 40%); }
+  .dot-prospect { background-color: mix($medici-danger, #fff, 40%); }
 }
 
 // Model-specific card styling with colors matching the logo

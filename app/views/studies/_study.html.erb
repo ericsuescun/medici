@@ -1,277 +1,277 @@
+<%# Study page, grouped so it reads top-down instead of sprawling:
+      main column — Demográfico / Científico / Administrativo sections
+      side column — recruitment bar (labeled variant), patient list, contacts
+    The patient list is policy-scoped in the controller (@patients). %>
 <div class="card study-card">
   <div class="card-header">
-    <%= render "studies/recruitment_bar", study: study %>
     <h1 class="card-title"><strong><%= study.public_title %></strong></h1>
     <h2 class="card-subtitle mb-2 text-body-secondary"><strong><%= study.scientific_title %></strong></h2>
     <h3 class="card-subtitle mb-2 text-body-secondary"><strong><%= Study.human_attribute_name(:short_title) %>: <%= study.short_title %></strong></h3>
   </div>
   <div class="card-body">
-    <p class="card-text">
-    <%# patients.study_id — the old studies_users HABTM stopped carrying
-        patients when patient accounts were removed (2026-07-15). %>
-    <h6><strong><%= t("studies.interested_subjects") %>:</strong> <%= study.patients.count %></h6>
-    <div class="row">
-      <div class="col-3">
-        <table class="table table-striped">
-          <thead>
-          <tr>
-            <th><%= Patient.human_attribute_name(:firstname) %></th>
-            <th><%= t("studies.age") %></th>
-          </tr>
-          </thead>
-          <tbody>
-          <% @patients.each do |patient| %>
-            <tr>
-              <td><%= link_to patient.fullname, patient %></td>
-              <td><%= get_age(patient.dob) if patient.dob.present? %></td>
-            </tr>
-          <% end %>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <p><strong><%= t("studies.clinical_trials") %>:</strong></p>
+    <div class="row g-4">
+      <div class="col-lg-8">
 
-    <div class="row">
-      <div class="col-8">
-        <!-- Display existing trial center branches -->
-        <div class="mb-4">
-          <h5><%= t("studies.associated_centers_and_sites") %></h5>
-          <% if study.trial_center_branches.any? %>
-            <table class="table table-striped">
-              <thead>
-              <tr>
-                <th><%= TrialCenterFacility.model_name.human %></th>
-                <th><%= TrialCenterBranch.model_name.human %></th>
-                <th><%= City.model_name.human %></th>
-                <th><%= t("common.actions") %></th>
-              </tr>
-              </thead>
-              <tbody>
-              <% study.trial_center_branches.sort_by { |branch| branch.cities.pluck(:name).join(', ') }.each do |branch| %>
-                <tr>
-                  <td><%= link_to branch.trial_center_facility.name, branch.trial_center_facility, class: "card-link" %></td>
-                  <td><%= link_to branch.name, branch, class: "card-link" %></td>
-                  <td><%= branch.cities.pluck(:name).join(', ') %></td>
-                  <td>
-                    <% if study.trial_center_branches.count > 1 %>
-                      <%= button_to t("common.destroy"), remove_trial_center_branch_study_path(study, trial_center_branch_id: branch.id),
-                                    method: :delete,
-                                    class: "btn btn-outline-danger btn-sm",
-                                    data: { confirm: t("studies.confirm_remove_site") } %>
-                    <% end %>
-                  </td>
-                </tr>
-              <% end %>
-              </tbody>
-            </table>
-          <% else %>
-            <p><%= t("studies.no_associated_sites") %></p>
-          <% end %>
-        </div>
-      </div>
-      <div class="col-4">
-        <!-- Form to add a new trial center branch -->
         <div class="card study-card mb-4">
-          <div class="card-header">
-            <h5><%= t("studies.add_site_to_study") %></h5>
-          </div>
+          <div class="card-header"><h5 class="mb-0"><%= t("studies.sections.demographic") %></h5></div>
           <div class="card-body">
-            <%= form_with url: add_trial_center_branch_study_path(study), method: :post, class: "row g-3" do |form| %>
-              <div class="col-md-12">
-                <label for="trial_center_branch_id" class="form-label"><%= t("studies.select_site_by_city") %></label>
-                <select name="trial_center_branch_id" id="trial_center_branch_id" class="form-select" required>
-                  <option value=""><%= t("studies.select_site_prompt") %></option>
-                  <% @trial_center_branches.sort_by { |branch| branch.cities.pluck(:name).join(', ') }.each do |branch| %>
-                    <option value="<%= branch.id %>">
-                      <%= branch.name %> - <%= branch.trial_center_facility.name %>
-                      (<%= branch.cities.pluck(:name).join(', ') %>)
-                    </option>
-                  <% end %>
-                </select>
-              </div>
-              <div class="col-12">
-                <%= form.submit t("studies.add_site"), class: "btn btn-primary" %>
-              </div>
-            <% end %>
+            <dl class="row mb-0">
+              <dt class="col-sm-4"><%= Study.human_attribute_name(:sex) %></dt>
+              <dd class="col-sm-8"><%= study.sex %></dd>
+              <dt class="col-sm-4"><%= Study.human_attribute_name(:sample_size) %></dt>
+              <dd class="col-sm-8"><%= study.sample_size %></dd>
+              <dt class="col-sm-4"><%= Study.human_attribute_name(:inclusion_criteria) %></dt>
+              <dd class="col-sm-8"><%= study.inclusion_criteria %></dd>
+              <dt class="col-sm-4"><%= Study.human_attribute_name(:exclusion_criteria) %></dt>
+              <dd class="col-sm-8 mb-0"><%= study.exclusion_criteria %></dd>
+            </dl>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div class="row">
-      <div class="col-8">
-        <!-- Display existing medications -->
-        <div class="mb-4">
-          <h5><%= t("studies.associated_medications") %></h5>
-          <% if study.medications.any? %>
-            <table class="table table-striped">
-              <thead>
-              <tr>
-                <th><%= Medication.human_attribute_name(:name) %></th>
-                <th><%= Medication.human_attribute_name(:description) %></th>
-                <th><%= t("common.actions") %></th>
-              </tr>
-              </thead>
-              <tbody>
-              <% study.medications.each do |medication| %>
-                <tr>
-                  <td><strong><%= medication.name %></strong></td>
-                  <td><%= medication.description %></td>
-                  <td>
-                    <% if study.medications.count > 1 %>
-                      <%= button_to t("common.destroy"), remove_medication_study_path(study, medication_id: medication.id),
-                                    method: :delete,
-                                    class: "btn btn-outline-danger btn-sm",
-                                    data: { confirm: t("studies.confirm_remove_medication") } %>
-                    <% end %>
-                  </td>
-                </tr>
-              <% end %>
-              </tbody>
-            </table>
-          <% else %>
-            <p><%= t("studies.no_associated_medications") %></p>
-          <% end %>
-        </div>
-      </div>
-      <div class="col-4">
-        <!-- Form to add a new medication -->
         <div class="card study-card mb-4">
-          <div class="card-header">
-            <h5><%= t("studies.add_medication_to_study") %></h5>
-          </div>
+          <div class="card-header"><h5 class="mb-0"><%= t("studies.sections.scientific") %></h5></div>
           <div class="card-body">
-            <%= form_with url: add_medication_study_path(study), method: :post, class: "row g-3" do |form| %>
-              <div class="col-md-12">
-                <label for="medication_id" class="form-label"><%= t("studies.select_medication") %></label>
-                <select name="medication_id" id="medication_id" class="form-select" required>
-                  <option value=""><%= t("studies.select_medication_prompt") %></option>
-                  <% Medication.all.each do |medication| %>
-                    <option value="<%= medication.id %>">
-                      <%= medication.name %> - <%= medication.description %>
-                    </option>
+            <dl class="row">
+              <dt class="col-sm-4"><%= Study.human_attribute_name(:study_phase) %></dt>
+              <dd class="col-sm-8"><%= t_enum(study, :study_phase) %></dd>
+              <dt class="col-sm-4"><%= Study.human_attribute_name(:main_intervention) %></dt>
+              <dd class="col-sm-8"><%= study.main_intervention %></dd>
+              <dt class="col-sm-4"><%= Category.model_name.human(count: 2) %></dt>
+              <dd class="col-sm-8 mb-0">
+                <% if study.categories.any? %>
+                  <% study.categories.order(:name).each do |category| %>
+                    <span class="badge bg-light text-primary border me-1"><%= category.name %></span>
                   <% end %>
-                </select>
-              </div>
-              <div class="col-12">
-                <%= form.submit t("studies.add_medication"), class: "btn btn-primary" %>
-              </div>
-            <% end %>
-          </div>
-        </div>
-      </div>
-    </div>
+                <% else %>
+                  <span class="text-muted">—</span>
+                <% end %>
+              </dd>
+            </dl>
 
-    <h4><%= t("studies.study_identification") %></h4>
-    <table class="table table-striped">
-      <thead>
-      <tr>
-        <th><%= Study.human_attribute_name(:completed_at) %></th>
-        <th><%= Study.human_attribute_name(:started_at) %></th>
-        <th><%= Study.human_attribute_name(:first_patient_at) %></th>
-        <th><%= Study.human_attribute_name(:global_ending_at) %></th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <td><%= study.completed_at %></td>
-        <td><%= study.started_at %></td>
-        <td><%= study.first_patient_at %></td>
-        <td><%= study.global_ending_at %></td>
-      </tr>
+            <h6 class="mt-3"><%= t("studies.associated_medications") %></h6>
+            <div class="row">
+              <div class="col-md-7">
+                <% if study.medications.any? %>
+                  <table class="table table-striped table-sm">
+                    <thead>
+                    <tr>
+                      <th><%= Medication.human_attribute_name(:name) %></th>
+                      <th><%= Medication.human_attribute_name(:description) %></th>
+                      <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% study.medications.each do |medication| %>
+                      <tr>
+                        <td><strong><%= medication.name %></strong></td>
+                        <td><%= medication.description %></td>
+                        <td class="text-end">
+                          <% if study.medications.count > 1 %>
+                            <%= button_to t("common.destroy"), remove_medication_study_path(study, medication_id: medication.id),
+                                          method: :delete,
+                                          class: "btn btn-outline-danger btn-sm",
+                                          data: { confirm: t("studies.confirm_remove_medication") } %>
+                          <% end %>
+                        </td>
+                      </tr>
+                    <% end %>
+                    </tbody>
+                  </table>
+                <% else %>
+                  <p class="text-muted"><%= t("studies.no_associated_medications") %></p>
+                <% end %>
+              </div>
+              <div class="col-md-5">
+                <%= form_with url: add_medication_study_path(study), method: :post, class: "row g-2" do |form| %>
+                  <div class="col-12">
+                    <label for="medication_id" class="form-label"><%= t("studies.select_medication") %></label>
+                    <select name="medication_id" id="medication_id" class="form-select form-select-sm" required>
+                      <option value=""><%= t("studies.select_medication_prompt") %></option>
+                      <% Medication.all.each do |medication| %>
+                        <option value="<%= medication.id %>"><%= medication.name %> - <%= medication.description %></option>
+                      <% end %>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <%= form.submit t("studies.add_medication"), class: "btn btn-primary btn-sm" %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
 
-      </tbody>
-    </table>
-    <div class="row">
-      <div class="col-3">
-        <div class="card study-card mt-3">
-          <div class="card-header">
-            <h5><%= t("studies.sponsor_information") %></h5>
-          </div>
-          <div class="card-body">
-            <p><strong><%= Sponsor.model_name.human %>: </strong><%= study.sponsor.name %></p>
-            <p><strong><%= Sponsor.human_attribute_name(:sponsor_type) %>: </strong><%= t_enum(study.sponsor, :sponsor_type) %></p>
-            <p><strong><%= Study.human_attribute_name(:study_status) %>: </strong><%= t_enum(study, :study_status) %></p>
-          </div>
-        </div>
-      </div>
-      <div class="col-3">
-        <div class="card study-card mt-3">
-          <div class="card-header">
-            <h5><%= t("studies.study_design") %></h5>
-          </div>
-          <div class="card-body">
-            <p><strong><%= Study.human_attribute_name(:study_phase) %>: </strong><%= t_enum(study, :study_phase) %></p>
-            <p><strong><%= Study.human_attribute_name(:inclusion_criteria) %>: </strong><%= study.inclusion_criteria %></p>
-            <p><strong><%= Study.human_attribute_name(:exclusion_criteria) %>: </strong><%= study.exclusion_criteria %></p>
-            <p><strong><%= Study.human_attribute_name(:sample_size) %>: </strong><%= study.sample_size %></p>
-            <p><strong><%= Study.human_attribute_name(:main_intervention) %>: </strong><%= study.main_intervention %></p>
-          </div>
-        </div>
-      </div>
-      <div class="col-3">
-        <div class="card study-card mt-3">
-          <div class="card-header">
-            <h5><%= t("studies.primary_and_secondary_results") %></h5>
-          </div>
-          <div class="card-body">
-            <p><strong><%= t("studies.primary_results") %>:  </strong></p>
+            <h6 class="mt-3"><%= t("studies.primary_and_secondary_results") %></h6>
+            <p class="mb-1"><strong><%= t("studies.primary_results") %>:</strong></p>
             <% study.results.primary.each do |result| %>
-              <p><strong><%= t("studies.result_title") %>: </strong><%= result.title %></p>
+              <p class="mb-1"><strong><%= t("studies.result_title") %>: </strong><%= result.title %></p>
               <p><%= result.description %></p>
             <% end %>
-            <p><strong><%= t("studies.secondary_results") %>:  </strong></p>
+            <p class="mb-1"><strong><%= t("studies.secondary_results") %>:</strong></p>
             <% study.results.secondary.each do |result| %>
-              <p><strong><%= t("studies.result_title") %>: </strong><%= result.title %></p>
+              <p class="mb-1"><strong><%= t("studies.result_title") %>: </strong><%= result.title %></p>
               <p><%= result.description %></p>
             <% end %>
           </div>
         </div>
-      </div>
-      <div class="col-3">
-        <div class="card study-card mt-3">
-          <div class="card-header">
-            <h5><%= t("studies.study_population") %></h5>
-          </div>
+
+        <div class="card study-card mb-4">
+          <div class="card-header"><h5 class="mb-0"><%= t("studies.sections.administrative") %></h5></div>
           <div class="card-body">
-            <p><strong><%= Study.human_attribute_name(:sex) %>: </strong><%= study.sex %></p>
+            <dl class="row">
+              <dt class="col-sm-4"><%= Sponsor.model_name.human %></dt>
+              <dd class="col-sm-8"><%= study.sponsor.name %></dd>
+              <dt class="col-sm-4"><%= Sponsor.human_attribute_name(:sponsor_type) %></dt>
+              <dd class="col-sm-8"><%= t_enum(study.sponsor, :sponsor_type) %></dd>
+              <dt class="col-sm-4"><%= Study.human_attribute_name(:study_status) %></dt>
+              <dd class="col-sm-8"><%= t_enum(study, :study_status) %></dd>
+              <dt class="col-sm-4"><%= Study.human_attribute_name(:reviewed) %></dt>
+              <dd class="col-sm-8"><%= study.reviewed %></dd>
+              <dt class="col-sm-4"><%= t("studies.review_user") %></dt>
+              <dd class="col-sm-8 mb-0"><%= study.review_user_id %></dd>
+            </dl>
+
+            <h6 class="mt-3"><%= t("studies.study_identification") %></h6>
+            <table class="table table-striped table-sm">
+              <thead>
+              <tr>
+                <th><%= Study.human_attribute_name(:started_at) %></th>
+                <th><%= Study.human_attribute_name(:first_patient_at) %></th>
+                <th><%= Study.human_attribute_name(:completed_at) %></th>
+                <th><%= Study.human_attribute_name(:global_ending_at) %></th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td><%= study.started_at %></td>
+                <td><%= study.first_patient_at %></td>
+                <td><%= study.completed_at %></td>
+                <td><%= study.global_ending_at %></td>
+              </tr>
+              </tbody>
+            </table>
+
+            <h6 class="mt-3"><%= t("studies.associated_centers_and_sites") %></h6>
+            <div class="row">
+              <div class="col-md-7">
+                <% if study.trial_center_branches.any? %>
+                  <table class="table table-striped table-sm">
+                    <thead>
+                    <tr>
+                      <th><%= TrialCenterFacility.model_name.human %></th>
+                      <th><%= TrialCenterBranch.model_name.human %></th>
+                      <th><%= City.model_name.human %></th>
+                      <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% study.trial_center_branches.sort_by { |branch| branch.cities.pluck(:name).join(', ') }.each do |branch| %>
+                      <tr>
+                        <td><%= link_to branch.trial_center_facility.name, branch.trial_center_facility, class: "card-link" %></td>
+                        <td><%= link_to branch.name, branch, class: "card-link" %></td>
+                        <td><%= branch.cities.pluck(:name).join(', ') %></td>
+                        <td class="text-end">
+                          <% if study.trial_center_branches.count > 1 %>
+                            <%= button_to t("common.destroy"), remove_trial_center_branch_study_path(study, trial_center_branch_id: branch.id),
+                                          method: :delete,
+                                          class: "btn btn-outline-danger btn-sm",
+                                          data: { confirm: t("studies.confirm_remove_site") } %>
+                          <% end %>
+                        </td>
+                      </tr>
+                    <% end %>
+                    </tbody>
+                  </table>
+                <% else %>
+                  <p class="text-muted"><%= t("studies.no_associated_sites") %></p>
+                <% end %>
+              </div>
+              <div class="col-md-5">
+                <%= form_with url: add_trial_center_branch_study_path(study), method: :post, class: "row g-2" do |form| %>
+                  <div class="col-12">
+                    <label for="trial_center_branch_id" class="form-label"><%= t("studies.select_site_by_city") %></label>
+                    <select name="trial_center_branch_id" id="trial_center_branch_id" class="form-select form-select-sm" required>
+                      <option value=""><%= t("studies.select_site_prompt") %></option>
+                      <% @trial_center_branches.sort_by { |branch| branch.cities.pluck(:name).join(', ') }.each do |branch| %>
+                        <option value="<%= branch.id %>">
+                          <%= branch.name %> - <%= branch.trial_center_facility.name %>
+                          (<%= branch.cities.pluck(:name).join(', ') %>)
+                        </option>
+                      <% end %>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <%= form.submit t("studies.add_site"), class: "btn btn-primary btn-sm" %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+
+            <h6 class="mt-3"><%= t("studies.publication_links") %></h6>
+            <p class="text-muted mb-0">—</p>
           </div>
         </div>
-        <div class="card study-card mt-3">
-          <div class="card-header">
-            <h5><%= t("studies.reviews") %></h5>
-          </div>
-          <div class="card-body">
-            <p><strong><%= Study.human_attribute_name(:reviewed) %>: </strong><%= study.reviewed %></p>
-            <p><strong><%= t("studies.review_user") %>: </strong><%= study.review_user_id %></p>
-          </div>
-        </div>
       </div>
-      <div class="col-3">
-        <div class="card study-card mt-3">
-          <div class="card-header">
-            <h5><%= t("studies.contact_information") %></h5>
+
+      <div class="col-lg-4">
+        <% progress = study.recruitment_progress %>
+        <% if progress.renderable? %>
+          <div class="card study-card mb-4">
+            <div class="card-header"><h5 class="mb-0"><%= t("studies.recruitment.title") %></h5></div>
+            <div class="card-body">
+              <%= render "studies/recruitment_bar", study: study, progress: progress, labeled: true %>
+              <p class="text-muted small mt-2 mb-2"><%= t("studies.recruitment.summary", total: progress.total, goal: progress.goal) %></p>
+              <div class="recruitment-legend small text-muted">
+                <span class="me-3"><span class="dot dot-participant"></span><%= t("studies.recruitment.legend_participants") %></span>
+                <span class="me-3"><span class="dot dot-candidate"></span><%= t("studies.recruitment.legend_candidates") %></span>
+                <span><span class="dot dot-prospect"></span><%= t("studies.recruitment.legend_prospects") %></span>
+              </div>
+            </div>
           </div>
+        <% end %>
+
+        <div class="card study-card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><%= t("studies.interested_subjects") %></h5>
+            <span class="badge bg-primary"><%= study.patients.count %></span>
+          </div>
+          <% if @patients.any? %>
+            <div class="overflow-auto" style="max-height: 24rem;">
+              <table class="table table-striped table-sm mb-0">
+                <thead>
+                <tr>
+                  <th><%= Patient.human_attribute_name(:firstname) %></th>
+                  <th><%= t("studies.age") %></th>
+                </tr>
+                </thead>
+                <tbody>
+                <% @patients.each do |patient| %>
+                  <tr>
+                    <td><%= link_to patient.fullname, patient %></td>
+                    <td><%= get_age(patient.dob) if patient.dob.present? %></td>
+                  </tr>
+                <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <div class="card-body">
+              <p class="text-muted small mb-0"><%= t("studies.no_visible_patients") %></p>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="card study-card mb-4">
+          <div class="card-header"><h5 class="mb-0"><%= t("studies.contact_information") %></h5></div>
           <div class="card-body">
-            <% study.contacts.each do |contact|%>
-              <p><span><%= contact.contact_info %> </span></p>
+            <% if study.contacts.any? %>
+              <% study.contacts.each do |contact| %>
+                <p class="mb-1"><%= contact.contact_info %></p>
+              <% end %>
+            <% else %>
+              <p class="text-muted mb-0">—</p>
             <% end %>
-          </div>
-        </div>
-      </div>
-      <div class="col-3">
-        <div class="card study-card mt-3">
-          <div class="card-header">
-            <h5><%= t("studies.publication_links") %></h5>
-          </div>
-          <div class="card-body">
           </div>
         </div>
       </div>
     </div>
-    </p>
   </div>
-</div>
-
 </div>
