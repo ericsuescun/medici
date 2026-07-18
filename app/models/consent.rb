@@ -10,16 +10,15 @@
 #  purpose          :string           not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
-#  user_id          :bigint           not null
+#  patient_id       :bigint           not null
 #
 # Indexes
 #
-#  index_consents_on_user_id                    (user_id)
-#  index_consents_on_user_id_and_document_type  (user_id,document_type)
+#  index_consents_on_patient_id  (patient_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (user_id => users.id)
+#  fk_rails_...  (patient_id => patients.id)
 #
 # An immutable record that a user granted a specific, versioned authorization —
 # the Ley 1581 de 2012 habeas-data authorization to process sensitive health data,

@@ -2,26 +2,26 @@
 #
 # Table name: variable_values
 #
-#  id                :bigint           not null, primary key
-#  comparison_type   :string           not null
-#  conditions        :text
-#  criteria_order    :integer
-#  description       :text
-#  enabled           :boolean          default(TRUE), not null
-#  name              :string           not null
-#  qualitative_scale :text             default([]), not null, is an Array
-#  qualitative_value :string
-#  reference_value_1 :decimal(15, 6)
-#  reference_value_2 :decimal(15, 6)
-#  shown             :boolean          default(TRUE), not null
-#  value             :string
-#  value_type        :string           not null
-#  variable_type     :string           default("inclusion"), not null
-#  created_at        :datetime         not null
+#  id                   :bigint           not null, primary key
+#  comparison_type      :string           not null
+#  conditions           :text
+#  criteria_order       :integer
+#  description          :text
+#  enabled              :boolean          default(TRUE), not null
+#  name                 :string           not null
+#  qualitative_scale    :text             default([]), not null, is an Array
+#  qualitative_value    :string
+#  reference_value_1    :decimal(15, 6)
+#  reference_value_2    :decimal(15, 6)
+#  shown                :boolean          default(TRUE), not null
+#  value                :string
+#  value_type           :string           not null
+#  variable_type        :string           default("inclusion"), not null
+#  created_at           :datetime         not null
 #  updated_at           :datetime         not null
 #  criteria_variable_id :bigint
-#  patient_id           :bigint           not null
 #  entered_by_id        :bigint
+#  patient_id           :bigint           not null
 #
 # Indexes
 #
@@ -33,7 +33,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (criteria_variable_id => criteria_variables.id)
+#  fk_rails_...  (criteria_variable_id => criteria_variables.id) ON DELETE => nullify
 #  fk_rails_...  (entered_by_id => users.id)
 #  fk_rails_...  (patient_id => patients.id)
 #

@@ -101,7 +101,7 @@ fr:
       stat_studies: "Études cliniques"
       stat_patients: "Patients inscrits"
       logout: "Se déconnecter"
-      login: "Se connecter"
+      login: "Connexion utilisateur"
       search_by_city_title: "Rechercher des études par ville"
       select_city_prompt: "Sélectionnez une ville"
       search_button: "Rechercher"
@@ -113,6 +113,9 @@ fr:
       title: "Études cliniques disponibles"
       participate: "Je veux participer !"
       more_about: "En savoir plus sur cette étude"
+      all_studies: "Toutes les études"
+      filter_label: "Explorer par thème de santé"
+      none_for_topic: "Aucune étude sur ce thème pour le moment."
     study_details:
       back_home: "Retour à l’accueil"
       description: "Description"

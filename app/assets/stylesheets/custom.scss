@@ -67,6 +67,36 @@ $dark: $medici-dark;
   }
 }
 
+// Public home hero: logo + tagline + compact stat pills (the landing keeps
+// the roomier .stat-card for dashboards; pills read better on a phone).
+.home-hero-logo {
+  max-height: 220px;
+}
+
+.home-tagline {
+  max-width: 34rem;
+  font-size: calc(1.35rem + 0.9vw);
+  font-weight: 700;
+  color: $medici-dark;
+}
+
+.stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: $medici-bg-subtle;
+  color: $medici-dark;
+  border: 1px solid rgba($medici-primary, 0.2);
+  border-radius: 50rem;
+  padding: 0.35rem 0.9rem;
+  font-weight: 500;
+
+  .stat-pill-value {
+    color: $medici-primary;
+    font-weight: 700;
+  }
+}
+
 // Model-specific card styling with colors matching the logo
 // Study card with green styling
 .study-card {

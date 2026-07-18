@@ -18,6 +18,7 @@
 #  started_at         :date
 #  study_phase        :string
 #  study_status       :string
+#  topic              :string
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #  review_user_id     :integer
@@ -41,6 +42,7 @@ FactoryBot.define do
     inclusion_criteria { Faker::Lorem.paragraph }
     exclusion_criteria { Faker::Lorem.paragraph }
     main_intervention { Faker::Lorem.sentence }
+    topic { [ "Dermatología", "Diabetes", "Hipertensión", "Oncología", "Salud mental" ].sample }
     sample_size { Faker::Number.between(from: 50, to: 1000) }
     sex { [ 'male', 'female', 'both' ].sample }
 

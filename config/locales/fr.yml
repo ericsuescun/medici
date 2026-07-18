@@ -169,6 +169,7 @@ fr:
         public_title: "Titre public"
         scientific_title: "Titre scientifique"
         short_title: "Titre court"
+        topic: "Thème de santé"
         study_status: "Statut de l'étude"
         study_phase: "Phase de l'étude"
         inclusion_criteria: "Critères d'inclusion"
