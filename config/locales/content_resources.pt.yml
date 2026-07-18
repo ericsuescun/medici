@@ -1,4 +1,16 @@
 pt:
+  categories:
+    created: "A categoria foi criada com sucesso."
+    updated: "A categoria foi atualizada com sucesso."
+    destroyed: "A categoria foi excluída com sucesso."
+    form_errors:
+      one: "%{count} erro impediu salvar esta categoria:"
+      other: "%{count} erros impediram salvar esta categoria:"
+    home_link: "Voltar para Vitalia"
+    new: "Nova categoria"
+    edit: "Editar categoria"
+    confirm_delete: "Excluir esta categoria? Os estudos associados são mantidos; apenas perdem esta área terapêutica."
+    studies_column: "Estudos"
   medications:
     created: "O medicamento foi criado com sucesso."
     updated: "O medicamento foi atualizado com sucesso."

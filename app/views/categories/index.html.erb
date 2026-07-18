@@ -1,0 +1,41 @@
+<div class="container">
+  <p style="color: green"><%= notice %></p>
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1><%= t("nav.categories") %></h1>
+    <div>
+      <%= link_to t("categories.home_link"), static_pages_medici_home_path %>
+      <% if policy(Category).new? %>
+        | <%= link_to t("categories.new"), new_category_path, class: "btn btn-primary" %>
+      <% end %>
+    </div>
+  </div>
+
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th><%= Category.human_attribute_name(:name) %></th>
+      <th class="text-end"><%= t("categories.studies_column") %></th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <% @categories.each do |category| %>
+      <tr>
+        <td><%= link_to category.name, category_path(category) %></td>
+        <td class="text-end"><span class="badge bg-light text-dark border"><%= category.studies_count %></span></td>
+        <td class="text-end">
+          <% if policy(category).edit? %>
+            <%= link_to t("common.edit"), edit_category_path(category), class: 'btn btn-sm btn-outline-secondary' %>
+          <% end %>
+          <% if policy(category).destroy? %>
+            <%= button_to t("common.destroy"), category_path(category), method: :delete, class: 'btn btn-sm btn-outline-danger', form: { class: "d-inline", data: { turbo_confirm: t("categories.confirm_delete") } } %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+
+  <%= will_paginate @categories, :renderer => WillPaginate::ActionView::Bootstrap4LinkRenderer %>
+</div>

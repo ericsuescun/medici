@@ -29,6 +29,7 @@ module OperationManual
     "Article" => "Artículos",
     "Campaign" => "Campañas",
     "CampaignDocument" => "Documentos de campaña",
+    "Category" => "Categorías de estudio",
     "City" => "Ciudades",
     "Contact" => "Contactos",
     "CriteriaProfile" => "Perfiles de criterios",

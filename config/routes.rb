@@ -82,6 +82,7 @@ Rails.application.routes.draw do
   resources :articles
   resources :sponsors
   resources :medications
+  resources :categories
   resources :users
   resources :criteria_profiles do
     resources :criteria_variables

@@ -1,0 +1,9 @@
+<div class="container">
+  <h1><%= t("categories.edit") %></h1>
+
+  <%= render "form", category: @category %>
+
+  <div class="mt-3">
+    <%= link_to t("common.back"), categories_path %>
+  </div>
+</div>

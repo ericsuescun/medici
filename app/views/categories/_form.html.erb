@@ -1,0 +1,19 @@
+<%= form_with(model: category) do |form| %>
+  <% if category.errors.any? %>
+    <div class="alert alert-danger">
+      <h5><%= t("categories.form_errors", count: category.errors.count) %></h5>
+      <ul class="mb-0">
+        <% category.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.label :name, class: "form-label" %>
+    <%= form.text_field :name, class: "form-control", autofocus: true %>
+  </div>
+
+  <%= form.submit class: "btn btn-primary" %>
+<% end %>

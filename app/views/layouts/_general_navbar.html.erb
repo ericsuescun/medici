@@ -21,6 +21,13 @@
         <li class="nav-item">
           <%= link_to t("nav.medications"), medications_path, class: "nav-link" %>
         </li>
+        <%# Categories are admin-only: the seeder grants Category permissions
+            to no role but admin, and this pill follows the permission. %>
+        <% if policy(Category).index? %>
+          <li class="nav-item">
+            <%= link_to t("nav.categories"), categories_path, class: "nav-link" %>
+          </li>
+        <% end %>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <%= t("nav.users") %>
