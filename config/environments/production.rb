@@ -54,12 +54,18 @@ Rails.application.configure do
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
 
-  # Replace the default in-process memory cache store with a durable alternative.
-  config.cache_store = :solid_cache_store
+  # Single web dyno on Heroku (no worker dyno, essential-0 Postgres = one
+  # database), so cache and jobs run in-process. Solid Cache/Queue/Cable were
+  # configured here against separate databases that cannot exist on this plan:
+  # every cache read and purge_later raised. If the app grows a worker dyno,
+  # reintroduce Solid Queue deliberately (gem + tables + dyno), not by default.
+  config.cache_store = :memory_store
 
-  # Replace the default in-process and non-durable queuing backend for Active Job.
-  config.active_job.queue_adapter = :solid_queue
-  config.solid_queue.connects_to = { database: { writing: :queue } }
+  # Active Storage's analyze/purge jobs (this app's only background jobs) run
+  # in the web process. Jobs pending during a dyno restart are lost — the
+  # scheduled `active_storage:purge_unattached` sweep catches any blob those
+  # lost purges leave behind.
+  config.active_job.queue_adapter = :async
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

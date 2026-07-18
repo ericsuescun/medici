@@ -39,12 +39,12 @@ bin/brakeman --no-pager      # Security scan
 bin/importmap audit          # JS dependency audit
 ```
 
-CI (`.github/workflows/ci.yml`) runs Brakeman, importmap audit, and RuboCop on every PR and push to `main`. **It does not run the RSpec suite** — tests are not currently enforced in CI.
+CI (`.github/workflows/ci.yml`) runs four jobs on every PR and push to `main`: Brakeman, importmap audit, RuboCop, and **the full RSpec suite** (`test` job: Postgres service container, Chrome for the `js: true` feature specs, `dartsass:build` for CSS, and — critically — `yarn install`, because five importmap pins (trix, @rails/actiontext, @rails/activestorage, bootstrap, bootstrap-icons) are served out of `node_modules` via Propshaft asset paths; without them the browser's ES-module graph fails and every JS-driven feature spec breaks while the rest of the suite stays green (exactly the failure CI showed until 2026-07-18).
 
 ## Testing
 
-- Framework: RSpec (`spec/models`, `spec/requests`, `spec/routing`, `spec/views`, `spec/helpers`, `spec/factories`).
-- No Capybara/Selenium — there are no browser-driven feature specs in this project (unlike other projects in this workspace). Flows are covered via request specs, not full-browser UI specs.
+- Framework: RSpec (`spec/models`, `spec/requests`, `spec/features`, `spec/routing`, `spec/views`, `spec/helpers`, `spec/jobs`, `spec/factories`).
+- Capybara/Selenium feature specs exist in `spec/features/` (first added with the campaign module; the consent-gate specs are `js: true` and run headless Chrome). Most flows are still covered via request specs — feature specs are reserved for behavior that genuinely needs a browser (JS gating, Stimulus).
 - `shoulda-matchers` is configured in `spec/rails_helper.rb` for concise model/association assertions.
 - Data built with FactoryBot (`spec/factories/`) + Faker.
 
@@ -164,11 +164,20 @@ Bootstrap 5 (`bootstrap` gem) + `dartsass-rails`. Custom healthcare color palett
 
 ### Database
 
-PostgreSQL, single database (no Solid Cache/Queue/Cable multi-db split as in other projects in this workspace — verify `config/database.yml` before assuming otherwise if the Gemfile changes).
+PostgreSQL, single database — **for real since 2026-07-18**. Until then `config/database.yml` production still declared the Rails 8 default cache/queue/cable multi-DB split against databases that can never exist on Heroku's essential-0 plan (one database only), which made every Solid Queue enqueue raise. The solid_cache/solid_queue/solid_cable gems were removed; if the app ever grows a worker dyno, reintroduce Solid Queue deliberately (gem + tables + process), don't assume it's wired.
+
+### Background jobs & Active Storage garbage collection (2026-07-18)
+
+- **Jobs run in-process (`:async` adapter) in production.** There is no worker dyno; the app's only background jobs are Active Storage's own (analyze, purge) plus Action Text embed purges. `purge_later` therefore works, but a job pending during a dyno restart is lost — by design, because:
+- **`PurgeUnattachedBlobsJob` is the safety net** (`app/jobs/`), run daily in production by **Heroku Scheduler** → `rails active_storage:purge_unattached`. It purges blobs with no attachment older than `TTL` (3 days): abandoned Trix uploads (images upload to S3 the moment they're pasted, before any submit), direct-upload files whose form failed validation or was never submitted, and blobs orphaned by lost purge jobs. **If the Scheduler job isn't configured, orphans accumulate silently** — that scheduled task is part of the design, not an optimization.
+- **`rails active_storage:audit_orphans`** (report-only, never deletes) finds what the sweep can't: service files with no blob row, and blank rich texts still holding embeds (the pre-`store_if_blank` leak shape).
+- **`store_if_blank: false` on every `has_rich_text`** (SoapNote ×4, ComplementaryInformation#notes). Two distinct clear paths, verified empirically (2026-07-18): assigning `""`/nil destroys the RichText row (this option); a **browser** clear submits `"<div><br></div>"` — present, so the row survives and it's Action Text's embed re-sync (`RichText#before_save`) that detaches the images. Both end with the blobs unattached and sweep-reclaimable; don't weaken either assuming the other covers it. Keep the option on any future `has_rich_text`.
+- **Open follow-up (found in review 2026-07-18, deliberately not in that PR):** the blob-*serving* engine endpoints (`ActiveStorage::Blobs::*`, `Representations::*`, `DiskController`) authenticate by signed URL alone, and `config.active_storage.urls_expire_in` is unset — so a leaked `rails_blob_path` link to a patient's clinical file works **forever**. Consider setting `urls_expire_in` (Action Text bodies store never-expiring attachable sgids, not URL signed_ids, so old notes keep rendering — verify that before shipping).
+- **The direct-upload endpoint requires login** (`config/initializers/active_storage_direct_uploads.rb`): every upload surface is staff-only and the public participation form takes no files, so anonymous blob minting (an orphan/cost/abuse surface) is blocked. If a patient-facing upload flow is ever built (see the ComplementaryInformation design note), this gate must be revisited alongside it.
 
 ### Deployment
 
-Kamal (Docker-based). Config in `.kamal/`.
+**Production is Heroku** (app `medici`, Eco web dyno + essential-0 Postgres): deploy via `git push heroku main`, migrate with `heroku run rails db:migrate`. Heroku Scheduler must run `rails active_storage:purge_unattached` daily (see the garbage-collection section). The `.kamal/` config in the repo is vestigial — do not treat it as the deploy path.
 
 ## Key Conventions
 

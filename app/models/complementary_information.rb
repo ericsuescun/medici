@@ -27,7 +27,11 @@ class ComplementaryInformation < ApplicationRecord
 
   belongs_to :patient
 
-  has_rich_text :notes
+  # store_if_blank: false — same rationale and same caveat as SoapNote's
+  # sections: ""/nil destroys the RichText row; a browser-cleared Trix editor
+  # submits "<div><br></div>" and relies on the embed re-sync instead. Both
+  # release embedded images to the unattached-blob sweep.
+  has_rich_text :notes, store_if_blank: false
 
   # Previous exams. PDFs and images are kept as separate collections so the UI
   # can present documents and pictures differently.
