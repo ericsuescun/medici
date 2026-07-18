@@ -1,10 +1,13 @@
 <%# Stacked recruitment bar: participants → candidates → prospects in pastel
     tones, white remainder = patients still to recruit. Pass `progress:` from
     a RecruitmentProgress.for bulk map on listings; falls back to a per-study
-    query otherwise. Hidden entirely when the study has no goal. %>
+    query otherwise. `labeled: true` renders the tall variant with the patient
+    count inside each colored segment (used in the study page's side column).
+    Hidden entirely when the study has no goal. %>
 <% progress = local_assigns[:progress] || study.recruitment_progress %>
+<% labeled = local_assigns.fetch(:labeled, false) %>
 <% if progress.renderable? %>
-  <div class="recruitment-bar"
+  <div class="recruitment-bar <%= "recruitment-bar--labeled" if labeled %>"
        role="img"
        aria-label="<%= t("studies.recruitment.aria", total: progress.total, goal: progress.goal) %>"
        title="<%= t("studies.recruitment.tooltip",
@@ -12,8 +15,8 @@
                     candidates: progress.count(:candidate),
                     prospects: progress.count(:prospect),
                     goal: progress.goal) %>">
-    <div class="seg seg-participant" style="width: <%= progress.percent(:participant) %>%"></div>
-    <div class="seg seg-candidate" style="width: <%= progress.percent(:candidate) %>%"></div>
-    <div class="seg seg-prospect" style="width: <%= progress.percent(:prospect) %>%"></div>
+    <% RecruitmentProgress::STATES.each do |state| %>
+      <div class="seg seg-<%= state %>" style="width: <%= progress.percent(state) %>%"><%= progress.count(state) if labeled && progress.count(state).positive? %></div>
+    <% end %>
   </div>
 <% end %>

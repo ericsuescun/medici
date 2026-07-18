@@ -14,7 +14,8 @@ RSpec.describe "Study page patient data", type: :request do
     get study_path(study)
 
     expect(response).to be_successful
-    expect(response.body).to include("#{I18n.t("studies.interested_subjects")}:</strong> 1")
+    expect(response.body).to include(I18n.t("studies.interested_subjects"))
+    expect(response.body).to include('<span class="badge bg-primary">1</span>')
     expect(response.body).to include("Zoraida")
   end
 
@@ -27,8 +28,9 @@ RSpec.describe "Study page patient data", type: :request do
 
     expect(response).to be_successful
     # The aggregate stays (it discloses no identity)…
-    expect(response.body).to include("#{I18n.t("studies.interested_subjects")}:</strong> 1")
+    expect(response.body).to include('<span class="badge bg-primary">1</span>')
     # …but an out-of-reach rep gets no patient rows.
     expect(response.body).not_to include("Zoraida")
+    expect(response.body).to include(I18n.t("studies.no_visible_patients"))
   end
 end

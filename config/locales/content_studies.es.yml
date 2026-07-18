@@ -1,6 +1,16 @@
 es:
   studies:
+    sections:
+      demographic: "Demográfico"
+      scientific: "Científico"
+      administrative: "Administrativo"
+    no_visible_patients: "No hay pacientes visibles para tu rol."
     recruitment:
+      title: "Reclutamiento"
+      summary: "%{total} de %{goal} pacientes en el proceso"
+      legend_participants: "Participantes"
+      legend_candidates: "Candidatos"
+      legend_prospects: "Prospectos"
       aria: "Reclutamiento: %{total} de %{goal} pacientes"
       tooltip: "Participantes: %{participants} · Candidatos: %{candidates} · Prospectos: %{prospects} · Meta: %{goal}"
     age: "Edad"
