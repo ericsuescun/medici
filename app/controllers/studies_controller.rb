@@ -13,7 +13,13 @@ class StudiesController < SecureApplicationController
 
   # GET /studies/1 or /studies/1.json
   def show
-    @patients = @study.users.patients
+    # The old @study.users.patients read the dead studies_users join (always
+    # empty since patients stopped being Users). The patient LIST is row-level
+    # data about identifiable people, so it goes through PatientPolicy::Scope:
+    # admins see all of the study's patients, a branch rep only their reach,
+    # roles without Patient access (sponsor reps) an empty list — while the
+    # aggregate counter in the view stays a plain count.
+    @patients = policy_scope(Patient).where(study: @study)
   end
 
   # GET /studies/new

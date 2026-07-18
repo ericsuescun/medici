@@ -36,7 +36,7 @@
                   <td><%= link_to study.sponsor.name, study.sponsor %></td>
                   <td><%= study.trial_center_facilities.count %></td>
                   <td><%= study.cities_names.count %></td>
-                  <td><span class="badge bg-primary"><%= study.users.count %></span></td>
+                  <td><span class="badge bg-primary"><%= study.patients.count %></span></td>
                   <td>
                     <% status_class = case study.study_status 
                                       when "completed" then "bg-secondary"
