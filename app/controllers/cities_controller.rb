@@ -3,11 +3,24 @@ class CitiesController < SecureApplicationController
 
   # GET /cities or /cities.json
   def index
-    @cities = City.all
+    @cities = City.order(:name)
+    # Studies per city, narrowed to the signed-in user (a branch rep sees only
+    # their branch's studies; admins and other permitted roles see all) — one
+    # query for the whole table. The city↔study link goes through branches.
+    pairs = Study.joins(:trial_center_branches)
+                 .joins("INNER JOIN cities_trial_center_branches cctb ON cctb.trial_center_branch_id = trial_center_branches.id")
+                 .where(trial_center_branches: { id: user_branch_scope.select(:id) })
+                 .select("studies.*, cctb.city_id AS city_id")
+                 .distinct
+    @studies_by_city = pairs.group_by(&:city_id)
   end
 
   # GET /cities/1 or /cities/1.json
   def show
+    # The user's branches located in this city, with the studies they run.
+    @branches = user_branch_scope.joins(:cities).where(cities: { id: @city.id })
+                                 .includes(:trial_center_facility, :studies)
+                                 .distinct.order(:name)
   end
 
   # GET /cities/new
@@ -58,6 +71,19 @@ class CitiesController < SecureApplicationController
   end
 
   private
+    # Same scoping rule as GlobalSearch: admin = every branch, a trial centre
+    # rep = only their own branch, other permitted roles = all rows.
+    def user_branch_scope
+      return TrialCenterBranch.all if current_user.admin?
+
+      if current_user.trial_center_branch_rep?
+        branch = current_user.userable.trial_center_branch
+        return branch ? TrialCenterBranch.where(id: branch.id) : TrialCenterBranch.none
+      end
+
+      TrialCenterBranch.all
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_city
       @city = City.find(params[:id])

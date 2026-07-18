@@ -37,6 +37,12 @@ en:
     new: "New city"
     edit_title: "Edit city"
     back_to_list: "Back to cities"
+    your_studies: "Studies (per your role)"
+    your_branches: "Branches related to you in this city"
+    branch_studies: "Branch studies"
+    no_studies: "No studies"
+    no_branches: "No branches related to you in this city."
+    view_details: "View details"
 
   contacts:
     created: "Contact was successfully created."

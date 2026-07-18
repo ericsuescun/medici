@@ -1,25 +1,49 @@
 <div class="container">
-  <div class="row">
-    <div class="col-12 mx-auto">
-      <p style="color: green"><%= notice %></p>
+  <p style="color: green"><%= notice %></p>
+  <% content_for :title, t("nav.cities") %>
 
-      <% content_for :title, t("nav.cities") %>
-      <%= link_to t("cities.new"), new_city_path %> |
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1><%= t("nav.cities") %></h1>
+    <div>
       <%= link_to t("cities.home_link"), static_pages_medici_home_path %>
-      <h1><%= t("nav.cities") %></h1>
-
-
-        <div class="row">
-            <% @cities.each do |city| %>
-
-            <div class="col-3">
-              <%= render partial: 'city', locals: { city: city } %>
-            </div>
-
-            <% end %>
-        </div>
-      <%= link_to t("cities.new"), new_city_path %> |
-      <%= link_to t("cities.home_link"), static_pages_medici_home_path %>
+      <% if policy(City).new? %>
+        | <%= link_to t("cities.new"), new_city_path, class: "btn btn-primary" %>
+      <% end %>
     </div>
   </div>
+
+  <table class="table table-striped align-middle">
+    <thead>
+      <tr>
+        <th><%= City.human_attribute_name(:name) %></th>
+        <%# Studies running in the city, narrowed to the signed-in user
+            (admins see all, a branch rep only their branch's). %>
+        <th><%= t("cities.your_studies") %></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @cities.each do |city| %>
+        <% studies = @studies_by_city.fetch(city.id, []) %>
+        <tr>
+          <td><%= link_to city.name, city_path(city), class: "fw-semibold text-decoration-none" %></td>
+          <td>
+            <% if studies.any? %>
+              <% studies.each do |study| %>
+                <%= link_to study.public_title, study_path(study), class: "badge bg-light text-primary border text-decoration-none me-1" %>
+              <% end %>
+            <% else %>
+              <span class="text-muted small"><%= t("cities.no_studies") %></span>
+            <% end %>
+          </td>
+          <td class="text-end">
+            <%= link_to t("cities.view_details"), city_path(city), class: "btn btn-sm btn-outline-primary" %>
+            <% if policy(city).edit? %>
+              <%= link_to t("common.edit"), edit_city_path(city), class: "btn btn-sm btn-outline-secondary" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 </div>
