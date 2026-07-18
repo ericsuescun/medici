@@ -7,7 +7,9 @@
   </div>
   <div class="card-body">
     <p class="card-text">
-    <h6><strong><%= t("studies.interested_subjects") %>:</strong> <%= study.users.count %></h6>
+    <%# patients.study_id — the old studies_users HABTM stopped carrying
+        patients when patient accounts were removed (2026-07-15). %>
+    <h6><strong><%= t("studies.interested_subjects") %>:</strong> <%= study.patients.count %></h6>
     <div class="row">
       <div class="col-3">
         <table class="table table-striped">

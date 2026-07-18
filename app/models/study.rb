@@ -98,6 +98,6 @@ class Study < ApplicationRecord
   # Whether ANY patient is enrolled (used by the public info card, which shows a
   # yes/no badge — never a count — to avoid disclosing enrollment numbers).
   def any_patient_enrolled?
-    users.patients.exists?
+    patients.exists?
   end
 end

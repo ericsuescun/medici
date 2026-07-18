@@ -23,7 +23,9 @@ RSpec.feature "Public 'More about this study' card", type: :feature do
 
   scenario "shows a 'yes' badge once a patient is enrolled" do
     study = create(:study)
-    study.users << create(:user, :patient)
+    # A real Patient record (patients.study_id) — enrollment stopped flowing
+    # through the studies_users join when patient accounts were removed.
+    create(:patient, study: study)
     visit study_about_path(study)
     expect(page).to have_css(".badge.bg-success", text: I18n.t("common.yes"))
   end
