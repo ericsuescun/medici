@@ -1,4 +1,16 @@
 en:
+  categories:
+    created: "Category was successfully created."
+    updated: "Category was successfully updated."
+    destroyed: "Category was successfully deleted."
+    form_errors:
+      one: "%{count} error prevented saving this category:"
+      other: "%{count} errors prevented saving this category:"
+    home_link: "Back to Vitalia"
+    new: "New category"
+    edit: "Edit category"
+    confirm_delete: "Delete this category? Associated studies are kept; they only lose this therapeutic area."
+    studies_column: "Studies"
   medications:
     created: "Medication was successfully created."
     updated: "Medication was successfully updated."

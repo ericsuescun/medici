@@ -1,4 +1,16 @@
 es:
+  categories:
+    created: "La categoría se creó correctamente."
+    updated: "La categoría se actualizó correctamente."
+    destroyed: "La categoría se eliminó correctamente."
+    form_errors:
+      one: "%{count} error impidió guardar esta categoría:"
+      other: "%{count} errores impidieron guardar esta categoría:"
+    home_link: "Retornar a Vitalia"
+    new: "Nueva categoría"
+    edit: "Editar categoría"
+    confirm_delete: "¿Eliminar esta categoría? Los estudios asociados no se eliminan; solo pierden esta área terapéutica."
+    studies_column: "Estudios"
   medications:
     created: "El medicamento se creó correctamente."
     updated: "El medicamento se actualizó correctamente."

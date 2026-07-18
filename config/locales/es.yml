@@ -15,6 +15,7 @@ es:
     campaigns: "Campañas"
     facilities: "Centros de Ensayos Clínicos"
     medications: "Medicamentos"
+    categories: "Categorías"
     users: "Usuarios"
     admins: "Administradores"
     platform_staffs: "Personal de Plataforma"
@@ -168,6 +169,8 @@ es:
       campaign_document: "Documento de campaña"
       platform_staff: "Personal de plataforma"
     attributes:
+      category:
+        name: "Nombre"
       sponsor:
         name: "Nombre"
         initials: "Iniciales"

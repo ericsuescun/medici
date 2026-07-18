@@ -6,6 +6,7 @@ module PermissionCatalog
     Article
     Campaign
     CampaignDocument
+    Category
     City
     Contact
     CriteriaProfile

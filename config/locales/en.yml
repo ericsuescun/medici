@@ -15,6 +15,7 @@ en:
     campaigns: "Campaigns"
     facilities: "Clinical Trial Centers"
     medications: "Medications"
+    categories: "Categories"
     users: "Users"
     admins: "Administrators"
     platform_staffs: "Platform Staff"
@@ -169,6 +170,8 @@ en:
       campaign_document: "Campaign document"
       platform_staff: "Platform staff"
     attributes:
+      category:
+        name: "Name"
       sponsor:
         name: "Name"
         initials: "Initials"
