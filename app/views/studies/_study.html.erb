@@ -13,9 +13,18 @@
       <div class="col-lg-8">
 
         <div class="card study-card mb-4">
-          <div class="card-header"><h5 class="mb-0"><%= t("studies.sections.demographic") %></h5></div>
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><%= t("studies.sections.demographic") %></h5>
+            <% if study.criteria_profile %>
+              <%# smooth-anchor, not a bare #jump: the layout sets body
+                  padding after paint, so native jumps drift ~250px (measured). %>
+              <%= link_to t("studies.go_to_criteria_profile"), "#perfil-de-criterios",
+                  class: "btn btn-sm btn-light",
+                  data: { controller: "smooth-anchor", action: "click->smooth-anchor#jump" } %>
+            <% end %>
+          </div>
           <div class="card-body">
-            <dl class="row mb-0">
+            <dl class="row">
               <dt class="col-sm-4"><%= Study.human_attribute_name(:sex) %></dt>
               <dd class="col-sm-8"><%= study.sex %></dd>
               <dt class="col-sm-4"><%= Study.human_attribute_name(:sample_size) %></dt>
@@ -25,6 +34,39 @@
               <dt class="col-sm-4"><%= Study.human_attribute_name(:exclusion_criteria) %></dt>
               <dd class="col-sm-8 mb-0"><%= study.exclusion_criteria %></dd>
             </dl>
+
+            <%# The structured eligibility rules (criteria profile variables),
+                names only — the full grammar lives in the profile card below. %>
+            <% if (profile = study.criteria_profile) %>
+              <div class="row mt-2">
+                <div class="col-md-6">
+                  <h6><%= t("studies.inclusion_variables") %></h6>
+                  <% variables = profile.criteria_variables.inclusion.order(:name) %>
+                  <% if variables.any? %>
+                    <ul class="mb-0">
+                      <% variables.each do |variable| %>
+                        <li><%= variable.name %></li>
+                      <% end %>
+                    </ul>
+                  <% else %>
+                    <p class="text-muted mb-0">—</p>
+                  <% end %>
+                </div>
+                <div class="col-md-6">
+                  <h6><%= t("studies.exclusion_variables") %></h6>
+                  <% variables = profile.criteria_variables.exclusion.order(:name) %>
+                  <% if variables.any? %>
+                    <ul class="mb-0">
+                      <% variables.each do |variable| %>
+                        <li><%= variable.name %></li>
+                      <% end %>
+                    </ul>
+                  <% else %>
+                    <p class="text-muted mb-0">—</p>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
           </div>
         </div>
 

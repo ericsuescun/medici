@@ -38,6 +38,16 @@ class RecruitmentProgress
     STATES.sum { |state| count(state) }
   end
 
+  # Patients still wanted to reach the goal (never negative).
+  def missing
+    [ goal - total, 0 ].max
+  end
+
+  # Width of the white (unfilled) region after all state segments.
+  def remainder_percent
+    (100.0 - segments.values.sum).round(1).clamp(0.0, 100.0)
+  end
+
   # Segment width (0.0..100.0) for one state, after the states before it in
   # STATES order have claimed their share of the bar.
   def percent(state)

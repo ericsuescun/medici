@@ -17,7 +17,9 @@
 
       <%= render @study %>
 
-      <div class="card mt-4">
+      <%# Anchor target for the "Ver perfil de criterios" quick-nav in the
+          Demográfico section; .anchor-target compensates the fixed navbar. %>
+      <div class="card mt-4 anchor-target" id="perfil-de-criterios">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="mb-0"><%= CriteriaProfile.model_name.human %></h5>
           <% if (profile = @study.criteria_profile) %>
@@ -27,7 +29,10 @@
         <div class="card-body">
           <% if profile.present? %>
             <div class="mb-3">
-              <h6 class="mb-1"><%= link_to profile.name, criteria_profile_path(profile) %></h6>
+              <h6 class="mb-1">
+                <%= profile.name %>
+                <%= link_to t("studies.criteria_profile_review"), criteria_profile_path(profile), class: "btn btn-sm btn-outline-primary ms-2" %>
+              </h6>
               <% if profile.description.present? %>
                 <p class="text-muted"><%= profile.description %></p>
               <% end %>

@@ -8,6 +8,20 @@ RSpec.describe "Study page patient data", type: :request do
   let(:study) { FactoryBot.create(:study).tap { |s| s.trial_center_branches << branch } }
   let!(:patient) { FactoryBot.create(:patient, :participant, study: study, firstname: "Zoraida") }
 
+  it "lists the criteria profile's variables in Demográfico with a quick-nav anchor" do
+    profile = FactoryBot.create(:criteria_profile, study: study)
+    FactoryBot.create(:criteria_variable, criteria_profile: profile, variable_type: "inclusion", name: "Edad entre 18 y 40")
+    FactoryBot.create(:criteria_variable, criteria_profile: profile, variable_type: "exclusion", name: "Embarazo actual")
+    sign_in(FactoryBot.create(:user, :admin), scope: :user)
+
+    get study_path(study)
+
+    expect(response.body).to include("Edad entre 18 y 40")
+    expect(response.body).to include("Embarazo actual")
+    expect(response.body).to include('href="#perfil-de-criterios"')
+    expect(response.body).to include('id="perfil-de-criterios"')
+  end
+
   it "shows admins the real pipeline count and the patient list" do
     sign_in(FactoryBot.create(:user, :admin), scope: :user)
 

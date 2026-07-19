@@ -126,6 +126,13 @@ $dark: $medici-dark;
     background-color: mix($medici-danger, #fff, 40%);
   }
 
+  // The unfilled remainder: stays white, but in the labeled variant it
+  // carries the still-wanted count in muted text.
+  .seg-missing {
+    background-color: #fff;
+    color: $medici-muted;
+  }
+
   // Tall variant for the study page's side column: wide enough segments show
   // their patient count inline.
   &.recruitment-bar--labeled {
@@ -140,6 +147,14 @@ $dark: $medici-dark;
       color: rgba($medici-dark, 0.75);
     }
   }
+}
+
+// In-page anchor targets. NOTE: this is only the no-JS fallback — the body
+// padding is set from JS after paint, so native jumps drift ~250px (measured
+// again 2026-07-18) and scroll-margin can't fix that. Real navigation goes
+// through the smooth-anchor Stimulus controller.
+.anchor-target {
+  scroll-margin-top: 6rem;
 }
 
 .recruitment-legend {
