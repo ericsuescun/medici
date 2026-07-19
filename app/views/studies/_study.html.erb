@@ -282,6 +282,7 @@
                 <tr>
                   <th><%= Patient.human_attribute_name(:firstname) %></th>
                   <th><%= t("studies.age") %></th>
+                  <th><%= Patient.human_attribute_name(:state) %></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -289,6 +290,9 @@
                   <tr>
                     <td><%= link_to patient.fullname, patient %></td>
                     <td><%= get_age(patient.dob) if patient.dob.present? %></td>
+                    <%# Same semantics as the bar: participant green, candidate
+                        amber, prospect red. %>
+                    <td><span class="patient-state patient-state--<%= patient.state %>"><%= t("patients.states.#{patient.state}", default: patient.state) %></span></td>
                   </tr>
                 <% end %>
                 </tbody>

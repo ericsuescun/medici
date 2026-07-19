@@ -18,6 +18,7 @@
               <thead>
               <tr>
                 <th><%= Study.human_attribute_name(:scientific_title) %></th>
+                <th><%= t("studies.recruitment.title") %></th>
                 <th><%= Study.human_attribute_name(:sponsor) %></th>
                 <th><%= TrialCenterFacility.model_name.human %></th>
                 <th><%= City.model_name.human %></th>
@@ -29,9 +30,13 @@
               <tbody>
               <% @studies.order(:study_status).each do |study| %>
                 <tr>
+                  <td><strong><%= link_to study.scientific_title, study %></strong></td>
                   <td>
-                    <%= render "studies/recruitment_bar", study: study, progress: @recruitment&.fetch(study.id, nil) %>
-                    <strong><%= link_to study.scientific_title, study %></strong>
+                    <%# Compact labeled bar in its own column (numbers inside),
+                        capped by .recruitment-bar-cell so it stays narrow. %>
+                    <div class="recruitment-bar-cell">
+                      <%= render "studies/recruitment_bar", study: study, progress: @recruitment&.fetch(study.id, nil), labeled: true %>
+                    </div>
                   </td>
                   <td><%= link_to study.sponsor.name, study.sponsor %></td>
                   <td><%= study.trial_center_facilities.count %></td>
