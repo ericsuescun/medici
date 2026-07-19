@@ -31,6 +31,20 @@ RSpec.describe "Study page patient data", type: :request do
     expect(response.body).to include(I18n.t("studies.interested_subjects"))
     expect(response.body).to include('<span class="badge bg-primary">1</span>')
     expect(response.body).to include("Zoraida")
+    # State column, color-classed with the bar's semantics.
+    expect(response.body).to include('patient-state--participant')
+    expect(response.body).to include(I18n.t("patients.states.participant"))
+  end
+
+  it "shows the compact labeled recruitment bar as a column on the index" do
+    FactoryBot.create(:patient, :candidate, study: study)
+    study.update!(sample_size: 10)
+    sign_in(FactoryBot.create(:user, :admin), scope: :user)
+
+    get studies_path
+
+    expect(response.body).to include("recruitment-bar-cell")
+    expect(response.body).to include("recruitment-bar--labeled")
   end
 
   it "narrows the list to the rep's reach while keeping the aggregate count" do

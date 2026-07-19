@@ -157,6 +157,26 @@ $dark: $medici-dark;
   scroll-margin-top: 6rem;
 }
 
+// Compact bar column on the studies index: numbers inside, but never wide.
+.recruitment-bar-cell {
+  max-width: 10rem;
+  min-width: 7rem;
+
+  .recruitment-bar {
+    margin-bottom: 0;
+  }
+}
+
+// Patient lifecycle state text, same semantics as the bar's segments. Full
+// semantic tones (not the pastels) so the colored TEXT stays readable.
+.patient-state {
+  font-weight: 600;
+
+  &.patient-state--participant { color: $medici-success; }
+  &.patient-state--candidate { color: darken($medici-warning, 12%); }
+  &.patient-state--prospect { color: $medici-danger; }
+}
+
 .recruitment-legend {
   .dot {
     display: inline-block;
