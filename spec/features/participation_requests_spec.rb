@@ -11,8 +11,16 @@ RSpec.feature "Participation request consent gate", type: :feature, js: true do
 
   before { visit new_participation_request_path(study_id: study.id) }
 
-  def submit_disabled?
-    page.evaluate_script("document.querySelector('input[type=submit]').disabled")
+  # Waiting matchers, not an instant evaluate_script: the button starts
+  # enabled by design (no-JS fail-open; the server is the real gate) and
+  # Stimulus disables it on connect — an instant check can race that boot
+  # and flake (it did, twice, on 2026-07-18).
+  def expect_submit_disabled
+    expect(page).to have_button(I18n.t("participation_requests.submit"), disabled: true)
+  end
+
+  def expect_submit_enabled
+    expect(page).to have_button(I18n.t("participation_requests.submit"), disabled: false)
   end
 
   it "shows the authorization text above the checkbox, not beside it" do
@@ -31,17 +39,17 @@ RSpec.feature "Participation request consent gate", type: :feature, js: true do
   end
 
   it "keeps the submit button disabled until the box is ticked" do
-    expect(submit_disabled?).to be(true)
+    expect_submit_disabled
 
     check "patient_data_processing_authorization"
-    expect(submit_disabled?).to be(false)
+    expect_submit_enabled
   end
 
   it "disables it again if the box is un-ticked" do
     check "patient_data_processing_authorization"
     uncheck "patient_data_processing_authorization"
 
-    expect(submit_disabled?).to be(true)
+    expect_submit_disabled
   end
 
   # The authorization is a legal act, so its state has to be readable at a glance
