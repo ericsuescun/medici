@@ -18,11 +18,11 @@
               <thead>
               <tr>
                 <th><%= Study.human_attribute_name(:scientific_title) %></th>
-                <th><%= t("studies.recruitment.title") %></th>
                 <th><%= Study.human_attribute_name(:sponsor) %></th>
                 <th><%= TrialCenterFacility.model_name.human %></th>
                 <th><%= City.model_name.human %></th>
                 <th><%= Patient.model_name.human %></th>
+                <th><%= t("studies.recruitment.title") %></th>
                 <th><%= Study.human_attribute_name(:study_status) %></th>
                 <th><%= Study.human_attribute_name(:completed_at) %></th>
               </tr>
@@ -31,17 +31,17 @@
               <% @studies.order(:study_status).each do |study| %>
                 <tr>
                   <td><strong><%= link_to study.scientific_title, study %></strong></td>
+                  <td><%= link_to study.sponsor.name, study.sponsor %></td>
+                  <td><%= study.trial_center_facilities.count %></td>
+                  <td><%= study.cities_names.count %></td>
+                  <td><span class="badge bg-primary"><%= study.patients.count %></span></td>
                   <td>
-                    <%# Compact labeled bar in its own column (numbers inside),
+                    <%# Compact labeled bar right after the patient count,
                         capped by .recruitment-bar-cell so it stays narrow. %>
                     <div class="recruitment-bar-cell">
                       <%= render "studies/recruitment_bar", study: study, progress: @recruitment&.fetch(study.id, nil), labeled: true %>
                     </div>
                   </td>
-                  <td><%= link_to study.sponsor.name, study.sponsor %></td>
-                  <td><%= study.trial_center_facilities.count %></td>
-                  <td><%= study.cities_names.count %></td>
-                  <td><span class="badge bg-primary"><%= study.patients.count %></span></td>
                   <td>
                     <% status_class = case study.study_status 
                                       when "completed" then "bg-secondary"
