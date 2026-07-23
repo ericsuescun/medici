@@ -2,26 +2,29 @@
 #
 # Table name: studies
 #
-#  id                 :bigint           not null, primary key
-#  completed_at       :date
-#  exclusion_criteria :string
-#  first_patient_at   :date
-#  global_ending_at   :date
-#  inclusion_criteria :string
-#  main_intervention  :string
-#  public_title       :string
-#  reviewed           :boolean
-#  sample_size        :integer
-#  scientific_title   :string
-#  sex                :string
-#  short_title        :string           default("")
-#  started_at         :date
-#  study_phase        :string
-#  study_status       :string
-#  created_at         :datetime         not null
-#  updated_at         :datetime         not null
-#  review_user_id     :integer
-#  sponsor_id         :bigint           not null
+#  id                              :bigint           not null, primary key
+#  committee_approved              :boolean          default(FALSE), not null
+#  completed_at                    :date
+#  exclusion_criteria              :string
+#  first_patient_at                :date
+#  global_ending_at                :date
+#  inclusion_criteria              :string
+#  local_health_authority_approved :boolean          default(FALSE), not null
+#  main_intervention               :string
+#  public_title                    :string
+#  reviewed                        :boolean
+#  sample_size                     :integer
+#  scientific_title                :string
+#  sex                             :string
+#  short_title                     :string           default("")
+#  started_at                      :date
+#  study_phase                     :string
+#  study_status                    :string
+#  study_type                      :string
+#  created_at                      :datetime         not null
+#  updated_at                      :datetime         not null
+#  review_user_id                  :integer
+#  sponsor_id                      :bigint           not null
 #
 # Indexes
 #

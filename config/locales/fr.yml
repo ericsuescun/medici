@@ -26,6 +26,8 @@ fr:
     branch_reps: "Représentants des sites"
     patients: "Patients"
     roles: "Gérer les rôles"
+    user_activations: "Gestion des utilisateurs"
+    local_parameters: "Paramètres locaux"
     profiles: "Profils"
     cities: "Villes"
     my_data: "Mes données"
@@ -145,6 +147,8 @@ fr:
   # ---- Model & attribute names (auto-translates form labels & human_attribute_name) ----
   activerecord:
     models:
+      country: "Pays"
+      local_parameter: "Paramètre local"
       sponsor: "Promoteur"
       study: "Étude"
       category:
@@ -171,6 +175,12 @@ fr:
       campaign_document: "Document de campagne"
       platform_staff: "Personnel de la plateforme"
     attributes:
+      local_parameter:
+        country: "Pays"
+        name: "Nom du paramètre"
+        value: "Valeur"
+        display_name: "Nom affiché"
+        description: "Description"
       category:
         name: "Nom"
       sponsor:
@@ -180,6 +190,9 @@ fr:
         sponsor_type: "Type de promoteur"
         international: "International"
       study:
+        study_type: "Type d'étude"
+        committee_approved: "Approuvée par le comité d'éthique"
+        local_health_authority_approved: "Approuvée par l'autorité sanitaire locale"
         public_title: "Titre public"
         scientific_title: "Titre scientifique"
         short_title: "Titre court"

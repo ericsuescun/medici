@@ -26,6 +26,8 @@ en:
     branch_reps: "Site Representatives"
     patients: "Patients"
     roles: "Manage Roles"
+    user_activations: "User Management"
+    local_parameters: "Local Parameters"
     profiles: "Profiles"
     cities: "Cities"
     my_data: "My data"
@@ -147,6 +149,8 @@ en:
   # ---- Model & attribute names (auto-translates form labels & human_attribute_name) ----
   activerecord:
     models:
+      country: "Country"
+      local_parameter: "Local parameter"
       sponsor: "Sponsor"
       study: "Study"
       category:
@@ -173,6 +177,12 @@ en:
       campaign_document: "Campaign document"
       platform_staff: "Platform staff"
     attributes:
+      local_parameter:
+        country: "Country"
+        name: "Parameter name"
+        value: "Value"
+        display_name: "Display name"
+        description: "Description"
       category:
         name: "Name"
       sponsor:
@@ -182,6 +192,9 @@ en:
         sponsor_type: "Sponsor type"
         international: "International"
       study:
+        study_type: "Study type"
+        committee_approved: "Approved by the ethics committee"
+        local_health_authority_approved: "Approved by the local health authority"
         public_title: "Public title"
         scientific_title: "Scientific title"
         short_title: "Short title"

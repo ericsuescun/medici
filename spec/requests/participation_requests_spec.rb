@@ -35,7 +35,7 @@ RSpec.describe "Participation requests", type: :request do
     patient = Patient.last
     expect(patient.study).to eq(study)
     expect(patient.contact_number).to eq("300 123 4567")
-    expect(patient.state).to eq("prospect")
+    expect(patient.state).to eq("interested")
     expect(patient.user).to be_nil
 
     consent = Consent.last

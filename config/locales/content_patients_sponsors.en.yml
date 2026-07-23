@@ -21,7 +21,7 @@ en:
     edit_title: "Editing patient"
     current_state: "Current state:"
     states:
-      prospect: "Prospect"
+      interested: "Interested"
       candidate: "Candidate"
       participant: "Participant"
     errors_header:

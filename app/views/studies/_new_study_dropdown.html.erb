@@ -1,0 +1,18 @@
+<%# There is no generic "new study" button: the study type decides which
+    approval the form asks about, so it is chosen here and carried into
+    StudiesController#new as ?study_type=. %>
+<div class="btn-group">
+  <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <%= t("studies.new_study") %>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <% Study.study_types.keys.each do |type| %>
+      <li>
+        <%= link_to new_study_path(study_type: type), class: "dropdown-item" do %>
+          <strong><%= t("studies.types.#{type}") %></strong>
+          <div class="small text-muted"><%= t("studies.types_help.#{type}") %></div>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</div>

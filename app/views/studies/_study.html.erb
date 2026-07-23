@@ -264,7 +264,7 @@
               <div class="recruitment-legend small text-muted">
                 <span class="me-3"><span class="dot dot-participant"></span><%= t("studies.recruitment.legend_participants") %></span>
                 <span class="me-3"><span class="dot dot-candidate"></span><%= t("studies.recruitment.legend_candidates") %></span>
-                <span><span class="dot dot-prospect"></span><%= t("studies.recruitment.legend_prospects") %></span>
+                <span><span class="dot dot-interested"></span><%= t("studies.recruitment.legend_interested") %></span>
               </div>
             </div>
           </div>
@@ -291,7 +291,7 @@
                     <td><%= link_to patient.fullname, patient %></td>
                     <td><%= get_age(patient.dob) if patient.dob.present? %></td>
                     <%# Same semantics as the bar: participant green, candidate
-                        amber, prospect red. %>
+                        amber, interested red. %>
                     <td><span class="patient-state patient-state--<%= patient.state %>"><%= t("patients.states.#{patient.state}", default: patient.state) %></span></td>
                   </tr>
                 <% end %>

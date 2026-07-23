@@ -2,26 +2,29 @@
 #
 # Table name: studies
 #
-#  id                 :bigint           not null, primary key
-#  completed_at       :date
-#  exclusion_criteria :string
-#  first_patient_at   :date
-#  global_ending_at   :date
-#  inclusion_criteria :string
-#  main_intervention  :string
-#  public_title       :string
-#  reviewed           :boolean
-#  sample_size        :integer
-#  scientific_title   :string
-#  sex                :string
-#  short_title        :string           default("")
-#  started_at         :date
-#  study_phase        :string
-#  study_status       :string
-#  created_at         :datetime         not null
-#  updated_at         :datetime         not null
-#  review_user_id     :integer
-#  sponsor_id         :bigint           not null
+#  id                              :bigint           not null, primary key
+#  committee_approved              :boolean          default(FALSE), not null
+#  completed_at                    :date
+#  exclusion_criteria              :string
+#  first_patient_at                :date
+#  global_ending_at                :date
+#  inclusion_criteria              :string
+#  local_health_authority_approved :boolean          default(FALSE), not null
+#  main_intervention               :string
+#  public_title                    :string
+#  reviewed                        :boolean
+#  sample_size                     :integer
+#  scientific_title                :string
+#  sex                             :string
+#  short_title                     :string           default("")
+#  started_at                      :date
+#  study_phase                     :string
+#  study_status                    :string
+#  study_type                      :string
+#  created_at                      :datetime         not null
+#  updated_at                      :datetime         not null
+#  review_user_id                  :integer
+#  sponsor_id                      :bigint           not null
 #
 # Indexes
 #
@@ -67,6 +70,13 @@ class Study < ApplicationRecord
 
   enum :study_status, completed: "completed", recruiting: "recruiting"
   enum :study_phase, I: "I", II: "II", III: "III", IV: "IV"
+  # Observational research assigns no intervention — what it needs signed off is
+  # the ethics committee. Interventional research administers something, so the
+  # local health authority (INVIMA in Colombia) is the approval that matters.
+  # Which of the two approval flags the form asks about follows from this.
+  enum :study_type, observational: "observational", interventional: "interventional"
+
+  validates :study_type, presence: true
 
   validates :public_title, :scientific_title, :short_title, presence: true
   validates :sample_size, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
@@ -93,6 +103,16 @@ class Study < ApplicationRecord
   end
   def current_criteria_profile
     CriteriaProfile.find_by(study_id: id)
+  end
+
+  # The approval flag this study's type is judged by — the form asks about this
+  # one and only this one.
+  def approval_attribute
+    observational? ? :committee_approved : :local_health_authority_approved
+  end
+
+  def approved?
+    public_send(approval_attribute)
   end
 
   # Whether ANY patient is enrolled (used by the public info card, which shows a

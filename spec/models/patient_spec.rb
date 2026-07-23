@@ -18,7 +18,7 @@ require 'rails_helper'
 #  notes               :string
 #  participant_code    :string
 #  sex                 :string
-#  state               :string           default("prospect"), not null
+#  state               :string           default("interested"), not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  study_id            :bigint
@@ -37,13 +37,13 @@ RSpec.describe Patient, type: :model do
   subject(:patient) { FactoryBot.create(:patient) }
 
   describe "AASM lifecycle" do
-    it "starts in the prospect state" do
-      expect(patient).to be_prospect
-      expect(patient.state).to eq("prospect")
+    it "starts in the interested state" do
+      expect(patient).to be_interested
+      expect(patient.state).to eq("interested")
     end
 
-    it "assess: prospect -> candidate" do
-      expect { patient.assess! }.to change(patient, :state).from("prospect").to("candidate")
+    it "assess: interested -> candidate" do
+      expect { patient.assess! }.to change(patient, :state).from("interested").to("candidate")
     end
 
     it "accept: candidate -> participant" do
@@ -51,9 +51,9 @@ RSpec.describe Patient, type: :model do
       expect { patient.accept! }.to change(patient, :state).from("candidate").to("participant")
     end
 
-    it "discard: candidate -> prospect" do
+    it "discard: candidate -> interested" do
       patient.assess!
-      expect { patient.discard! }.to change(patient, :state).from("candidate").to("prospect")
+      expect { patient.discard! }.to change(patient, :state).from("candidate").to("interested")
     end
 
     it "reject: participant -> candidate" do
@@ -62,7 +62,7 @@ RSpec.describe Patient, type: :model do
       expect { patient.reject! }.to change(patient, :state).from("participant").to("candidate")
     end
 
-    it "forbids an illegal transition (accept from prospect)" do
+    it "forbids an illegal transition (accept from interested)" do
       expect(patient.may_accept?).to be false
       expect { patient.accept! }.to raise_error(AASM::InvalidTransition)
     end

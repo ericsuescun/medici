@@ -7,7 +7,7 @@ RSpec.describe "Patients", type: :request do
     context "as an admin (authorized)" do
       before { sign_in(FactoryBot.create(:user, :admin), scope: :user) }
 
-      it "assess transitions prospect -> candidate" do
+      it "assess transitions interested -> candidate" do
         post transition_patient_path(patient), params: { event: "assess" }
 
         expect(response).to have_http_status(:redirect)
@@ -18,7 +18,7 @@ RSpec.describe "Patients", type: :request do
         post transition_patient_path(patient), params: { event: "bogus" }
 
         expect(response).to have_http_status(:redirect)
-        expect(patient.reload.state).to eq("prospect")
+        expect(patient.reload.state).to eq("interested")
       end
     end
 
@@ -33,7 +33,7 @@ RSpec.describe "Patients", type: :request do
         post transition_patient_path(patient), params: { event: "assess" }
 
         expect(response).to have_http_status(:not_found)
-        expect(patient.reload.state).to eq("prospect")
+        expect(patient.reload.state).to eq("interested")
       end
     end
   end

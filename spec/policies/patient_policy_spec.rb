@@ -24,7 +24,7 @@ RSpec.describe PatientPolicy do
 
   permissions :assess? do
     it "permits an authorized role when the AASM guard allows it" do
-      expect(subject).to permit(admin, record) # prospect => may_assess? true
+      expect(subject).to permit(admin, record) # interested => may_assess? true
     end
 
     it "denies when the AASM guard forbids the transition" do
@@ -38,8 +38,8 @@ RSpec.describe PatientPolicy do
   end
 
   permissions :accept? do
-    it "denies an admin while the patient is still prospect" do
-      expect(subject).not_to permit(admin, record) # may_accept? false from prospect
+    it "denies an admin while the patient is still interested" do
+      expect(subject).not_to permit(admin, record) # may_accept? false from interested
     end
 
     it "permits an admin once the patient is a candidate" do

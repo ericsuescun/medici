@@ -16,7 +16,7 @@
 #  notes               :string
 #  participant_code    :string
 #  sex                 :string
-#  state               :string           default("prospect"), not null
+#  state               :string           default("interested"), not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  study_id            :bigint
@@ -43,7 +43,7 @@ FactoryBot.define do
     contact_number { Faker::PhoneNumber.cell_phone }
     # A patient exists to be considered for exactly one study.
     study
-    # state defaults to "prospect" (DB default); AASM manages transitions.
+    # state defaults to "interested" (DB default); AASM manages transitions.
 
     # Lifecycle states (AASM manages transitions in the app; for test/seed
     # data writing the column directly is fine).

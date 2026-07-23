@@ -19,7 +19,7 @@
 
   <%# ---- Take action: promote through the lifecycle ---- %>
   <% eligible = @result&.eligible? %>
-  <% forward_event = { "prospect" => "assess", "candidate" => "accept" }[@patient.state] %>
+  <% forward_event = { "interested" => "assess", "candidate" => "accept" }[@patient.state] %>
   <% any_transition = %w[assess accept discard reject].any? { |e| policy(@patient).public_send("#{e}?") } %>
   <% if any_transition %>
     <div class="card my-3">

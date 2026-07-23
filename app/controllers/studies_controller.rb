@@ -22,11 +22,14 @@ class StudiesController < SecureApplicationController
     @patients = policy_scope(Patient).where(study: @study)
   end
 
-  # GET /studies/new
+  # GET /studies/new?study_type=observational|interventional
+  #
+  # There is no generic "new study" entry point any more: the type decides which
+  # approval the form asks about, so it is chosen up front (see the index's
+  # dropdown) and travels as a hidden field. An unknown/missing type falls back
+  # to interventional rather than rendering a form with no approval question.
   def new
-    @study = Study.new
-    # @sponsors = Sponsor.all
-    # @trial_center_branches = TrialCenterBranch.all
+    @study = Study.new(study_type: requested_study_type)
   end
 
   # GET /studies/1/edit
@@ -169,7 +172,11 @@ class StudiesController < SecureApplicationController
 
     # Only allow a list of trusted parameters through.
     def study_params
-      params.require(:study).permit(:city_id, :sponsor_id, :study_status, :scientific_title, :public_title, :short_title, :completed_at, :started_at, :first_patient_at, :global_ending_at, :study_phase, :inclusion_criteria, :exclusion_criteria, :sample_size, :main_intervention, :sex, :reviewed, :review_user_id, category_ids: [])
+      params.require(:study).permit(:city_id, :sponsor_id, :study_status, :study_type, :scientific_title, :public_title, :short_title, :completed_at, :started_at, :first_patient_at, :global_ending_at, :study_phase, :inclusion_criteria, :exclusion_criteria, :sample_size, :main_intervention, :sex, :reviewed, :review_user_id, :local_health_authority_approved, :committee_approved, category_ids: [])
+    end
+
+    def requested_study_type
+      Study.study_types.key?(params[:study_type]) ? params[:study_type] : "interventional"
     end
 
   def set_commercial_data

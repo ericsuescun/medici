@@ -1,0 +1,23 @@
+<div class="container mt-4">
+  <% content_for :title, @local_parameter.label %>
+
+  <h1 class="mb-1"><%= @local_parameter.label %></h1>
+  <p class="text-muted"><%= @local_parameter.description %></p>
+
+  <dl class="row">
+    <dt class="col-sm-3"><%= Country.model_name.human %></dt>
+    <dd class="col-sm-9"><%= @local_parameter.country.name %></dd>
+
+    <dt class="col-sm-3"><%= LocalParameter.human_attribute_name(:name) %></dt>
+    <dd class="col-sm-9"><code><%= @local_parameter.name %></code></dd>
+
+    <dt class="col-sm-3"><%= LocalParameter.human_attribute_name(:value) %></dt>
+    <dd class="col-sm-9"><%= @local_parameter.value %></dd>
+
+    <dt class="col-sm-3"><%= LocalParameter.human_attribute_name(:display_name) %></dt>
+    <dd class="col-sm-9"><%= @local_parameter.display_name %></dd>
+  </dl>
+
+  <%= link_to t("common.edit"), edit_local_parameter_path(@local_parameter), class: "btn btn-primary" %>
+  <%= link_to t("common.back"), local_parameters_path, class: "btn btn-link" %>
+</div>

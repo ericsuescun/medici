@@ -1,4 +1,4 @@
-<%# Stacked recruitment bar: participants → candidates → prospects in pastel
+<%# Stacked recruitment bar: participants → candidates → interested in pastel
     tones, white remainder = patients still to recruit. Pass `progress:` from
     a RecruitmentProgress.for bulk map on listings; falls back to a per-study
     query otherwise. `labeled: true` renders the tall variant with the patient
@@ -13,7 +13,7 @@
        title="<%= t("studies.recruitment.tooltip",
                     participants: progress.count(:participant),
                     candidates: progress.count(:candidate),
-                    prospects: progress.count(:prospect),
+                    interested: progress.count(:interested),
                     goal: progress.goal) %>">
     <% RecruitmentProgress::STATES.each do |state| %>
       <div class="seg seg-<%= state %>" style="width: <%= progress.percent(state) %>%"><%= progress.count(state) if labeled && progress.count(state).positive? %></div>

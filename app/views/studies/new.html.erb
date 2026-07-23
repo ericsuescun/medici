@@ -1,9 +1,10 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-12">
-      <% content_for :title, t("studies.new_study") %>
+      <% title = t("studies.new_study_typed", type: t("studies.types.#{@study.study_type}")) %>
+      <% content_for :title, title %>
 
-      <h1><%= t("studies.new_study") %></h1>
+      <h1><%= title %></h1>
 
       <%= render "form", study: @study %>
 

@@ -99,7 +99,7 @@ $dark: $medici-dark;
 
 // Recruitment progress bar (shown above study titles): pastel tints of the
 // palette's semantic colors so the bar informs without shouting. Fills in
-// seniority order — participants, candidates, prospects — and the white
+// seniority order — participants, candidates, interested — and the white
 // remainder reads as the unmet part of the goal.
 .recruitment-bar {
   display: flex;
@@ -122,7 +122,7 @@ $dark: $medici-dark;
     background-color: mix($medici-warning, #fff, 40%);
   }
 
-  .seg-prospect {
+  .seg-interested {
     background-color: mix($medici-danger, #fff, 40%);
   }
 
@@ -174,7 +174,7 @@ $dark: $medici-dark;
 
   &.patient-state--participant { color: $medici-success; }
   &.patient-state--candidate { color: darken($medici-warning, 12%); }
-  &.patient-state--prospect { color: $medici-danger; }
+  &.patient-state--interested { color: $medici-danger; }
 }
 
 .recruitment-legend {
@@ -189,7 +189,7 @@ $dark: $medici-dark;
 
   .dot-participant { background-color: mix($medici-success, #fff, 40%); }
   .dot-candidate { background-color: mix($medici-warning, #fff, 40%); }
-  .dot-prospect { background-color: mix($medici-danger, #fff, 40%); }
+  .dot-interested { background-color: mix($medici-danger, #fff, 40%); }
 }
 
 // Model-specific card styling with colors matching the logo

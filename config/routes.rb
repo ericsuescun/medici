@@ -73,6 +73,10 @@ Rails.application.routes.draw do
 
   # Admin-only role/permission manager.
   resources :roles, only: %i[index new create edit update]
+  # Admin-only account activation manager: an inactive user cannot sign in.
+  resources :user_activations, only: %i[index update], path: "user-activations"
+  # Admin-only country-specific configuration (e.g. the local health authority).
+  resources :local_parameters, path: "local-parameters"
   resources :admins
   resources :platform_staffs
   resources :sponsor_reps

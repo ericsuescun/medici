@@ -21,7 +21,7 @@ fr:
     edit_title: "Modification du patient"
     current_state: "État actuel :"
     states:
-      prospect: "Prospect"
+      interested: "Intéressé"
       candidate: "Candidat"
       participant: "Participant"
     errors_header:

@@ -1,0 +1,6 @@
+<div class="container mt-4">
+  <% content_for :title, t("local_parameters.new_title") %>
+  <h1 class="mb-4"><%= t("local_parameters.new_title") %></h1>
+
+  <%= render "form", local_parameter: @local_parameter %>
+</div>

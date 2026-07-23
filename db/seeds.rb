@@ -21,6 +21,11 @@ RolesAndPermissionsSeeder.seed!
 require_relative 'seeds/categories'
 CategoriesSeeder.seed!
 
+# Country-specific configuration (Colombia's health authority = INVIMA) — the
+# study form names the regulator by reading this.
+require_relative 'seeds/local_parameters'
+LocalParametersSeeder.seed!
+
 # ---------------------------------------------------------------------------
 # All sample data below is intentionally DISABLED (commented out).
 #
@@ -90,7 +95,7 @@ CategoriesSeeder.seed!
 #     study.update!(study_status: rand < 0.8 ? "recruiting" : "completed",
 #                   sample_size: rand(8..20))
 #     # ...and patients spread across the lifecycle states that fill it:
-#     # participants (green), candidates (yellow), prospects (red).
+#     # participants (green), candidates (yellow), interested (red).
 #     rand(1..4).times { FactoryBot.create(:patient, :participant, study: study) }
 #     rand(0..4).times { FactoryBot.create(:patient, :candidate, study: study) }
 #     rand(0..5).times { FactoryBot.create(:patient, study: study) }

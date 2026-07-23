@@ -1,0 +1,128 @@
+<div class="container mt-4">
+  <% content_for :title, t("user_activations.index_title") %>
+
+  <% if notice.present? %>
+    <div class="alert alert-success"><%= notice %></div>
+  <% end %>
+  <% if alert.present? %>
+    <div class="alert alert-warning"><%= alert %></div>
+  <% end %>
+
+  <h1 class="mb-1"><%= t("user_activations.index_title") %></h1>
+  <p class="text-muted"><%= t("user_activations.intro") %></p>
+
+  <%# Filters. A GET form so every selection is a shareable/bookmarkable URL and
+      the toggle buttons below can bounce back to the same list. %>
+  <%= form_with url: user_activations_path, method: :get, class: "card health-card shadow-sm mb-4" do |f| %>
+    <div class="card-body">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-3">
+          <%= label_tag :type, t("user_activations.filter_type"), class: "form-label" %>
+          <%= select_tag :type,
+                options_for_select(
+                  [ [ t("user_activations.types.all"), "all" ] ] +
+                  UserActivationsController::TYPES.keys.map { |k| [ t("user_activations.types.#{k}"), k ] },
+                  @type),
+                class: "form-select" %>
+        </div>
+
+        <div class="col-md-3">
+          <%= label_tag :sponsor_id, t("user_activations.filter_sponsor"), class: "form-label" %>
+          <%= select_tag :sponsor_id,
+                options_from_collection_for_select(@sponsors, :id, :name, @sponsor_id),
+                include_blank: t("user_activations.any"), class: "form-select" %>
+        </div>
+
+        <div class="col-md-3">
+          <%= label_tag :trial_center_branch_id, t("user_activations.filter_branch"), class: "form-label" %>
+          <%= select_tag :trial_center_branch_id,
+                options_from_collection_for_select(@branches, :id, :name, @branch_id),
+                include_blank: t("user_activations.any"), class: "form-select" %>
+        </div>
+
+        <div class="col-md-3">
+          <%= label_tag :q, t("user_activations.filter_query"), class: "form-label" %>
+          <%= text_field_tag :q, @query, class: "form-control", placeholder: t("user_activations.filter_query_placeholder") %>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <%# Status tabs keep the other filters intact. %>
+        <div class="btn-group" role="group" aria-label="<%= t("user_activations.filter_status") %>">
+          <% { "all" => t("user_activations.statuses.all"),
+               "active" => t("user_activations.statuses.active"),
+               "inactive" => t("user_activations.statuses.inactive") }.each do |value, label| %>
+            <%= link_to label,
+                  user_activations_path(request.query_parameters.merge(status: value, page: nil)),
+                  class: "btn btn-sm #{@status == value ? 'btn-primary' : 'btn-outline-primary'}" %>
+          <% end %>
+        </div>
+
+        <div>
+          <%= link_to t("user_activations.clear_filters"), user_activations_path, class: "btn btn-link btn-sm" %>
+          <%= f.submit t("user_activations.apply_filters"), class: "btn btn-primary btn-sm" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <p class="text-muted">
+    <span class="badge bg-success"><%= @active_count %></span> <%= t("user_activations.statuses.active") %>
+    &nbsp;
+    <span class="badge bg-secondary"><%= @inactive_count %></span> <%= t("user_activations.statuses.inactive") %>
+  </p>
+
+  <% if @users.empty? %>
+    <p class="text-muted"><%= t("user_activations.no_users") %></p>
+  <% else %>
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th><%= t("user_activations.table_name") %></th>
+            <th><%= t("user_activations.table_email") %></th>
+            <th><%= t("user_activations.table_kind") %></th>
+            <th><%= t("user_activations.table_organization") %></th>
+            <th><%= t("user_activations.table_status") %></th>
+            <th class="text-end"><%= t("common.actions") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @users.each do |user| %>
+            <tr id="<%= dom_id(user) %>">
+              <td><strong><%= user.fullname.presence || t("user_activations.unnamed") %></strong></td>
+              <td><%= user.email %></td>
+              <td><%= user.role&.display_name || user.userable_type %></td>
+              <td><%= user.organization_name || "—" %></td>
+              <td>
+                <% if user.active? %>
+                  <span class="badge bg-success"><%= t("user_activations.statuses.active") %></span>
+                <% else %>
+                  <span class="badge bg-secondary"><%= t("user_activations.statuses.inactive") %></span>
+                <% end %>
+              </td>
+              <td class="text-end">
+                <% if user.admin? %>
+                  <%# Admins run this screen; deactivating them is refused server-side too. %>
+                  <span class="text-muted small"><%= t("user_activations.admin_always_active_short") %></span>
+                <% elsif user.active? %>
+                  <%= button_to t("user_activations.deactivate"),
+                        user_activation_path(user, request.query_parameters.merge(active: false)),
+                        method: :patch, class: "btn btn-sm btn-outline-danger" %>
+                <% else %>
+                  <%= button_to t("user_activations.activate"),
+                        user_activation_path(user, request.query_parameters.merge(active: true)),
+                        method: :patch, class: "btn btn-sm btn-outline-success" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%= will_paginate @users, renderer: WillPaginate::ActionView::Bootstrap4LinkRenderer %>
+  <% end %>
+
+  <%= link_to t("common.back"), root_path, class: "btn btn-link" %>
+</div>

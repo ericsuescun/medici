@@ -3,6 +3,7 @@
 # Table name: users
 #
 #  id                     :bigint           not null, primary key
+#  active                 :boolean          default(FALSE), not null
 #  email                  :string           default(""), not null
 #  encrypted_password     :string           default(""), not null
 #  firstname              :string
@@ -19,6 +20,7 @@
 #
 # Indexes
 #
+#  index_users_on_active                         (active)
 #  index_users_on_email                          (email) UNIQUE
 #  index_users_on_reset_password_token           (reset_password_token) UNIQUE
 #  index_users_on_role_id                        (role_id)
@@ -37,6 +39,14 @@ FactoryBot.define do
     password_confirmation { "12345678" }
     firstname { Faker::Name.first_name }
     lastname { Faker::Name.last_name }
+    # Accounts are inactive by default in the DB (an admin activates them), but
+    # specs almost always want a user that can actually sign in. Use the
+    # :inactive trait to exercise the gate itself.
+    active { true }
+
+    trait :inactive do
+      active { false }
+    end
 
     trait :admin do
       association :userable, factory: :admin

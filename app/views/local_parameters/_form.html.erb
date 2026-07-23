@@ -1,0 +1,43 @@
+<%= form_with(model: local_parameter) do |form| %>
+  <% if local_parameter.errors.any? %>
+    <div class="alert alert-danger">
+      <h2 class="h6"><%= t("local_parameters.errors_header", count: local_parameter.errors.count) %></h2>
+      <ul class="mb-0">
+        <% local_parameter.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.label :country_id, Country.model_name.human, class: "form-label" %>
+    <%= form.collection_select :country_id, @countries, :id, :name, {}, class: "form-select" %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :name, class: "form-label" %>
+    <%= form.text_field :name, class: "form-control" %>
+    <div class="form-text"><%= t("local_parameters.name_help") %></div>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :value, class: "form-label" %>
+    <%= form.text_field :value, class: "form-control" %>
+    <div class="form-text"><%= t("local_parameters.value_help") %></div>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :display_name, class: "form-label" %>
+    <%= form.text_field :display_name, class: "form-control" %>
+    <div class="form-text"><%= t("local_parameters.display_name_help") %></div>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :description, class: "form-label" %>
+    <%= form.text_field :description, class: "form-control" %>
+  </div>
+
+  <%= form.submit t("common.save"), class: "btn btn-primary" %>
+  <%= link_to t("common.cancel"), local_parameters_path, class: "btn btn-link" %>
+<% end %>

@@ -1,12 +1,12 @@
 # Recruitment progress of a study toward its goal (its sample size): how many
 # patients sit in each AASM lifecycle state, expressed as stacked-bar segment
 # widths. Segments fill in seniority order — participants, then candidates,
-# then prospects — and the stacked total is capped at 100% so an over-enrolled
+# then interested — and the stacked total is capped at 100% so an over-enrolled
 # study can't overflow the bar; the white remainder is the unmet goal.
 #
 # Use .for(studies) to bulk-load a whole listing with ONE grouped query.
 class RecruitmentProgress
-  STATES = %w[participant candidate prospect].freeze
+  STATES = %w[participant candidate interested].freeze
 
   attr_reader :goal
 

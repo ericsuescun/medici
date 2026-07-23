@@ -16,7 +16,7 @@
 #  notes               :string
 #  participant_code    :string
 #  sex                 :string
-#  state               :string           default("prospect"), not null
+#  state               :string           default("interested"), not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  study_id            :bigint
@@ -104,12 +104,12 @@ class Patient < ApplicationRecord
   include AASM
 
   aasm column: :state do
-    state :prospect, initial: true
+    state :interested, initial: true
     state :candidate
     state :participant
 
     event :assess do
-      transitions from: :prospect, to: :candidate
+      transitions from: :interested, to: :candidate
     end
 
     event :accept do
@@ -117,7 +117,7 @@ class Patient < ApplicationRecord
     end
 
     event :discard do
-      transitions from: :candidate, to: :prospect
+      transitions from: :candidate, to: :interested
     end
 
     event :reject do

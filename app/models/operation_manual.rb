@@ -128,7 +128,7 @@ module OperationManual
       responsibilities: [
         "Registrar y actualizar pacientes, incluyendo su descripción de enfermedad y notas clínicas.",
         "Capturar los valores de las variables del paciente y ejecutar la evaluación de elegibilidad contra el perfil de criterios del estudio.",
-        "Mover al paciente por su ciclo de vida: prospecto → candidato → participante (y de vuelta cuando corresponda).",
+        "Mover al paciente por su ciclo de vida: interesado → candidato → participante (y de vuelta cuando corresponda).",
         "Construir y mantener perfiles de criterios y sus variables de inclusión/exclusión.",
         "Cargar resultados y gestionar los contactos del estudio.",
         "Consultar estudios, centros, sedes, ciudades, artículos y medicamentos, sin poder modificarlos."
@@ -253,12 +253,27 @@ module OperationManual
     Feature.new(
       name: "Autenticación del personal y solicitud pública de participación",
       status: :done,
-      detail: "Devise autentica solo al personal; nadie se registra por su cuenta. Los pacientes no tienen cuenta: desde la ficha pública de un estudio dejan una solicitud de contacto (teléfono o correo) que crea el registro del paciente como prospecto, y el representante del centro construye después la historia clínica."
+      detail: "Devise autentica solo al personal; nadie se registra por su cuenta. Los pacientes no tienen cuenta: desde la ficha pública de un estudio dejan una solicitud de contacto (teléfono o correo) que crea el registro del paciente como interesado, y el representante del centro construye después la historia clínica."
     ),
     Feature.new(
       name: "Roles y permisos por recurso",
       status: :done,
       detail: "Cinco roles con una matriz de permisos por recurso (ver/editar/eliminar), editable por el administrador sin tocar código."
+    ),
+    Feature.new(
+      name: "Activación de cuentas de usuario",
+      status: :done,
+      detail: "Toda cuenta nace inactiva y no puede iniciar sesión hasta que un administrador la active desde la gestión de usuarios (filtrable por patrocinador, sede, tipo de cuenta o estado). Desactivar a alguien también cierra la sesión que tuviera abierta. Las cuentas de administrador están siempre activas."
+    ),
+    Feature.new(
+      name: "Tipo de estudio y aprobación regulatoria",
+      status: :done,
+      detail: "Cada estudio se crea explícitamente como observacional o intervencional. El observacional registra la aprobación del comité de ética; el intervencional, la de la autoridad sanitaria local, nombrada según los parámetros locales del país (INVIMA en Colombia)."
+    ),
+    Feature.new(
+      name: "Parámetros locales por país",
+      status: :done,
+      detail: "Configuración propia de cada jurisdicción (por ahora, el nombre de la autoridad sanitaria), administrada por el administrador y asociada a un país, para no dejar nombres de entidades escritos en el código."
     ),
     Feature.new(
       name: "Control de acceso Pundit, denegado por defecto",
@@ -308,7 +323,7 @@ module OperationManual
     Feature.new(
       name: "Ciclo de vida del paciente",
       status: :done,
-      detail: "Máquina de estados prospecto → candidato → participante, con las transiciones de descarte y rechazo."
+      detail: "Máquina de estados interesado → candidato → participante, con las transiciones de descarte y rechazo."
     ),
     Feature.new(
       name: "Salvaguarda de transferencia internacional",

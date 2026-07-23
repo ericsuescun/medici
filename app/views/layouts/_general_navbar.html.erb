@@ -58,7 +58,9 @@
             <li><%= link_to t("nav.branch_reps"), trial_center_branch_reps_path, class: 'dropdown-item' %></li>
             <% if current_user&.admin? %>
               <li><hr class="dropdown-divider"></li>
+              <li><%= link_to t("nav.user_activations"), user_activations_path, class: 'dropdown-item' %></li>
               <li><%= link_to t("nav.roles"), roles_path, class: 'dropdown-item' %></li>
+              <li><%= link_to t("nav.local_parameters"), local_parameters_path, class: 'dropdown-item' %></li>
             <% end %>
           </ul>
         </li>

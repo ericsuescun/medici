@@ -1,5 +1,12 @@
 fr:
   studies:
+    types:
+      observational: "Observationnelle"
+      interventional: "Interventionnelle"
+    types_help:
+      observational: "Aucune intervention assignée par l'investigateur ; nécessite l'approbation du comité d'éthique."
+      interventional: "Un médicament ou dispositif est administré ; nécessite l'approbation de l'autorité sanitaire."
+    new_study_typed: "Nouvelle étude %{type}"
     criteria_profile_review: "Révision du profil de critères"
     go_to_criteria_profile: "Voir le profil de critères"
     inclusion_variables: "Variables d'inclusion"
@@ -14,9 +21,9 @@ fr:
       summary: "%{total} sur %{goal} patients dans le processus"
       legend_participants: "Participants"
       legend_candidates: "Candidats"
-      legend_prospects: "Prospects"
+      legend_interested: "Intéressés"
       aria: "Recrutement : %{total} sur %{goal} patients"
-      tooltip: "Participants : %{participants} · Candidats : %{candidates} · Prospects : %{prospects} · Objectif : %{goal}"
+      tooltip: "Participants : %{participants} · Candidats : %{candidates} · Intéressés : %{interested} · Objectif : %{goal}"
     age: "Âge"
     interested_subjects: "Sujets intéressés par l'étude"
     clinical_trials: "Essais cliniques"

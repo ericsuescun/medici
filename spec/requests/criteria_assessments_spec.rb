@@ -61,10 +61,10 @@ RSpec.describe "Criteria assessments", type: :request do
     end
 
     it "offers a promote action that transitions the patient's state" do
-      # A prospect is promoted to candidate via the AASM `assess` event.
+      # A interested is promoted to candidate via the AASM `assess` event.
       expect {
         post transition_patient_path(patient, event: "assess")
-      }.to change { patient.reload.state }.from("prospect").to("candidate")
+      }.to change { patient.reload.state }.from("interested").to("candidate")
     end
   end
 

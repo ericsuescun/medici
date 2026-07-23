@@ -11,6 +11,49 @@
     </div>
   <% end %>
 
+<%# Study type + the single approval question that follows from it. On a new
+    study the type came from the index's per-type button, so it travels as a
+    hidden field (with a link back to change it); on an existing study it is
+    editable, and switching it re-renders with the other approval question. %>
+<div class="card health-card shadow-sm mb-4">
+  <div class="card-body">
+    <% if study.persisted? %>
+      <div class="mb-3">
+        <%= form.label :study_type, class: "form-label" %>
+        <%= form.select :study_type,
+                        Study.study_types.keys.map { |type| [ t("studies.types.#{type}"), type ] },
+                        {}, class: "form-select" %>
+        <div class="form-text"><%= t("studies.form.study_type_help") %></div>
+      </div>
+    <% else %>
+      <%= form.hidden_field :study_type %>
+      <p class="mb-3">
+        <span class="text-muted"><%= Study.human_attribute_name(:study_type) %>:</span>
+        <strong><%= t("studies.types.#{study.study_type}") %></strong>
+        <%= link_to t("studies.form.change_study_type"), studies_path, class: "small ms-2" %>
+      </p>
+    <% end %>
+
+    <%# Observational research answers to the ethics committee; interventional
+        research answers to the local health authority, named from the
+        local_parameters table (INVIMA in Colombia) instead of a cryptic key. %>
+    <% if study.observational? %>
+      <div class="form-check">
+        <%= form.check_box :committee_approved, class: "form-check-input" %>
+        <%= form.label :committee_approved, t("studies.form.committee_approved"), class: "form-check-label" %>
+      </div>
+    <% else %>
+      <% authority = LocalParameter.health_authority_label %>
+      <div class="form-check">
+        <%= form.check_box :local_health_authority_approved, class: "form-check-input" %>
+        <%= form.label :local_health_authority_approved,
+              (authority.present? ? t("studies.form.authority_approved", authority: authority) : t("studies.form.local_health_authority_approved")),
+              class: "form-check-label" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
 <div class="row">
   <div class="col-6">
     <div>

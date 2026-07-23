@@ -1,5 +1,12 @@
 en:
   studies:
+    types:
+      observational: "Observational"
+      interventional: "Interventional"
+    types_help:
+      observational: "No intervention assigned by the investigator; needs ethics committee approval."
+      interventional: "A drug or device is administered; needs health authority approval."
+    new_study_typed: "New %{type} study"
     criteria_profile_review: "Criteria profile review"
     go_to_criteria_profile: "View criteria profile"
     inclusion_variables: "Inclusion variables"
@@ -14,9 +21,9 @@ en:
       summary: "%{total} of %{goal} patients in the pipeline"
       legend_participants: "Participants"
       legend_candidates: "Candidates"
-      legend_prospects: "Prospects"
+      legend_interested: "Interested"
       aria: "Recruitment: %{total} of %{goal} patients"
-      tooltip: "Participants: %{participants} · Candidates: %{candidates} · Prospects: %{prospects} · Goal: %{goal}"
+      tooltip: "Participants: %{participants} · Candidates: %{candidates} · Interested: %{interested} · Goal: %{goal}"
     age: "Age"
     interested_subjects: "Subjects interested in the study"
     clinical_trials: "Clinical trials"

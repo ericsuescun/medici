@@ -26,6 +26,8 @@ pt:
     branch_reps: "Representantes de Centros"
     patients: "Pacientes"
     roles: "Gerenciar Perfis"
+    user_activations: "Gestão de Usuários"
+    local_parameters: "Parâmetros Locais"
     profiles: "Perfis"
     cities: "Cidades"
     my_data: "Meus dados"
@@ -145,6 +147,8 @@ pt:
   # ---- Model & attribute names (auto-translates form labels & human_attribute_name) ----
   activerecord:
     models:
+      country: "País"
+      local_parameter: "Parâmetro local"
       sponsor: "Patrocinador"
       study: "Estudo"
       category:
@@ -171,6 +175,12 @@ pt:
       campaign_document: "Documento de campanha"
       platform_staff: "Integrante da plataforma"
     attributes:
+      local_parameter:
+        country: "País"
+        name: "Nome do parâmetro"
+        value: "Valor"
+        display_name: "Nome de exibição"
+        description: "Descrição"
       category:
         name: "Nome"
       sponsor:
@@ -180,6 +190,9 @@ pt:
         sponsor_type: "Tipo de patrocinador"
         international: "Internacional"
       study:
+        study_type: "Tipo de estudo"
+        committee_approved: "Aprovado pelo comitê de ética"
+        local_health_authority_approved: "Aprovado pela autoridade sanitária local"
         public_title: "Título público"
         scientific_title: "Título científico"
         short_title: "Título curto"

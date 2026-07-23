@@ -7,7 +7,7 @@
         <h1 class="mb-0"><%= t("studies.clinical_studies") %></h1>
         <div>
           <%= link_to t("studies.return_to_vitalia"), static_pages_medici_home_path %> |
-          <%= link_to t("studies.new_study"), new_study_path %>
+          <%= render "new_study_dropdown" %>
         </div>
       </div>
       
@@ -63,7 +63,7 @@
         <%= will_paginate @studies, :renderer => WillPaginate::ActionView::Bootstrap4LinkRenderer %>
         <div>
           <%= link_to t("studies.return_to_vitalia"), static_pages_medici_home_path %> |
-          <%= link_to t("studies.new_study"), new_study_path %>
+          <%= render "new_study_dropdown" %>
         </div>
       </div>
     </div>

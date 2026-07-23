@@ -3,6 +3,7 @@
 # Table name: users
 #
 #  id                     :bigint           not null, primary key
+#  active                 :boolean          default(FALSE), not null
 #  email                  :string           default(""), not null
 #  encrypted_password     :string           default(""), not null
 #  firstname              :string
@@ -19,6 +20,7 @@
 #
 # Indexes
 #
+#  index_users_on_active                         (active)
 #  index_users_on_email                          (email) UNIQUE
 #  index_users_on_reset_password_token           (reset_password_token) UNIQUE
 #  index_users_on_role_id                        (role_id)
@@ -60,6 +62,12 @@ class User < ApplicationRecord
 
   before_save :assign_default_role, if: -> { role_id.nil? && userable_type.present? }
 
+  # Admins are always active — the activation manager is theirs to operate, so
+  # locking the last admin out of it would be unrecoverable. Runs on every save
+  # (like assign_default_role) because `userable` is only assigned right before
+  # the insert on the nested-attributes creation paths.
+  before_save :force_active_for_admins, if: -> { userable_type == "Admin" }
+
   delegate :dob,
            :sex,
            :contact_number,
@@ -79,6 +87,32 @@ class User < ApplicationRecord
   scope :admins,   -> { where(userable_type: "Admin") }
   scope :trial_center_branch_reps, -> { where(userable_type: "TrialCenterBranchRep") }
   scope :platform_staffs, -> { where(userable_type: "PlatformStaff") }
+  scope :active, -> { where(active: true) }
+  scope :inactive, -> { where(active: false) }
+
+  # Devise checks this at sign-in AND on every request (Devise::Hooks::Activatable),
+  # so deactivating an account also terminates the session it is already using.
+  # Admins pass regardless: force_active_for_admins already keeps their column
+  # true, and the belt-and-braces carve-out means no direct DB write can lock
+  # the people who operate the activation manager out of it.
+  def active_for_authentication?
+    super && (active? || admin?)
+  end
+
+  # Message shown when the sign-in is refused above (devise.failure.inactive).
+  def inactive_message
+    active_for_authentication? ? super : :inactive
+  end
+
+  # Whose account this is, organisationally — the sponsor for a sponsor rep, the
+  # trial centre branch for a branch rep. Nil for admins/platform staff, who
+  # belong to no external organisation. Used by the activation manager.
+  def organization_name
+    case userable
+    when SponsorRep then userable.sponsor&.name
+    when TrialCenterBranchRep then userable.trial_center_branch&.name
+    end
+  end
 
   # Convenience predicate methods to keep API compatible with previous enum
   def patient?
@@ -112,5 +146,9 @@ class User < ApplicationRecord
   def assign_default_role
     role_name = ROLE_FOR_USERABLE[userable_type]
     self.role = Role.find_by(name: role_name) if role_name
+  end
+
+  def force_active_for_admins
+    self.active = true
   end
 end

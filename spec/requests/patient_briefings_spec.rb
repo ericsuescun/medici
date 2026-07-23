@@ -29,7 +29,7 @@ RSpec.describe "Patient briefings", type: :request do
     it "offers a promote action from the briefing" do
       expect {
         post transition_patient_path(patient, event: "assess")
-      }.to change { patient.reload.state }.from("prospect").to("candidate")
+      }.to change { patient.reload.state }.from("interested").to("candidate")
     end
 
     it "handles a study with no criteria profile" do

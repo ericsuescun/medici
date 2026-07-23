@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_18_195018) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_22_130200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -228,6 +228,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_18_195018) do
     t.index ["country_code"], name: "index_id_types_on_country_code"
   end
 
+  create_table "local_parameters", force: :cascade do |t|
+    t.bigint "country_id", null: false
+    t.string "name", null: false
+    t.string "value", null: false
+    t.string "display_name"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["country_id", "name"], name: "index_local_parameters_on_country_id_and_name", unique: true
+    t.index ["country_id"], name: "index_local_parameters_on_country_id"
+  end
+
   create_table "medications", force: :cascade do |t|
     t.string "name"
     t.text "description"
@@ -257,7 +269,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_18_195018) do
     t.string "id_type", default: ""
     t.string "id_number", default: ""
     t.string "country", default: ""
-    t.string "state", default: "prospect", null: false
+    t.string "state", default: "interested", null: false
     t.string "participant_code"
     t.bigint "study_id"
     t.index ["participant_code"], name: "index_patients_on_participant_code", unique: true
@@ -354,6 +366,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_18_195018) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "short_title", default: ""
+    t.string "study_type"
+    t.boolean "local_health_authority_approved", default: false, null: false
+    t.boolean "committee_approved", default: false, null: false
     t.index ["sponsor_id"], name: "index_studies_on_sponsor_id"
   end
 
@@ -430,6 +445,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_18_195018) do
     t.string "userable_type"
     t.bigint "userable_id"
     t.bigint "role_id"
+    t.boolean "active", default: false, null: false
+    t.index ["active"], name: "index_users_on_active"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["role_id"], name: "index_users_on_role_id"
@@ -485,6 +502,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_18_195018) do
   add_foreign_key "criteria_profiles", "studies"
   add_foreign_key "criteria_profiles", "users"
   add_foreign_key "criteria_variables", "criteria_profiles"
+  add_foreign_key "local_parameters", "countries"
   add_foreign_key "patients", "studies"
   add_foreign_key "results", "studies"
   add_foreign_key "role_permissions", "roles"

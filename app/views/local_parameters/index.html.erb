@@ -1,0 +1,53 @@
+<div class="container mt-4">
+  <% content_for :title, t("local_parameters.index_title") %>
+
+  <% if notice.present? %>
+    <div class="alert alert-success"><%= notice %></div>
+  <% end %>
+
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h1 class="mb-0"><%= t("local_parameters.index_title") %></h1>
+    <%= link_to t("local_parameters.new"), new_local_parameter_path, class: "btn btn-primary" %>
+  </div>
+  <p class="text-muted"><%= t("local_parameters.intro") %></p>
+
+  <% if @local_parameters.empty? %>
+    <p class="text-muted"><%= t("local_parameters.none") %></p>
+  <% else %>
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th><%= Country.model_name.human %></th>
+            <th><%= LocalParameter.human_attribute_name(:name) %></th>
+            <th><%= LocalParameter.human_attribute_name(:value) %></th>
+            <th><%= LocalParameter.human_attribute_name(:display_name) %></th>
+            <th><%= LocalParameter.human_attribute_name(:description) %></th>
+            <th class="text-end"><%= t("common.actions") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @local_parameters.each do |parameter| %>
+            <tr id="<%= dom_id(parameter) %>">
+              <td><%= parameter.country.name %></td>
+              <td><code><%= parameter.name %></code></td>
+              <td><strong><%= parameter.value %></strong></td>
+              <td><%= parameter.display_name %></td>
+              <td><%= parameter.description %></td>
+              <td class="text-end text-nowrap">
+                <%= link_to t("common.edit"), edit_local_parameter_path(parameter), class: "btn btn-sm btn-outline-primary" %>
+                <%= button_to t("common.destroy"), local_parameter_path(parameter), method: :delete,
+                      class: "btn btn-sm btn-outline-danger d-inline-block",
+                      form: { class: "d-inline-block", data: { turbo_confirm: t("local_parameters.confirm_destroy") } } %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%= will_paginate @local_parameters, renderer: WillPaginate::ActionView::Bootstrap4LinkRenderer %>
+  <% end %>
+
+  <%= link_to t("common.back"), root_path, class: "btn btn-link" %>
+</div>
