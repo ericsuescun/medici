@@ -88,7 +88,7 @@ jobs:
       # Chrome for the Capybara `js: true` feature specs. selenium-manager
       # (bundled with selenium-webdriver) fetches a matching chromedriver.
       - name: Install Chrome
-        uses: browser-actions/setup-chrome@v1
+        uses: browser-actions/setup-chrome@v2
 
       # Trix, @rails/actiontext, @rails/activestorage, bootstrap and
       # bootstrap-icons are served out of node_modules via Propshaft asset
