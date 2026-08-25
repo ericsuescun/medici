@@ -1,6 +1,0 @@
-<div class="container mt-4">
-  <h1 class="mb-1"><%= t("soap_notes.edit_title") %></h1>
-  <p class="text-muted mb-4"><%= @patient.fullname.presence || @patient.participant_code %></p>
-
-  <%= render "form", soap_note: @soap_note %>
-</div>

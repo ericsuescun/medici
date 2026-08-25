@@ -27,7 +27,7 @@ class ComplementaryInformation < ApplicationRecord
 
   belongs_to :patient
 
-  # store_if_blank: false — same rationale and same caveat as SoapNote's
+  # store_if_blank: false — assigning ""/nil destroys the RichText row, which
   # sections: ""/nil destroys the RichText row; a browser-cleared Trix editor
   # submits "<div><br></div>" and relies on the embed re-sync instead. Both
   # release embedded images to the unattached-blob sweep.

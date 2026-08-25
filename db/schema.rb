@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_01_100300) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_24_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -350,16 +350,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_01_100300) do
     t.datetime "updated_at", null: false
     t.bigint "sponsor_id"
     t.index ["sponsor_id"], name: "index_sponsor_reps_on_sponsor_id"
-  end
-
-  create_table "soap_notes", force: :cascade do |t|
-    t.bigint "patient_id", null: false
-    t.bigint "author_id"
-    t.date "encounter_date", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["author_id"], name: "index_soap_notes_on_author_id"
-    t.index ["patient_id"], name: "index_soap_notes_on_patient_id"
   end
 
   create_table "sponsors", force: :cascade do |t|

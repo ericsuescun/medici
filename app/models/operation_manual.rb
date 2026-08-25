@@ -306,11 +306,6 @@ module OperationManual
       detail: "La evaluación se presenta como un informe: veredicto, conteos de criterios cumplidos, fuera de alcance y por medir, con el detalle de lo que falta o no se cumple. Desde ahí el representante o investigador promueve al paciente en el ciclo del estudio."
     ),
     Feature.new(
-      name: "Notas clínicas SOAP",
-      status: :done,
-      detail: "Notas en formato SOAP (Subjetivo, Objetivo, Análisis, Plan) — el estándar de documentación clínica estadounidense. Cada paciente acumula todas las que requiera la investigación, con campos de texto enriquecido; las imágenes se suben directamente al bucket de AWS al insertarlas, no a la base de datos."
-    ),
-    Feature.new(
       name: "Información complementaria del paciente",
       status: :done,
       detail: "Exámenes previos del paciente: documentos en PDF, fotografías y notas en texto enriquecido, subidos directamente al bucket de AWS. Visible para el representante del centro y los administradores."
@@ -318,7 +313,7 @@ module OperationManual
     Feature.new(
       name: "Resumen de tratamiento del paciente",
       status: :done,
-      detail: "Página única para representantes y administradores que consolida el estado del paciente, el veredicto de elegibilidad con lo pendiente y fuera de alcance, las últimas notas SOAP y la información complementaria, con las acciones de promoción a la mano."
+      detail: "Página única para representantes y administradores que consolida el estado del paciente, el veredicto de elegibilidad con lo pendiente y fuera de alcance, y la información complementaria, con las acciones de promoción a la mano."
     ),
     Feature.new(
       name: "Ciclo de vida del paciente",

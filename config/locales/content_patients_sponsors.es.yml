@@ -1,12 +1,15 @@
 es:
   patients:
+    sections:
+      demographic: "Información demográfica"
+      clinical: "Evaluación clínica"
     contact_method_required: "Debe indicar al menos un teléfono de contacto o un correo electrónico."
     study_not_enrollable: "no corresponde a un estudio de su centro de investigación"
     grouped_by_study: "Pacientes por estudio"
     no_patients: "No hay pacientes para este estudio."
     no_study: "Sin estudio asignado"
     index_title: "Pacientes"
-    back_to_home: "Retornar a Vitalia"
+    back_to_home: "Retornar a Medici"
     new_patient: "Nuevo paciente"
     studies: "Estudios"
     view_study: "Ver estudio"
@@ -32,13 +35,17 @@ es:
     destroyed: "El paciente se eliminó correctamente."
     state_updated: "Estado actualizado correctamente."
     state_update_failed: "No se pudo actualizar el estado: %{message}"
+    primary_criteria_required: "No se puede avanzar al paciente: todos los criterios primarios deben estar registrados y cumplirse."
+    answered_questions: "Cuestionario"
+    answered_count: "%{count} respondidas"
+    proxy_badge: "Tercero"
+    proxy_hint: "El formulario fue diligenciado por otra persona, no por el paciente."
 
   patient_briefings:
     title: "Resumen del paciente"
     eligibility: "Elegibilidad"
     open_assessment: "Abrir evaluación"
     no_profile: "El estudio de este paciente no tiene un perfil de criterios."
-    open_notes: "Ver todas"
     open_information: "Abrir"
     open_briefing: "Ver resumen"
 
@@ -65,50 +72,9 @@ es:
       not_an_image: "«%{filename}» no es una imagen válida."
       too_large: "«%{filename}» supera el límite de %{limit} MB."
 
-  soap_notes:
-    index_title: "Notas SOAP"
-    show_title: "Nota SOAP"
-    new_title: "Nueva nota SOAP"
-    edit_title: "Editar nota SOAP"
-    new_note: "Nueva nota"
-    view_notes:
-      zero: "Ver notas SOAP"
-      one: "Ver notas SOAP (%{count})"
-      other: "Ver notas SOAP (%{count})"
-    none: "Este paciente aún no tiene notas SOAP."
-    unknown_author: "Autor desconocido"
-    encounter_date: "Fecha de la consulta"
-    save: "Guardar nota"
-    attachment_hint: "Las imágenes se suben al guardarlas en el campo; no se almacenan en la base de datos sino en el bucket de AWS."
-    section_empty: "Sin contenido."
-    blank_note: "La nota debe tener contenido en al menos una sección."
-    confirm_delete: "¿Eliminar esta nota SOAP?"
-    back_to_patient: "Volver al paciente"
-    back_to_list: "Volver a las notas"
-    created: "Nota SOAP creada correctamente."
-    updated: "Nota SOAP actualizada correctamente."
-    destroyed: "Nota SOAP eliminada correctamente."
-    sections:
-      subjective:
-        label: "Subjetivo"
-        short: "S"
-        hint: "Lo que refiere el paciente: síntomas, antecedentes, motivo de consulta."
-      objective:
-        label: "Objetivo"
-        short: "O"
-        hint: "Hallazgos medibles: signos vitales, examen físico, laboratorio, imágenes."
-      assessment:
-        label: "Análisis"
-        short: "A"
-        hint: "Síntesis del clínico: impresión diagnóstica, diagnóstico diferencial."
-      plan:
-        label: "Plan"
-        short: "P"
-        hint: "Tratamiento, medicación, seguimiento, remisiones, educación al paciente."
-
   sponsors:
     index_title: "Patrocinadores"
-    back_to_home: "Retornar a Vitalia"
+    back_to_home: "Retornar a Medici"
     new_sponsor: "Nuevo patrocinador"
     studies_count: "# Estudios"
     back_to_index: "Retornar a Patrocinadores"

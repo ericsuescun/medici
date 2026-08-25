@@ -93,9 +93,6 @@ class Patient < ApplicationRecord
     "Cúcuta", "Pereira", "Santa Marta", "Ibagué", "Manizales", "Villavicencio"
   ].freeze
 
-  # Clinical SOAP notes accumulated over the course of the research.
-  has_many :soap_notes, dependent: :destroy
-
   # Patient-contributed complementary information (prior exams: PDFs, images, notes).
   has_one :complementary_information, dependent: :destroy
 

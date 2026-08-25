@@ -41,8 +41,8 @@ RSpec.describe PurgeUnattachedBlobsJob do
   it "keeps images embedded in rich text, then purges them once the section is cleared" do
     blob = create_blob
     note = FactoryBot.create(
-      :soap_note,
-      subjective: ActionText::Content.new("Con imagen").append_attachables(blob).to_html
+      :complementary_information,
+      notes: ActionText::Content.new("Con imagen").append_attachables(blob).to_html
     )
     backdate(blob)
 
@@ -55,8 +55,8 @@ RSpec.describe PurgeUnattachedBlobsJob do
     # clear submits "<div><br></div>" instead — same outcome via the embed
     # re-sync. In test the enqueued purge_later never runs, exactly like a
     # lost job in prod.)
-    note.update!(subjective: "")
-    expect(note.reload.subjective.body).to be_blank
+    note.update!(notes: "")
+    expect(note.reload.notes.body).to be_blank
 
     expect(described_class.perform_now).to eq(1)
     expect(ActiveStorage::Blob.exists?(blob.id)).to be(false)
@@ -65,15 +65,15 @@ RSpec.describe PurgeUnattachedBlobsJob do
   it "also frees the embed when the section is cleared the way a browser does" do
     blob = create_blob
     note = FactoryBot.create(
-      :soap_note,
-      subjective: ActionText::Content.new("Con imagen").append_attachables(blob).to_html
+      :complementary_information,
+      notes: ActionText::Content.new("Con imagen").append_attachables(blob).to_html
     )
     backdate(blob)
 
     # Trix serializes a visually-empty editor as "<div><br></div>", which is
     # `present?` — the RichText row survives (store_if_blank never fires) and
     # the before_save embed re-sync must detach the image instead.
-    note.update!(subjective: "<div><br></div>")
+    note.update!(notes: "<div><br></div>")
 
     expect(described_class.perform_now).to eq(1)
     expect(ActiveStorage::Blob.exists?(blob.id)).to be(false)
