@@ -1,5 +1,5 @@
 # A patient's complementary information (prior exams as PDFs/images + notes).
-# Like SOAP notes, access is gated by the parent patient's visibility rather
+# Access is gated by the parent patient's visibility rather
 # than the Role permission matrix: reps reach only their own centre's patients.
 class ComplementaryInformationsController < SecureApplicationController
   before_action :set_patient
@@ -54,7 +54,8 @@ class ComplementaryInformationsController < SecureApplicationController
     authorize(@patient, :update?)
   end
 
-  # Gated by the parent patient, not the permission matrix (see SoapNotesController).
+  # Gated by the parent patient, not the permission matrix — this controller is
+  # the reference implementation of that recipe.
   def authorization_model
     nil
   end

@@ -7,7 +7,7 @@
       <%= link_to t("complementary_informations.edit_link"), edit_patient_complementary_information_path(@patient), class: "btn btn-sm btn-outline-primary" %>
     <% end %>
   </div>
-  <p class="text-muted mb-4"><%= @patient.fullname.presence || @patient.participant_code %></p>
+  <p class="text-muted mb-4"><%= @patient.display_name %></p>
 
   <% unless @information.any_content? %>
     <p class="text-muted"><%= t("complementary_informations.empty") %></p>

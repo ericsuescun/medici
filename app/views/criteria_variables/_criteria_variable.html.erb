@@ -13,11 +13,24 @@
     </p>
     <p>
       <strong><%= CriteriaVariable.human_attribute_name(:variable_type) %>:</strong>
-      <% if criteria_variable.variable_type == "inclusion" %>
-        <span class="badge bg-success"><%= t_enum(criteria_variable, :variable_type) %></span>
+      <%= variable_type_badge(criteria_variable) %>
+    </p>
+    <p>
+      <strong><%= CriteriaVariable.human_attribute_name(:criteria_category) %>:</strong>
+      <%= criteria_category_badge(criteria_variable) %>
+      <span class="text-muted small"><%= t("criteria_variables.form.criteria_category_hint") %></span>
+    </p>
+    <%# The patient-facing question. Its PRESENCE is the switch that makes this
+        rule askable in the public questionnaire, so say so explicitly when it
+        is blank rather than rendering an empty line. %>
+    <p>
+      <strong><%= CriteriaVariable.human_attribute_name(:patient_prompt) %>:</strong>
+      <% if criteria_variable.patient_prompt.present? %>
+        <%= criteria_variable.patient_prompt %>
       <% else %>
-        <span class="badge bg-danger"><%= t_enum(criteria_variable, :variable_type) %></span>
+        <span class="text-muted">—</span>
       <% end %>
+      <span class="text-muted small d-block"><%= t("criteria_variables.form.patient_prompt_hint") %></span>
     </p>
     <p>
       <strong><%= CriteriaVariable.human_attribute_name(:comparison_type) %>:</strong>
@@ -48,11 +61,11 @@
 
     <p>
       <strong><%= CriteriaVariable.human_attribute_name(:enabled) %>:</strong>
-      <%= criteria_variable.enabled? ? t("common.yes") : t("common.no") %>
+      <%= boolean_checkbox(criteria_variable.enabled?, label: CriteriaVariable.human_attribute_name(:enabled)) %>
     </p>
     <p>
       <strong><%= CriteriaVariable.human_attribute_name(:shown) %>:</strong>
-      <%= criteria_variable.shown? ? t("common.yes") : t("common.no") %>
+      <%= boolean_checkbox(criteria_variable.shown?, label: CriteriaVariable.human_attribute_name(:shown)) %>
     </p>
   </div>
 </div>

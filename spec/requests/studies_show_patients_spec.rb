@@ -47,6 +47,32 @@ RSpec.describe "Study page patient data", type: :request do
     expect(response.body).to include("recruitment-bar--labeled")
   end
 
+  # A patient who came through "¡Quiero participar!" has a phone and nothing
+  # else — no name at all. The list used to render `fullname` raw, so the row
+  # showed an EMPTY link and the rep had no way to reach the person it was about.
+  describe "a lead with no name yet" do
+    let!(:lead) do
+      FactoryBot.create(:patient, :lead, study: study,
+                                         contact_number: "+57 300 123 4567",
+                                         email: "lead@example.com")
+    end
+
+    before do
+      sign_in(FactoryBot.create(:user, :admin), scope: :user)
+      get study_path(study)
+    end
+
+    it "labels the row with the participant code rather than an empty link" do
+      expect(response.body).to include(lead.participant_code)
+      expect(response.body).not_to match(%r{<a[^>]*href="/patients/#{lead.id}"[^>]*>\s*</a>})
+    end
+
+    it "gives the rep a way to actually make contact" do
+      expect(response.body).to include('href="tel:+573001234567"')
+      expect(response.body).to include('href="mailto:lead@example.com"')
+    end
+  end
+
   it "narrows the list to the rep's reach while keeping the aggregate count" do
     other_branch = FactoryBot.create(:trial_center_branch)
     rep = FactoryBot.create(:trial_center_branch_rep, trial_center_branch: other_branch)

@@ -49,6 +49,8 @@
                     <th><%= CriteriaProfile.human_attribute_name(:description) %></th>
                     <th><%= CriteriaVariable.human_attribute_name(:value_type) %></th>
                     <th><%= CriteriaVariable.human_attribute_name(:variable_type) %></th>
+                    <th><%= CriteriaVariable.human_attribute_name(:criteria_category) %></th>
+                    <th><%= CriteriaVariable.human_attribute_name(:patient_prompt) %></th>
                     <th><%= CriteriaVariable.human_attribute_name(:comparison_type) %></th>
                     <th><%= CriteriaVariable.human_attribute_name(:reference_value_1) %></th>
                     <th><%= CriteriaVariable.human_attribute_name(:reference_value_2) %></th>
@@ -67,12 +69,10 @@
                       <td><%= variable.description %></td>
                       <td><%= t_enum(variable, :value_type) %></td>
                       <td>
-                        <% if variable.variable_type == "inclusion" %>
-                          <span class="badge bg-success"><%= t_enum(variable, :variable_type) %></span>
-                        <% else %>
-                          <span class="badge bg-danger"><%= t_enum(variable, :variable_type) %></span>
-                        <% end %>
+                        <%= variable_type_badge(variable) %>
                       </td>
+                      <td><%= criteria_category_badge(variable) %></td>
+                      <td style="min-width: 14rem"><%= patient_prompt_display(variable) %></td>
                       <td><%= t_enum(variable, :comparison_type) %></td>
                       <td><%= variable.reference_value_1 %></td>
                       <td><%= variable.reference_value_2 %></td>
@@ -80,18 +80,10 @@
                       <td><%= (variable.qualitative_scale || []).join(', ') %></td>
                       <td><%= variable.qualitative_value %></td>
                       <td>
-                        <% if variable.enabled? %>
-                          <span class="badge bg-success"><%= t("common.yes") %></span>
-                        <% else %>
-                          <span class="badge bg-secondary"><%= t("common.no") %></span>
-                        <% end %>
+                        <%= boolean_checkbox(variable.enabled?, label: CriteriaVariable.human_attribute_name(:enabled)) %>
                       </td>
                       <td>
-                        <% if variable.shown? %>
-                          <span class="badge bg-success"><%= t("common.yes") %></span>
-                        <% else %>
-                          <span class="badge bg-secondary"><%= t("common.no") %></span>
-                        <% end %>
+                        <%= boolean_checkbox(variable.shown?, label: CriteriaVariable.human_attribute_name(:shown)) %>
                       </td>
                     </tr>
                   <% end %>

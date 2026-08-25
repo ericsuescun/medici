@@ -36,16 +36,19 @@
             </dl>
 
             <%# The structured eligibility rules (criteria profile variables),
-                names only — the full grammar lives in the profile card below. %>
+                name + category — the full grammar lives in the profile card
+                below. The category is here because "is this one decisive?" is
+                the first thing a rep asks of a rule, and primary criteria are
+                also exactly the questions the patient questionnaire asks. %>
             <% if (profile = study.criteria_profile) %>
               <div class="row mt-2">
                 <div class="col-md-6">
                   <h6><%= t("studies.inclusion_variables") %></h6>
-                  <% variables = profile.criteria_variables.inclusion.order(:name) %>
+                  <% variables = profile.criteria_variables.inclusion.order(Arel.sql("CASE WHEN criteria_category = 'primary' THEN 0 ELSE 1 END"), :name) %>
                   <% if variables.any? %>
                     <ul class="mb-0">
                       <% variables.each do |variable| %>
-                        <li><%= variable.name %></li>
+                        <li><%= variable.name %> <%= criteria_category_badge(variable) %></li>
                       <% end %>
                     </ul>
                   <% else %>
@@ -54,11 +57,11 @@
                 </div>
                 <div class="col-md-6">
                   <h6><%= t("studies.exclusion_variables") %></h6>
-                  <% variables = profile.criteria_variables.exclusion.order(:name) %>
+                  <% variables = profile.criteria_variables.exclusion.order(Arel.sql("CASE WHEN criteria_category = 'primary' THEN 0 ELSE 1 END"), :name) %>
                   <% if variables.any? %>
                     <ul class="mb-0">
                       <% variables.each do |variable| %>
-                        <li><%= variable.name %></li>
+                        <li><%= variable.name %> <%= criteria_category_badge(variable) %></li>
                       <% end %>
                     </ul>
                   <% else %>
@@ -281,6 +284,7 @@
                 <thead>
                 <tr>
                   <th><%= Patient.human_attribute_name(:firstname) %></th>
+                  <th><%= t("studies.patient_contact.header") %></th>
                   <th><%= t("studies.age") %></th>
                   <th><%= Patient.human_attribute_name(:state) %></th>
                 </tr>
@@ -288,7 +292,38 @@
                 <tbody>
                 <% @patients.each do |patient| %>
                   <tr>
-                    <td><%= link_to patient.fullname, patient %></td>
+                    <%# display_name, not fullname: a patient who came through the
+                        public form has no name yet, and rendering fullname raw
+                        made the row an EMPTY, unclickable link. %>
+                    <td>
+                      <%= link_to patient.display_name, patient,
+                            title: patient.fullname.presence || t("studies.patient_contact.unnamed") %>
+                    </td>
+                    <%# The whole point of a nameless lead is that somebody rings
+                        them back, so the phone/email are actionable here rather
+                        than one page away. Same audience as the patient page —
+                        this list is already policy-scoped in the controller. %>
+                    <td class="small text-nowrap">
+                      <% if patient.contact_number.present? %>
+                        <div>
+                          <%= link_to "tel:#{patient.contact_number.gsub(/[^+0-9]/, '')}",
+                                class: "text-decoration-none", title: t("studies.patient_contact.call") do %>
+                            <i class="bi bi-telephone"></i> <%= patient.contact_number %>
+                          <% end %>
+                        </div>
+                      <% end %>
+                      <% if patient.email.present? %>
+                        <div>
+                          <%= link_to "mailto:#{patient.email}",
+                                class: "text-decoration-none", title: patient.email do %>
+                            <i class="bi bi-envelope"></i> <%= truncate(patient.email, length: 22) %>
+                          <% end %>
+                        </div>
+                      <% end %>
+                      <% if patient.contact_number.blank? && patient.email.blank? %>
+                        <span class="text-muted" title="<%= t("studies.patient_contact.none") %>">—</span>
+                      <% end %>
+                    </td>
                     <td><%= get_age(patient.dob) if patient.dob.present? %></td>
                     <%# Same semantics as the bar: participant green, candidate
                         amber, interested red. %>

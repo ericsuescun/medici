@@ -62,7 +62,7 @@
           <% when :patients %>
             <% group.records.each do |patient| %>
               <li class="list-group-item">
-                <%= link_to patient.fullname.presence || patient.participant_code, patient, class: "text-decoration-none fw-semibold" %>
+                <%= link_to patient.display_name, patient, class: "text-decoration-none fw-semibold" %>
                 <span class="text-muted small">· <%= patient.participant_code %></span>
               </li>
             <% end %>

@@ -29,6 +29,8 @@
             <th><%= CriteriaVariable.human_attribute_name(:name) %></th>
             <th><%= CriteriaVariable.human_attribute_name(:value_type) %></th>
             <th><%= CriteriaVariable.human_attribute_name(:variable_type) %></th>
+            <th><%= CriteriaVariable.human_attribute_name(:criteria_category) %></th>
+            <th><%= CriteriaVariable.human_attribute_name(:patient_prompt) %></th>
             <th><%= CriteriaVariable.human_attribute_name(:comparison_type) %></th>
             <th><%= CriteriaVariable.human_attribute_name(:reference_value_1) %></th>
             <th><%= CriteriaVariable.human_attribute_name(:reference_value_2) %></th>
@@ -43,13 +45,9 @@
               <td><%= variable.criteria_order.present? ? variable.criteria_order : '-' %></td>
               <td><%= link_to variable.name, [@criteria_profile, variable] %></td>
               <td><%= t_enum(variable, :value_type) %></td>
-              <td>
-                <% if variable.variable_type == "inclusion" %>
-                  <span class="badge bg-success"><%= t_enum(variable, :variable_type) %></span>
-                <% else %>
-                  <span class="badge bg-danger"><%= t_enum(variable, :variable_type) %></span>
-                <% end %>
-              </td>
+              <td><%= variable_type_badge(variable) %></td>
+              <td><%= criteria_category_badge(variable) %></td>
+              <td style="min-width: 14rem"><%= patient_prompt_display(variable) %></td>
               <td><%= t_enum(variable, :comparison_type) %></td>
               <td><%= variable.reference_value_1 %></td>
               <td><%= variable.reference_value_2 %></td>
