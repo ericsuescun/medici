@@ -83,7 +83,7 @@ es:
     description: "Descripción"
     resources_with_permissions: "Recursos con permisos"
     edit_permissions: "Editar permisos"
-    back_to_home: "Retornar a Vitalia"
+    back_to_home: "Retornar a Medici"
     name_placeholder: "p. ej. auditor"
     name_hint: "Identificador en minúsculas, sin espacios. Único."
     display_name_placeholder: "p. ej. Auditor"
@@ -95,8 +95,7 @@ es:
   static_pages:
     no_city_selected: "Ninguna ciudad seleccionada"
     home:
-      header: "Vitalia - Plataforma de Estudios Clínicos"
-      logo_alt: "Logotipo de Medici"
+      header: "Medici - Plataforma de Estudios Clínicos"
       tagline: "Te ayudamos a encontrar un estudio que pueda mejorar tu condición de salud"
       stat_sponsors: "Patrocinadores"
       stat_facilities: "Centros de Ensayos Clínicos"

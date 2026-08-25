@@ -6,7 +6,7 @@ es:
     form_errors:
       one: "%{count} error impidió guardar esta categoría:"
       other: "%{count} errores impidieron guardar esta categoría:"
-    home_link: "Retornar a Vitalia"
+    home_link: "Retornar a Medici"
     new: "Nueva categoría"
     edit: "Editar categoría"
     confirm_delete: "¿Eliminar esta categoría? Los estudios asociados no se eliminan; solo pierden esta área terapéutica."
@@ -18,7 +18,7 @@ es:
     form_errors:
       one: "%{count} error impidió guardar este medicamento:"
       other: "%{count} errores impidieron guardar este medicamento:"
-    home_link: "Retornar a Vitalia"
+    home_link: "Retornar a Medici"
     new: "Nuevo medicamento"
     confirm_delete: "¿Eliminar este medicamento?"
     related_studies: "Estudios relacionados"
@@ -33,7 +33,7 @@ es:
     form_errors:
       one: "%{count} error impidió guardar esta ciudad:"
       other: "%{count} errores impidieron guardar esta ciudad:"
-    home_link: "Retornar a Vitalia"
+    home_link: "Retornar a Medici"
     new: "Nueva ciudad"
     edit_title: "Edición de ciudad"
     back_to_list: "Retornar a ciudades"

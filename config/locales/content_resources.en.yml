@@ -6,7 +6,7 @@ en:
     form_errors:
       one: "%{count} error prevented saving this category:"
       other: "%{count} errors prevented saving this category:"
-    home_link: "Back to Vitalia"
+    home_link: "Back to Medici"
     new: "New category"
     edit: "Edit category"
     confirm_delete: "Delete this category? Associated studies are kept; they only lose this therapeutic area."
@@ -18,7 +18,7 @@ en:
     form_errors:
       one: "%{count} error prohibited this medication from being saved:"
       other: "%{count} errors prohibited this medication from being saved:"
-    home_link: "Return to Vitalia"
+    home_link: "Return to Medici"
     new: "New medication"
     confirm_delete: "Delete this medication?"
     related_studies: "Related studies"
@@ -33,7 +33,7 @@ en:
     form_errors:
       one: "%{count} error prohibited this city from being saved:"
       other: "%{count} errors prohibited this city from being saved:"
-    home_link: "Return to Vitalia"
+    home_link: "Return to Medici"
     new: "New city"
     edit_title: "Edit city"
     back_to_list: "Back to cities"

@@ -6,7 +6,7 @@ fr:
     form_errors:
       one: "%{count} erreur a empêché l'enregistrement de cette catégorie :"
       other: "%{count} erreurs ont empêché l'enregistrement de cette catégorie :"
-    home_link: "Retour à Vitalia"
+    home_link: "Retour à Medici"
     new: "Nouvelle catégorie"
     edit: "Modifier la catégorie"
     confirm_delete: "Supprimer cette catégorie ? Les études associées sont conservées ; elles perdent seulement cette aire thérapeutique."
@@ -18,7 +18,7 @@ fr:
     form_errors:
       one: "%{count} erreur a empêché l’enregistrement de ce médicament :"
       other: "%{count} erreurs ont empêché l’enregistrement de ce médicament :"
-    home_link: "Retourner à Vitalia"
+    home_link: "Retourner à Medici"
     new: "Nouveau médicament"
     confirm_delete: "Supprimer ce médicament ?"
     related_studies: "Études associées"
@@ -33,7 +33,7 @@ fr:
     form_errors:
       one: "%{count} erreur a empêché l’enregistrement de cette ville :"
       other: "%{count} erreurs ont empêché l’enregistrement de cette ville :"
-    home_link: "Retourner à Vitalia"
+    home_link: "Retourner à Medici"
     new: "Nouvelle ville"
     edit_title: "Modification de la ville"
     back_to_list: "Retour aux villes"

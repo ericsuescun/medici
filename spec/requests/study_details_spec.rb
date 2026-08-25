@@ -4,10 +4,10 @@ require 'rails_helper'
 # in (the authenticated StudiesController#show is behind Devise + Pundit).
 RSpec.describe "Public study details", type: :request do
   it "is reachable by an anonymous visitor" do
-    study = create(:study, public_title: "Vitalia Trial")
+    study = create(:study, public_title: "Medici Trial")
     get study_about_path(study)
     expect(response).to be_successful
-    expect(response.body).to include("Vitalia Trial")
+    expect(response.body).to include("Medici Trial")
   end
 
   it "shows the enrollment status without exposing a count" do

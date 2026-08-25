@@ -6,7 +6,7 @@
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="mb-0"><%= t("studies.clinical_studies") %></h1>
         <div>
-          <%= link_to t("studies.return_to_vitalia"), static_pages_medici_home_path %> |
+          <%= link_to t("studies.return_to_home"), static_pages_medici_home_path %> |
           <%= render "new_study_dropdown" %>
         </div>
       </div>
@@ -62,7 +62,7 @@
       <div class="d-flex justify-content-between align-items-center">
         <%= will_paginate @studies, :renderer => WillPaginate::ActionView::Bootstrap4LinkRenderer %>
         <div>
-          <%= link_to t("studies.return_to_vitalia"), static_pages_medici_home_path %> |
+          <%= link_to t("studies.return_to_home"), static_pages_medici_home_path %> |
           <%= render "new_study_dropdown" %>
         </div>
       </div>

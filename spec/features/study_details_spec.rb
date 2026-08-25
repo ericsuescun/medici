@@ -2,13 +2,13 @@ require 'rails_helper'
 
 RSpec.feature "Public 'More about this study' card", type: :feature do
   scenario "an anonymous visitor opens the info card from the home showcase" do
-    create(:study, public_title: "Vitalia Diabetes Trial", main_intervention: "Metformin XR")
+    create(:study, public_title: "Medici Diabetes Trial", main_intervention: "Metformin XR")
 
     visit root_path
     expect(page).to have_link(I18n.t("static_pages.showcase.more_about"))
     first(:link, I18n.t("static_pages.showcase.more_about")).click
 
-    expect(page).to have_content("Vitalia Diabetes Trial")
+    expect(page).to have_content("Medici Diabetes Trial")
     expect(page).to have_content("Metformin XR")
     expect(page).to have_content(I18n.t("static_pages.study_details.cities"))
     expect(page).to have_content(I18n.t("static_pages.study_details.centers"))

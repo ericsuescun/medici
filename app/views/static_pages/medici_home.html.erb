@@ -1,9 +1,19 @@
-<%# Mobile-first landing: logo → tagline → stat pills → city search → topic
+<%# Mobile-first landing: wordmark → tagline → stat pills → city search → topic
     pills + study cards (anonymous showcase) → login at the very end. The same
     order reads naturally on desktop; widths are only constrained per section. %>
+
+<%# Preloaded only here, the one page that renders the wordmark, so the brand
+    doesn't flash in the fallback face. crossorigin is required on font
+    preloads even same-origin, or the browser fetches the file twice. %>
+<% content_for :head do %>
+  <%= preload_link_tag asset_path("Figtree-SemiBold.woff2"), as: "font", type: "font/woff2", crossorigin: "anonymous" %>
+<% end %>
 <div class="container py-4 py-md-5">
   <div class="text-center">
-    <%= image_tag "logo/medici_logo.jpeg", alt: t("static_pages.home.logo_alt"), class: "img-fluid rounded shadow-sm home-hero-logo" %>
+    <%# The brand is set as real text, not an image: it stays selectable, scales
+        with the viewport, needs no alt attribute and costs no image request.
+        Deliberately not an <h1> — the tagline below already is one. %>
+    <p class="home-wordmark mb-0">Medici</p>
     <h1 class="home-tagline mx-auto mt-4 mb-3"><%= t("static_pages.home.tagline") %></h1>
 
     <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">

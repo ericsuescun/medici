@@ -81,7 +81,7 @@ fr:
     description: "Description"
     resources_with_permissions: "Ressources avec permissions"
     edit_permissions: "Modifier les permissions"
-    back_to_home: "Retour à Vitalia"
+    back_to_home: "Retour à Medici"
     name_placeholder: "p. ex. auditeur"
     name_hint: "Identifiant en minuscules, sans espaces. Unique."
     display_name_placeholder: "p. ex. Auditeur"
@@ -93,8 +93,7 @@ fr:
   static_pages:
     no_city_selected: "Aucune ville sélectionnée"
     home:
-      header: "Vitalia - Plateforme d'études cliniques"
-      logo_alt: "Logo de Medici"
+      header: "Medici - Plateforme d'études cliniques"
       tagline: "Nous vous aidons à trouver une étude susceptible d'améliorer votre état de santé"
       stat_sponsors: "Promoteurs"
       stat_facilities: "Centres d'essais cliniques"

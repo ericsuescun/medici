@@ -81,7 +81,7 @@ en:
     description: "Description"
     resources_with_permissions: "Resources with permissions"
     edit_permissions: "Edit permissions"
-    back_to_home: "Return to Vitalia"
+    back_to_home: "Return to Medici"
     name_placeholder: "e.g. auditor"
     name_hint: "Lowercase identifier, no spaces. Unique."
     display_name_placeholder: "e.g. Auditor"
@@ -93,8 +93,7 @@ en:
   static_pages:
     no_city_selected: "No city selected"
     home:
-      header: "Vitalia - Clinical Studies Platform"
-      logo_alt: "Medici logo"
+      header: "Medici - Clinical Studies Platform"
       tagline: "We help you find a study that could improve your health condition"
       stat_sponsors: "Sponsors"
       stat_facilities: "Clinical Trial Centers"

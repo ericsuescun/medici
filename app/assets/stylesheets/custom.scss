@@ -67,10 +67,43 @@ $dark: $medici-dark;
   }
 }
 
-// Public home hero: logo + tagline + compact stat pills (the landing keeps
+// Brand wordmark typeface. Self-hosted on purpose: a Google Fonts request from
+// the public participation form or the step-2 patient questionnaire would
+// disclose the patient's IP to a third party, which is a new transmisión we
+// don't need (same reasoning as the rest of the Ley 1581 posture).
+//
+// Bare url() — Propshaft's CssAssetUrls compiler rewrites it to the digested
+// path, and app/assets/fonts is already on the load path. Do NOT use
+// font-path()/asset-path(): dartsass-rails is a thin dart-sass wrapper with no
+// Rails helper functions, so those are undefined-function compile errors.
+@font-face {
+  font-family: "Figtree";
+  src: url("Figtree-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Public home hero: wordmark + tagline + compact stat pills (the landing keeps
 // the roomier .stat-card for dashboards; pills read better on a phone).
-.home-hero-logo {
-  max-height: 220px;
+//
+// The wordmark replaced the logo image entirely. It is scoped to this class
+// rather than set as $font-family-base for two reasons: the rest of the UI
+// stays on the system stack by choice, and custom.scss is imported AFTER
+// bootstrap, so a variable override here would be silently dead (task D1).
+// The brand face applies wherever the name is used AS the brand — the landing
+// wordmark and the navbar — so the mark reads the same in both places.
+.home-wordmark,
+.navbar-brand {
+  font-family: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.home-wordmark {
+  font-size: clamp(3rem, 11vw, 5.5rem);
+  line-height: 1;
+  color: $medici-primary;
 }
 
 .home-tagline {

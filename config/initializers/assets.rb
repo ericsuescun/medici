@@ -15,7 +15,5 @@ Rails.application.config.assets.paths << Rails.root.join("node_modules/trix/dist
 Rails.application.config.assets.paths << Rails.root.join("node_modules/@rails/actiontext/app/assets/javascripts")
 Rails.application.config.assets.paths << Rails.root.join("node_modules/@rails/activestorage/app/assets/javascripts")
 Rails.application.config.assets.paths << Rails.root.join("app/assets/images")
-Rails.application.config.assets.paths << Rails.root.join("app/assets/images/logo")
 Rails.application.config.assets.precompile << "bootstrap.bundle.min.js"
 Rails.application.config.assets.precompile += %w[ trix.esm.min.js actiontext.esm.js actiontext.css activestorage.esm.js ]
-Rails.application.config.assets.precompile += %w[ logo/medici_logo.jpeg ]
