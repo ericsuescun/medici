@@ -1,0 +1,28 @@
+<%# Complementary criteria the patient does not meet. Deliberately a WARNING and
+    never part of the eligibility headline: these do not block the transition,
+    and whether they matter is the rep's clinical judgment. Says so explicitly,
+    and names them as secondary, so nobody reads it as a verdict. Locals:
+      result  — an EligibilityResult
+      compact — tighter padding, for the briefing's narrower column (default false)
+%>
+<% if result.secondary_concerns.any? %>
+  <% pad = local_assigns.fetch(:compact, false) ? "py-2" : "" %>
+  <div class="alert alert-warning <%= pad %> mb-3">
+    <div class="d-flex align-items-start gap-2">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <div>
+        <strong><%= t("criteria_assessments.secondary_warning.title") %></strong>
+        <p class="mb-1 small"><%= t("criteria_assessments.secondary_warning.body", count: result.secondary_concerns.count) %></p>
+        <ul class="small mb-0">
+          <% result.secondary_concerns.each do |c| %>
+            <li>
+              <strong><%= c.variable.name %></strong> —
+              <%= t("criteria_assessments.brief.required") %>: <%= c.variable.rule_summary %>,
+              <%= t("criteria_assessments.brief.measured") %>: <%= c.value %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+<% end %>

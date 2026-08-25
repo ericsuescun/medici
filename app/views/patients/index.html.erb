@@ -46,13 +46,14 @@
                 <th><%= Patient.human_attribute_name(:id_number) %></th>
                 <th><%= Patient.human_attribute_name(:illness_description) %></th>
                 <th><%= Patient.human_attribute_name(:state) %></th>
+                <th><%= t("patients.answered_questions") %></th>
                 <th><%= t("common.actions") %></th>
               </tr>
             </thead>
             <tbody>
               <% patients.each do |patient| %>
                 <tr id="<%= dom_id(patient) %>">
-                  <td><strong><%= link_to patient.fullname.presence || patient.participant_code, patient %></strong></td>
+                  <td><strong><%= link_to patient.display_name, patient %></strong></td>
                   <td><%= patient.contact_number %></td>
                   <td><%= patient.email %></td>
                   <td><%= patient.id_number %></td>
@@ -60,6 +61,19 @@
                   <td>
                     <% if policy(patient).show_state? %>
                       <span class="badge bg-secondary"><%= patient.state %></span>
+                    <% end %>
+                  </td>
+                  <td>
+                    <%# Self-reported questionnaire fill count — the review-order
+                        tiebreaker (fullest first). Sorted in the controller. %>
+                    <% count = @declaration_counts&.fetch(patient.id, 0) || 0 %>
+                    <% if count.positive? %>
+                      <span class="badge bg-info-subtle text-info-emphasis border"><%= t("patients.answered_count", count: count) %></span>
+                      <% if patient.submitted_by_proxy? %>
+                        <span class="badge bg-warning-subtle text-warning-emphasis border" title="<%= t("patients.proxy_hint") %>"><%= t("patients.proxy_badge") %></span>
+                      <% end %>
+                    <% else %>
+                      <span class="text-muted">—</span>
                     <% end %>
                   </td>
                   <td>

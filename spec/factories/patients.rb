@@ -3,6 +3,7 @@
 # Table name: patients
 #
 #  id                  :bigint           not null, primary key
+#  adult_confirmed     :boolean          default(FALSE), not null
 #  contact_address     :string
 #  contact_number      :string
 #  country             :string           default("")
@@ -15,8 +16,10 @@
 #  lastname            :string
 #  notes               :string
 #  participant_code    :string
+#  reported_city       :string
 #  sex                 :string
 #  state               :string           default("interested"), not null
+#  submitted_by_proxy  :boolean          default(FALSE), not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  study_id            :bigint

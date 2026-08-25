@@ -12,6 +12,10 @@ class CriteriaAssessmentsController < SecureApplicationController
     @values_by_var = values.index_by(&:criteria_variable_id)
     @values_by_name = values.reject(&:criteria_variable_id).index_by(&:name)
     @result = @profile.evaluate(@patient)
+    # What the patient declared about themselves (questionnaire/phone) — shown
+    # as testimony beside each rule so the rep can verify rather than re-ask.
+    # Never evaluated here: only investigator-recorded values feed @result.
+    @declarations_by_variable = @patient.patient_declarations.live.index_by(&:criteria_variable_id)
   end
 
   def update
@@ -22,16 +26,41 @@ class CriteriaAssessmentsController < SecureApplicationController
 
   private
 
+  # Row-level access, the same recipe as the other patient sub-resources (
+  # notes, complementary information, briefing): load through `policy_scope`, so
+  # a rep reaching for another centre's patient gets a 404 rather than the
+  # record. This used to be a bare `Patient.find`, which let any rep with the
+  # class-level `can_edit` permission read AND write any patient's clinical
+  # values — and since those values are what the promotion gate reads, writing
+  # them was enough to open the gate for the patient's own rep.
   def set_patient
-    @patient = Patient.find(params[:patient_id])
+    @patient = policy_scope(Patient).find(params[:patient_id])
   end
 
+  # Always the patient's OWN study's profile. A criteria_profile_id that does not
+  # match is refused rather than honoured: assessing a patient against one rule
+  # set while `Patient#primary_criteria_met?` gates on another is how the page
+  # and the gate end up contradicting each other.
   def set_profile
-    @profile = CriteriaProfile.find(params[:criteria_profile_id])
+    @profile = @patient.study&.criteria_profile
+    raise ActiveRecord::RecordNotFound if @profile.nil?
+
+    requested = params[:criteria_profile_id]
+    raise ActiveRecord::RecordNotFound if requested.present? && requested.to_s != @profile.id.to_s
   end
 
+  # Gated by the parent patient, not the permission matrix (see
+  # ComplementaryInformationsController).
+  def authorization_model
+    nil
+  end
+
+  # Decisive criteria first: they are what the recruitment score is built from,
+  # so they are what a rep should be asked to measure first.
   def ordered_variables
-    @profile.criteria_variables.select(&:enabled).sort_by { |cv| [ cv.variable_type, cv.criteria_order || 0 ] }
+    @profile.criteria_variables.select(&:enabled).sort_by do |cv|
+      [ cv.criteria_category == "primary" ? 0 : 1, cv.variable_type, cv.criteria_order || 0 ]
+    end
   end
 
   # Upsert one VariableValue per submitted variable, keyed by the rule's FK so a
@@ -52,6 +81,7 @@ class CriteriaAssessmentsController < SecureApplicationController
         name: cv.name,
         value: raw.to_s,
         value_type: cv.value_type, comparison_type: cv.comparison_type, variable_type: cv.variable_type,
+        criteria_category: cv.criteria_category,
         reference_value_1: cv.reference_value_1, reference_value_2: cv.reference_value_2,
         qualitative_value: cv.qualitative_value, qualitative_scale: cv.qualitative_scale,
         criteria_order: cv.criteria_order

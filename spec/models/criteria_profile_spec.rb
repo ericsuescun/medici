@@ -16,6 +16,7 @@ require 'rails_helper'
 #
 #  index_criteria_profiles_on_study_id              (study_id)
 #  index_criteria_profiles_on_study_id_and_user_id  (study_id,user_id)
+#  index_criteria_profiles_on_study_id_unique       (study_id) UNIQUE WHERE (study_id IS NOT NULL)
 #  index_criteria_profiles_on_user_id               (user_id)
 #
 # Foreign Keys
@@ -24,14 +25,43 @@ require 'rails_helper'
 #  fk_rails_...  (user_id => users.id)
 #
 RSpec.describe CriteriaProfile, type: :model do
+  # A study's eligibility rules are singular, and since they gate promotion a
+  # second profile pointing at the same study would make "which rules apply"
+  # depend on physical row order — and could open the gate outright if the
+  # winner happened to define no primary criteria.
+  describe "one profile per study" do
+    let(:study) { FactoryBot.create(:study) }
+
+    it "rejects a second profile for the same study" do
+      FactoryBot.create(:criteria_profile, study: study)
+      duplicate = FactoryBot.build(:criteria_profile, study: study)
+
+      expect(duplicate).not_to be_valid
+      expect(duplicate.errors[:study_id]).to be_present
+    end
+
+    it "still allows many study-less (reusable) profiles" do
+      FactoryBot.create(:criteria_profile, study: nil)
+
+      expect(FactoryBot.build(:criteria_profile, study: nil)).to be_valid
+    end
+
+    it "resolves the study's profile deterministically" do
+      profile = FactoryBot.create(:criteria_profile, study: study)
+
+      expect(study.reload.criteria_profile).to eq(profile)
+    end
+  end
+
   describe "#evaluate" do
     let(:profile) { FactoryBot.create(:criteria_profile) }
     let(:patient) { FactoryBot.create(:patient) }
 
-    def rule(name:, variable_type:, comparison_type:, value_type: "quantitative", ref1: nil, ref2: nil)
+    def rule(name:, variable_type:, comparison_type:, value_type: "quantitative", ref1: nil, ref2: nil, category: "primary")
       profile.criteria_variables.create!(
         name: name, variable_type: variable_type, value_type: value_type,
-        comparison_type: comparison_type, reference_value_1: ref1, reference_value_2: ref2
+        comparison_type: comparison_type, reference_value_1: ref1, reference_value_2: ref2,
+        criteria_category: category
       )
     end
 
@@ -110,6 +140,93 @@ RSpec.describe CriteriaProfile, type: :model do
         expect(result.answered_count).to eq(2)
         expect(result.total_count).to eq(3)
         expect(result.verdict).to eq(:not_eligible)
+      end
+    end
+
+    # The recruitment score answers a different question from the verdict: not
+    # "does this patient meet the protocol" but "is there enough evidence to
+    # move them forward". Only primary criteria feed it.
+    describe "the recruitment score" do
+      # Answer a rule, linked by FK the way the assessment controller does.
+      def measure(variable, value)
+        patient.variable_values.create!(
+          criteria_variable: variable, name: variable.name, value: value.to_s,
+          value_type: variable.value_type, comparison_type: variable.comparison_type,
+          variable_type: variable.variable_type, criteria_category: variable.criteria_category,
+          reference_value_1: variable.reference_value_1, reference_value_2: variable.reference_value_2
+        )
+      end
+
+      it "scores the primary criteria only, so a failing secondary never holds a patient back" do
+        age = rule(name: "Edad", variable_type: "inclusion", comparison_type: "between_range", ref1: 18, ref2: 40)
+        weight = rule(name: "Peso", variable_type: "inclusion", comparison_type: "more_than", ref1: 50)
+        height = rule(name: "Talla", variable_type: "inclusion", comparison_type: "more_than", ref1: 150, category: "secondary")
+        measure(age, 30)
+        measure(weight, 70)
+        measure(height, 140) # fails, but it is only complementary
+
+        result = profile.evaluate(patient.reload)
+        expect(result.primary_score).to eq(100)
+        expect(result.recommendation).to eq(:ready)
+        expect(result).to be_promotable
+        # The whole-protocol verdict still reports the secondary failure — the
+        # two answers are allowed to disagree, and both are surfaced.
+        expect(result).not_to be_eligible
+        expect(result.secondary_concerns.map { |c| c.variable.name }).to eq([ "Talla" ])
+      end
+
+      it "holds the score down for an unmeasured primary criterion" do
+        passing = 3.times.map { |i| rule(name: "P#{i}", variable_type: "inclusion", comparison_type: "more_than", ref1: 10) }
+        rule(name: "Sin medir", variable_type: "inclusion", comparison_type: "more_than", ref1: 10)
+        passing.each { |cv| measure(cv, 20) }
+
+        result = profile.evaluate(patient.reload)
+        expect(result.primary_score).to eq(75)
+        expect(result.recommendation).to eq(:promising)
+        expect(result).not_to be_promotable
+        expect(result).to be_high_score
+      end
+
+      it "blocks on a failing primary criterion however high the rest scores" do
+        4.times { |i| measure(rule(name: "P#{i}", variable_type: "inclusion", comparison_type: "more_than", ref1: 10), 20) }
+        measure(rule(name: "Infección", variable_type: "exclusion", value_type: "boolean", comparison_type: "true"), true)
+
+        result = profile.evaluate(patient.reload)
+        expect(result.primary_score).to eq(80)
+        expect(result.recommendation).to eq(:blocked)
+        expect(result).not_to be_promotable
+        expect(result).not_to be_high_score
+      end
+
+      it "stays pending while too little is measured" do
+        measure(rule(name: "P0", variable_type: "inclusion", comparison_type: "more_than", ref1: 10), 20)
+        3.times { |i| rule(name: "Sin medir #{i}", variable_type: "inclusion", comparison_type: "more_than", ref1: 10) }
+
+        result = profile.evaluate(patient.reload)
+        expect(result.primary_score).to eq(25)
+        expect(result.recommendation).to eq(:pending)
+      end
+
+      it "has no score at all when the profile marks nothing primary" do
+        measure(rule(name: "Talla", variable_type: "inclusion", comparison_type: "more_than", ref1: 150, category: "secondary"), 170)
+
+        result = profile.evaluate(patient.reload)
+        expect(result.primary_score).to be_nil
+        expect(result.recommendation).to eq(:none)
+        expect(result).not_to be_promotable
+      end
+
+      # The migration backfilled every pre-existing rule to primary precisely so
+      # profiles written before the split keep scoring on all of their criteria.
+      it "treats a rule with no explicit category as primary" do
+        cv = profile.criteria_variables.create!(
+          name: "Edad", variable_type: "inclusion", value_type: "quantitative",
+          comparison_type: "between_range", reference_value_1: 18, reference_value_2: 40
+        )
+        expect(cv.criteria_category).to eq("primary")
+
+        measure(cv, 30)
+        expect(profile.evaluate(patient.reload).primary_score).to eq(100)
       end
     end
   end

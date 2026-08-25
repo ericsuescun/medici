@@ -16,6 +16,11 @@ pt:
       scientific: "Científico"
       administrative: "Administrativo"
     no_visible_patients: "Não há pacientes visíveis para o seu papel."
+    patient_contact:
+      header: "Contato"
+      call: "Ligar para este paciente"
+      none: "Sem dados de contato"
+      unnamed: "Ainda sem nome — veio pelo formulário público"
     recruitment:
       title: "Recrutamento"
       summary: "%{total} de %{goal} pacientes no processo"
@@ -54,7 +59,7 @@ pt:
     contact_information: "Informações de contato"
     publication_links: "Links para publicações"
     clinical_studies: "Estudos clínicos"
-    return_to_vitalia: "Voltar para Vitalia"
+    return_to_home: "Voltar para Medici"
     new_study: "Novo estudo"
     edit_this_study: "Editar este estudo"
     return_to_studies: "Voltar para estudos"
@@ -111,6 +116,25 @@ pt:
     back_to_patient: "Voltar ao paciente"
     updated: "Avaliação de critérios atualizada."
     no_criteria: "Este perfil ainda não tem critérios definidos."
+    primary:
+      eligible_detail: "o paciente atende a todos os critérios primários."
+      not_eligible_detail:
+        one: "%{count} critério primário não é atendido."
+        other: "%{count} critérios primários não são atendidos."
+      incomplete_detail:
+        one: "falta registrar %{count} critério primário."
+        other: "faltam registrar %{count} critérios primários."
+      none: "Este perfil não marca nenhum critério como primário, portanto não define elegibilidade."
+    secondary_warning:
+      title: "Atenção: critérios SECUNDÁRIOS não atendidos"
+      body:
+        one: "%{count} critério secundário não é atendido. Não impede promover o paciente — cabe ao representante decidir se afeta."
+        other: "%{count} critérios secundários não são atendidos. Não impedem promover o paciente — cabe ao representante decidir se afetam."
+    locked:
+      hint: "Para promover este paciente você deve registrar um valor para cada critério primário, e todos devem ser atendidos."
+    declared: "Paciente declarou: %{value}"
+    declared_dont_know: "Paciente declarou: não sabe"
+    declared_by_patient: "autopreenchido"
     brief:
       passing: "Atendidos"
       out_of_reach: "Fora de alcance"
@@ -129,3 +153,24 @@ pt:
       promote_hint_incomplete: "Ainda faltam valores a registrar antes de confirmar a elegibilidade."
       promote_hint_not_eligible: "O paciente não atende a todos os critérios; revise o que está fora de alcance antes de promover."
       promote_hint_generic: "Atualize o estado do paciente no ciclo do estudo."
+    score:
+      title: "Pontuação de recrutamento"
+      subtitle: "Calculada apenas com os critérios primários."
+      measured: "%{answered} de %{total} critérios primários registrados"
+      no_primary: "Este perfil não marca nenhum critério como primário, portanto não há pontuação de recrutamento."
+      primary_section: "Critérios primários"
+      primary_section_hint: "Decidem a pontuação e a promoção do paciente."
+      secondary_section: "Critérios secundários"
+      secondary_section_hint: "Complementam a avaliação; não afetam a pontuação nem a mudança de estado."
+      secondary_concerns:
+        one: "%{count} critério secundário não é atendido (não bloqueia a promoção)."
+        other: "%{count} critérios secundários não são atendidos (não bloqueiam a promoção)."
+      recommendation:
+        ready: "Pronto para promover"
+        promising: "Pontuação alta"
+        blocked: "Bloqueado por um critério primário"
+        pending: "Em avaliação"
+      promote_hint_ready: "Todos os critérios primários são atendidos (%{score}%) — você pode promovê-lo com “%{event}”."
+      promote_hint_promising: "Pontuação alta (%{score}%) e nenhum critério primário descartado; termine de medir os restantes antes de promover."
+      promote_hint_blocked: "Um critério primário não é atendido; revise-o antes de promover."
+      promote_hint_pending: "Ainda faltam critérios primários por medir para que a pontuação seja confiável."

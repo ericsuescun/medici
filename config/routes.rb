@@ -12,6 +12,13 @@ Rails.application.routes.draw do
   get "studies/:study_id/participate", to: "participation_requests#new", as: :new_participation_request
   post "studies/:study_id/participate", to: "participation_requests#create", as: :participation_requests
 
+  # Step 2 of the flow above: the public self-report questionnaire. The patient
+  # is identified by the session stamp step 1 wrote — the :study_id in the URL
+  # is cosmetic/navigational; SelfReportsController never reads identity from
+  # params (see that controller).
+  get "studies/:study_id/participate/questions", to: "self_reports#show", as: :study_self_report
+  post "studies/:study_id/participate/questions", to: "self_reports#create"
+
   # Operation manual / regulatory sources / feature inventory (signed-in only).
   get "about", to: "static_pages#about", as: :about
 
@@ -61,8 +68,6 @@ Rails.application.routes.draw do
     end
     # Capture a patient's values for a study's criteria profile + see the verdict.
     resource :criteria_assessment, only: %i[show update]
-    # Clinical SOAP notes accumulated over the research (rich text + S3 images).
-    resources :soap_notes
     # Patient-contributed prior exams: PDFs + pictures + notes (one bundle each).
     resource :complementary_information, only: %i[show edit update] do
       delete :purge_attachment

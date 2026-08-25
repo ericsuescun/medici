@@ -5,10 +5,12 @@
 #  id                  :bigint           not null, primary key
 #  comparison_type     :string           not null
 #  conditions          :text
+#  criteria_category   :string           default("primary"), not null
 #  criteria_order      :integer
 #  description         :text
 #  enabled             :boolean          default(TRUE), not null
 #  name                :string           not null
+#  patient_prompt      :text
 #  qualitative_scale   :text             default([]), not null, is an Array
 #  qualitative_value   :string
 #  reference_value_1   :decimal(15, 6)
@@ -43,7 +45,16 @@ FactoryBot.define do
     qualitative_scale { [ "low", "medium", "high" ] }
     qualitative_value { "medium" }
 
+    # Decisive by default, matching the column default: a criterion somebody
+    # bothered to define counts toward the recruitment score unless it is
+    # deliberately marked complementary.
+    criteria_category { "primary" }
+
     enabled { true }
     shown { true }
+
+    trait :secondary do
+      criteria_category { "secondary" }
+    end
   end
 end

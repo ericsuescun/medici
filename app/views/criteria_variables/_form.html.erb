@@ -26,17 +26,25 @@
     <%= form.text_area :description, class: "form-control", rows: 3 %>
   </div>
 
-  <div class="col-md-4">
+  <div class="col-md-3">
     <%= form.label :value_type, CriteriaVariable.human_attribute_name(:value_type) %>
     <%= form.select :value_type, CriteriaVariable.value_types.keys.map { |k| [k.humanize, k] }, {}, class: "form-select", required: true %>
   </div>
 
-  <div class="col-md-4">
+  <div class="col-md-3">
     <%= form.label :variable_type, CriteriaVariable.human_attribute_name(:variable_type) %>
     <%= form.select :variable_type, CriteriaVariable.variable_types.keys.map { |k| [k.humanize, k] }, {}, class: "form-select", required: true %>
   </div>
 
-  <div class="col-md-4">
+  <div class="col-md-3">
+    <%= form.label :criteria_category, CriteriaVariable.human_attribute_name(:criteria_category) %>
+    <%= form.select :criteria_category,
+                    CriteriaVariable.criteria_categories.keys.map { |k| [t("enums.criteria_variable.criteria_category.#{k}", default: k.humanize), k] },
+                    {}, class: "form-select", required: true %>
+    <div class="form-text"><%= t("criteria_variables.form.criteria_category_hint") %></div>
+  </div>
+
+  <div class="col-md-3">
     <%= form.label :comparison_type, CriteriaVariable.human_attribute_name(:comparison_type) %>
     <%= form.select :comparison_type, CriteriaVariable.comparison_types.keys.map { |k| [k.humanize, k] }, {}, class: "form-select", required: true %>
   </div>
@@ -65,6 +73,13 @@
   <div class="col-12">
     <%= form.label :conditions, t("criteria_variables.form.conditions_label") %>
     <%= form.text_area :conditions, class: "form-control", rows: 3 %>
+  </div>
+
+  <div class="col-12">
+    <%= form.label :patient_prompt, CriteriaVariable.human_attribute_name(:patient_prompt) %>
+    <%= form.text_area :patient_prompt, class: "form-control", rows: 2,
+          placeholder: t("criteria_variables.form.patient_prompt_placeholder") %>
+    <div class="form-text"><%= t("criteria_variables.form.patient_prompt_hint") %></div>
   </div>
 
   <div class="col-md-3 form-check">

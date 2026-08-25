@@ -11,6 +11,7 @@
 #  inclusion_criteria              :string
 #  local_health_authority_approved :boolean          default(FALSE), not null
 #  main_intervention               :string
+#  patient_self_report_enabled     :boolean          default(FALSE), not null
 #  public_title                    :string
 #  reviewed                        :boolean
 #  sample_size                     :integer
@@ -66,7 +67,13 @@ class Study < ApplicationRecord
   has_many :trial_cities, dependent: :destroy
   has_many :contacts, dependent: :destroy
   has_many :campaigns, dependent: :destroy
-  has_one :criteria_profile, dependent: :destroy
+  # Ordered on purpose. `has_one` emits LIMIT 1 with no ORDER BY, so with two
+  # rows pointing at the same study which one wins is physical row order — it
+  # flips when a row is merely updated. That is load-bearing now: this profile is
+  # what gates a patient's promotion (Patient#eligibility_result), so an
+  # unstable answer here silently changes who may be promoted. A partial unique
+  # index enforces one-per-study; this ordering is the belt to that braces.
+  has_one :criteria_profile, -> { order(:id) }, dependent: :destroy
 
   enum :study_status, completed: "completed", recruiting: "recruiting"
   enum :study_phase, I: "I", II: "II", III: "III", IV: "IV"

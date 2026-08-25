@@ -27,13 +27,28 @@ class ParticipationRequestsController < ApplicationController
       render :new, status: :unprocessable_entity and return
     end
 
+    unless adult_confirmed?
+      @patient.errors.add(:base, t("participation_requests.adult_confirmation_required"))
+      render :new, status: :unprocessable_entity and return
+    end
+
     if @patient.save
       Consent.record_ley_1581!(@patient, ip_address: request.remote_ip)
       # A foreign sponsor means the same authorization also covers the Art. 26
       # cross-border transfer — recorded distinctly so we know what was agreed.
       Consent.record_cross_border_transfer!(@patient, ip_address: request.remote_ip) if @study.international_sponsor?
 
-      redirect_to study_about_path(@study), notice: t("participation_requests.thanks")
+      if step_two_available?
+        # Stamp the questionnaire session: SelfReportsController reads the
+        # patient from here (never from params), for a limited time.
+        session[SelfReportsController::SESSION_KEY] = {
+          "patient_id" => @patient.id,
+          "expires_at" => SelfReportsController::SESSION_TTL.from_now.iso8601
+        }
+        redirect_to study_self_report_path(@study)
+      else
+        redirect_to study_about_path(@study), notice: t("participation_requests.thanks")
+      end
     else
       render :new, status: :unprocessable_entity
     end
@@ -45,13 +60,27 @@ class ParticipationRequestsController < ApplicationController
     @study = Study.find(params[:study_id])
   end
 
-  # Only the contact details. Nothing clinical is collected here — that is the
-  # rep's job once they have spoken to the person.
+  # Only the contact details plus two declared facts about the submission
+  # itself. Nothing clinical is collected here — that is step 2 (the
+  # questionnaire) or the rep's call.
   def participation_params
-    params.require(:patient).permit(:contact_number, :email)
+    params.require(:patient).permit(:contact_number, :email, :submitted_by_proxy, :adult_confirmed)
   end
 
   def data_processing_authorized?
     ActiveModel::Type::Boolean.new.cast(params.dig(:patient, :data_processing_authorization))
+  end
+
+  # Ley 1581 Art. 7 proscribes processing minors' data, so the submitter must
+  # assert the patient is an adult before anything is written. An assertion,
+  # not a verification — recorded on the row as exactly that.
+  def adult_confirmed?
+    ActiveModel::Type::Boolean.new.cast(params.dig(:patient, :adult_confirmed))
+  end
+
+  # Step 2 exists only when the study has approved patient-facing questions.
+  def step_two_available?
+    @study.patient_self_report_enabled? &&
+      @study.criteria_profile&.criteria_variables&.askable_to_patient&.exists?
   end
 end

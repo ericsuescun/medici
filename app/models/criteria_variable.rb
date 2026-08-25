@@ -5,10 +5,12 @@
 #  id                  :bigint           not null, primary key
 #  comparison_type     :string           not null
 #  conditions          :text
+#  criteria_category   :string           default("primary"), not null
 #  criteria_order      :integer
 #  description         :text
 #  enabled             :boolean          default(TRUE), not null
 #  name                :string           not null
+#  patient_prompt      :text
 #  qualitative_scale   :text             default([]), not null, is an Array
 #  qualitative_value   :string
 #  reference_value_1   :decimal(15, 6)
@@ -45,10 +47,22 @@ class CriteriaVariable < ApplicationRecord
   attribute :value_type, :string
   attribute :variable_type, :string
   attribute :comparison_type, :string
+  attribute :criteria_category, :string
 
   enum :value_type, boolean: "boolean", quantitative: "quantitative", qualitative: "qualitative"
 
   enum :variable_type, inclusion: "inclusion", exclusion: "exclusion"
+
+  # How much this rule weighs on the recruitment decision — a third axis,
+  # orthogonal to value_type (the datatype) and variable_type (the polarity):
+  #
+  #   primary   — decisive. These, and only these, are scored (see
+  #               EligibilityResult#primary_score), and the score is what tells a
+  #               rep whether an interested patient is ready to be a candidate.
+  #   secondary — complementary. Measured, shown and part of the full-protocol
+  #               verdict, but deliberately outside the score, so it can never on
+  #               its own promote or hold back a patient.
+  enum :criteria_category, primary: "primary", secondary: "secondary"
 
   enum :comparison_type,
        less_than: "less_than",
@@ -62,12 +76,32 @@ class CriteriaVariable < ApplicationRecord
        true: "true",
        false: "false"
 
+  # Rules the public questionnaire may ask a patient. TWO conditions, both
+  # load-bearing:
+  #
+  #   1. PRIMARY only. The questionnaire exists to triage — to find out whether
+  #      somebody is worth a rep's review — and only the primary criteria decide
+  #      that (they alone are scored, and auto-triage needs every one of them
+  #      answered). Asking a patient about complementary criteria lengthens the
+  #      form without being able to move the outcome, so it is not asked at all.
+  #      This is enforced here rather than left to whoever writes the prompts:
+  #      a secondary rule that happens to carry a prompt is still never asked.
+  #   2. The prompt's PRESENCE is the switch. The questionnaire renders
+  #      patient_prompt and nothing else (never name/rule_summary/thresholds —
+  #      they leak the protocol), so a rule without a prompt cannot be asked.
+  scope :askable_to_patient, -> { primary.where(enabled: true).where.not(patient_prompt: [ nil, "" ]) }
+
+  def askable_to_patient?
+    primary? && enabled? && patient_prompt.present?
+  end
+
   # Normalize qualitative_scale when provided as a comma-separated string from forms
   before_validation :normalize_qualitative_scale
 
   validates :name, presence: true
   validates :value_type, presence: true
   validates :comparison_type, presence: true
+  validates :criteria_category, presence: true
 
   validate :qualitative_value_in_scale, if: -> { value_type == "qualitative" }
 

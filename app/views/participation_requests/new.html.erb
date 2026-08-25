@@ -46,6 +46,20 @@
 
             <p class="text-muted small"><%= t("participation_requests.contact_hint") %></p>
 
+            <%# Two declared facts about the submission itself. The proxy box
+                establishes WHO is filling this in (family member helping, etc.)
+                — it qualifies the authorization and is shown to the rep. The
+                adult confirmation is a hard gate: Ley 1581 Art. 7 proscribes
+                processing minors' data, so we refuse to proceed without it. %>
+            <div class="form-check mb-2">
+              <%= f.check_box :submitted_by_proxy, class: "form-check-input" %>
+              <%= f.label :submitted_by_proxy, t("participation_requests.not_the_patient"), class: "form-check-label" %>
+            </div>
+            <div class="form-check mb-3">
+              <%= f.check_box :adult_confirmed, class: "form-check-input" %>
+              <%= f.label :adult_confirmed, t("participation_requests.adult_confirmation"), class: "form-check-label" %>
+            </div>
+
             <div class="mt-4 mb-2 p-3 border rounded bg-light">
               <%# The authorization text, read first — the checkbox sits under it.
                   The wording is verbatim: Consent::LEY_1581_CURRENT_VERSION is

@@ -16,6 +16,11 @@ en:
       scientific: "Scientific"
       administrative: "Administrative"
     no_visible_patients: "No patients visible for your role."
+    patient_contact:
+      header: "Contact"
+      call: "Call this patient"
+      none: "No contact details"
+      unnamed: "No name yet — came in through the public form"
     recruitment:
       title: "Recruitment"
       summary: "%{total} of %{goal} patients in the pipeline"
@@ -54,7 +59,7 @@ en:
     contact_information: "Contact information"
     publication_links: "Publication links"
     clinical_studies: "Clinical studies"
-    return_to_vitalia: "Back to Vitalia"
+    return_to_home: "Back to Medici"
     new_study: "New study"
     edit_this_study: "Edit this study"
     return_to_studies: "Back to studies"
@@ -111,6 +116,25 @@ en:
     back_to_patient: "Back to patient"
     updated: "Criteria assessment updated."
     no_criteria: "This profile has no criteria defined yet."
+    primary:
+      eligible_detail: "the patient meets every primary criterion."
+      not_eligible_detail:
+        one: "%{count} primary criterion is not met."
+        other: "%{count} primary criteria are not met."
+      incomplete_detail:
+        one: "%{count} primary criterion still needs recording."
+        other: "%{count} primary criteria still need recording."
+      none: "This profile marks no criterion as primary, so it defines no eligibility."
+    secondary_warning:
+      title: "Heads up: SECONDARY criteria not met"
+      body:
+        one: "%{count} secondary criterion is not met. It does not block promoting the patient — it is the rep's call whether it matters."
+        other: "%{count} secondary criteria are not met. They do not block promoting the patient — it is the rep's call whether they matter."
+    locked:
+      hint: "To promote this patient you must record a value for every primary criterion, and all of them must be met."
+    declared: "Patient declared: %{value}"
+    declared_dont_know: "Patient declared: don't know"
+    declared_by_patient: "self-reported"
     brief:
       passing: "Met"
       out_of_reach: "Out of reach"
@@ -129,3 +153,24 @@ en:
       promote_hint_incomplete: "Some values still need recording before eligibility can be confirmed."
       promote_hint_not_eligible: "The patient does not meet every criterion; review what is out of reach before promoting."
       promote_hint_generic: "Update the patient's state in the study lifecycle."
+    score:
+      title: "Recruitment score"
+      subtitle: "Computed from the primary criteria only."
+      measured: "%{answered} of %{total} primary criteria recorded"
+      no_primary: "This profile marks no criterion as primary, so there is no recruitment score."
+      primary_section: "Primary criteria"
+      primary_section_hint: "These decide the score and whether the patient moves forward."
+      secondary_section: "Secondary criteria"
+      secondary_section_hint: "They complement the assessment; they do not affect the score or the state change."
+      secondary_concerns:
+        one: "%{count} secondary criterion is not met (does not block promotion)."
+        other: "%{count} secondary criteria are not met (they do not block promotion)."
+      recommendation:
+        ready: "Ready to promote"
+        promising: "High score"
+        blocked: "Blocked by a primary criterion"
+        pending: "Still assessing"
+      promote_hint_ready: "Every primary criterion is met (%{score}%) — you can promote them with “%{event}”."
+      promote_hint_promising: "High score (%{score}%) and no primary criterion ruled out; finish measuring the rest before promoting."
+      promote_hint_blocked: "A primary criterion is not met; review it before promoting."
+      promote_hint_pending: "Too few primary criteria measured yet for the score to mean anything."

@@ -16,6 +16,11 @@ fr:
       scientific: "Scientifique"
       administrative: "Administratif"
     no_visible_patients: "Aucun patient visible pour votre rôle."
+    patient_contact:
+      header: "Contact"
+      call: "Appeler ce patient"
+      none: "Aucune coordonnée"
+      unnamed: "Pas encore de nom — arrivé via le formulaire public"
     recruitment:
       title: "Recrutement"
       summary: "%{total} sur %{goal} patients dans le processus"
@@ -54,7 +59,7 @@ fr:
     contact_information: "Coordonnées"
     publication_links: "Liens vers les publications"
     clinical_studies: "Études cliniques"
-    return_to_vitalia: "Retour à Vitalia"
+    return_to_home: "Retour à Medici"
     new_study: "Nouvelle étude"
     edit_this_study: "Modifier cette étude"
     return_to_studies: "Retour aux études"
@@ -111,6 +116,25 @@ fr:
     back_to_patient: "Retour au patient"
     updated: "Évaluation des critères mise à jour."
     no_criteria: "Ce profil n'a pas encore de critères définis."
+    primary:
+      eligible_detail: "le patient remplit tous les critères primaires."
+      not_eligible_detail:
+        one: "%{count} critère primaire n'est pas rempli."
+        other: "%{count} critères primaires ne sont pas remplis."
+      incomplete_detail:
+        one: "%{count} critère primaire reste à enregistrer."
+        other: "%{count} critères primaires restent à enregistrer."
+      none: "Ce profil ne marque aucun critère comme primaire ; il ne définit donc pas l'éligibilité."
+    secondary_warning:
+      title: "Attention : critères SECONDAIRES non remplis"
+      body:
+        one: "%{count} critère secondaire n'est pas rempli. Cela n'empêche pas de promouvoir le patient — il revient au représentant de juger si cela compte."
+        other: "%{count} critères secondaires ne sont pas remplis. Cela n'empêche pas de promouvoir le patient — il revient au représentant de juger si cela compte."
+    locked:
+      hint: "Pour promouvoir ce patient, vous devez enregistrer une valeur pour chaque critère primaire, et tous doivent être remplis."
+    declared: "Le patient a déclaré : %{value}"
+    declared_dont_know: "Le patient a déclaré : ne sait pas"
+    declared_by_patient: "auto-déclaré"
     brief:
       passing: "Remplis"
       out_of_reach: "Hors de portée"
@@ -129,3 +153,24 @@ fr:
       promote_hint_incomplete: "Certaines valeurs restent à enregistrer avant de confirmer l'éligibilité."
       promote_hint_not_eligible: "Le patient ne remplit pas tous les critères ; vérifiez ce qui est hors de portée avant de promouvoir."
       promote_hint_generic: "Mettez à jour l'état du patient dans le cycle de l'étude."
+    score:
+      title: "Score de recrutement"
+      subtitle: "Calculé uniquement à partir des critères primaires."
+      measured: "%{answered} critères primaires enregistrés sur %{total}"
+      no_primary: "Ce profil ne marque aucun critère comme primaire ; il n'y a donc pas de score de recrutement."
+      primary_section: "Critères primaires"
+      primary_section_hint: "Ils déterminent le score et la promotion du patient."
+      secondary_section: "Critères secondaires"
+      secondary_section_hint: "Ils complètent l'évaluation ; ils n'influent ni sur le score ni sur le changement d'état."
+      secondary_concerns:
+        one: "%{count} critère secondaire n'est pas rempli (cela ne bloque pas la promotion)."
+        other: "%{count} critères secondaires ne sont pas remplis (cela ne bloque pas la promotion)."
+      recommendation:
+        ready: "Prêt à promouvoir"
+        promising: "Score élevé"
+        blocked: "Bloqué par un critère primaire"
+        pending: "Évaluation en cours"
+      promote_hint_ready: "Tous les critères primaires sont remplis (%{score} %) — vous pouvez le promouvoir avec « %{event} »."
+      promote_hint_promising: "Score élevé (%{score} %) et aucun critère primaire écarté ; terminez les mesures restantes avant de promouvoir."
+      promote_hint_blocked: "Un critère primaire n'est pas rempli ; vérifiez-le avant de promouvoir."
+      promote_hint_pending: "Trop peu de critères primaires mesurés pour que le score soit fiable."

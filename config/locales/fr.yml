@@ -131,6 +131,9 @@ fr:
       variable_type:
         inclusion: "Inclusion"
         exclusion: "Exclusion"
+      criteria_category:
+        primary: "Primaire"
+        secondary: "Secondaire"
       comparison_type:
         less_than: "Inférieur à"
         less_than_or_equal: "Inférieur ou égal à"
@@ -225,6 +228,7 @@ fr:
         notes: "Notes"
         state: "État"
         participant_code: "Code du participant"
+        reported_city: "Ville déclarée"
       criteria_profile:
         name: "Nom"
         description: "Description"
@@ -232,6 +236,8 @@ fr:
         name: "Nom"
         value_type: "Type de valeur"
         variable_type: "Type de règle"
+        criteria_category: "Catégorie du critère"
+        patient_prompt: "Question pour le patient"
         comparison_type: "Comparaison"
         reference_value_1: "Valeur de référence 1"
         reference_value_2: "Valeur de référence 2"
@@ -314,3 +320,29 @@ fr:
     submit: "Envoyer mes coordonnées"
     thanks: "Merci ! Un représentant du centre vous contactera bientôt."
     authorization_required: "Vous devez autoriser le traitement des données personnelles sensibles pour que nous puissions vous contacter."
+    not_the_patient: "Je ne suis pas le patient (je remplis ce formulaire pour quelqu'un d'autre)."
+    adult_confirmation: "Je confirme que le/la patient(e) est majeur(e)."
+    adult_confirmation_required: "Vous devez confirmer que le/la patient(e) est majeur(e) pour continuer."
+
+  self_reports:
+    title: "Parlez-nous de vous"
+    why_it_matters: "Ces questions sont essentielles pour votre participation : elles nous aident à savoir si cette étude est faite pour vous, ou si vous pourriez participer à d'autres études à l'avenir."
+    fill_what_you_can: "Répondez à celles que vous pouvez — toutes sont facultatives. Si vous ne connaissez pas une réponse, cochez « Je ne sais pas »."
+    no_answer: "— Sans réponse —"
+    dont_know: "Je ne sais pas / je préfère ne pas répondre"
+    city_label: "Dans quelle ville vivez-vous ?"
+    other_city: "Autre"
+    files_label: "Examens ou documents médicaux que vous avez déjà (facultatif)"
+    files_hint: "Jusqu'à %{count} fichiers (PDF ou images, max. 25 Mo chacun). Si une question utilise des termes techniques, vos documents peuvent y répondre pour vous."
+    future_studies_text: "De manière facultative et indépendante de votre participation à cette étude, vous pouvez nous autoriser à utiliser vos réponses pour vous proposer d'autres études cliniques à l'avenir. Ne pas autoriser n'affecte pas votre participation à cette étude."
+    future_studies_accept: "J'autorise à être considéré(e) pour d'autres études à l'avenir."
+    submit: "Envoyer mes réponses"
+    consent_note: "En envoyant, vous autorisez le traitement de ces réponses pour évaluer votre éligibilité à cette étude (Ley 1581 de 2012)."
+    thanks: "Merci ! Le centre examinera vos réponses et vous contactera bientôt."
+    errors:
+      too_many_files: "Au plus %{limit} fichiers."
+      bad_file_type: "Le fichier %{filename} n'est pas un PDF ou une image."
+      file_too_large: "Le fichier %{filename} dépasse la limite de %{limit} Mo."
+
+  patient_declarations:
+    answer_or_decline_required: "Une déclaration nécessite une réponse ou la case « Je ne sais pas »."

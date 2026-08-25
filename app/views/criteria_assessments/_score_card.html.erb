@@ -1,0 +1,44 @@
+<%# Recruitment score — the primary criteria only (see EligibilityResult).
+    This is deliberately a different question from the verdict banner above it:
+    the banner answers "does this patient meet the protocol", this answers
+    "is there enough evidence to move them forward". Locals:
+      result  — an EligibilityResult
+      compact — smaller type, for the briefing's narrower column (default false)
+%>
+<% compact = local_assigns.fetch(:compact, false) %>
+<% if result.recommendation == :none %>
+  <div class="alert alert-secondary py-2 mb-0 small"><%= t("criteria_assessments.score.no_primary") %></div>
+<% else %>
+  <% tone = { ready: "success", promising: "warning", blocked: "danger", pending: "secondary" }[result.recommendation] %>
+  <div class="card border-<%= tone %> h-100">
+    <div class="card-body <%= "py-3" if compact %>">
+      <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+        <div>
+          <div class="fw-semibold"><%= t("criteria_assessments.score.title") %></div>
+          <div class="text-muted small"><%= t("criteria_assessments.score.subtitle") %></div>
+        </div>
+        <span class="badge bg-<%= tone %>"><%= t("criteria_assessments.score.recommendation.#{result.recommendation}") %></span>
+      </div>
+
+      <div class="d-flex align-items-baseline gap-2">
+        <span class="<%= compact ? "fs-3" : "display-6" %> fw-bold text-<%= tone %>"><%= result.primary_score %>%</span>
+        <span class="text-muted small">
+          <%= t("criteria_assessments.score.measured", answered: result.primary_answered_count, total: result.primary_total_count) %>
+        </span>
+      </div>
+
+      <div class="progress mt-2" style="height: .5rem" role="progressbar"
+           aria-label="<%= t("criteria_assessments.score.title") %>"
+           aria-valuenow="<%= result.primary_score %>" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar bg-<%= tone %>" style="width: <%= result.primary_score %>%"></div>
+      </div>
+
+      <% if result.secondary_concerns.any? %>
+        <p class="text-muted small mb-0 mt-2">
+          <i class="bi bi-info-circle"></i>
+          <%= t("criteria_assessments.score.secondary_concerns", count: result.secondary_concerns.count) %>
+        </p>
+      <% end %>
+    </div>
+  </div>
+<% end %>

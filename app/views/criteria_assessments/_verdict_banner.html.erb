@@ -1,0 +1,26 @@
+<%# Eligibility headline — decided by the PRIMARY criteria alone, because those
+    are the ones that gate the patient's progress through the trial. A patient
+    held up only by a complementary criterion is NOT "not eligible"; that case
+    is a warning, rendered separately by _secondary_warning. Locals:
+      result  — an EligibilityResult
+      compact — tighter padding, for the briefing's narrower column (default false)
+%>
+<% pad = local_assigns.fetch(:compact, false) ? "py-2" : "" %>
+<% case result.primary_verdict %>
+<% when :eligible %>
+  <div class="alert alert-success <%= pad %> mb-3">
+    <strong><%= t("criteria_assessments.eligible") %></strong> — <%= t("criteria_assessments.primary.eligible_detail") %>
+  </div>
+<% when :not_eligible %>
+  <div class="alert alert-danger <%= pad %> mb-3">
+    <strong><%= t("criteria_assessments.not_eligible") %></strong> — <%= t("criteria_assessments.primary.not_eligible_detail", count: result.primary_failing.count) %>
+  </div>
+<% when :incomplete %>
+  <div class="alert alert-warning <%= pad %> mb-3">
+    <strong><%= t("criteria_assessments.incomplete") %></strong> — <%= t("criteria_assessments.primary.incomplete_detail", count: result.primary_pending.count) %>
+  </div>
+<% else %>
+  <div class="alert alert-secondary <%= pad %> mb-3">
+    <%= result.total_count.zero? ? t("criteria_assessments.no_criteria") : t("criteria_assessments.primary.none") %>
+  </div>
+<% end %>

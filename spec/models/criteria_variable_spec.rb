@@ -7,10 +7,12 @@ require 'rails_helper'
 #  id                  :bigint           not null, primary key
 #  comparison_type     :string           not null
 #  conditions          :text
+#  criteria_category   :string           default("primary"), not null
 #  criteria_order      :integer
 #  description         :text
 #  enabled             :boolean          default(TRUE), not null
 #  name                :string           not null
+#  patient_prompt      :text
 #  qualitative_scale   :text             default([]), not null, is an Array
 #  qualitative_value   :string
 #  reference_value_1   :decimal(15, 6)

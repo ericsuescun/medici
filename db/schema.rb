@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_22_130200) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_01_100300) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -190,6 +190,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_22_130200) do
     t.datetime "updated_at", null: false
     t.index ["study_id", "user_id"], name: "index_criteria_profiles_on_study_id_and_user_id"
     t.index ["study_id"], name: "index_criteria_profiles_on_study_id"
+    t.index ["study_id"], name: "index_criteria_profiles_on_study_id_unique", unique: true, where: "(study_id IS NOT NULL)"
     t.index ["user_id"], name: "index_criteria_profiles_on_user_id"
   end
 
@@ -210,6 +211,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_22_130200) do
     t.boolean "shown", default: true, null: false
     t.string "variable_type", default: "inclusion", null: false
     t.integer "criteria_order"
+    t.string "criteria_category", default: "primary", null: false
+    t.text "patient_prompt"
     t.index ["criteria_profile_id", "name"], name: "index_criteria_variables_on_criteria_profile_id_and_name"
     t.index ["criteria_profile_id", "variable_type", "criteria_order"], name: "index_cv_on_profile_type_order"
     t.index ["criteria_profile_id"], name: "index_criteria_variables_on_criteria_profile_id"
@@ -254,6 +257,26 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_22_130200) do
     t.index ["study_id", "medication_id"], name: "index_medications_studies_on_study_id_and_medication_id"
   end
 
+  create_table "patient_declarations", force: :cascade do |t|
+    t.bigint "patient_id", null: false
+    t.bigint "criteria_variable_id"
+    t.bigint "recorded_by_id"
+    t.text "prompt", null: false
+    t.string "answer"
+    t.string "value_type", null: false
+    t.text "qualitative_scale", default: [], null: false, array: true
+    t.boolean "declined", default: false, null: false
+    t.string "capture_mode", default: "public_form", null: false
+    t.datetime "declared_at", null: false
+    t.datetime "superseded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["criteria_variable_id"], name: "index_patient_declarations_on_criteria_variable_id"
+    t.index ["patient_id", "criteria_variable_id"], name: "index_live_declarations_on_patient_and_variable", unique: true, where: "(superseded_at IS NULL)"
+    t.index ["patient_id"], name: "index_patient_declarations_on_patient_id"
+    t.index ["recorded_by_id"], name: "index_patient_declarations_on_recorded_by_id"
+  end
+
   create_table "patients", force: :cascade do |t|
     t.string "firstname"
     t.string "lastname"
@@ -272,6 +295,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_22_130200) do
     t.string "state", default: "interested", null: false
     t.string "participant_code"
     t.bigint "study_id"
+    t.boolean "submitted_by_proxy", default: false, null: false
+    t.boolean "adult_confirmed", default: false, null: false
+    t.string "reported_city"
     t.index ["participant_code"], name: "index_patients_on_participant_code", unique: true
     t.index ["state"], name: "index_patients_on_state"
     t.index ["study_id"], name: "index_patients_on_study_id"
@@ -316,16 +342,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_22_130200) do
     t.index ["name"], name: "index_roles_on_name", unique: true
   end
 
-  create_table "soap_notes", force: :cascade do |t|
-    t.bigint "patient_id", null: false
-    t.bigint "author_id"
-    t.date "encounter_date", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["author_id"], name: "index_soap_notes_on_author_id"
-    t.index ["patient_id"], name: "index_soap_notes_on_patient_id"
-  end
-
   create_table "sponsor_reps", force: :cascade do |t|
     t.string "contact_number"
     t.string "contact_address"
@@ -334,6 +350,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_22_130200) do
     t.datetime "updated_at", null: false
     t.bigint "sponsor_id"
     t.index ["sponsor_id"], name: "index_sponsor_reps_on_sponsor_id"
+  end
+
+  create_table "soap_notes", force: :cascade do |t|
+    t.bigint "patient_id", null: false
+    t.bigint "author_id"
+    t.date "encounter_date", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["author_id"], name: "index_soap_notes_on_author_id"
+    t.index ["patient_id"], name: "index_soap_notes_on_patient_id"
   end
 
   create_table "sponsors", force: :cascade do |t|
@@ -369,6 +395,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_22_130200) do
     t.string "study_type"
     t.boolean "local_health_authority_approved", default: false, null: false
     t.boolean "committee_approved", default: false, null: false
+    t.boolean "patient_self_report_enabled", default: false, null: false
     t.index ["sponsor_id"], name: "index_studies_on_sponsor_id"
   end
 
@@ -473,6 +500,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_22_130200) do
     t.datetime "updated_at", null: false
     t.bigint "entered_by_id"
     t.bigint "criteria_variable_id"
+    t.string "criteria_category", default: "primary", null: false
     t.index ["criteria_variable_id"], name: "index_variable_values_on_criteria_variable_id"
     t.index ["entered_by_id"], name: "index_variable_values_on_entered_by_id"
     t.index ["patient_id", "name"], name: "index_variable_values_on_patient_id_and_name"
@@ -503,11 +531,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_22_130200) do
   add_foreign_key "criteria_profiles", "users"
   add_foreign_key "criteria_variables", "criteria_profiles"
   add_foreign_key "local_parameters", "countries"
+  add_foreign_key "patient_declarations", "criteria_variables", on_delete: :nullify
+  add_foreign_key "patient_declarations", "patients"
+  add_foreign_key "patient_declarations", "users", column: "recorded_by_id"
   add_foreign_key "patients", "studies"
   add_foreign_key "results", "studies"
   add_foreign_key "role_permissions", "roles"
-  add_foreign_key "soap_notes", "patients"
-  add_foreign_key "soap_notes", "users", column: "author_id", on_delete: :nullify
   add_foreign_key "sponsor_reps", "sponsors"
   add_foreign_key "studies", "sponsors"
   add_foreign_key "trial_center_branch_reps", "trial_center_branches"

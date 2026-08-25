@@ -133,6 +133,9 @@ en:
       variable_type:
         inclusion: "Inclusion"
         exclusion: "Exclusion"
+      criteria_category:
+        primary: "Primary"
+        secondary: "Secondary"
       comparison_type:
         less_than: "Less than"
         less_than_or_equal: "Less than or equal to"
@@ -227,6 +230,7 @@ en:
         notes: "Notes"
         state: "State"
         participant_code: "Participant code"
+        reported_city: "Reported city"
       criteria_profile:
         name: "Name"
         description: "Description"
@@ -234,6 +238,8 @@ en:
         name: "Name"
         value_type: "Value type"
         variable_type: "Rule type"
+        criteria_category: "Criterion category"
+        patient_prompt: "Patient question"
         comparison_type: "Comparison"
         reference_value_1: "Reference value 1"
         reference_value_2: "Reference value 2"
@@ -316,3 +322,29 @@ en:
     submit: "Send my details"
     thanks: "Thank you! A centre representative will contact you soon."
     authorization_required: "You must authorize the processing of sensitive personal data so that we can contact you."
+    not_the_patient: "I am not the patient (I am filling this form in for somebody else)."
+    adult_confirmation: "I confirm the patient is an adult."
+    adult_confirmation_required: "You must confirm the patient is an adult to continue."
+
+  self_reports:
+    title: "Tell us more about you"
+    why_it_matters: "These questions are key to your participation: they help us know whether this study is for you, or whether you could join other studies in the future."
+    fill_what_you_can: "Answer the ones you can — all are optional. If you don't know an answer, tick \"I don't know\"."
+    no_answer: "— No answer —"
+    dont_know: "I don't know / prefer not to answer"
+    city_label: "Which city do you live in?"
+    other_city: "Other"
+    files_label: "Medical exams or documents you already have (optional)"
+    files_hint: "Up to %{count} files (PDF or images, max. 25 MB each). If a question uses technical terms, your paperwork may answer it for you."
+    future_studies_text: "Optionally and independently of your participation in this study, you can authorize us to use your answers to consider you for other clinical studies in the future. Not authorizing does not affect your participation in this study."
+    future_studies_accept: "I authorize being considered for other studies in the future."
+    submit: "Send my answers"
+    consent_note: "By sending, you authorize the processing of these answers to assess your eligibility for this study (Ley 1581 de 2012)."
+    thanks: "Thank you! The centre will review your answers and contact you soon."
+    errors:
+      too_many_files: "At most %{limit} files."
+      bad_file_type: "The file %{filename} is not a PDF or an image."
+      file_too_large: "The file %{filename} exceeds the %{limit} MB limit."
+
+  patient_declarations:
+    answer_or_decline_required: "A declaration needs an answer or the \"I don't know\" mark."

@@ -12,19 +12,16 @@
     <%= @profile.name %><% if @profile.study %> · <%= Study.model_name.human %>: <%= @profile.study.public_title %><% end %>
   </p>
 
-  <%# ---- Verdict banner ---- %>
-  <% case @result.verdict %>
-  <% when :eligible %>
-    <div class="alert alert-success mb-3"><strong><%= t("criteria_assessments.eligible") %></strong> — <%= t("criteria_assessments.eligible_detail") %></div>
-  <% when :not_eligible %>
-    <div class="alert alert-danger mb-3"><strong><%= t("criteria_assessments.not_eligible") %></strong> — <%= t("criteria_assessments.not_eligible_detail", count: @result.failing.count) %></div>
-  <% when :incomplete %>
-    <div class="alert alert-warning mb-3"><strong><%= t("criteria_assessments.incomplete") %></strong> — <%= t("criteria_assessments.incomplete_detail", count: @result.missing.count) %></div>
-  <% else %>
-    <div class="alert alert-secondary mb-3"><%= t("criteria_assessments.no_criteria") %></div>
-  <% end %>
+  <%# ---- Verdict banner (primary criteria) + secondary advisory ---- %>
+  <%= render "criteria_assessments/verdict_banner", result: @result %>
+  <%= render "criteria_assessments/secondary_warning", result: @result %>
 
-  <%# ---- Brief: at-a-glance counts ---- %>
+  <%# ---- Recruitment score: primary criteria only ---- %>
+  <div class="mb-4">
+    <%= render "criteria_assessments/score_card", result: @result %>
+  </div>
+
+  <%# ---- Brief: at-a-glance counts (whole profile, both categories) ---- %>
   <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
       <div class="stat-card h-100 text-center p-3 border rounded">
@@ -67,6 +64,7 @@
                   <span>
                     <strong><%= c.variable.name %></strong>
                     <span class="badge bg-light text-dark border ms-1"><%= c.variable.variable_type == "exclusion" ? Study.human_attribute_name(:exclusion_criteria) : Study.human_attribute_name(:inclusion_criteria) %></span>
+                    <span class="badge border ms-1 <%= c.primary? ? "bg-primary-subtle text-primary-emphasis" : "bg-light text-secondary" %>"><%= t_enum(c.variable, :criteria_category) %></span>
                     <div class="small text-muted">
                       <%= t("criteria_assessments.brief.required") %>: <%= c.variable.rule_summary %> ·
                       <%= t("criteria_assessments.brief.measured") %>: <span class="text-danger fw-semibold"><%= c.value %></span>
@@ -91,6 +89,7 @@
                   <span>
                     <strong><%= c.variable.name %></strong>
                     <span class="badge bg-light text-dark border ms-1"><%= c.variable.variable_type == "exclusion" ? Study.human_attribute_name(:exclusion_criteria) : Study.human_attribute_name(:inclusion_criteria) %></span>
+                    <span class="badge border ms-1 <%= c.primary? ? "bg-primary-subtle text-primary-emphasis" : "bg-light text-secondary" %>"><%= t_enum(c.variable, :criteria_category) %></span>
                     <div class="small text-muted"><%= t("criteria_assessments.brief.required") %>: <%= c.variable.rule_summary %></div>
                   </span>
                 </li>
@@ -105,13 +104,29 @@
   <%# ---- Take action: promote the patient through the trial lifecycle ---- %>
   <% forward_event = { "interested" => "assess", "candidate" => "accept" }[@patient.state] %>
   <% forward_allowed = forward_event && policy(@patient).public_send("#{forward_event}?") %>
-  <% any_transition = %w[assess accept discard reject].any? { |e| policy(@patient).public_send("#{e}?") } %>
+  <%# A forward step this user's role permits but the PRIMARY criteria block.
+      Shown as a disabled button with the reason rather than vanishing, which is
+      what would otherwise happen: the AASM guard makes policy.assess? false. %>
+  <% locked_forward = forward_event.present? && policy(@patient).update_state? && !@patient.primary_criteria_met? %>
+  <% any_transition = locked_forward || %w[assess accept discard reject].any? { |e| policy(@patient).public_send("#{e}?") } %>
+  <%# The score drives the recommendation; profiles with no primary criteria
+      fall back to the whole-profile verdict, as before the score existed. %>
+  <% recommend_forward = @result.recommendation == :none ? @result.eligible? : @result.promotable? %>
   <% if any_transition %>
     <div class="card mb-4">
       <div class="card-body">
         <h5 class="card-title mb-1"><%= t("criteria_assessments.brief.take_action") %></h5>
         <p class="text-muted small mb-3">
-          <% if forward_allowed && @result.eligible? %>
+          <% if locked_forward %>
+            <% if @result.recommendation != :none %>
+              <%= t("criteria_assessments.score.promote_hint_#{@result.recommendation}",
+                    score: @result.primary_score, event: t("patients.#{forward_event}")) %>
+            <% end %>
+            <strong><%= t("criteria_assessments.locked.hint") %></strong>
+          <% elsif forward_allowed && @result.recommendation != :none %>
+            <%= t("criteria_assessments.score.promote_hint_#{@result.recommendation}",
+                  score: @result.primary_score, event: t("patients.#{forward_event}")) %>
+          <% elsif forward_allowed && @result.eligible? %>
             <%= t("criteria_assessments.brief.promote_hint_eligible", event: t("patients.#{forward_event}")) %>
           <% elsif forward_allowed && !@result.complete? %>
             <%= t("criteria_assessments.brief.promote_hint_incomplete") %>
@@ -122,13 +137,19 @@
           <% end %>
         </p>
         <div class="d-flex flex-wrap gap-2">
+          <% if locked_forward %>
+            <button type="button" class="btn btn-sm btn-outline-secondary" disabled
+                    title="<%= t("criteria_assessments.locked.hint") %>">
+              <i class="bi bi-lock-fill"></i> <%= t("patients.#{forward_event}") %>
+            </button>
+          <% end %>
           <% if policy(@patient).assess? %>
             <%= button_to t("patients.assess"), transition_patient_path(@patient, event: "assess"), method: :post,
-                          class: "btn btn-sm #{forward_event == 'assess' && @result.eligible? ? 'btn-success' : 'btn-outline-primary'}" %>
+                          class: "btn btn-sm #{forward_event == 'assess' && recommend_forward ? 'btn-success' : 'btn-outline-primary'}" %>
           <% end %>
           <% if policy(@patient).accept? %>
             <%= button_to t("patients.accept"), transition_patient_path(@patient, event: "accept"), method: :post,
-                          class: "btn btn-sm #{forward_event == 'accept' && @result.eligible? ? 'btn-success' : 'btn-outline-success'}" %>
+                          class: "btn btn-sm #{forward_event == 'accept' && recommend_forward ? 'btn-success' : 'btn-outline-success'}" %>
           <% end %>
           <% if policy(@patient).discard? %>
             <%= button_to t("patients.discard"), transition_patient_path(@patient, event: "discard"), method: :post, class: "btn btn-sm btn-outline-warning" %>
@@ -145,8 +166,15 @@
   <% checks_by_var = @result.checks.index_by { |c| c.variable.id } %>
 
   <%= form_with url: patient_criteria_assessment_path(@patient, criteria_profile_id: @profile.id), method: :patch do %>
-    <% @variables.group_by(&:variable_type).each do |variable_type, vars| %>
-      <h4 class="mt-4"><%= variable_type == "inclusion" ? Study.human_attribute_name(:inclusion_criteria) : Study.human_attribute_name(:exclusion_criteria) %></h4>
+    <%# Grouped by category first (decisive criteria on top, because they are the
+        ones that move the score), then by inclusion/exclusion as before. %>
+    <% @variables.group_by(&:criteria_category).sort_by { |category, _| category == "primary" ? 0 : 1 }.each do |category, category_vars| %>
+      <div class="d-flex flex-wrap align-items-baseline gap-2 mt-5 mb-1">
+        <h4 class="mb-0"><%= t("criteria_assessments.score.#{category}_section") %></h4>
+        <span class="text-muted small"><%= t("criteria_assessments.score.#{category}_section_hint") %></span>
+      </div>
+      <% category_vars.group_by(&:variable_type).each do |variable_type, vars| %>
+      <h6 class="mt-3 text-muted text-uppercase small"><%= variable_type == "inclusion" ? Study.human_attribute_name(:inclusion_criteria) : Study.human_attribute_name(:exclusion_criteria) %></h6>
       <div class="table-responsive">
         <table class="table align-middle">
           <thead>
@@ -157,7 +185,21 @@
               <% current = (@values_by_var[cv.id] || @values_by_name[cv.name])&.value %>
               <% status = checks_by_var[cv.id]&.status %>
               <tr>
-                <td><%= cv.name %></td>
+                <td>
+                  <%= cv.name %>
+                  <% if (declaration = @declarations_by_variable[cv.id]) %>
+                    <div class="small text-muted">
+                      <i class="bi bi-chat-left-quote"></i>
+                      <% if declaration.declined? %>
+                        <%= t("criteria_assessments.declared_dont_know") %>
+                      <% else %>
+                        <%= t("criteria_assessments.declared", value: declaration.answer) %>
+                      <% end %>
+                      · <%= l(declaration.declared_at.to_date) %>
+                      <% if declaration.recorded_by.nil? %>(<%= t("criteria_assessments.declared_by_patient") %>)<% end %>
+                    </div>
+                  <% end %>
+                </td>
                 <td><span class="text-muted"><%= cv.rule_summary %></span></td>
                 <td style="max-width: 220px">
                   <% if cv.value_type == "boolean" %>
@@ -182,6 +224,7 @@
           </tbody>
         </table>
       </div>
+      <% end %>
     <% end %>
 
     <%= submit_tag t("criteria_assessments.save_and_evaluate"), class: "btn btn-success" %>

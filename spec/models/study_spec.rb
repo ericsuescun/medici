@@ -11,6 +11,7 @@
 #  inclusion_criteria              :string
 #  local_health_authority_approved :boolean          default(FALSE), not null
 #  main_intervention               :string
+#  patient_self_report_enabled     :boolean          default(FALSE), not null
 #  public_title                    :string
 #  reviewed                        :boolean
 #  sample_size                     :integer

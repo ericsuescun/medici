@@ -86,6 +86,7 @@ RSpec.feature "Participation request consent gate", type: :feature, js: true do
 
   it "submits once authorized, recording the patient and the consent" do
     check "patient_data_processing_authorization"
+    check "patient_adult_confirmed"
     fill_in I18n.t("participation_requests.contact_number"), with: "300 111 2222"
 
     expect {

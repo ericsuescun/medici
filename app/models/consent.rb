@@ -71,4 +71,46 @@ class Consent < ApplicationRecord
       ip_address: ip_address
     )
   end
+
+  # ---- Self-report questionnaire (added 2026-08-01) ------------------------
+  # Each is deliberately its OWN document type and version constant: bumping the
+  # shared LEY_1581_CURRENT_VERSION would falsely imply every existing patient
+  # agreed to these newer finalidades.
+
+  # The health questionnaire itself. Recorded when the patient submits answers
+  # through the public step-2 form — the page states the purpose and the
+  # submission is the authorization (Decreto 1377 Art. 7 accepts conductas
+  # inequívocas; Art. 8 requires keeping proof, which this row is).
+  SELF_REPORT_QUESTIONNAIRE = "ley_1581_self_report_questionnaire".freeze
+  SELF_REPORT_CURRENT_VERSION = "2026-08-01.1".freeze
+  PURPOSE_SELF_REPORT = "self_reported_eligibility_questionnaire".freeze
+
+  # The OPTIONAL "consider me for other studies in the future" checkbox —
+  # separate and never bundled with participation (Decreto 1377 Art. 6:
+  # participation cannot be conditioned on it).
+  FUTURE_STUDIES = "future_studies_matching".freeze
+  FUTURE_STUDIES_CURRENT_VERSION = "2026-08-01.1".freeze
+  PURPOSE_FUTURE_STUDIES = "future_studies_matching".freeze
+
+  def self.record_self_report!(patient, ip_address: nil)
+    create!(
+      patient: patient,
+      document_type: SELF_REPORT_QUESTIONNAIRE,
+      document_version: SELF_REPORT_CURRENT_VERSION,
+      purpose: PURPOSE_SELF_REPORT,
+      granted_at: Time.current,
+      ip_address: ip_address
+    )
+  end
+
+  def self.record_future_studies!(patient, ip_address: nil)
+    create!(
+      patient: patient,
+      document_type: FUTURE_STUDIES,
+      document_version: FUTURE_STUDIES_CURRENT_VERSION,
+      purpose: PURPOSE_FUTURE_STUDIES,
+      granted_at: Time.current,
+      ip_address: ip_address
+    )
+  end
 end

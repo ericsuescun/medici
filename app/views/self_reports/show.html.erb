@@ -1,0 +1,114 @@
+<%# Step 2 of the public participation flow — the self-report questionnaire.
+    Renders ONLY each rule's patient_prompt: never the rule name, thresholds,
+    rule_summary, or min/max on inputs (they describe the protocol), and never
+    any verdict or per-answer feedback (the form must not be an oracle a
+    patient can optimise against). Everything here is optional — the copy says
+    "fill in what you can" — except nothing: even submitting zero answers is
+    allowed. Spanish-first copy like the rest of the public flow. %>
+<% content_for :title, t("self_reports.title") %>
+
+<div class="container my-5">
+  <div class="row">
+    <div class="col-lg-7 mx-auto">
+      <div class="card health-card shadow-sm">
+        <div class="card-header">
+          <h1 class="h4 mb-0"><%= t("self_reports.title") %></h1>
+        </div>
+        <div class="card-body">
+          <p class="mb-1"><strong><%= @study.public_title %></strong></p>
+
+          <%# Why these questions matter — key to being considered for the
+              study — while staying honest that answering is optional. %>
+          <div class="alert alert-info">
+            <p class="mb-1"><%= t("self_reports.why_it_matters") %></p>
+            <p class="mb-0 small text-muted"><%= t("self_reports.fill_what_you_can") %></p>
+          </div>
+
+          <%= form_with url: study_self_report_path(@study), method: :post, multipart: true do |f| %>
+            <% if @patient.errors.any? %>
+              <div class="alert alert-danger">
+                <ul class="mb-0">
+                  <% @patient.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+
+            <% @questions.each do |cv| %>
+              <% current = @declarations_by_variable[cv.id] %>
+              <div class="mb-4">
+                <label class="form-label fw-semibold" for="answers_<%= cv.id %>"><%= cv.patient_prompt %></label>
+                <% if cv.value_type == "boolean" %>
+                  <%= select_tag "answers[#{cv.id}]",
+                        options_for_select([ [ t("self_reports.no_answer"), "" ],
+                                             [ t("common.yes"), "true" ],
+                                             [ t("common.no"), "false" ] ],
+                                           current&.declined? ? "" : current&.answer),
+                        class: "form-select", id: "answers_#{cv.id}" %>
+                <% elsif cv.value_type == "qualitative" %>
+                  <%= select_tag "answers[#{cv.id}]",
+                        options_for_select([ [ t("self_reports.no_answer"), "" ] ] + Array(cv.qualitative_scale).map { |o| [ o, o ] },
+                                           current&.declined? ? "" : current&.answer),
+                        class: "form-select", id: "answers_#{cv.id}" %>
+                <% else %>
+                  <%# Plain number input — no min/max: bounds would leak the rule. %>
+                  <%= number_field_tag "answers[#{cv.id}]", current&.declined? ? nil : current&.answer,
+                        step: :any, class: "form-control", id: "answers_#{cv.id}" %>
+                <% end %>
+                <div class="form-check mt-1">
+                  <%= check_box_tag "declined[#{cv.id}]", "1", current&.declined? || false,
+                        class: "form-check-input", id: "declined_#{cv.id}" %>
+                  <label class="form-check-label small text-muted" for="declined_<%= cv.id %>">
+                    <%= t("self_reports.dont_know") %>
+                  </label>
+                </div>
+              </div>
+            <% end %>
+
+            <%# City — for matching the person to a nearby centre. Picker is the
+                source of truth (IP geolocation is unreliable here). %>
+            <div class="mb-4">
+              <label class="form-label fw-semibold" for="reported_city"><%= t("self_reports.city_label") %></label>
+              <%= select_tag :reported_city,
+                    options_for_select([ [ t("self_reports.no_answer"), "" ] ] +
+                                       Patient::PRINCIPAL_CITIES.map { |c| [ c, c ] } +
+                                       [ [ t("self_reports.other_city"), "Otra" ] ],
+                                       @patient.reported_city),
+                    class: "form-select", id: "reported_city" %>
+            </div>
+
+            <%# Exams the person already has — so technical questions they can't
+                answer can still be answered by their paperwork. Plain multipart
+                upload; validated server-side (type, size, count). %>
+            <div class="mb-4">
+              <label class="form-label fw-semibold" for="files"><%= t("self_reports.files_label") %></label>
+              <p class="text-muted small mb-1"><%= t("self_reports.files_hint", count: Patient::MAX_SELF_REPORTED_FILES) %></p>
+              <%= file_field_tag "files[]", multiple: true, accept: Patient::SELF_REPORTED_FILE_TYPES.join(","),
+                    class: "form-control", id: "files" %>
+            </div>
+
+            <%# The future-studies authorization — deliberately set APART and
+                optional (Decreto 1377 Art. 6: participation cannot be
+                conditioned on it). Its own consent record, own version. %>
+            <div class="mt-4 mb-3 p-3 border rounded bg-light">
+              <p class="small mb-2"><%= t("self_reports.future_studies_text") %></p>
+              <div class="form-check">
+                <%= check_box_tag :future_studies_authorization, "1", false, class: "form-check-input", id: "future_studies_authorization" %>
+                <label class="form-check-label" for="future_studies_authorization">
+                  <%= t("self_reports.future_studies_accept") %>
+                </label>
+              </div>
+              <span class="text-muted d-block small mt-1">Versión <%= Consent::FUTURE_STUDIES_CURRENT_VERSION %></span>
+            </div>
+
+            <div class="d-grid mt-3">
+              <%= submit_tag t("self_reports.submit"), class: "btn btn-success" %>
+            </div>
+            <p class="small text-muted text-center mt-2 mb-0"><%= t("self_reports.consent_note") %></p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

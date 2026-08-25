@@ -14,6 +14,7 @@
 #
 #  index_criteria_profiles_on_study_id              (study_id)
 #  index_criteria_profiles_on_study_id_and_user_id  (study_id,user_id)
+#  index_criteria_profiles_on_study_id_unique       (study_id) UNIQUE WHERE (study_id IS NOT NULL)
 #  index_criteria_profiles_on_user_id               (user_id)
 #
 # Foreign Keys

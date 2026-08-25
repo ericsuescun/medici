@@ -9,11 +9,14 @@ require 'rails_helper'
 RSpec.describe "Participation requests", type: :request do
   let(:study) { FactoryBot.create(:study) }
 
+  # adult_confirmed rides along by default: it is a second hard gate (Ley 1581
+  # Art. 7 — minors' data), and these examples are about the habeas-data one.
   def participation_params(authorized:, **overrides)
     {
       patient: {
         contact_number: "300 123 4567",
-        data_processing_authorization: authorized ? "1" : "0"
+        data_processing_authorization: authorized ? "1" : "0",
+        adult_confirmed: "1"
       }.merge(overrides)
     }
   end
