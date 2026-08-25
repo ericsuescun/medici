@@ -8,7 +8,9 @@ pin_all_from "app/javascript/controllers", under: "controllers"
 pin "bootstrap", to: "bootstrap.bundle.min.js"
 pin "trix", to: "trix.esm.min.js"
 pin "@rails/actiontext", to: "actiontext.esm.js"
-# Direct-to-S3 uploads for plain file fields (direct_upload: true), e.g. the
-# complementary-information PDFs/images. Action Text handles its own image
-# uploads; this covers the non-Trix file inputs.
+# Required by Action Text, NOT by any file field: as of 2026-08-24 no
+# `file_field` passes `direct_upload: true` — every explicit upload is plain
+# multipart. `@rails/actiontext` still imports DirectUpload from here to push
+# images dropped into a Trix editor straight to S3, so this pin and the
+# `ActiveStorage.start()` in application.js both stay.
 pin "@rails/activestorage", to: "activestorage.esm.js"

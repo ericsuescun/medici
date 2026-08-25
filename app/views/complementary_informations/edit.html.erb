@@ -1,6 +1,6 @@
 <div class="container mt-4">
   <h1 class="mb-1"><%= t("complementary_informations.edit_title") %></h1>
-  <p class="text-muted mb-4"><%= @patient.fullname.presence || @patient.participant_code %></p>
+  <p class="text-muted mb-4"><%= @patient.display_name %></p>
 
   <% if @information.errors.any? %>
     <div class="alert alert-danger">
@@ -20,7 +20,7 @@
       <div class="card-header"><strong><%= t("complementary_informations.documents") %></strong> <span class="text-muted small"><%= t("complementary_informations.documents_hint") %></span></div>
       <div class="card-body">
         <%= render "attachments", attachments: @information.documents, icon: "bi-file-earmark-pdf" %>
-        <%= f.file_field :documents, multiple: true, accept: "application/pdf", direct_upload: true, class: "form-control" %>
+        <%= f.file_field :documents, multiple: true, accept: "application/pdf", class: "form-control" %>
       </div>
     </div>
 
@@ -28,7 +28,7 @@
       <div class="card-header"><strong><%= t("complementary_informations.images") %></strong> <span class="text-muted small"><%= t("complementary_informations.images_hint") %></span></div>
       <div class="card-body">
         <%= render "attachments", attachments: @information.images, icon: "bi-image" %>
-        <%= f.file_field :images, multiple: true, accept: "image/*", direct_upload: true, class: "form-control" %>
+        <%= f.file_field :images, multiple: true, accept: "image/*", class: "form-control" %>
       </div>
     </div>
 
