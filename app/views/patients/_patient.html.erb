@@ -1,70 +1,82 @@
-<div id="<%= dom_id patient %>" class="card patient-card">
+<%# The DEMOGRAPHIC half of the patient page — who this person is and how to
+    reach them. The clinical half (eligibility, criteria answers, promotion)
+    lives beside it in patients/show.html.erb; the two were separate pages until
+    2026-08-24 and a rep had to bounce between them to answer one question.
+
+    No lifecycle buttons here: promotion is one decision and it belongs in the
+    single "take action" bar at the top of the page, where the reason it is or
+    isn't available can be stated once. %>
+<div id="<%= dom_id patient %>" class="card patient-card h-100">
   <div class="card-header">
-    <h5 class="card-title"><%= patient.firstname %> <%= patient.lastname %></h5>
+    <strong><%= t("patients.sections.demographic") %></strong>
   </div>
   <div class="card-body">
-    <% if policy(patient).show_state? %>
-      <p>
-        <strong><%= Patient.human_attribute_name(:state) %>:</strong>
-        <%= patient.state %>
-      </p>
+    <dl class="row mb-0">
+      <dt class="col-sm-5"><%= Patient.human_attribute_name(:firstname) %></dt>
+      <dd class="col-sm-7"><%= patient.display_name %></dd>
 
-      <div class="mb-3">
-        <div class="btn-group" role="group">
-          <% if policy(patient).assess? %>
-            <%= button_to t("patients.assess"), transition_patient_path(patient, event: 'assess'), method: :post, class: 'btn btn-sm btn-outline-primary', form: { data: { turbo: true } } %>
+      <dt class="col-sm-5"><%= Patient.human_attribute_name(:participant_code) %></dt>
+      <dd class="col-sm-7"><code><%= patient.participant_code %></code></dd>
+
+      <dt class="col-sm-5"><%= Patient.human_attribute_name(:dob) %></dt>
+      <dd class="col-sm-7">
+        <%= patient.dob %>
+        <% if patient.dob.present? %><span class="text-muted small">· <%= get_age(patient.dob) %></span><% end %>
+      </dd>
+
+      <dt class="col-sm-5"><%= Patient.human_attribute_name(:sex) %></dt>
+      <dd class="col-sm-7"><%= patient.sex.presence || content_tag(:span, "—", class: "text-muted") %></dd>
+
+      <dt class="col-sm-5"><%= Patient.human_attribute_name(:id_type) %></dt>
+      <dd class="col-sm-7"><%= patient.id_type.presence || content_tag(:span, "—", class: "text-muted") %></dd>
+
+      <dt class="col-sm-5"><%= Patient.human_attribute_name(:id_number) %></dt>
+      <dd class="col-sm-7"><%= patient.id_number.presence || content_tag(:span, "—", class: "text-muted") %></dd>
+
+      <dt class="col-sm-5"><%= Patient.human_attribute_name(:country) %></dt>
+      <dd class="col-sm-7"><%= patient.country.presence || content_tag(:span, "—", class: "text-muted") %></dd>
+    </dl>
+
+    <hr>
+
+    <%# Contact details are actionable here for the same reason they are on the
+        study page: a lead with only a phone number exists to be rung back. %>
+    <dl class="row mb-0">
+      <dt class="col-sm-5"><%= Patient.human_attribute_name(:contact_number) %></dt>
+      <dd class="col-sm-7">
+        <% if patient.contact_number.present? %>
+          <%= link_to "tel:#{patient.contact_number.gsub(/[^+0-9]/, '')}", class: "text-decoration-none" do %>
+            <i class="bi bi-telephone"></i> <%= patient.contact_number %>
           <% end %>
-          <% if policy(patient).accept? %>
-            <%= button_to t("patients.accept"), transition_patient_path(patient, event: 'accept'), method: :post, class: 'btn btn-sm btn-outline-success', form: { data: { turbo: true } } %>
+        <% else %>
+          <span class="text-muted">—</span>
+        <% end %>
+      </dd>
+
+      <dt class="col-sm-5"><%= Patient.human_attribute_name(:email) %></dt>
+      <dd class="col-sm-7">
+        <% if patient.email.present? %>
+          <%= link_to "mailto:#{patient.email}", class: "text-decoration-none" do %>
+            <i class="bi bi-envelope"></i> <%= patient.email %>
           <% end %>
-          <% if policy(patient).discard? %>
-            <%= button_to t("patients.discard"), transition_patient_path(patient, event: 'discard'), method: :post, class: 'btn btn-sm btn-outline-warning', form: { data: { turbo: true } } %>
-          <% end %>
-          <% if policy(patient).reject? %>
-            <%= button_to t("patients.reject"), transition_patient_path(patient, event: 'reject'), method: :post, class: 'btn btn-sm btn-outline-danger', form: { data: { turbo: true } } %>
-          <% end %>
-        </div>
+        <% else %>
+          <span class="text-muted">—</span>
+        <% end %>
+      </dd>
+
+      <dt class="col-sm-5"><%= Patient.human_attribute_name(:contact_address) %></dt>
+      <dd class="col-sm-7"><%= patient.contact_address.presence || content_tag(:span, "—", class: "text-muted") %></dd>
+
+      <dt class="col-sm-5"><%= Patient.human_attribute_name(:reported_city) %></dt>
+      <dd class="col-sm-7"><%= patient.reported_city.presence || content_tag(:span, "—", class: "text-muted") %></dd>
+    </dl>
+
+    <% if patient.illness_description.present? %>
+      <hr>
+      <div>
+        <div class="fw-semibold small mb-1"><%= Patient.human_attribute_name(:illness_description) %></div>
+        <p class="mb-0 small"><%= patient.illness_description %></p>
       </div>
     <% end %>
-
-    <p>
-      <strong><%= Patient.human_attribute_name(:country) %>:</strong>
-      <%= patient.country %>
-    </p>
-
-    <p>
-      <strong><%= Patient.human_attribute_name(:id_type) %>:</strong>
-      <%= patient.id_type %>
-    </p>
-
-    <p>
-      <strong><%= Patient.human_attribute_name(:id_number) %>:</strong>
-      <%= patient.id_number %>
-    </p>
-
-    <p>
-      <strong><%= Patient.human_attribute_name(:illness_description) %>:</strong>
-      <%= patient.illness_description %>
-    </p>
-
-    <p>
-      <strong><%= Patient.human_attribute_name(:dob) %>:</strong>
-      <%= patient.dob %>
-    </p>
-
-    <p>
-      <strong><%= Patient.human_attribute_name(:contact_number) %>:</strong>
-      <%= patient.contact_number %>
-    </p>
-
-    <p>
-      <strong><%= Patient.human_attribute_name(:contact_address) %>:</strong>
-      <%= patient.contact_address %>
-    </p>
-
-    <p>
-      <strong><%= Patient.human_attribute_name(:email) %>:</strong>
-      <%= patient.email %>
-    </p>
   </div>
 </div>

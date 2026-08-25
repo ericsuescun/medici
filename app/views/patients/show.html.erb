@@ -1,48 +1,196 @@
-<p style="color: green"><%= notice %></p>
+<%# The patient page: demographics LEFT, clinical picture RIGHT.
+    Fused from patients/show + patient_briefings/show on 2026-08-24 — they
+    answered halves of the same question ("who is this, and can they move
+    forward?") and a rep had to bounce between two pages to get both. %>
+<div class="container-fluid mt-3">
+  <% if notice %><div class="alert alert-success"><%= notice %></div><% end %>
+  <% if alert %><div class="alert alert-danger"><%= alert %></div><% end %>
 
-<%= render @patient %>
-
-<% if policy(@patient).show? %>
-  <div class="mt-3">
-    <%= link_to t("patient_briefings.open_briefing"), patient_briefing_path(@patient), class: "btn btn-primary" %>
-  </div>
-<% end %>
-
-<% study = @patient.study %>
-<% if study&.criteria_profile && policy(@patient).update? %>
-  <div class="mt-3">
-    <h5><%= t("patients.eligibility_assessment") %></h5>
-    <div class="d-flex flex-column align-items-start gap-2">
-      <%= link_to t("patients.assess_criteria", title: study.public_title),
-                  patient_criteria_assessment_path(@patient, criteria_profile_id: study.criteria_profile.id),
-                  class: "btn btn-sm btn-outline-primary" %>
-    </div>
-  </div>
-<% end %>
-
-<% if policy(@patient).show? %>
-  <div class="mt-3 d-flex flex-column align-items-start gap-2">
+  <%# ---- Header ---- %>
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
     <div>
-      <h5><%= t("soap_notes.index_title") %></h5>
-      <%= link_to t("soap_notes.view_notes", count: @patient.soap_notes.size),
-                  patient_soap_notes_path(@patient),
-                  class: "btn btn-sm btn-outline-secondary" %>
+      <h1 class="h3 mb-0"><%= @patient.display_name %></h1>
+      <p class="text-muted mb-0">
+        <% if @patient.study %><%= link_to @patient.study.public_title, @patient.study %> · <% end %>
+        <span><%= @patient.participant_code %></span>
+      </p>
     </div>
-    <div>
-      <h5><%= t("complementary_informations.index_title") %></h5>
-      <%= link_to t("complementary_informations.view_link"),
-                  patient_complementary_information_path(@patient),
-                  class: "btn btn-sm btn-outline-secondary" %>
-    </div>
+    <span class="patient-state patient-state--<%= @patient.state %> align-self-center">
+      <%= t("patients.states.#{@patient.state}", default: @patient.state) %>
+    </span>
   </div>
-<% end %>
 
-<div>
-  <%= link_to t("common.edit"), edit_patient_path(@patient) %> |
-  <%= link_to t("patients.back_to_index"), patients_path %>
-  <% if current_user&.admin? %>
-    | <%= link_to t("patients.change_control"), change_control_path("Patient", @patient.id) %>
+  <%# ---- Take action: the single place the lifecycle moves ---- %>
+  <%
+    result = @result
+    recommendation = result&.recommendation
+    eligible = result&.eligible?
+    recommend_forward = result && (recommendation == :none ? eligible : result.promotable?)
+    forward_event = @patient.forward_event
+    # The criteria gate, evaluated at the tier THIS event requires — assess
+    # accepts self-reported declarations, accept does not. Asking the model
+    # rather than picking a predicate here is what keeps the button, the
+    # controller's refusal message and the AASM guard from disagreeing.
+    locked_forward = forward_event.present? && policy(@patient).update_state? &&
+                     !@patient.criteria_permit_forward?
+    any_transition = locked_forward ||
+                     %w[assess accept discard reject].any? { |e| policy(@patient).public_send("#{e}?") }
+  %>
+  <% if any_transition %>
+    <div class="card mb-3">
+      <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div>
+          <h5 class="card-title mb-1"><%= t("criteria_assessments.brief.take_action") %></h5>
+          <p class="text-muted small mb-0">
+            <% if locked_forward %>
+              <%= t("criteria_assessments.locked.hint") %>
+            <% elsif forward_event && result && recommendation != :none %>
+              <%= t("criteria_assessments.score.promote_hint_#{recommendation}",
+                    score: result.primary_score, event: t("patients.#{forward_event}")) %>
+            <% elsif forward_event && eligible %>
+              <%= t("criteria_assessments.brief.promote_hint_eligible", event: t("patients.#{forward_event}")) %>
+            <% elsif result && !result.complete? %>
+              <%= t("criteria_assessments.brief.promote_hint_incomplete") %>
+            <% elsif result && !eligible %>
+              <%= t("criteria_assessments.brief.promote_hint_not_eligible") %>
+            <% else %>
+              <%= t("criteria_assessments.brief.promote_hint_generic") %>
+            <% end %>
+          </p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+          <% if locked_forward %>
+            <button type="button" class="btn btn-sm btn-outline-secondary" disabled
+                    title="<%= t("criteria_assessments.locked.hint") %>">
+              <i class="bi bi-lock-fill"></i> <%= t("patients.#{forward_event}") %>
+            </button>
+          <% end %>
+          <% if policy(@patient).assess? %>
+            <%= button_to t("patients.assess"), transition_patient_path(@patient, event: "assess"), method: :post,
+                          class: "btn btn-sm #{forward_event == 'assess' && recommend_forward ? 'btn-success' : 'btn-outline-primary'}" %>
+          <% end %>
+          <% if policy(@patient).accept? %>
+            <%= button_to t("patients.accept"), transition_patient_path(@patient, event: "accept"), method: :post,
+                          class: "btn btn-sm #{forward_event == 'accept' && recommend_forward ? 'btn-success' : 'btn-outline-success'}" %>
+          <% end %>
+          <% if policy(@patient).discard? %>
+            <%= button_to t("patients.discard"), transition_patient_path(@patient, event: "discard"), method: :post, class: "btn btn-sm btn-outline-warning" %>
+          <% end %>
+          <% if policy(@patient).reject? %>
+            <%= button_to t("patients.reject"), transition_patient_path(@patient, event: "reject"), method: :post, class: "btn btn-sm btn-outline-danger" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
   <% end %>
 
-  <%= button_to t("common.destroy"), @patient, method: :delete %>
+  <div class="row g-3">
+    <%# ================= LEFT: demographic ================= %>
+    <div class="col-lg-4">
+      <%= render @patient %>
+
+      <div class="card mt-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <strong><%= t("complementary_informations.index_title") %></strong>
+          <% if policy(@patient).show? %>
+            <%= link_to t("patient_briefings.open_information"),
+                        patient_complementary_information_path(@patient),
+                        class: "btn btn-sm btn-outline-secondary" %>
+          <% end %>
+        </div>
+        <div class="card-body">
+          <% if @complementary_information&.any_content? %>
+            <ul class="list-unstyled mb-0 small">
+              <li><i class="bi bi-file-earmark-pdf"></i> <%= t("complementary_informations.documents") %>: <strong><%= @complementary_information.documents.count %></strong></li>
+              <li><i class="bi bi-image"></i> <%= t("complementary_informations.images") %>: <strong><%= @complementary_information.images.count %></strong></li>
+              <li><i class="bi bi-journal-text"></i> <%= t("complementary_informations.notes") %>: <strong><%= @complementary_information.notes.present? ? t("common.yes") : t("common.no") %></strong></li>
+            </ul>
+          <% else %>
+            <p class="text-muted mb-0"><%= t("complementary_informations.empty") %></p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <%# ================= RIGHT: clinical ================= %>
+    <div class="col-lg-8">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <strong><%= t("patients.sections.clinical") %></strong>
+          <% if @profile && policy(@patient).update? %>
+            <%= link_to t("patient_briefings.open_assessment"),
+                        patient_criteria_assessment_path(@patient, criteria_profile_id: @profile.id),
+                        class: "btn btn-sm btn-outline-primary" %>
+          <% end %>
+        </div>
+        <div class="card-body">
+          <% if result.nil? %>
+            <p class="text-muted mb-0"><%= t("patient_briefings.no_profile") %></p>
+          <% else %>
+            <%= render "criteria_assessments/verdict_banner", result: result, compact: true %>
+            <%= render "criteria_assessments/secondary_warning", result: result, compact: true %>
+
+            <div class="mb-3">
+              <%= render "criteria_assessments/score_card", result: result, compact: true %>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-3"><div class="stat-card text-center p-2 border rounded"><div class="fw-bold text-success"><%= result.passing.count %></div><div class="text-muted small"><%= t("criteria_assessments.brief.passing") %></div></div></div>
+              <div class="col-3"><div class="stat-card text-center p-2 border rounded"><div class="fw-bold text-danger"><%= result.failing.count %></div><div class="text-muted small"><%= t("criteria_assessments.brief.out_of_reach") %></div></div></div>
+              <div class="col-3"><div class="stat-card text-center p-2 border rounded"><div class="fw-bold text-secondary"><%= result.pending.count %></div><div class="text-muted small"><%= t("criteria_assessments.brief.pending") %></div></div></div>
+              <div class="col-3"><div class="stat-card text-center p-2 border rounded"><div class="fw-bold"><%= result.answered_count %>/<%= result.total_count %></div><div class="text-muted small"><%= t("criteria_assessments.brief.answered") %></div></div></div>
+            </div>
+
+            <%# EVERY criterion and its answer, primary block first. The old
+                briefing showed only the failing and pending ones, which meant a
+                rep could not see what a patient actually passed without opening
+                the assessment form. Primary before secondary because that is
+                the order the decision is made in: the primary set is what gates
+                promotion, the secondary set is context. %>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th><%= t("criteria_assessments.criterion") %></th>
+                    <th><%= CriteriaVariable.human_attribute_name(:criteria_category) %></th>
+                    <th><%= CriteriaVariable.human_attribute_name(:variable_type) %></th>
+                    <th><%= t("criteria_assessments.rule") %></th>
+                    <th><%= t("criteria_assessments.patient_value") %></th>
+                    <th><%= t("criteria_assessments.status") %></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% (result.primary_checks + result.secondary_checks).each do |check| %>
+                    <tr>
+                      <td><%= check.variable.name %></td>
+                      <td><%= criteria_category_badge(check.variable) %></td>
+                      <td><%= variable_type_badge(check.variable) %></td>
+                      <td class="small text-muted"><%= check.variable.rule_summary %></td>
+                      <td>
+                        <% if check.value.present? %>
+                          <%= check.value %>
+                        <% else %>
+                          <span class="text-muted">—</span>
+                        <% end %>
+                      </td>
+                      <td><%= check_status_badge(check) %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 d-flex flex-wrap align-items-center gap-2">
+    <%= link_to t("common.edit"), edit_patient_path(@patient), class: "btn btn-sm btn-outline-secondary" %>
+    <%= link_to t("patients.back_to_index"), patients_path, class: "btn btn-sm btn-link" %>
+    <% if current_user&.admin? %>
+      <%= link_to t("patients.change_control"), change_control_path("Patient", @patient.id), class: "btn btn-sm btn-link" %>
+    <% end %>
+    <%= button_to t("common.destroy"), @patient, method: :delete, class: "btn btn-sm btn-outline-danger ms-auto" %>
+  </div>
 </div>

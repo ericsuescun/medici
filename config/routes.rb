@@ -72,8 +72,10 @@ Rails.application.routes.draw do
     resource :complementary_information, only: %i[show edit update] do
       delete :purge_attachment
     end
-    # One-page treatment briefing for reps/admins (eligibility + notes + info).
-    resource :briefing, only: :show, controller: :patient_briefings
+    # The briefing was fused into the patient page on 2026-08-24 (demographics
+    # left, clinical right). Kept as a redirect rather than deleted so existing
+    # links and bookmarks land somewhere useful instead of 404ing.
+    get "briefing", to: redirect("/patients/%{patient_id}"), as: :briefing
   end
 
   # Admin-only role/permission manager.
