@@ -13,13 +13,30 @@ RSpec.describe "About", type: :request do
     context "as a #{role}" do
       before { sign_in create(:user, role) }
 
-      it "renders the full manual" do
+      # The per-role manual moved to /manual on 2026-08-25. This page now points
+      # at it rather than containing it — see spec/requests/manual_spec.rb.
+      it "points at the per-role manual instead of inlining it" do
         get about_path
 
         expect(response).to be_successful
-        # Every role's section, not just the signed-in user's own.
-        OperationManual::ROLES.each do |documented_role|
-          expect(response.body).to include(documented_role.display_name)
+        expect(response.body).to include(manual_path)
+        expect(response.body).to include("Abrir el manual")
+      end
+
+      it "renders the patient lifecycle: every state and every way out of it" do
+        get about_path
+
+        OperationManual::PATIENT_STATES.each do |state|
+          expect(response.body).to include(I18n.t("patients.states.#{state}"))
+          expect(response.body).to include(
+            ERB::Util.html_escape(I18n.t("operation_manual.lifecycle.states.#{state}.summary"))
+          )
+        end
+
+        OperationManual::PATIENT_TRANSITIONS.each do |transition|
+          expect(response.body).to include(
+            ERB::Util.html_escape(I18n.t("operation_manual.lifecycle.transitions.#{transition.event}.requirement"))
+          )
         end
       end
 

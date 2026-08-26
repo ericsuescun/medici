@@ -104,6 +104,7 @@ module OperationManual
       display_name: "Representante de Patrocinador",
       summary: "Representa a la entidad que financia el estudio. Gestiona el estudio y su contenido científico, pero no accede a datos clínicos identificables de pacientes.",
       responsibilities: [
+        "Definir el perfil de criterios de elegibilidad del estudio: los 5 primarios que deciden y los complementarios que informan.",
         "Crear y editar los estudios de su patrocinador, incluyendo fase, estado y ciudades.",
         "Publicar artículos y cargar los resultados (primarios y secundarios) del estudio.",
         "Ver y editar las campañas de promoción de sus estudios (sin poder eliminarlas).",
@@ -111,6 +112,8 @@ module OperationManual
       ],
       permissions: {
         "Study" => [ true, true, false ],
+        "CriteriaProfile" => [ true, true, false ],
+        "CriteriaVariable" => [ true, true, false ],
         "Article" => [ true, true, false ],
         "Result" => [ true, true, false ],
         "Sponsor" => [ true, false, false ],
@@ -129,15 +132,15 @@ module OperationManual
         "Registrar y actualizar pacientes, incluyendo su descripción de enfermedad y notas clínicas.",
         "Capturar los valores de las variables del paciente y ejecutar la evaluación de elegibilidad contra el perfil de criterios del estudio.",
         "Mover al paciente por su ciclo de vida: interesado → candidato → participante (y de vuelta cuando corresponda).",
-        "Construir y mantener perfiles de criterios y sus variables de inclusión/exclusión.",
+        "Consultar el perfil de criterios que define el patrocinador y evaluar contra él a cada paciente (definirlo ya no le corresponde desde 2026-08-25).",
         "Cargar resultados y gestionar los contactos del estudio.",
         "Consultar estudios, centros, sedes, ciudades, artículos y medicamentos, sin poder modificarlos."
       ],
       permissions: {
         "Patient" => [ true, true, false ],
         "Contact" => [ true, true, false ],
-        "CriteriaProfile" => [ true, true, false ],
-        "CriteriaVariable" => [ true, true, false ],
+        "CriteriaProfile" => [ true, false, false ],
+        "CriteriaVariable" => [ true, false, false ],
         "Result" => [ true, true, false ],
         "TrialCenterBranchRep" => [ true, true, false ],
         "Study" => [ true, false, false ],
@@ -171,6 +174,145 @@ module OperationManual
       }
     )
   ].freeze
+
+  # ------------------------------------------------------------- Flujos por rol
+  #
+  # One Mermaid flowchart per role, rendered on /manual. They describe what the
+  # CODE actually does, not what the role is nominally for — a manual that
+  # flatters the design is worse than none. Two consequences worth knowing:
+  #
+  #   * The criteria profile is built by the TRIAL CENTRE rep, not the sponsor
+  #     rep: `CriteriaProfile`/`CriteriaVariable` sit in the trial_center_branch_rep
+  #     row of RolesAndPermissionsSeeder::MATRIX and appear nowhere in the
+  #     sponsor_rep row. The sponsor's flow therefore ends at the study; the
+  #     eligibility rules are somebody else's step.
+  #   * The patient has no account at all, so their flow is drawn from the two
+  #     PUBLIC controllers (ParticipationRequestsController, SelfReportsController)
+  #     rather than from anything they log into.
+  #
+  # Kept as source text rather than committed SVG so the flows stay editable by
+  # whoever edits the prose next to them. spec/models/operation_manual_spec.rb
+  # requires one per documented role, so adding a role fails until it has a flow.
+  ROLE_FLOWS = {
+    "admin" => <<~MERMAID,
+      flowchart TD
+        A["Inicia sesión"] --> B["Siempre activo: un administrador<br/>no puede quedar fuera de la plataforma"]
+        B --> C["Crea las cuentas del personal<br/>(nadie se registra solo)"]
+        C --> D{"¿Activa la cuenta?"}
+        D -- "No" --> E["La persona no puede entrar,<br/>ni siquiera con su contraseña"]
+        D -- "Sí" --> F["La persona ya puede trabajar"]
+        B --> G["Ajusta la matriz de roles y permisos"]
+        G --> H["Amplía o recorta lo que ve cada rol"]
+        B --> I["Configura parámetros locales por país<br/>(p. ej. INVIMA como autoridad sanitaria)"]
+        B --> J["Alcanza todos los recursos:<br/>estudios, centros, patrocinadores, pacientes"]
+        J --> K["Ve y promueve pacientes de cualquier centro"]
+        B --> L["Consulta el control de cambios<br/>de cualquier registro versionado"]
+    MERMAID
+
+    "platform_staff" => <<~MERMAID,
+      flowchart TD
+        A["Inicia sesión"] --> B{"¿Cuenta activada<br/>por un administrador?"}
+        B -- "No" --> C["No puede entrar"]
+        B -- "Sí" --> D["Consulta estudios, artículos y medicamentos<br/>(solo lectura)"]
+        D --> E["Crea una campaña para un estudio"]
+        E --> F["Adjunta documentos de campaña"]
+        F --> G["Publica y actualiza el material de difusión"]
+        G --> H["El público llega al estudio<br/>y pulsa «¡Quiero participar!»"]
+        D --> I["Nunca accede a datos de pacientes:<br/>el rol no tiene permiso sobre Paciente"]
+    MERMAID
+
+    "sponsor_rep" => <<~MERMAID,
+      flowchart TD
+        A["Inicia sesión"] --> B{"¿Cuenta activada<br/>por un administrador?"}
+        B -- "No" --> C["No puede entrar"]
+        B -- "Sí" --> D["Crea un estudio"]
+        D --> E{"¿Qué tipo de estudio?"}
+        E -- "Observacional" --> F["La aprobación que se le exige es<br/>la del comité de ética"]
+        E -- "Intervencional" --> G["La aprobación que se le exige es<br/>la de la autoridad sanitaria (INVIMA)"]
+        F --> H["Completa la ficha: fases, medicamentos,<br/>sedes donde se ejecuta"]
+        G --> H
+        H --> I["Publica artículos y resultados"]
+        I --> J["Coordina campañas con Personal de Plataforma"]
+        H --> K["Define el perfil de criterios del estudio:<br/>5 primarios que deciden + los complementarios"]
+        K --> M["Los 5 primarios son las preguntas<br/>que se le hacen al paciente"]
+        M --> N["El centro evalúa a cada paciente<br/>contra esos criterios"]
+        J --> L["Nunca ve datos clínicos identificables:<br/>el rol no tiene permiso sobre Paciente"]
+    MERMAID
+
+    "trial_center_branch_rep" => <<~MERMAID,
+      flowchart TD
+        A["Inicia sesión"] --> B{"¿Cuenta activada<br/>por un administrador?"}
+        B -- "No" --> C["No puede entrar"]
+        B -- "Sí" --> D["Ve únicamente los pacientes<br/>de los estudios de SU sede"]
+        D --> E["Consulta el perfil de criterios<br/>que definió el patrocinador"]
+        E --> F["Reclutamiento: filtra por estudio,<br/>ciudad, estado, cuestionario…"]
+        F --> G["«Solo leads»: quienes dejaron<br/>un teléfono y nada más"]
+        G --> H["Llama al paciente"]
+        H --> I["Completa la ficha clínica<br/>y adjunta información complementaria"]
+        I --> J["Registra el valor de cada criterio"]
+        J --> K{"¿Todos los criterios primarios<br/>registrados y cumplidos?"}
+        K -- "No" --> L["El botón aparece bloqueado<br/>con el motivo a la vista"]
+        L --> J
+        K -- "Sí" --> M["«Evaluar» → Candidato"]
+        M --> N["«Aceptar» → Participante"]
+        N --> O["Participantes: el resultado del reclutamiento"]
+        K -.-> P["Los criterios secundarios no bloquean:<br/>avisan, y el representante decide"]
+    MERMAID
+
+    "patient" => <<~MERMAID
+      flowchart TD
+        A["Encuentra un estudio en la página pública<br/>(sin iniciar sesión: no existe cuenta de paciente)"] --> B["Pulsa «¡Quiero participar!»"]
+        B --> C["Deja un teléfono y/o un correo"]
+        C --> D{"¿Autoriza el tratamiento de sus datos<br/>(Ley 1581) y confirma ser mayor de edad?"}
+        D -- "No" --> E["No se guarda absolutamente nada"]
+        D -- "Sí" --> F["Queda registrado como Interesado,<br/>con su autorización guardada aparte"]
+        F --> G{"¿El estudio tiene habilitado<br/>el cuestionario público?"}
+        G -- "No" --> H["El centro lo contacta por teléfono"]
+        G -- "Sí" --> P["Antes de preguntarle nada ve las exclusiones<br/>del estudio: puede descartarse por sí mismo"]
+        P --> I["Responde solo las preguntas<br/>de los criterios primarios"]
+        I --> J["Sus respuestas se guardan como declaraciones,<br/>nunca como mediciones del investigador"]
+        J --> L{"¿Sus respuestas cumplen<br/>todos los criterios primarios?"}
+        L -- "Sí" --> M["El sistema lo pasa a Candidato<br/>y firma el cambio como «system:self-report-triage»"]
+        L -- "No" --> Q["«Por ahora este estudio no parece corresponder»<br/>— nunca se le dice qué criterio falló"]
+        Q --> H
+        M --> H
+        H --> N["Un representante verifica con datos clínicos<br/>antes de aceptarlo en el estudio"]
+    MERMAID
+  }.freeze
+
+  # ---------------------------------------------------------------- Pacientes
+  #
+  # The patient lifecycle, as STRUCTURE ONLY. Unlike the rest of this file, every
+  # word of this section is translated — config/locales/content_about.*.yml,
+  # under `operation_manual.lifecycle.*`. It documents the mechanics of the app
+  # rather than Colombian regulation, so a rep reading the interface in English
+  # still needs to know what pressing "Assess" does; the roles, the normativa and
+  # the feature inventory stay Spanish-only for the reasons at the top of the file.
+  #
+  # State and action NAMES are not repeated here either: the page renders
+  # patients.states.* and patients.<event>, so the manual always uses the same
+  # word as the badge and the button the rep is reading about.
+  #
+  # Source of truth is the `aasm` block in Patient plus PatientPolicy for who may
+  # fire each event. spec/models/operation_manual_spec.rb fails when the two
+  # drift, AND when a locale is missing a state's or a transition's copy — a
+  # gap that would otherwise fall back to Spanish and look deliberate.
+  PATIENT_STATES = %w[interested candidate participant].freeze
+
+  # direction: :forward (gated by the criteria) | :backward (never gated).
+  PatientTransition = Struct.new(:event, :from, :to, :direction, keyword_init: true)
+
+  PATIENT_TRANSITIONS = [
+    PatientTransition.new(event: "assess", from: "interested", to: "candidate", direction: :forward),
+    PatientTransition.new(event: "accept", from: "candidate", to: "participant", direction: :forward),
+    PatientTransition.new(event: "discard", from: "candidate", to: "interested", direction: :backward),
+    PatientTransition.new(event: "reject", from: "participant", to: "candidate", direction: :backward)
+  ].freeze
+
+  # How many standing notes the page renders under the transitions table. The
+  # notes themselves are a YAML list per locale; this is what lets the spec catch
+  # a language that translated four of five.
+  PATIENT_LIFECYCLE_NOTE_COUNT = 5
 
   # Primary regulatory sources. Local copies of each live in docs/sources/ (see
   # its README) because government links are known to move; the URLs below are

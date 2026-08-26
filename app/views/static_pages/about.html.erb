@@ -31,8 +31,9 @@
   <div class="mb-4">
     <h1 class="h2 mb-2">Acerca de Medici</h1>
     <p class="lead mb-0">
-      Manual de operación de la plataforma: qué puede hacer cada tipo de usuario, sobre qué
-      marco normativo colombiano se apoya la operación, y qué está construido y qué falta.
+      Manual de operación de la plataforma: cómo avanza un paciente por el reclutamiento, qué
+      puede hacer cada tipo de usuario, sobre qué marco normativo colombiano se apoya la
+      operación, y qué está construido y qué falta.
     </p>
   </div>
 
@@ -43,6 +44,7 @@
     <div class="card-body">
       <h2 class="h6 text-uppercase text-muted mb-3">Índice</h2>
       <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-4">
+        <%= link_to t("operation_manual.lifecycle.title"), "#pacientes", class: "text-decoration-none", data: { action: "click->smooth-anchor#jump" } %>
         <%= link_to "Manual de operación por rol", "#manual", class: "text-decoration-none", data: { action: "click->smooth-anchor#jump" } %>
         <%= link_to "Marco normativo colombiano", "#normativa", class: "text-decoration-none", data: { action: "click->smooth-anchor#jump" } %>
         <%= link_to "Estado de la plataforma", "#estado", class: "text-decoration-none", data: { action: "click->smooth-anchor#jump" } %>
@@ -50,84 +52,123 @@
     </div>
   </nav>
 
-  <%# ---------------------------------------------------------------- Manual %>
-  <section id="manual" class="mb-5">
-    <h2 class="h3 mb-1">Manual de operación por rol</h2>
+  <%# --------------------------------------------------------------- Pacientes
+      First section on purpose: the patient lifecycle is what the platform is
+      for, and every role below is described in terms of it.
+
+      Unlike the rest of this page it IS translated — operation_manual.lifecycle.*
+      in content_about.*.yml; see OperationManual for why this one section is.
+      State and action names come from patients.states.* / patients.<event>, so
+      the manual always uses the same word as the badge and the button.
+
+      No patient-state--* badge in the card headers: those are text colours meant
+      for a white row, and green measures 1.47:1 on the blue .health-card header.
+      The transitions table teaches the colour on white, where it is legible. %>
+  <section id="pacientes" class="mb-5">
+    <h2 class="h3 mb-1"><%= t("operation_manual.lifecycle.title") %></h2>
     <%= back_to_index %>
 
     <div class="card health-card shadow-sm mb-4">
       <div class="card-body">
-        <p class="mb-2">
-          Cada usuario tiene exactamente un rol, y el rol decide qué recursos ve y qué puede
-          hacer con ellos. Los permisos se traducen así a las acciones de la plataforma:
-        </p>
-        <ul class="mb-2">
-          <% OperationManual::ACTION_LEGEND.each_value do |description| %>
-            <li><%= description %></li>
-          <% end %>
-        </ul>
-        <p class="mb-0 small text-muted">
-          La tabla de cada rol muestra los permisos <strong>por defecto</strong>, que son con los
-          que se crea la plataforma. Un administrador puede ajustarlos en cualquier momento desde
-          <em>Usuarios → Gestionar roles</em>, así que ante una diferencia manda siempre lo
-          configurado allí. Todo recurso que no aparece en la tabla de un rol le está negado:
-          el permiso se concede de forma explícita y lo no concedido queda cerrado.
-        </p>
+        <p class="mb-2"><%= t("operation_manual.lifecycle.intro") %></p>
+        <p class="mb-0 small text-muted"><%= t("operation_manual.lifecycle.intro_note_html") %></p>
       </div>
     </div>
 
-    <% @roles.each do |role| %>
-      <div class="card health-card shadow-sm mb-4">
-        <div class="card-header">
-          <h3 class="h5 mb-0"><%= role.display_name %></h3>
-        </div>
-        <div class="card-body">
-          <p><%= role.summary %></p>
-
-          <h4 class="h6 text-uppercase text-muted mt-4">Responsabilidades</h4>
-          <ul>
-            <% role.responsibilities.each do |responsibility| %>
-              <li><%= responsibility %></li>
-            <% end %>
-          </ul>
-
-          <h4 class="h6 text-uppercase text-muted mt-4">Permisos por defecto</h4>
-          <% if role.full_access? %>
-            <p class="mb-2">
-              Acceso completo — ver, editar y eliminar — sobre todos los recursos de la plataforma:
-            </p>
-            <p class="mb-0">
-              <% role.permissions.keys.sort_by { |r| OperationManual.resource_label(r) }.each do |resource| %>
-                <span class="badge bg-light text-dark border me-1 mb-1"><%= OperationManual.resource_label(resource) %></span>
-              <% end %>
-            </p>
-          <% else %>
-            <div class="table-responsive">
-              <table class="table table-sm align-middle mb-0">
-                <thead>
-                  <tr>
-                    <th scope="col">Recurso</th>
-                    <th scope="col" class="text-center">Ver</th>
-                    <th scope="col" class="text-center">Editar</th>
-                    <th scope="col" class="text-center">Eliminar</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% role.permissions.sort_by { |resource, _| OperationManual.resource_label(resource) }.each do |resource, (can_show, can_edit, can_delete)| %>
-                    <tr>
-                      <th scope="row" class="fw-normal"><%= OperationManual.resource_label(resource) %></th>
-                      <td class="text-center"><%= flag.call(can_show) %></td>
-                      <td class="text-center"><%= flag.call(can_edit) %></td>
-                      <td class="text-center"><%= flag.call(can_delete) %></td>
-                    </tr>
-                  <% end %>
-                </tbody>
-              </table>
+    <div class="row g-4 mb-4">
+      <% @patient_states.each_with_index do |state, index| %>
+        <div class="col-lg-4">
+          <div class="card health-card shadow-sm h-100">
+            <div class="card-header">
+              <h3 class="h5 mb-0"><%= index + 1 %>. <%= t("patients.states.#{state}") %></h3>
             </div>
-          <% end %>
+            <div class="card-body">
+              <p><%= t("operation_manual.lifecycle.states.#{state}.summary") %></p>
+              <h4 class="h6 text-uppercase text-muted mt-4"><%= t("operation_manual.lifecycle.arrival_heading") %></h4>
+              <p class="mb-0"><%= t("operation_manual.lifecycle.states.#{state}.arrival") %></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="card health-card shadow-sm mb-4">
+      <div class="card-header">
+        <h3 class="h5 mb-0"><%= t("operation_manual.lifecycle.transitions_title") %></h3>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+              <tr>
+                <th scope="col"><%= t("operation_manual.lifecycle.table.action") %></th>
+                <th scope="col"><%= t("operation_manual.lifecycle.table.change") %></th>
+                <th scope="col"><%= t("operation_manual.lifecycle.table.who") %></th>
+                <th scope="col"><%= t("operation_manual.lifecycle.table.requires") %></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @patient_transitions.each do |transition| %>
+                <tr>
+                  <th scope="row" class="fw-semibold text-nowrap">
+                    <%= t("patients.#{transition.event}") %>
+                    <span class="badge <%= transition.direction == :forward ? "bg-primary-subtle text-primary-emphasis" : "bg-secondary-subtle text-secondary-emphasis" %> border ms-1">
+                      <%= t("operation_manual.lifecycle.direction.#{transition.direction}") %>
+                    </span>
+                  </th>
+                  <td class="text-nowrap">
+                    <span class="patient-state patient-state--<%= transition.from %>"><%= t("patients.states.#{transition.from}") %></span>
+                    <span class="text-muted mx-1" aria-hidden="true">→</span>
+                    <span class="visually-hidden"><%= t("operation_manual.lifecycle.moves_to") %></span>
+                    <span class="patient-state patient-state--<%= transition.to %>"><%= t("patients.states.#{transition.to}") %></span>
+                  </td>
+                  <td class="small"><%= t("operation_manual.lifecycle.transitions.#{transition.event}.actor") %></td>
+                  <td class="small"><%= t("operation_manual.lifecycle.transitions.#{transition.event}.requirement") %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
         </div>
       </div>
-    <% end %>
+    </div>
+
+    <div class="card health-card shadow-sm">
+      <div class="card-header">
+        <h3 class="h5 mb-0"><%= t("operation_manual.lifecycle.notes_title") %></h3>
+      </div>
+      <ul class="list-group list-group-flush">
+        <% t("operation_manual.lifecycle.notes").each do |note| %>
+          <li class="list-group-item"><%= note %></li>
+        <% end %>
+      </ul>
+    </div>
+  </section>
+
+  <%# ---------------------------------------------------------------- Manual %>
+  <%# The per-role manual moved to its own page on 2026-08-25 (static_pages#manual).
+      It was the longest section here by a wide margin and it answers a different
+      question — "what does this role do" rather than "what is this platform and
+      what is it built on" — so it gets a card that points at it instead of
+      sitting inline. %>
+  <section id="manual" class="mb-5">
+    <h2 class="h3 mb-1">Manual de operación por rol</h2>
+    <%= back_to_index %>
+
+    <div class="card health-card shadow-sm">
+      <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+          <p class="mb-1">
+            Qué hace cada tipo de usuario, con su recorrido dibujado de principio a fin y la
+            tabla de permisos que lo sostiene. Están los <%= @roles_count %> roles de la
+            plataforma, incluido el paciente, que no tiene cuenta pero sí recorrido.
+          </p>
+          <p class="mb-0 small text-muted">
+            Vive en su propia página porque se lee solo, no de paso.
+          </p>
+        </div>
+        <%= link_to "Abrir el manual", manual_path, class: "btn btn-primary text-nowrap" %>
+      </div>
+    </div>
   </section>
 
   <%# ------------------------------------------------------------- Normativa %>

@@ -1,0 +1,49 @@
+# French half of the patient-lifecycle section of the operation manual.
+# See content_about.es.yml for why only this section of /about is translated.
+fr:
+  operation_manual:
+    lifecycle:
+      title: "Cycle de vie du patient"
+      intro: "L'état indique où en est une personne dans le recrutement. Il y en a trois, toujours dans le même ordre, et ils ne changent que par une action explicite sur la fiche du patient : modifier ses données cliniques ne déplace jamais son état."
+      intro_note_html: "Les actions vers l'avant sont conditionnées par les <strong>critères primaires</strong> de l'étude — ceux qui décident — et non par les secondaires, qui informent. Les actions vers l'arrière n'ont aucune condition."
+      arrival_heading: "Comment on arrive ici"
+      transitions_title: "Comment passer d'un état à un autre"
+      notes_title: "Ce qu'il faut avoir en tête"
+      moves_to: "passe à"
+      table:
+        action: "Action"
+        change: "Changement"
+        who: "Qui peut la faire"
+        requires: "Ce qu'elle exige"
+      direction:
+        forward: "Avance"
+        backward: "Recule"
+      states:
+        interested:
+          summary: "Quelqu'un qui a levé la main pour une étude. C'est l'état initial et il n'affirme rien de clinique : il peut n'y avoir qu'un numéro de téléphone."
+          arrival: "Créé par le formulaire public « Je veux participer ! » lorsque quelqu'un laisse ses coordonnées pour une étude, ou saisi par un représentant de site avec la fiche clinique complète."
+        candidate:
+          summary: "A passé le triage : il existe des preuves qu'il remplit tous les critères primaires, il mérite donc l'examen d'un représentant. Ces preuves peuvent venir de l'investigateur ou être déclarées par le patient lui-même, de sorte qu'un candidat n'est PAS vérifié cliniquement."
+          arrival: "Par l'action « Évaluer », faite par un représentant ou déclenchée par le système lorsque le questionnaire du patient satisfait tous les critères primaires."
+        participant:
+          summary: "Accepté dans l'étude. Exige les preuves de l'investigateur : tous les critères primaires mesurés et remplis."
+          arrival: "Par l'action « Accepter », que seule une personne peut faire — jamais le système — sur un candidat dont tous les critères primaires sont enregistrés."
+      transitions:
+        assess:
+          actor: "Administrateur ou représentant de site. Le système la déclenche aussi de lui-même, à l'envoi du questionnaire du patient ; dans le journal des modifications elle est signée « system:self-report-triage » et non par une personne."
+          requirement: "Tous les critères primaires renseignés et remplis, les valeurs de l'investigateur comme les déclarations du patient comptant. C'est le niveau de preuve du triage : suffisant pour entrer dans la liste d'examen, pas pour entrer dans l'essai."
+        accept:
+          actor: "Administrateur ou représentant de site, toujours une personne."
+          requirement: "Tous les critères primaires avec une valeur enregistrée par l'investigateur, et remplis. Les déclarations du patient ne comptent pas ici : non mesuré n'équivaut jamais à rempli."
+        discard:
+          actor: "Administrateur ou représentant de site."
+          requirement: "Aucune. Faire revenir un patient en arrière doit toujours être possible, surtout quand ce sont les critères qui ont posé problème."
+        reject:
+          actor: "Administrateur ou représentant de site."
+          requirement: "Aucune, pour la même raison."
+      notes:
+        - "Les critères SECONDAIRES ne bloquent rien. Ils s'affichent en avertissement à côté du patient et c'est le représentant qui décide s'ils pèsent : il l'exprime en faisant ou non la transition."
+        - "Lorsque le rôle permet d'avancer mais que les critères ne le permettent pas, le bouton apparaît désactivé avec le motif en clair, plutôt que de disparaître."
+        - "Le système ne promeut jamais de lui-même au-delà du triage décrit ci-dessus. Appuyer sur le bouton est la décision, et elle est enregistrée."
+        - "Tout changement d'état est versionné dans le journal des modifications, avec l'utilisateur qui l'a fait et le moment où il est survenu."
+        - "Une étude sans profil de critères, ou avec un profil ne marquant rien comme primaire, n'a rien de décisif à vérifier : là, les transitions vers l'avant ne rencontrent aucun frein."

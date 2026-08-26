@@ -1,0 +1,49 @@
+# Portuguese half of the patient-lifecycle section of the operation manual.
+# See content_about.es.yml for why only this section of /about is translated.
+pt:
+  operation_manual:
+    lifecycle:
+      title: "Ciclo de vida do paciente"
+      intro: "O estado diz em que ponto do recrutamento está uma pessoa. São três, sempre na mesma ordem, e só mudam por uma ação explícita sobre a ficha do paciente: editar seus dados clínicos nunca move seu estado."
+      intro_note_html: "As ações para a frente estão condicionadas aos <strong>critérios primários</strong> do estudo — os que decidem — e não aos secundários, que informam. As ações para trás não têm condição alguma."
+      arrival_heading: "Como se chega aqui"
+      transitions_title: "Como se passa de um estado a outro"
+      notes_title: "O que convém ter claro"
+      moves_to: "passa a"
+      table:
+        action: "Ação"
+        change: "Mudança"
+        who: "Quem pode fazer"
+        requires: "O que exige"
+      direction:
+        forward: "Avança"
+        backward: "Retrocede"
+      states:
+        interested:
+          summary: "Alguém que levantou a mão por um estudo. É o estado inicial e não afirma nada clínico: pode não haver mais que um telefone."
+          arrival: "Criado pelo formulário público “Quero participar!” quando alguém deixa seu contato sobre um estudo, ou registrado por um representante de centro com a ficha clínica completa."
+        candidate:
+          summary: "Passou pela triagem: há evidência de que cumpre todos os critérios primários, então merece a revisão de um representante. Essa evidência pode ser do investigador ou declarada pelo próprio paciente, de modo que um candidato NÃO está verificado clinicamente."
+          arrival: "Com a ação “Avaliar”, feita por um representante ou disparada pelo sistema quando o questionário do paciente satisfaz todos os critérios primários."
+        participant:
+          summary: "Aceito no estudo. Exige a evidência do investigador: todos os critérios primários medidos e atendidos."
+          arrival: "Com a ação “Aceitar”, que só uma pessoa pode fazer — nunca o sistema — sobre um candidato com todos os seus critérios primários registrados."
+      transitions:
+        assess:
+          actor: "Administrador ou representante de centro. O sistema também a dispara sozinho, ao ser enviado o questionário do paciente; no controle de mudanças fica assinada como “system:self-report-triage” e não como uma pessoa."
+          requirement: "Todos os critérios primários respondidos e atendidos, valendo tanto os valores do investigador quanto as declarações do próprio paciente. É o nível de evidência da triagem: basta para entrar na lista de revisão, não para entrar no ensaio."
+        accept:
+          actor: "Administrador ou representante de centro, sempre uma pessoa."
+          requirement: "Todos os critérios primários com valor registrado pelo investigador e atendidos. As declarações do paciente não contam aqui: o não medido nunca equivale a atendido."
+        discard:
+          actor: "Administrador ou representante de centro."
+          requirement: "Nenhuma. Devolver um paciente sempre deve ser possível, sobretudo quando o que falhou foram os critérios."
+        reject:
+          actor: "Administrador ou representante de centro."
+          requirement: "Nenhuma, pela mesma razão."
+      notes:
+        - "Os critérios SECUNDÁRIOS não bloqueiam nada. Aparecem como advertência junto ao paciente e é o representante quem decide se pesam: expressa isso fazendo ou não fazendo a transição."
+        - "Quando o papel permite avançar mas os critérios não, o botão aparece desabilitado com o motivo à vista, em vez de desaparecer."
+        - "O sistema nunca promove por conta própria além da triagem descrita acima. Apertar o botão é a decisão, e fica registrada."
+        - "Toda mudança de estado é versionada no controle de mudanças com o usuário que a fez e o momento em que ocorreu."
+        - "Um estudo sem perfil de critérios, ou com um perfil que não marca nada como primário, não tem nada decisivo a verificar: ali as transições para a frente não encontram freio."

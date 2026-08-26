@@ -1,0 +1,59 @@
+# The patient-lifecycle section of the operation manual (/about).
+#
+# The REST of that page is deliberately Spanish-only and lives in
+# OperationManual (see the comment at the top of that file). This one section is
+# translated because it documents the mechanics of the app rather than Colombian
+# regulation: a rep reading the interface in English still needs to know what
+# pressing "Assess" does. OperationManual keeps only the STRUCTURE — which states
+# exist, which event connects which pair — and every word comes from here.
+#
+# State and action names are NOT repeated here: they come from patients.states.*
+# and patients.<event>, so the manual always uses the same word as the badge and
+# the button the rep is reading about.
+es:
+  operation_manual:
+    lifecycle:
+      title: "Ciclo de vida del paciente"
+      intro: "El estado dice en qué punto del reclutamiento va una persona. Son tres, siempre en el mismo orden, y sólo cambian por una acción explícita sobre la ficha del paciente: editar sus datos clínicos no mueve nunca su estado."
+      intro_note_html: "Las acciones hacia adelante están condicionadas por los <strong>criterios primarios</strong> del estudio — los que deciden — y no por los secundarios, que informan. Las acciones hacia atrás no tienen condición alguna."
+      arrival_heading: "Cómo llega aquí"
+      transitions_title: "Cómo se pasa de un estado a otro"
+      notes_title: "Lo que conviene tener claro"
+      moves_to: "pasa a"
+      table:
+        action: "Acción"
+        change: "Cambio"
+        who: "Quién puede hacerla"
+        requires: "Qué exige"
+      direction:
+        forward: "Avanza"
+        backward: "Retrocede"
+      states:
+        interested:
+          summary: "Alguien que levantó la mano por un estudio. Es el estado inicial y no afirma nada clínico: puede no haber más que un teléfono."
+          arrival: "Lo crea el formulario público «¡Quiero participar!» cuando alguien deja su contacto sobre un estudio, o lo registra un representante de sede con la ficha clínica completa."
+        candidate:
+          summary: "Pasó el triaje: hay evidencia de que cumple todos los criterios primarios, así que merece la revisión de un representante. Esa evidencia puede ser del investigador o declarada por el propio paciente, de modo que un candidato NO está verificado clínicamente."
+          arrival: "Con la acción «Evaluar», hecha por un representante o disparada por el sistema cuando el cuestionario del paciente satisface todos los criterios primarios."
+        participant:
+          summary: "Aceptado en el estudio. Exige la evidencia del investigador: todos los criterios primarios medidos y cumplidos."
+          arrival: "Con la acción «Aceptar», que sólo puede hacer una persona — nunca el sistema — sobre un candidato con todos sus criterios primarios registrados."
+      transitions:
+        assess:
+          actor: "Administrador o representante de sede. El sistema también la dispara solo, al enviarse el cuestionario del paciente; en el control de cambios queda firmada como «system:self-report-triage» y no como una persona."
+          requirement: "Todos los criterios primarios respondidos y cumplidos, sirviendo tanto los valores del investigador como las declaraciones del propio paciente. Es el nivel de evidencia de triaje: alcanza para entrar en la lista de revisión, no para entrar al ensayo."
+        accept:
+          actor: "Administrador o representante de sede, siempre una persona."
+          requirement: "Todos los criterios primarios con valor registrado por el investigador y cumplidos. Las declaraciones del paciente no cuentan aquí: lo no medido nunca equivale a cumplido."
+        discard:
+          actor: "Administrador o representante de sede."
+          requirement: "Ninguna. Devolver a un paciente siempre es posible, sobre todo cuando lo que falló fueron los criterios."
+        reject:
+          actor: "Administrador o representante de sede."
+          requirement: "Ninguna, por la misma razón."
+      notes:
+        - "Los criterios SECUNDARIOS no bloquean nada. Se muestran como advertencia junto al paciente y es el representante quien decide si pesan: lo expresa haciendo o no haciendo la transición."
+        - "Cuando el rol permite avanzar pero los criterios no, el botón aparece deshabilitado con el motivo a la vista, en lugar de desaparecer."
+        - "El sistema nunca promueve por su cuenta más allá del triaje descrito arriba. Apretar el botón es la decisión, y queda registrada."
+        - "Todo cambio de estado se versiona en el control de cambios con el usuario que lo hizo y el momento en que ocurrió."
+        - "Un estudio sin perfil de criterios, o con un perfil sin ningún criterio primario, no tiene nada decisivo que verificar: ahí las transiciones hacia adelante no encuentran freno."

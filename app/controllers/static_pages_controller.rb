@@ -3,7 +3,7 @@ class StaticPagesController < ApplicationController
   # out the permission matrix and the open compliance gaps, which is internal
   # operational detail — every signed-in role may read all of it, anonymous
   # visitors none. (The navbars that link it only render when signed in anyway.)
-  before_action :authenticate_user!, only: :about
+  before_action :authenticate_user!, only: %i[about manual]
 
   def medici_home
     @cities = City.all.order(:name)
@@ -15,11 +15,21 @@ class StaticPagesController < ApplicationController
     @recruitment = RecruitmentProgress.for(@studies)
   end
 
-  # Operation manual: what each role may do, the Colombian regulatory sources the
-  # operation rests on, and the feature inventory. Content lives in
-  # OperationManual.
-  def about
+  # The per-role operation manual: what each role does, drawn as a Mermaid flow,
+  # plus the permission table behind it. Split off #about on 2026-08-25 — it is
+  # the longest section by far and it is read on its own, to answer "what does
+  # this role do", not alongside the regulatory sources.
+  def manual
     @roles = OperationManual::ROLES
+  end
+
+  # How a patient moves through the recruitment lifecycle, the Colombian
+  # regulatory sources the operation rests on, and the feature inventory.
+  # Content lives in OperationManual.
+  def about
+    @roles_count = OperationManual::ROLES.size
+    @patient_states = OperationManual::PATIENT_STATES
+    @patient_transitions = OperationManual::PATIENT_TRANSITIONS
     @documents = OperationManual::DOCUMENTS
     @internal_documents = OperationManual::INTERNAL_DOCUMENTS
     @shipped = OperationManual.shipped

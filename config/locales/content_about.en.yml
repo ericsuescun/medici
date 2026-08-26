@@ -1,0 +1,49 @@
+# English half of the patient-lifecycle section of the operation manual.
+# See content_about.es.yml for why only this section of /about is translated.
+en:
+  operation_manual:
+    lifecycle:
+      title: "Patient lifecycle"
+      intro: "The state says where a person is in recruitment. There are three, always in the same order, and they change only through an explicit action on the patient's record: editing their clinical data never moves their state."
+      intro_note_html: "Forward actions are conditioned on the study's <strong>primary criteria</strong> — the ones that decide — and not on the secondary ones, which inform. Backward actions carry no condition at all."
+      arrival_heading: "How a patient gets here"
+      transitions_title: "How a patient moves from one state to another"
+      notes_title: "What to keep in mind"
+      moves_to: "moves to"
+      table:
+        action: "Action"
+        change: "Change"
+        who: "Who can do it"
+        requires: "What it requires"
+      direction:
+        forward: "Moves forward"
+        backward: "Moves back"
+      states:
+        interested:
+          summary: "Someone who raised their hand about a study. This is the initial state and it claims nothing clinical: there may be no more than a phone number."
+          arrival: "Created by the public “I want to participate!” form when somebody leaves their contact details against a study, or registered by a trial centre rep with the full clinical record."
+        candidate:
+          summary: "Passed triage: there is evidence they meet every primary criterion, so they deserve a rep's review. That evidence may come from the investigator or be declared by the patient themselves, so a candidate is NOT clinically verified."
+          arrival: "Through the “Assess” action, taken by a rep or fired by the system when the patient's questionnaire satisfies every primary criterion."
+        participant:
+          summary: "Accepted into the study. Requires the investigator's evidence: every primary criterion measured and met."
+          arrival: "Through the “Accept” action, which only a person can take — never the system — on a candidate with every primary criterion recorded."
+      transitions:
+        assess:
+          actor: "Admin or trial centre rep. The system also fires it on its own when the patient's questionnaire is submitted; in the change log it is signed “system:self-report-triage” rather than by a person."
+          requirement: "Every primary criterion answered and met, with the investigator's values and the patient's own declarations both counting. This is the triage tier of evidence: enough to reach the review list, not enough to enter the trial."
+        accept:
+          actor: "Admin or trial centre rep — always a person."
+          requirement: "Every primary criterion with a value recorded by the investigator, and met. Patient declarations do not count here: unmeasured never equals met."
+        discard:
+          actor: "Admin or trial centre rep."
+          requirement: "None. Walking a patient back must always be possible, above all when the criteria are what went wrong."
+        reject:
+          actor: "Admin or trial centre rep."
+          requirement: "None, for the same reason."
+      notes:
+        - "SECONDARY criteria block nothing. They appear as a warning beside the patient, and it is the rep who decides whether they weigh: they say so by making or withholding the transition."
+        - "When the role permits moving forward but the criteria do not, the button appears disabled with the reason in plain sight, rather than disappearing."
+        - "The system never promotes on its own beyond the triage described above. Pressing the button is the decision, and it is recorded."
+        - "Every state change is versioned in the change log, with the user who made it and the moment it happened."
+        - "A study with no criteria profile, or with a profile that marks nothing primary, has nothing decisive to check: there the forward transitions meet no brake."
