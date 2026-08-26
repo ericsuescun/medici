@@ -14,6 +14,13 @@ Rails.application.config.assets.paths << Rails.root.join("node_modules/bootstrap
 Rails.application.config.assets.paths << Rails.root.join("node_modules/trix/dist")
 Rails.application.config.assets.paths << Rails.root.join("node_modules/@rails/actiontext/app/assets/javascripts")
 Rails.application.config.assets.paths << Rails.root.join("node_modules/@rails/activestorage/app/assets/javascripts")
+# Mermaid renders the per-role flow diagrams on /manual. The self-contained UMD
+# build is used rather than the 30 KB ESM one, because that one dynamically
+# imports its diagram renderers from sibling files and Propshaft digests every
+# filename, so those relative imports would 404. It is 3.5 MB, which is why it
+# is loaded from that ONE page via content_for :head rather than from the
+# layout — nothing else in the app pays for it.
+Rails.application.config.assets.paths << Rails.root.join("node_modules/mermaid/dist")
 Rails.application.config.assets.paths << Rails.root.join("app/assets/images")
 Rails.application.config.assets.precompile << "bootstrap.bundle.min.js"
-Rails.application.config.assets.precompile += %w[ trix.esm.min.js actiontext.esm.js actiontext.css activestorage.esm.js ]
+Rails.application.config.assets.precompile += %w[ trix.esm.min.js actiontext.esm.js actiontext.css activestorage.esm.js mermaid.min.js ]

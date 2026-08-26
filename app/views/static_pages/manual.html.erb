@@ -1,0 +1,159 @@
+<%#
+  Operation manual, one section per role. Moved off /about on 2026-08-25: it was
+  the longest thing on that page by a wide margin, and it is read on its own — to
+  answer "what does this role actually do" — rather than alongside the regulatory
+  sources it used to sit above.
+
+  Content comes from OperationManual; see that file for why it is written in
+  Spanish rather than run through i18n.
+
+  Each role gets a Mermaid flow. They describe what the CODE does, not what the
+  role is nominally for: the sponsor's flow stops at the study because the
+  criteria profile belongs to the trial centre in the permission matrix, and the
+  patient's flow is drawn from the two PUBLIC controllers because a patient has
+  no account to log into.
+%>
+<% content_for :title, "Manual de operación — Medici" %>
+
+<%# 3.5 MB, so it is pulled in HERE and not from the layout — see
+    config/initializers/assets.rb. mermaid_controller.js waits for the global. %>
+<% content_for :head do %>
+  <%= javascript_include_tag "mermaid.min", defer: true %>
+<% end %>
+
+<%
+  flag = ->(on) do
+    if on
+      tag.span("✓", class: "text-success fw-bold", title: "Sí", aria: { label: "Sí" })
+    else
+      tag.span("—", class: "text-muted", title: "No", aria: { label: "No" })
+    end
+  end
+
+  back_to_index = link_to("↑ Volver al índice", "#indice",
+                          class: "small text-decoration-none d-inline-block mb-3",
+                          data: { action: "click->smooth-anchor#jump" })
+%>
+
+<div class="container my-5" data-controller="smooth-anchor mermaid">
+  <div class="mb-4">
+    <h1 class="h2 mb-2">Manual de operación</h1>
+    <p class="lead mb-2">
+      Qué hace cada tipo de usuario en Medici, dibujado como un recorrido de principio a fin,
+      y qué permisos lo sostienen.
+    </p>
+    <p class="mb-0">
+      <%= link_to "← Acerca de Medici", about_path, class: "text-decoration-none" %>
+      <span class="text-muted mx-1">·</span>
+      <span class="text-muted small">El marco normativo y el estado de la plataforma viven allí.</span>
+    </p>
+  </div>
+
+  <%# Same smooth-anchor treatment as /about: native #anchor jumps drift here
+      because the layout adjusts body padding from JS after paint. %>
+  <nav id="indice" class="card health-card shadow-sm mb-5" aria-label="Índice">
+    <div class="card-body">
+      <h2 class="h6 text-uppercase text-muted mb-3">Roles</h2>
+      <div class="d-flex flex-column flex-sm-row flex-wrap gap-2 gap-sm-4">
+        <% @roles.each do |role| %>
+          <%= link_to role.display_name, "##{role.name}", class: "text-decoration-none",
+                      data: { action: "click->smooth-anchor#jump" } %>
+        <% end %>
+      </div>
+    </div>
+  </nav>
+
+  <div class="card health-card shadow-sm mb-5">
+    <div class="card-body">
+      <p class="mb-2">
+        Cada usuario tiene exactamente un rol, y el rol decide qué recursos ve y qué puede
+        hacer con ellos. Los permisos se traducen así a las acciones de la plataforma:
+      </p>
+      <ul class="mb-2">
+        <% OperationManual::ACTION_LEGEND.each_value do |description| %>
+          <li><%= description %></li>
+        <% end %>
+      </ul>
+      <p class="mb-0 small text-muted">
+        La tabla de cada rol muestra los permisos <strong>por defecto</strong>, que son con los
+        que se crea la plataforma. Un administrador puede ajustarlos en cualquier momento desde
+        <em>Usuarios → Gestionar roles</em>, así que ante una diferencia manda siempre lo
+        configurado allí. Todo recurso que no aparece en la tabla de un rol le está negado:
+        el permiso se concede de forma explícita y lo no concedido queda cerrado.
+      </p>
+    </div>
+  </div>
+
+  <% @roles.each do |role| %>
+    <section id="<%= role.name %>" class="mb-5">
+      <h2 class="h3 mb-1"><%= role.display_name %></h2>
+      <%= back_to_index %>
+
+      <div class="card health-card shadow-sm mb-4">
+        <div class="card-body">
+          <p class="mb-0"><%= role.summary %></p>
+        </div>
+      </div>
+
+      <%# The flow. Rendered from the Mermaid source in OperationManual::ROLE_FLOWS;
+          if the bundle never loads, the <pre> stays on screen as readable text
+          rather than leaving a hole. %>
+      <div class="card health-card shadow-sm mb-4">
+        <div class="card-header">
+          <h3 class="h5 mb-0">Cómo transcurre su trabajo</h3>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <pre class="mermaid mb-0"><%= OperationManual::ROLE_FLOWS.fetch(role.name) %></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card health-card shadow-sm mb-4">
+        <div class="card-body">
+          <h3 class="h6 text-uppercase text-muted">Responsabilidades</h3>
+          <ul>
+            <% role.responsibilities.each do |responsibility| %>
+              <li><%= responsibility %></li>
+            <% end %>
+          </ul>
+
+          <h3 class="h6 text-uppercase text-muted mt-4">Permisos por defecto</h3>
+          <% if role.full_access? %>
+            <p class="mb-2">
+              Acceso completo — ver, editar y eliminar — sobre todos los recursos de la plataforma:
+            </p>
+            <p class="mb-0">
+              <% role.permissions.keys.sort_by { |r| OperationManual.resource_label(r) }.each do |resource| %>
+                <span class="badge bg-light text-dark border me-1 mb-1"><%= OperationManual.resource_label(resource) %></span>
+              <% end %>
+            </p>
+          <% else %>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col">Recurso</th>
+                    <th scope="col" class="text-center">Ver</th>
+                    <th scope="col" class="text-center">Editar</th>
+                    <th scope="col" class="text-center">Eliminar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% role.permissions.sort_by { |resource, _| OperationManual.resource_label(resource) }.each do |resource, (can_show, can_edit, can_delete)| %>
+                    <tr>
+                      <th scope="row" class="fw-normal"><%= OperationManual.resource_label(resource) %></th>
+                      <td class="text-center"><%= flag.call(can_show) %></td>
+                      <td class="text-center"><%= flag.call(can_edit) %></td>
+                      <td class="text-center"><%= flag.call(can_delete) %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </section>
+  <% end %>
+</div>
