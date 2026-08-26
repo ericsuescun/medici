@@ -138,11 +138,15 @@ RSpec.describe "Criteria assessments", type: :request do
   context "when the study's criteria gate the patient" do
     before { sign_in(FactoryBot.create(:user, :admin), scope: :user) }
 
-    it "locks the forward step and explains what is required" do
+    it "locks the forward step and explains what is required, naming both ends of the step" do
       get assessment_path
 
       expect(response).to be_successful
-      expect(response.body).to include(I18n.t("criteria_assessments.locked.hint"))
+      expect(response.body).to include(
+        I18n.t("criteria_assessments.locked.hint",
+               from: I18n.t("patients.states.interested"),
+               to: I18n.t("patients.states.candidate"))
+      )
       expect(response.body).to include("bi-lock-fill")
     end
 

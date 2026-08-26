@@ -102,12 +102,17 @@
   <% end %>
 
   <%# ---- Take action: promote the patient through the trial lifecycle ---- %>
-  <% forward_event = { "interested" => "assess", "candidate" => "accept" }[@patient.state] %>
+  <% forward_event = @patient.forward_event %>
   <% forward_allowed = forward_event && policy(@patient).public_send("#{forward_event}?") %>
   <%# A forward step this user's role permits but the PRIMARY criteria block.
       Shown as a disabled button with the reason rather than vanishing, which is
-      what would otherwise happen: the AASM guard makes policy.assess? false. %>
-  <% locked_forward = forward_event.present? && policy(@patient).update_state? && !@patient.primary_criteria_met? %>
+      what would otherwise happen: the AASM guard makes policy.assess? false.
+      Both the event and the gate come from the model: this view kept its own
+      copy of each until 2026-08-25, and the hardcoded gate was the tier-agnostic
+      one, so an `interested` patient who qualified by self-report alone got a
+      locked button here next to a working one. %>
+  <% locked_forward = forward_event.present? && policy(@patient).update_state? && !@patient.criteria_permit_forward? %>
+  <% hint_args = transition_hint_args(@patient, score: @result.primary_score) %>
   <% any_transition = locked_forward || %w[assess accept discard reject].any? { |e| policy(@patient).public_send("#{e}?") } %>
   <%# The score drives the recommendation; profiles with no primary criteria
       fall back to the whole-profile verdict, as before the score existed. %>
@@ -119,19 +124,21 @@
         <p class="text-muted small mb-3">
           <% if locked_forward %>
             <% if @result.recommendation != :none %>
-              <%= t("criteria_assessments.score.promote_hint_#{@result.recommendation}",
-                    score: @result.primary_score, event: t("patients.#{forward_event}")) %>
+              <%= t("criteria_assessments.score.promote_hint_#{@result.recommendation}", **hint_args) %>
             <% end %>
-            <strong><%= t("criteria_assessments.locked.hint") %></strong>
+            <strong><%= t("criteria_assessments.locked.hint", **hint_args) %></strong>
           <% elsif forward_allowed && @result.recommendation != :none %>
-            <%= t("criteria_assessments.score.promote_hint_#{@result.recommendation}",
-                  score: @result.primary_score, event: t("patients.#{forward_event}")) %>
+            <%= t("criteria_assessments.score.promote_hint_#{@result.recommendation}", **hint_args) %>
           <% elsif forward_allowed && @result.eligible? %>
-            <%= t("criteria_assessments.brief.promote_hint_eligible", event: t("patients.#{forward_event}")) %>
+            <%= t("criteria_assessments.brief.promote_hint_eligible", **hint_args) %>
           <% elsif forward_allowed && !@result.complete? %>
             <%= t("criteria_assessments.brief.promote_hint_incomplete") %>
           <% elsif forward_allowed %>
             <%= t("criteria_assessments.brief.promote_hint_not_eligible") %>
+          <%# End of the lifecycle — see the note on the same branch in
+              patients/show.html.erb. %>
+          <% elsif @patient.backward_event %>
+            <%= t("criteria_assessments.brief.at_final_state", **hint_args) %>
           <% else %>
             <%= t("criteria_assessments.brief.promote_hint_generic") %>
           <% end %>
@@ -139,7 +146,7 @@
         <div class="d-flex flex-wrap gap-2">
           <% if locked_forward %>
             <button type="button" class="btn btn-sm btn-outline-secondary" disabled
-                    title="<%= t("criteria_assessments.locked.hint") %>">
+                    title="<%= t("criteria_assessments.locked.hint", **hint_args) %>">
               <i class="bi bi-lock-fill"></i> <%= t("patients.#{forward_event}") %>
             </button>
           <% end %>

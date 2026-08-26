@@ -104,6 +104,51 @@ module ApplicationHelper
     normalized if normalized.match?(%r{\Ahttps?://}i)
   end
 
+  # Interpolations for the "take action" hints: the label on the button, and the
+  # two states pressing it moves the patient between. A hint that says only
+  # "puede promoverlo con «Aceptar»" makes the rep hold the lifecycle in their
+  # head; naming both ends states the decision on the button itself.
+  #
+  # One helper because two pages render these same hints and have drifted before.
+  # Extra keys are harmless — I18n ignores interpolations a string doesn't use —
+  # so every hint can be called with the same hash.
+  def transition_hint_args(patient, score: nil)
+    args = { state: t("patients.states.#{patient.state}"), score: score }
+
+    if patient.forward_event.present?
+      args[:event] = t("patients.#{patient.forward_event}")
+      args[:from] = args[:state]
+      args[:to] = t("patients.states.#{patient.forward_target_state}")
+    end
+
+    # Named separately from the forward step because at the END of the lifecycle
+    # the backward step is the only move there is, and the hint has to talk
+    # about that one instead of about promoting.
+    if patient.backward_event.present?
+      args[:back_event] = t("patients.#{patient.backward_event}")
+      args[:back_to] = t("patients.states.#{patient.backward_target_state}")
+    end
+
+    args.compact
+  end
+
+  # Turns an approved patient prompt ("¿Estás embarazada o en período de
+  # lactancia?") into a statement that reads under a "No podrás participar si:"
+  # heading ("estás embarazada o en período de lactancia").
+  #
+  # Deliberately reuses `patient_prompt` rather than the rule's `name`: the
+  # prompt is the CEI-approved participant wording (that is what
+  # `patient_self_report_enabled` attests), while `name` is protocol language
+  # the public flow must never render.
+  def patient_prompt_as_statement(prompt)
+    text = prompt.to_s.strip.delete_prefix("¿").delete_suffix("?").strip
+    return text if text.blank?
+
+    # Only the first character is lowercased, so a proper noun mid-sentence
+    # survives: "¿Tomas Metformina?" -> "tomas Metformina".
+    text[0].downcase + text[1..].to_s
+  end
+
   # Returns [ [name, code], ... ] for use in selects, ordered by country_priority then name
   # If no selected value is provided, defaults to 'CO' (Colombia)
   def country_options_for_select(selected = nil)

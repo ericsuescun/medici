@@ -135,10 +135,68 @@ class Patient < ApplicationRecord
 
   # Patients whose study runs at one of `branches` — the scoping rule for a
   # trial centre rep, who must only ever see the patients of their own centre.
+  #
+  # Expressed as `study_id IN (...)` rather than a join + DISTINCT. A study runs
+  # at many branches, so joining multiplies a patient into one row per branch,
+  # and the DISTINCT that repaired that then collided with the CASE ordering
+  # below (Postgres: "for SELECT DISTINCT, ORDER BY expressions must appear in
+  # select list"). A subquery cannot multiply rows, so neither problem exists.
   scope :for_trial_center_branches, ->(branches) {
-    joins(study: :trial_center_branches)
-      .where(trial_center_branches: { id: branches })
-      .distinct
+    where(study_id: Study.joins(:trial_center_branches)
+                         .where(trial_center_branches: { id: branches })
+                         .select(:id))
+  }
+
+  # Patients whose study belongs to one of `sponsors` — the scoping rule for a
+  # sponsor rep. A sponsor must never see another sponsor's patients, so this is
+  # the sponsor-side twin of the scope above; PatientPolicy::Scope applies it.
+  scope :for_sponsors, ->(sponsors) {
+    where(study_id: Study.where(sponsor_id: sponsors).select(:id))
+  }
+
+  # The pipeline the recruitment index works: everybody who has not yet joined a
+  # trial. `participant` is deliberately NOT here — those are results, not work,
+  # and they get their own page (PatientsController#participants).
+  RECRUITING_STATES = %w[interested candidate].freeze
+  FINAL_STATE = "participant"
+
+  # Patients as the PUBLIC form creates them: a phone number and nothing else.
+  # `firstname` is the marker because that form cannot set it — it permits only
+  # `:contact_number, :email`. Worth being able to isolate: a lead has no name to
+  # recognise them by and no clinical record yet, so somebody has to ring them
+  # before anything else can happen, and one who self-reported their way to
+  # `candidate` is the most urgent call on the page.
+  #
+  # Expressible in SQL even though names are encrypted: it tests for NULL and for
+  # ONE exact value, neither of which needs to read the ciphertext — which is why
+  # it works where an ILIKE on a name cannot.
+  #
+  # Both nil AND "" on purpose. The public form leaves the column NULL, but the
+  # staff edit form submits `patient[firstname]=""` on every save, so the first
+  # time a rep opens a lead and presses save — without typing a name — NULL
+  # becomes "". A `firstname: nil` test then silently drops exactly the leads
+  # somebody has already touched once, while `display_name` still shows the bare
+  # participant code. Deterministic encryption maps "" to a single fixed
+  # ciphertext, so equality still matches it.
+  BLANK_NAMES = [ nil, "" ].freeze
+
+  scope :leads, -> { where(firstname: BLANK_NAMES) }
+  scope :named, -> { where.not(firstname: BLANK_NAMES) }
+
+  scope :recruiting, -> { where(state: RECRUITING_STATES) }
+  scope :enrolled, -> { where(state: FINAL_STATE) }
+
+  # Review order: candidates first (they asked for the rep's attention — many
+  # arrive auto-triaged from their own questionnaire answers), then interested,
+  # then participants. Lived in PatientsController as a Ruby sort key; it is a
+  # property of the lifecycle, not of one page, and expressing it in SQL means a
+  # relation is already in review order before anything materialises it.
+  STATE_REVIEW_ORDER = { "candidate" => 0, "interested" => 1, FINAL_STATE => 2 }.freeze
+
+  scope :in_review_order, -> {
+    whens = STATE_REVIEW_ORDER.map { |state, rank| "WHEN #{connection.quote(state)} THEN #{rank}" }
+
+    order(Arel.sql("CASE #{table_name}.state #{whens.join(' ')} ELSE 9 END"), created_at: :desc)
   }
 
   # This patient evaluated against their study's eligibility rules, or nil when
@@ -186,8 +244,38 @@ class Patient < ApplicationRecord
     "accept" => :primary_criteria_met?
   }.freeze
 
+  # The step BACK available from the current state, or nil at the start of the
+  # line. Never gated — see the aasm block — but a patient at the END of the
+  # line has only this, and the take-action copy has to be able to name it:
+  # offering promotion advice to a participant is what made the box read as
+  # "reject this patient" (fixed 2026-08-25).
+  BACKWARD_EVENTS = { "candidate" => "discard", "participant" => "reject" }.freeze
+
   def forward_event
     FORWARD_EVENTS[state]
+  end
+
+  def backward_event
+    BACKWARD_EVENTS[state]
+  end
+
+  # The state an event lands in from where the patient stands now. Read off the
+  # AASM machine rather than kept as a second hardcoded map, so the copy the rep
+  # reads on the button ("promover de Candidato a Participante") cannot describe
+  # a transition the machine no longer makes.
+  def target_state_for(event)
+    return nil if event.blank?
+
+    aasm.events.find { |e| e.name.to_s == event.to_s }
+        &.transitions&.find { |t| t.from.to_s == state }&.to&.to_s
+  end
+
+  def forward_target_state
+    target_state_for(forward_event)
+  end
+
+  def backward_target_state
+    target_state_for(backward_event)
   end
 
   # True when the criteria do not stand in the way of the next forward step —
