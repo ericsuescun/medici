@@ -177,7 +177,12 @@ module ExampleCriteriaProfiles
     primary = variables.select(&:primary?)
     secondary = variables.reject(&:primary?)
 
-    profile.study.patients.each_with_index do |patient, i|
+    # `.named` skips the public-form leads. A lead has no clinical record at all
+    # — nobody has measured anything — so handing them investigator
+    # VariableValues would make them promotable straight to `participant` on the
+    # CLINICAL tier, which is precisely what the two-tier design exists to
+    # prevent. Their evidence is declarations, written by declare! instead.
+    profile.study.patients.named.each_with_index do |patient, i|
       outcome = OUTCOMES[i % OUTCOMES.size]
       next if outcome == :untouched
 
@@ -273,15 +278,21 @@ module ExampleCriteriaProfiles
   # answers satisfy every primary criterion this triages them exactly as the
   # controller does — under a system whodunnit, because the system really is
   # what moved them.
-  def self.declare!(profile, patients)
+  # `complete: true` answers every question with a passing value instead of
+  # leaving ~10% blank or declined. Auto-triage only fires when EVERY primary
+  # criterion is satisfied, so without it whether the dev graph contains a
+  # self-triaged candidate is a matter of dice — and the one the recruitment
+  # page most needs to show (a nameless lead who qualified on their own answers)
+  # would come and go between seed runs.
+  def self.declare!(profile, patients, complete: false)
     askable = profile.criteria_variables.askable_to_patient.to_a
     return if askable.empty?
 
     patients.each do |patient|
       askable.each do |cv|
-        next if rand < 0.1 # some questions simply left blank
+        next if !complete && rand < 0.1 # some questions simply left blank
 
-        declined = rand < 0.1
+        declined = !complete && rand < 0.1
         patient.patient_declarations.create!(
           criteria_variable: cv, prompt: cv.patient_prompt,
           answer: declined ? nil : passing_value(cv).to_s,

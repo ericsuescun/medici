@@ -118,6 +118,34 @@ if Study.count < 10
 end
 puts "  sponsors:    #{Sponsor.count} (#{Study.count} studies, #{Patient.count} patients)"
 
+# --- Leads: patients as the PUBLIC form actually creates them -----------------
+# Everything above is a FactoryBot patient with a Faker name, which is the shape
+# a trial centre rep types in — not the shape most patients arrive in. Somebody
+# who presses "¡Quiero participar!" leaves a phone number and nothing else: no
+# name, no dob, no sex (ParticipationRequestsController permits `:contact_number,
+# :email` and nothing more). They are the ones who most need a call back, and
+# until 2026-08-25 the dev graph contained none of them, so the recruitment page
+# never showed the case it exists for.
+#
+# In its own block rather than inside the studies loop above, which is guarded by
+# `if Study.count < 10` — this way an existing development database gets its
+# leads on the next `db:seed` instead of needing a reset.
+Study.recruiting.includes(:patients).find_each do |study|
+  next if study.patients.any? { |p| p.firstname.nil? } # already has leads
+
+  rand(1..3).times do
+    FactoryBot.create(
+      :patient, :lead,
+      study: study,
+      # The public form asks for a coarse city from a picker; plenty of people
+      # skip it, and some are filled in by a relative rather than the patient.
+      reported_city: rand < 0.7 ? Patient::PRINCIPAL_CITIES.sample : nil,
+      submitted_by_proxy: rand < 0.2
+    )
+  end
+end
+puts "  leads:       #{Patient.where(firstname: nil).count} with no name (public-form shape)"
+
 # --- Eligibility profiles ----------------------------------------------------
 # One profile per study, cycling four therapeutic areas. Each is 25 criteria
 # with a FIXED primary set of 5 (2 inclusion + 3 exclusion) — those five are the
@@ -136,10 +164,25 @@ Study.recruiting.order(:id).each_with_index do |study, i|
   next if study.criteria_profile.nil?
 
   study.update!(patient_self_report_enabled: true)
-  # A couple of patients answer the questions themselves. Where their answers
-  # satisfy every primary criterion this auto-triages them exactly as
-  # SelfReportsController does — attributed to the system, because it was.
-  ExampleCriteriaProfiles.declare!(study.criteria_profile, study.patients.where(state: "interested").limit(2))
+
+  # Patients answer the questions themselves. Where their answers satisfy every
+  # primary criterion this auto-triages them exactly as SelfReportsController
+  # does — attributed to the system, because it was.
+  #
+  # NAMELESS LEADS GO FIRST, and one of them answers everything (`complete:`).
+  # A lead who qualifies on their own answers is precisely the row the
+  # recruitment page exists for: no name, a phone number, sitting in `candidate`
+  # with a full questionnaire, waiting for somebody to ring them. Leaving it to
+  # chance meant the graph usually had none.
+  # Only patients who have not answered yet: `declare!` appends rows, so without
+  # this a second `db:seed` would give the same person two sets of answers.
+  interested = study.patients.where(state: "interested")
+                    .where.missing(:patient_declarations)
+  leads = interested.where(firstname: nil).to_a
+  named = interested.where.not(firstname: nil).limit(1).to_a
+
+  ExampleCriteriaProfiles.declare!(study.criteria_profile, leads.first(1), complete: true)
+  ExampleCriteriaProfiles.declare!(study.criteria_profile, leads.drop(1).first(1) + named)
 end
 puts "  self-report: #{Study.where(patient_self_report_enabled: true).count} studies, " \
      "#{PatientDeclaration.count} declarations"
