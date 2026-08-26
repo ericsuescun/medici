@@ -21,6 +21,10 @@ Rails.application.routes.draw do
 
   # Operation manual / regulatory sources / feature inventory (signed-in only).
   get "about", to: "static_pages#about", as: :about
+  # The per-role manual moved off /about onto its own page on 2026-08-25: it is
+  # the longest section by far and it is read on its own, to answer "what does
+  # this role do", not alongside the regulatory sources.
+  get "manual", to: "static_pages#manual", as: :manual
 
   # devise_for :users
 
@@ -63,6 +67,12 @@ Rails.application.routes.draw do
   resources :campaigns, only: :index
 
   resources :patients do
+    collection do
+      # Enrolled patients read as RESULTS, not as work, so they get their own
+      # page instead of sitting at the bottom of the recruitment pipeline.
+      # Declared on the collection so it is routed ahead of /patients/:id.
+      get :participants
+    end
     member do
       post :transition
     end

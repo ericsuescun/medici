@@ -103,6 +103,64 @@ RSpec.describe PatientPolicy do
       expect(resolved_for(nil)).to be_empty
     end
 
+    # THE SPONSOR RULE. A sponsor must never see another sponsor's patients.
+    #
+    # `sponsor_rep` has no Patient row in the seeded matrix, so today it sees
+    # nothing at all — which is exactly what made the old scope look safe. It
+    # narrowed only for trial centre reps and handed every other role `super`,
+    # i.e. `scope.all` for anyone holding can_show. These examples tick can_show
+    # the way an admin would in the role manager, and prove the scope still
+    # isolates by sponsor afterwards. Delete them and a permission grant silently
+    # becomes a cross-sponsor disclosure again.
+    def grant_patient_show!(role_name)
+      role = Role.find_by!(name: role_name)
+      permission = role.role_permissions.find_or_initialize_by(resource: "Patient")
+      permission.update!(can_show: true)
+    end
+
+    context "for a sponsor rep, once an admin grants can_show on Patient" do
+      before { grant_patient_show!("sponsor_rep") }
+
+      def rep_for(sponsor)
+        FactoryBot.create(:user, userable: FactoryBot.create(:sponsor_rep, sponsor: sponsor))
+      end
+
+      it "shows a sponsor rep only their own sponsor's patients" do
+        expect(resolved_for(rep_for(study_a.sponsor))).to contain_exactly(patient_a)
+      end
+
+      it "never leaks another sponsor's patient" do
+        resolved = resolved_for(rep_for(study_b.sponsor))
+
+        expect(resolved).to contain_exactly(patient_b)
+        expect(resolved).not_to include(patient_a)
+      end
+
+      # The column is nullable, so a rep can exist with no sponsor attached.
+      it "shows nothing to a rep with no sponsor — fails closed" do
+        rep = rep_for(study_a.sponsor)
+        rep.userable.update_column(:sponsor_id, nil)
+
+        expect(resolved_for(rep.reload)).to be_empty
+      end
+
+      it "still shows a trial centre rep their centre's patients, sponsor or not" do
+        expect(resolved_for(rep_at(branch_a))).to contain_exactly(patient_a)
+      end
+    end
+
+    # Deny by default: a role has to be NAMED in the scope to see anything. A
+    # permission grant may widen WHAT a role sees, never WHOSE records.
+    context "for platform staff, once an admin grants can_show on Patient" do
+      before { grant_patient_show!("platform_staff") }
+
+      it "still shows nothing — platform staff have no relationship to a patient" do
+        staff = FactoryBot.create(:user, :platform_staff)
+
+        expect(resolved_for(staff)).to be_empty
+      end
+    end
+
     context "when a study runs at more than one centre" do
       before { study_a.trial_center_branches << branch_b }
 

@@ -1,0 +1,109 @@
+<%# The grouped result tables, shared by the recruitment index and the
+    participants page. What is in here has already been narrowed by
+    PatientPolicy::Scope, so "nothing to show" means nothing THIS user may see,
+    not nothing at all — which is why the empty message is passed in rather than
+    assumed.
+
+    Locals: patients_by_study, declaration_counts, empty_message. %>
+<div id="patients">
+  <% if patients_by_study.empty? %>
+    <p class="text-muted"><%= empty_message %></p>
+  <% end %>
+
+  <% patients_by_study.sort_by { |study, _| study&.display_title.to_s }.each do |study, patients| %>
+    <div class="card health-card shadow-sm mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h2 class="h6 mb-0">
+          <% if study %>
+            <%= link_to study.display_title, study, class: "text-white" %>
+          <% else %>
+            <%= t("patients.no_study") %>
+          <% end %>
+        </h2>
+        <span class="badge bg-light text-dark"><%= patients.size %></span>
+      </div>
+
+      <%# Wide table: scroll it inside its own box rather than dragging the
+          whole page sideways on a phone. %>
+      <div class="table-responsive">
+        <table class="table table-striped align-middle mb-0">
+          <thead>
+            <tr>
+              <th><%= Patient.human_attribute_name(:firstname) %></th>
+              <th><%= Patient.human_attribute_name(:contact_number) %></th>
+              <th><%= Patient.human_attribute_name(:email) %></th>
+              <th><%= Patient.human_attribute_name(:reported_city) %></th>
+              <th><%= Patient.human_attribute_name(:state) %></th>
+              <th><%= t("patients.answered_questions") %></th>
+              <th><%= t("common.actions") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% patients.each do |patient| %>
+              <tr id="<%= dom_id(patient) %>">
+                <td><strong><%= link_to patient.display_name, patient %></strong></td>
+                <%# Actionable, not just printed: for a lead the phone number IS
+                    the record — there is no name, no clinical data, nothing to
+                    do but call them. Same treatment as the patient page. %>
+                <td>
+                  <% if patient.contact_number.present? %>
+                    <%= link_to "tel:#{patient.contact_number.gsub(/[^+0-9]/, '')}", class: "text-decoration-none text-nowrap" do %>
+                      <i class="bi bi-telephone"></i> <%= patient.contact_number %>
+                    <% end %>
+                  <% else %>
+                    <span class="text-muted">—</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if patient.email.present? %>
+                    <%= link_to patient.email, "mailto:#{patient.email}", class: "text-decoration-none" %>
+                  <% else %>
+                    <span class="text-muted">—</span>
+                  <% end %>
+                </td>
+                <td><%= patient.reported_city.presence || content_tag(:span, "—", class: "text-muted") %></td>
+                <td>
+                  <% if policy(patient).show_state? %>
+                    <span class="patient-state patient-state--<%= patient.state %>">
+                      <%= t("patients.states.#{patient.state}", default: patient.state) %>
+                    </span>
+                  <% end %>
+                </td>
+                <td>
+                  <%# Self-reported questionnaire fill count — the review-order
+                      tiebreaker (fullest first). Sorted in the controller. %>
+                  <% count = declaration_counts&.fetch(patient.id, 0) || 0 %>
+                  <% if count.positive? %>
+                    <span class="badge bg-info-subtle text-info-emphasis border"><%= t("patients.answered_count", count: count) %></span>
+                    <% if patient.submitted_by_proxy? %>
+                      <span class="badge bg-warning-subtle text-warning-emphasis border" title="<%= t("patients.proxy_hint") %>"><%= t("patients.proxy_badge") %></span>
+                    <% end %>
+                  <% else %>
+                    <span class="text-muted">—</span>
+                  <% end %>
+                </td>
+                <td>
+                  <%# Transition buttons shown only when permitted by policy and AASM %>
+                  <div class="btn-group" role="group">
+                    <% if policy(patient).assess? %>
+                      <%= button_to t("patients.assess"), transition_patient_path(patient, event: 'assess'), method: :post, class: 'btn btn-sm btn-outline-primary', form: { data: { turbo: true } } %>
+                    <% end %>
+                    <% if policy(patient).accept? %>
+                      <%= button_to t("patients.accept"), transition_patient_path(patient, event: 'accept'), method: :post, class: 'btn btn-sm btn-outline-success', form: { data: { turbo: true } } %>
+                    <% end %>
+                    <% if policy(patient).discard? %>
+                      <%= button_to t("patients.discard"), transition_patient_path(patient, event: 'discard'), method: :post, class: 'btn btn-sm btn-outline-warning', form: { data: { turbo: true } } %>
+                    <% end %>
+                    <% if policy(patient).reject? %>
+                      <%= button_to t("patients.reject"), transition_patient_path(patient, event: 'reject'), method: :post, class: 'btn btn-sm btn-outline-danger', form: { data: { turbo: true } } %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% end %>
+</div>

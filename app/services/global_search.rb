@@ -6,9 +6,16 @@
 #      can't see Patients never gets a Patients group.
 #   2. Scope — a trial centre rep is limited to THEIR branch's records
 #      (studies, patients, the branch/facility itself, its reps and cities),
-#      mirroring PatientPolicy::Scope. Admins see everything. Other roles see
-#      every row of the resources they're permitted (no branch to scope by),
-#      which is exactly what the inherited Pundit scope already grants them.
+#      mirroring PatientPolicy::Scope. Admins see everything. For everything
+#      EXCEPT patients, other roles see every row of the resources they're
+#      permitted (no branch to scope by), which is what the inherited Pundit
+#      scope grants them.
+#
+#      Patients are the exception, and this group gets them right for free by
+#      calling PatientPolicy::Scope directly (below) rather than the inherited
+#      one: since 2026-08-25 that scope is deny-by-default and isolates a
+#      sponsor rep to their own sponsor's studies. Keep going through it — a
+#      `Patient.all` shortcut here would reopen exactly what it closes.
 #
 # Results come back grouped by record type so the view can classify them.
 class GlobalSearch

@@ -1,0 +1,39 @@
+<%# ENROLLED PATIENTS — the recruitment result.
+
+    Split off the pipeline index on 2026-08-25: these are what the effort
+    produced, read as a report rather than worked as a queue. Same scoping and
+    the same filters (minus state, which is fixed here, and recommendation,
+    which has nothing left to recommend). %>
+<div class="container mt-4">
+  <% if notice.present? %>
+    <div class="alert alert-success"><%= notice %></div>
+  <% end %>
+
+  <% content_for :title, t("patients.participants_title") %>
+
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+    <div>
+      <h1 class="h3 mb-1"><%= t("patients.participants_title") %></h1>
+      <p class="text-muted mb-0"><%= t("patients.participants_subtitle") %></p>
+    </div>
+    <%= link_to t("patients.recruitment_link"), patients_path, class: "btn btn-sm btn-outline-primary" %>
+  </div>
+
+  <%= render "patients/filters",
+             filter: @filter,
+             url: participants_patients_path,
+             states: [ Patient::FINAL_STATE ],
+             recommendations: nil,
+             recommendation: nil,
+             leads_toggle: false %>
+
+  <%= render "patients/grouped_by_study",
+             patients_by_study: @patients_by_study,
+             declaration_counts: @declaration_counts,
+             empty_message: @filter.any? ? t("patients.no_matches") : t("patients.no_participants") %>
+
+  <div class="mt-4">
+    <%= link_to t("patients.back_to_home"), static_pages_medici_home_path %> |
+    <%= link_to t("patients.recruitment_link"), patients_path %>
+  </div>
+</div>

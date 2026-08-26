@@ -52,6 +52,7 @@
                 Sponsor reps and platform staff got a link that only 403'd. %>
             <% if policy(Patient).index? %>
               <li><%= link_to t("nav.patients"), patients_path, class: 'dropdown-item' %></li>
+              <li><%= link_to t("nav.participants"), participants_patients_path, class: 'dropdown-item' %></li>
             <% end %>
             <li><%= link_to t("nav.platform_staffs"), platform_staffs_path, class: 'dropdown-item' %></li>
             <li><%= link_to t("nav.sponsor_reps"), sponsor_reps_path, class: 'dropdown-item' %></li>
@@ -71,6 +72,9 @@
       <% end %>
       <%= render "layouts/locale_selector" %>
       <ul class="navbar-nav ms-3">
+        <li class="nav-item">
+          <%= link_to t("nav.manual"), manual_path, class: "nav-link text-nowrap" %>
+        </li>
         <li class="nav-item">
           <%= link_to t("nav.about"), about_path, class: "nav-link text-nowrap" %>
         </li>

@@ -74,7 +74,7 @@
   <div>
     <%= form.label :study_id, Study.model_name.human, style: "display: block" %>
     <%= form.collection_select :study_id, enrollable_studies, :id,
-                               ->(s) { s.public_title.presence || s.short_title.presence || "##{s.id}" },
+                               ->(s) { s.display_title },
                                { include_blank: true }, class: "form-select mb-3" %>
   </div>
 

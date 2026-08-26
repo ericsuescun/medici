@@ -2,32 +2,30 @@ class PatientsController < SecureApplicationController
   before_action :set_patient, only: %i[ show edit update destroy transition ]
   before_action -> { authorize(@patient, :update_state?) }, only: :transition
 
-  # GET /patients or /patients.json
+  # GET /patients — THE RECRUITMENT PIPELINE.
   #
-  # Grouped by study. `policy_scope` is what keeps a trial centre rep to the
-  # patients of their own centre — see PatientPolicy::Scope.
-  # Review order within each study: candidates first (they asked for the rep's
-  # attention — many arrive auto-triaged from their own questionnaire answers),
-  # then interested, then participants; ties broken by how much of the
-  # questionnaire they filled in, fullest first.
-  STATE_REVIEW_ORDER = { "candidate" => 0, "interested" => 1, "participant" => 2 }.freeze
-
+  # Only the states that are still work: `interested` and `candidate`. Enrolled
+  # patients moved to #participants below, because they are a result to report
+  # rather than a queue to work, and mixing them meant the page a rep opens all
+  # day grew by one permanently-irrelevant row per success.
+  #
+  # `policy_scope` is what keeps a trial centre rep to their own centre and a
+  # sponsor rep to their own sponsor — see PatientPolicy::Scope. PatientFilter
+  # only ever narrows that further, so no query string can widen it.
   def index
-    # The criteria profile and answers are eager-loaded because every row asks
-    # `policy(patient).assess?`, which runs Patient's AASM guards, which evaluate
-    # the patient against their study's rules. Without this it is an N+1.
-    # patient_declarations feeds both the triage guard and the fill count.
-    patients = policy_scope(Patient)
-               .includes(:variable_values, :patient_declarations, study: { criteria_profile: :criteria_variables })
-               .to_a
+    @filter = build_filter(policy_scope(Patient).recruiting, Patient::RECRUITING_STATES)
+    @patients_by_study = grouped_patients(@filter.results)
+  end
 
-    @declaration_counts = patients.to_h do |p|
-      [ p.id, p.patient_declarations.count { |d| d.superseded_at.nil? } ]
-    end
+  # GET /patients/participants — the enrolled ones, read as results.
+  #
+  # A custom collection action, so ResourceAuthorization does not cover it and
+  # the authorize call has to be explicit (its after_action would flag a miss).
+  def participants
+    authorize(Patient, :index?)
 
-    @patients_by_study = patients
-                         .sort_by { |p| [ STATE_REVIEW_ORDER.fetch(p.state, 9), -@declaration_counts[p.id] ] }
-                         .group_by(&:study)
+    @filter = build_filter(policy_scope(Patient).enrolled, [ Patient::FINAL_STATE ])
+    @patients_by_study = grouped_patients(@filter.results)
   end
 
   # GET /patients/1 or /patients/1.json
@@ -133,7 +131,61 @@ class PatientsController < SecureApplicationController
     end
   end
 
+  # Recommendations a rep can filter by. Unlike everything in PatientFilter this
+  # one cannot be a WHERE: it comes from EligibilityResult, which evaluates a
+  # patient against their study's rules in Ruby. It is applied after loading —
+  # affordable only because this page already evaluates every row anyway (each
+  # one asks `policy(patient).assess?`, which runs the AASM guards).
+  RECOMMENDATIONS = %w[ready promising blocked pending].freeze
+
   private
+    def build_filter(base, allowed_states)
+      PatientFilter.new(base, params.permit(*PatientFilter::PERMITTED).to_h, allowed_states: allowed_states)
+    end
+
+    def recommendation_filter
+      value = params[:recommendation].to_s
+      value if RECOMMENDATIONS.include?(value)
+    end
+
+    # Loads the filtered relation and groups it for the page.
+    #
+    # The eager loads are not optional: every row asks `policy(patient).assess?`,
+    # which runs Patient's AASM guards, which evaluate the patient against their
+    # study's criteria profile. Without them this is an N+1 per row.
+    # patient_declarations feeds both the triage guard and the fill count.
+    def grouped_patients(relation)
+      patients = relation
+                 .includes(:variable_values, :patient_declarations, study: { criteria_profile: :criteria_variables })
+                 .in_review_order
+                 .to_a
+
+      @declaration_counts = patients.to_h do |patient|
+        [ patient.id, patient.patient_declarations.count { |d| d.superseded_at.nil? } ]
+      end
+
+      # index.json.jbuilder renders @patients, so it has to keep existing: the
+      # rewrite that introduced @patients_by_study left the JSON view rendering
+      # a nil collection, which Jbuilder turns into `[]` rather than an error —
+      # a consumer told there are no patients instead of told it is broken.
+      @patients = patients
+
+      @recommendation = recommendation_filter
+      if @recommendation
+        patients.select! { |patient| patient.eligibility_result&.recommendation.to_s == @recommendation }
+      end
+
+      # State first, then how much of the questionnaire they filled in (fullest
+      # first — they gave the rep the most to go on). `sort_by` is not stable, so
+      # the original index rides along as the last key: without it, ties would
+      # scramble the newest-first order the SQL already established.
+      patients
+        .each_with_index
+        .sort_by { |patient, i| [ Patient::STATE_REVIEW_ORDER.fetch(patient.state, 9), -@declaration_counts[patient.id], i ] }
+        .map(&:first)
+        .group_by(&:study)
+    end
+
     # Bounce a refused state change back where it came from, saying why.
     def refuse_transition(reason)
       redirect_back fallback_location: patient_url(@patient), alert: reason

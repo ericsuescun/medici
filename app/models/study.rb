@@ -92,6 +92,15 @@ class Study < ApplicationRecord
   # sample size; aliased so the recruitment-bar code reads as domain language.
   alias_attribute :recruitment_goal, :sample_size
 
+  # Name a study with this, never `public_title` raw. `public_title` is optional
+  # and `short_title` can be blank too, so every listing that names a study was
+  # hand-rolling `public_title.presence || short_title.presence || fallback` —
+  # four copies, and the patients index used a different fallback from the rest.
+  # Same reasoning as Patient#display_name.
+  def display_title
+    public_title.presence || short_title.presence || "##{id}"
+  end
+
   # Prefer RecruitmentProgress.for(studies) when rendering a whole listing.
   def recruitment_progress
     RecruitmentProgress.for(self).fetch(id)

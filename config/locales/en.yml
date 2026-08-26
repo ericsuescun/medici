@@ -25,6 +25,8 @@ en:
     sponsor_reps: "Sponsor Representatives"
     branch_reps: "Site Representatives"
     patients: "Patients"
+    participants: "Participants"
+    manual: "Manual"
     roles: "Manage Roles"
     user_activations: "User Management"
     local_parameters: "Local Parameters"
@@ -341,6 +343,8 @@ en:
     submit: "Send my answers"
     consent_note: "By sending, you authorize the processing of these answers to assess your eligibility for this study (Ley 1581 de 2012)."
     thanks: "Thank you! The centre will review your answers and contact you soon."
+    not_a_match: "Thank you for answering. For now this study does not look like a match for your situation, but the centre keeps your details and will let you know if one that fits opens up."
+    exclusions_heading: "You will not be able to take part in this study if:"
     errors:
       too_many_files: "At most %{limit} files."
       bad_file_type: "The file %{filename} is not a PDF or an image."

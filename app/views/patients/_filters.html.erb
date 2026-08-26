@@ -1,0 +1,138 @@
+<%# Filter bar, shared by the recruitment index and the participants page.
+
+    Every option list comes from PatientFilter, which derives them from the
+    POLICY-SCOPED relation — never Study.all / Sponsor.all. A select naming
+    another sponsor's study would disclose that the study exists even though
+    picking it returned no rows; the option itself is the leak.
+
+    A select with fewer than two options is not rendered: a single-centre rep
+    has exactly one city and one branch, and a dropdown that can only be set to
+    the value it already has is furniture, not a filter.
+
+    Locals: filter, url, states, recommendations (nil to hide that select),
+    recommendation, leads_toggle. %>
+<%= form_with url: url, method: :get, class: "card health-card shadow-sm mb-4" do %>
+  <%# A LEAD is a patient the public form created: contact details and nothing
+      else, so no name to recognise them by. They get a dedicated button rather
+      than a ninth select, because they are the ones nobody can act on without
+      picking up a phone — and a lead who self-reported their way to Candidato is
+      the most urgent call on the page. The toggle keeps every other filter in
+      place; `identity=named` stays a valid URL parameter with no button of its
+      own, since "everything else" is what the unpressed state already shows. %>
+  <%
+    lead_params = request.query_parameters.except("identity")
+    lead_params = lead_params.merge("identity" => "lead") unless filter.only_leads?
+    lead_href = lead_params.any? ? "#{url}?#{lead_params.to_query}" : url
+  %>
+  <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <strong><%= t("patients.filters.title") %></strong>
+    <div class="d-flex flex-wrap gap-2">
+      <%# Recruitment page only: "lead" describes somebody nobody has spoken to
+          yet, which an enrolled participant no longer is, and the count there
+          would answer a question nobody asked. %>
+      <% if leads_toggle %>
+        <%= link_to lead_href,
+                    class: "btn btn-sm #{filter.only_leads? ? 'btn-light text-primary fw-semibold' : 'btn-outline-light'}",
+                    title: t("patients.filters.only_leads_hint"),
+                    aria: { pressed: filter.only_leads? } do %>
+          <i class="bi bi-telephone-inbound"></i>
+          <%= t("patients.filters.only_leads") %>
+          <span class="badge rounded-pill <%= filter.only_leads? ? "bg-primary" : "bg-light text-dark" %>"><%= filter.leads_count %></span>
+        <% end %>
+      <% end %>
+      <% if filter.any? || recommendation.present? %>
+        <%= link_to t("patients.filters.clear"), url, class: "btn btn-sm btn-outline-light" %>
+      <% end %>
+    </div>
+  </div>
+  <div class="card-body">
+    <%# The lead toggle is a link, not a field, so the form has to carry it or
+        pressing "Filtrar" would silently switch it back off. %>
+    <% if filter.only_leads? %>
+      <%= hidden_field_tag :identity, "lead" %>
+    <% end %>
+    <div class="row g-3 align-items-end">
+      <% if states.many? %>
+        <div class="col-sm-6 col-lg-3">
+          <%= label_tag :state, Patient.human_attribute_name(:state), class: "form-label small mb-1" %>
+          <%= select_tag :state,
+                options_for_select(states.map { |s| [ t("patients.states.#{s}"), s ] }, filter.filters[:state]),
+                include_blank: t("patients.filters.all"), class: "form-select form-select-sm" %>
+        </div>
+      <% end %>
+
+      <% if filter.studies.many? %>
+        <div class="col-sm-6 col-lg-3">
+          <%= label_tag :study_id, Study.model_name.human, class: "form-label small mb-1" %>
+          <%= select_tag :study_id,
+                options_from_collection_for_select(filter.studies, :id, :public_title, filter.filters[:study_id]),
+                include_blank: t("patients.filters.all"), class: "form-select form-select-sm" %>
+        </div>
+      <% end %>
+
+      <% if filter.sponsors.many? %>
+        <div class="col-sm-6 col-lg-3">
+          <%= label_tag :sponsor_id, Sponsor.model_name.human, class: "form-label small mb-1" %>
+          <%= select_tag :sponsor_id,
+                options_from_collection_for_select(filter.sponsors, :id, :name, filter.filters[:sponsor_id]),
+                include_blank: t("patients.filters.all"), class: "form-select form-select-sm" %>
+        </div>
+      <% end %>
+
+      <%# City of the TRIAL CENTRE (City <-> TrialCenterBranch <-> Study) — where
+          the trial is run, which is not the same question as where the patient
+          says they live. Both are offered. %>
+      <% if filter.cities.many? %>
+        <div class="col-sm-6 col-lg-3">
+          <%= label_tag :city_id, t("patients.filters.city"), class: "form-label small mb-1" %>
+          <%= select_tag :city_id,
+                options_from_collection_for_select(filter.cities, :id, :name, filter.filters[:city_id]),
+                include_blank: t("patients.filters.all"), class: "form-select form-select-sm" %>
+        </div>
+      <% end %>
+
+      <% if filter.trial_center_branches.many? %>
+        <div class="col-sm-6 col-lg-3">
+          <%= label_tag :trial_center_branch_id, TrialCenterBranch.model_name.human, class: "form-label small mb-1" %>
+          <%= select_tag :trial_center_branch_id,
+                options_from_collection_for_select(filter.trial_center_branches, :id, :name, filter.filters[:trial_center_branch_id]),
+                include_blank: t("patients.filters.all"), class: "form-select form-select-sm" %>
+        </div>
+      <% end %>
+
+      <% if filter.reported_cities.many? %>
+        <div class="col-sm-6 col-lg-3">
+          <%= label_tag :reported_city, Patient.human_attribute_name(:reported_city), class: "form-label small mb-1" %>
+          <%= select_tag :reported_city,
+                options_for_select(filter.reported_cities, filter.filters[:reported_city]),
+                include_blank: t("patients.filters.all"), class: "form-select form-select-sm" %>
+        </div>
+      <% end %>
+
+      <div class="col-sm-6 col-lg-3">
+        <%= label_tag :questionnaire, t("patients.answered_questions"), class: "form-label small mb-1" %>
+        <%= select_tag :questionnaire,
+              options_for_select([ [ t("patients.filters.questionnaire_with"), "with" ],
+                                   [ t("patients.filters.questionnaire_without"), "without" ] ],
+                                 filter.filters[:questionnaire]),
+              include_blank: t("patients.filters.all"), class: "form-select form-select-sm" %>
+      </div>
+
+      <%# Recruitment recommendation — the one filter that is not SQL (see
+          PatientsController::RECOMMENDATIONS). Hidden on the participants page:
+          they are already enrolled, so there is nothing left to recommend. %>
+      <% if recommendations.present? %>
+        <div class="col-sm-6 col-lg-3">
+          <%= label_tag :recommendation, t("patients.filters.recommendation"), class: "form-label small mb-1" %>
+          <%= select_tag :recommendation,
+                options_for_select(recommendations.map { |r| [ t("criteria_assessments.score.recommendation.#{r}"), r ] }, recommendation),
+                include_blank: t("patients.filters.all"), class: "form-select form-select-sm" %>
+        </div>
+      <% end %>
+
+      <div class="col-sm-6 col-lg-3">
+        <%= submit_tag t("patients.filters.apply"), class: "btn btn-sm btn-primary w-100", name: nil %>
+      </div>
+    </div>
+  </div>
+<% end %>

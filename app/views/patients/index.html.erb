@@ -1,3 +1,8 @@
+<%# THE RECRUITMENT PIPELINE: interested + candidate only.
+
+    Enrolled patients live at #participants — they are a result to report, not a
+    queue to work, and leaving them here meant the page a rep opens all day grew
+    by one permanently-irrelevant row per success. %>
 <div class="container mt-4">
   <% if notice.present? %>
     <div class="alert alert-success"><%= notice %></div>
@@ -5,102 +10,29 @@
 
   <% content_for :title, t("patients.index_title") %>
 
-  <h1 class="mb-1"><%= t("patients.index_title") %></h1>
-  <p class="text-muted"><%= t("patients.grouped_by_study") %></p>
-
-  <div class="mb-4">
-    <%= link_to t("patients.back_to_home"), static_pages_medici_home_path %> |
-    <%= link_to t("patients.new_patient"), new_patient_path %>
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+    <div>
+      <h1 class="h3 mb-1"><%= t("patients.recruitment_title") %></h1>
+      <p class="text-muted mb-0"><%= t("patients.recruitment_subtitle") %></p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      <%= link_to t("patients.participants_link"), participants_patients_path, class: "btn btn-sm btn-outline-success" %>
+      <%= link_to t("patients.new_patient"), new_patient_path, class: "btn btn-sm btn-primary" %>
+    </div>
   </div>
 
-  <%# Grouped by study. What is in here is already narrowed by
-      PatientPolicy::Scope — a trial centre rep only ever sees their own centre's
-      patients, so "no patients" here means none they may see, not none at all. %>
-  <div id="patients">
-    <% if @patients_by_study.empty? %>
-      <p class="text-muted"><%= t("patients.no_patients") %></p>
-    <% end %>
+  <%= render "patients/filters",
+             filter: @filter,
+             url: patients_path,
+             states: Patient::RECRUITING_STATES,
+             recommendations: PatientsController::RECOMMENDATIONS,
+             recommendation: @recommendation,
+             leads_toggle: true %>
 
-    <% @patients_by_study.sort_by { |study, _| study&.public_title.to_s }.each do |study, patients| %>
-      <div class="card health-card shadow-sm mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h2 class="h6 mb-0">
-            <% if study %>
-              <%= link_to study.public_title.presence || study.short_title.presence || t("patients.view_study"), study, class: "text-white" %>
-            <% else %>
-              <%= t("patients.no_study") %>
-            <% end %>
-          </h2>
-          <span class="badge bg-light text-dark"><%= patients.size %></span>
-        </div>
-
-        <%# Wide table: scroll it inside its own box rather than dragging the
-            whole page sideways on a phone. %>
-        <div class="table-responsive">
-          <table class="table table-striped align-middle mb-0">
-            <thead>
-              <tr>
-                <th><%= Patient.human_attribute_name(:firstname) %></th>
-                <th><%= Patient.human_attribute_name(:contact_number) %></th>
-                <th><%= Patient.human_attribute_name(:email) %></th>
-                <th><%= Patient.human_attribute_name(:id_number) %></th>
-                <th><%= Patient.human_attribute_name(:illness_description) %></th>
-                <th><%= Patient.human_attribute_name(:state) %></th>
-                <th><%= t("patients.answered_questions") %></th>
-                <th><%= t("common.actions") %></th>
-              </tr>
-            </thead>
-            <tbody>
-              <% patients.each do |patient| %>
-                <tr id="<%= dom_id(patient) %>">
-                  <td><strong><%= link_to patient.display_name, patient %></strong></td>
-                  <td><%= patient.contact_number %></td>
-                  <td><%= patient.email %></td>
-                  <td><%= patient.id_number %></td>
-                  <td class="text-truncate" style="max-width: 280px;"><%= patient.illness_description %></td>
-                  <td>
-                    <% if policy(patient).show_state? %>
-                      <span class="badge bg-secondary"><%= patient.state %></span>
-                    <% end %>
-                  </td>
-                  <td>
-                    <%# Self-reported questionnaire fill count — the review-order
-                        tiebreaker (fullest first). Sorted in the controller. %>
-                    <% count = @declaration_counts&.fetch(patient.id, 0) || 0 %>
-                    <% if count.positive? %>
-                      <span class="badge bg-info-subtle text-info-emphasis border"><%= t("patients.answered_count", count: count) %></span>
-                      <% if patient.submitted_by_proxy? %>
-                        <span class="badge bg-warning-subtle text-warning-emphasis border" title="<%= t("patients.proxy_hint") %>"><%= t("patients.proxy_badge") %></span>
-                      <% end %>
-                    <% else %>
-                      <span class="text-muted">—</span>
-                    <% end %>
-                  </td>
-                  <td>
-                    <%# Transition buttons shown only when permitted by policy and AASM %>
-                    <div class="btn-group" role="group">
-                      <% if policy(patient).assess? %>
-                        <%= button_to t("patients.assess"), transition_patient_path(patient, event: 'assess'), method: :post, class: 'btn btn-sm btn-outline-primary', form: { data: { turbo: true } } %>
-                      <% end %>
-                      <% if policy(patient).accept? %>
-                        <%= button_to t("patients.accept"), transition_patient_path(patient, event: 'accept'), method: :post, class: 'btn btn-sm btn-outline-success', form: { data: { turbo: true } } %>
-                      <% end %>
-                      <% if policy(patient).discard? %>
-                        <%= button_to t("patients.discard"), transition_patient_path(patient, event: 'discard'), method: :post, class: 'btn btn-sm btn-outline-warning', form: { data: { turbo: true } } %>
-                      <% end %>
-                      <% if policy(patient).reject? %>
-                        <%= button_to t("patients.reject"), transition_patient_path(patient, event: 'reject'), method: :post, class: 'btn btn-sm btn-outline-danger', form: { data: { turbo: true } } %>
-                      <% end %>
-                    </div>
-                  </td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    <% end %>
-  </div>
+  <%= render "patients/grouped_by_study",
+             patients_by_study: @patients_by_study,
+             declaration_counts: @declaration_counts,
+             empty_message: (@filter.any? || @recommendation.present?) ? t("patients.no_matches") : t("patients.no_patients") %>
 
   <div class="mt-4">
     <%= link_to t("patients.back_to_home"), static_pages_medici_home_path %> |

@@ -69,6 +69,31 @@ RSpec.describe "Patient page (demographic + clinical)", type: :request do
       }.to change { patient.reload.state }.from("interested").to("candidate")
     end
 
+    # A participant is at the end of the line, so the take-action box has nothing
+    # to promote to. It used to fall through to promotion advice — "no cumple
+    # todos los criterios... antes de promover" — on the strength of the
+    # WHOLE-PROTOCOL verdict, which a secondary criterion alone can fail. Beside
+    # the lone "Rechazar" button that read as a recommendation to reject a
+    # patient whose primary criteria all pass.
+    context "when the patient is already at the end of the lifecycle" do
+      before { patient.update!(state: "participant") }
+
+      it "names the way back instead of offering advice about promoting" do
+        get patient_path(patient)
+
+        expect(response.body).to include(
+          ERB::Util.html_escape(
+            I18n.t("criteria_assessments.brief.at_final_state",
+                   state: I18n.t("patients.states.participant"),
+                   back_event: I18n.t("patients.reject"),
+                   back_to: I18n.t("patients.states.candidate"))
+          )
+        )
+        expect(response.body).not_to include(I18n.t("criteria_assessments.brief.promote_hint_not_eligible"))
+        expect(response.body).not_to include(I18n.t("criteria_assessments.brief.promote_hint_incomplete"))
+      end
+    end
+
     it "handles a study with no criteria profile" do
       get patient_path(patient)
 

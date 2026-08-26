@@ -14,16 +14,35 @@ class PatientPolicy < ApplicationPolicy
   # every study, including centres they have nothing to do with. That is the
   # restricted-access principle in the Research Notes (Resolución 1995 de 1999,
   # Art. 14), applied by analogy.
+  #
+  # DENY BY DEFAULT (tightened 2026-08-25). This used to narrow only for trial
+  # centre reps and hand everyone else `super` untouched — which is `scope.all`
+  # for any role holding can_show on Patient. Sponsor reps have no Patient row in
+  # the seeded matrix, so nothing leaked in practice, but the matrix is
+  # admin-editable: one tick in the role manager and a sponsor rep would have
+  # listed every patient of every OTHER sponsor. A role now has to be named here
+  # to see anything, so a permission grant can widen what a role may see but
+  # never WHOSE records it may see.
   class Scope < ApplicationPolicy::Scope
     def resolve
       visible = super # scope.all or scope.none, per the role's can_show
-      return visible unless user&.trial_center_branch_rep?
+      return scope.none if user.nil?
+      return visible if user.admin?
 
-      branch = user.userable&.trial_center_branch
-      # A rep with no centre assigned has no patients to see — fail closed.
-      return scope.none if branch.nil?
+      if user.trial_center_branch_rep?
+        branch = user.userable&.trial_center_branch
+        # A rep with no centre assigned has no patients to see — fail closed.
+        return branch.nil? ? scope.none : visible.for_trial_center_branches(branch)
+      end
 
-      visible.for_trial_center_branches(branch)
+      if user.sponsor?
+        sponsor = user.userable&.sponsor
+        return sponsor.nil? ? scope.none : visible.for_sponsors(sponsor)
+      end
+
+      # Platform staff today, and anything added later: no relationship to a
+      # patient, so no patients — whatever the matrix says.
+      scope.none
     end
   end
 

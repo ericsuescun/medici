@@ -25,6 +25,8 @@ es:
     sponsor_reps: "Representantes de Patrocinadores"
     branch_reps: "Representantes de Sedes"
     patients: "Pacientes"
+    participants: "Participantes"
+    manual: "Manual"
     roles: "Gestionar Roles"
     user_activations: "Gestión de Usuarios"
     local_parameters: "Parámetros Locales"
@@ -340,6 +342,8 @@ es:
     submit: "Enviar mis respuestas"
     consent_note: "Al enviar, autorizas el tratamiento de estas respuestas para evaluar tu elegibilidad en este estudio (Ley 1581 de 2012)."
     thanks: "¡Gracias! El centro revisará tus respuestas y te contactará pronto."
+    not_a_match: "Gracias por responder. Por ahora este estudio no parece corresponder a tu situación, pero el centro conserva tus datos y te avisará si se abre alguno que encaje."
+    exclusions_heading: "No podrás participar en este estudio si:"
     errors:
       too_many_files: "Máximo %{limit} archivos."
       bad_file_type: "El archivo %{filename} no es un PDF o una imagen."
