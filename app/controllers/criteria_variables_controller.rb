@@ -79,8 +79,12 @@ class CriteriaVariablesController < SecureApplicationController
     end
 
     def set_criteria_profile
-      # Ensure users can only access their own profiles' variables
-      @criteria_profile = CriteriaProfile.where(user: current_user).find(params[:criteria_profile_id])
+      # Row-level access: CriteriaProfilePolicy::Scope, which since 2026-08-25
+      # reaches by ORGANISATION (a sponsor rep gets their sponsor's studies'
+      # profiles, a centre rep their branch's) rather than by who typed it in.
+      # Out of reach 404s rather than 403ing, like every other patient-adjacent
+      # resource — a 403 confirms the record exists.
+      @criteria_profile = policy_scope(CriteriaProfile).find(params[:criteria_profile_id])
     end
 
     def set_criteria_variable

@@ -17,8 +17,13 @@ module RolesAndPermissionsSeeder
     "trial_center_branch_rep" => {
       "Patient" => [ true, true, false ],
       "Contact" => [ true, true, false ],
-      "CriteriaProfile" => [ true, true, false ],
-      "CriteriaVariable" => [ true, true, false ],
+      # View-only since 2026-08-25: the SPONSOR owns the eligibility criteria —
+      # they come from the protocol. The centre reads them to screen patients and
+      # records each patient's values, which is a Patient permission, not this
+      # one (CriteriaAssessmentsController is gated by patient visibility and
+      # overrides authorization_model to nil, so capturing values is unaffected).
+      "CriteriaProfile" => [ true, false, false ],
+      "CriteriaVariable" => [ true, false, false ],
       "Result" => [ true, true, false ],
       "TrialCenterBranchRep" => [ true, true, false ],
       "Study" => [ true, false, false ],
@@ -35,6 +40,13 @@ module RolesAndPermissionsSeeder
     },
     "sponsor_rep" => {
       "Study" => [ true, true, false ],
+      # The eligibility criteria belong to the protocol, and the protocol is the
+      # sponsor's (moved off trial_center_branch_rep 2026-08-25). Row-level reach
+      # is CriteriaProfilePolicy::Scope — a class-level grant would otherwise let
+      # one sponsor rewrite another sponsor's criteria, and those criteria gate
+      # promotion, so that is a forgeable eligibility gate and not merely a leak.
+      "CriteriaProfile" => [ true, true, false ],
+      "CriteriaVariable" => [ true, true, false ],
       "Article" => [ true, true, false ],
       "Result" => [ true, true, false ],
       "Sponsor" => [ true, false, false ],

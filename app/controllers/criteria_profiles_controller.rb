@@ -3,7 +3,7 @@ class CriteriaProfilesController < SecureApplicationController
 
   # GET /criteria_profiles
   def index
-    @criteria_profiles = CriteriaProfile.where(user: current_user).order(created_at: :desc).paginate(page: params[:page], per_page: RECORDS_PER_PAGE)
+    @criteria_profiles = policy_scope(CriteriaProfile).order(created_at: :desc).paginate(page: params[:page], per_page: RECORDS_PER_PAGE)
   end
 
   # GET /criteria_profiles/1
@@ -60,8 +60,12 @@ class CriteriaProfilesController < SecureApplicationController
 
   private
     def set_criteria_profile
-      # Ensure users can only access their own profiles
-      @criteria_profile = CriteriaProfile.where(user: current_user).find(params[:id])
+      # Row-level access: CriteriaProfilePolicy::Scope, which since 2026-08-25
+      # reaches by ORGANISATION (a sponsor rep gets their sponsor's studies'
+      # profiles, a centre rep their branch's) rather than by who typed it in.
+      # Out of reach 404s rather than 403ing, like every other patient-adjacent
+      # resource — a 403 confirms the record exists.
+      @criteria_profile = policy_scope(CriteriaProfile).find(params[:id])
     end
 
     def criteria_profile_params
