@@ -16,10 +16,25 @@
 # whodunnit — that is the triage tier only; joining the trial still requires
 # investigator-verified values (see Patient's AASM guards).
 #
-# The confirmation page never echoes any verdict ("cumples los criterios",
-# per-answer pass/fail, progress toward eligibility) — that is a clinical
-# communication the investigator owns, and a verdict here would turn the form
-# into an oracle a patient could optimise against. Permanent constraint.
+# The confirmation page never echoes a CRITERION ("no cumples por tu edad",
+# per-answer pass/fail, thresholds, progress bars) — that is a clinical
+# communication the investigator owns, and naming a criterion would turn the
+# form into an oracle a patient could optimise against. Permanent constraint.
+#
+# It DOES say, since 2026-08-25, whether the study looks like a match at all:
+# answering into silence left people with nothing, which is its own harm. That
+# is a deliberate, bounded relaxation and the bound is what makes it safe:
+#
+#   * One bit, and no reason. "Por ahora no parece corresponder" covers a
+#     measurable failure and an incomplete questionnaire identically, so it does
+#     not even say WHICH of the two happened.
+#   * The bit buys nothing worth having. Brute-forcing it reaches `candidate`,
+#     the TRIAGE tier — joining the trial still requires investigator-verified
+#     values (Patient's AASM guards), so the ceiling is a wasted phone call.
+#
+# The exclusions themselves are shown UPFRONT instead, to everybody, before any
+# question is answered (see the view). Stating them is standard recruitment
+# practice and honest self-selection; it is not feedback, so it is not an oracle.
 class SelfReportsController < ApplicationController
   SESSION_KEY = "self_report".freeze
   SESSION_TTL = 2.hours
@@ -30,6 +45,20 @@ class SelfReportsController < ApplicationController
   def show
     @declarations_by_variable = @patient.patient_declarations.live.index_by(&:criteria_variable_id)
   end
+
+  private
+
+  # The primary EXCLUSIONS, shown before any question is answered. Only
+  # exclusions: those are the ones that keep somebody out of a trial that could
+  # harm them, and they are the ones a person can check against themselves
+  # without a clinic. Inclusions stay unlisted — "you must be 18 to 75" is a
+  # threshold, and thresholds are protocol.
+  def upfront_exclusions
+    @questions.select { |cv| cv.variable_type == "exclusion" }
+  end
+  helper_method :upfront_exclusions
+
+  public
 
   def create
     save_declarations!
@@ -53,8 +82,16 @@ class SelfReportsController < ApplicationController
 
     auto_triage!
 
+    # Read AFTER auto_triage! so it reflects the same evaluation the guard used.
+    # `primary_criteria_met_by_self_report?` is false both for "measurably does
+    # not qualify" and for "did not answer enough", which is deliberate: the
+    # patient is told the study is not a match without being told why, and
+    # without the two cases being distinguishable from outside.
+    looks_like_a_match = @patient.reload.primary_criteria_met_by_self_report?
+
     session.delete(SESSION_KEY)
-    redirect_to study_about_path(@study), notice: t("self_reports.thanks")
+    redirect_to study_about_path(@study),
+                notice: t(looks_like_a_match ? "self_reports.thanks" : "self_reports.not_a_match")
   end
 
   private

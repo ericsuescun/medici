@@ -24,6 +24,25 @@
             <p class="mb-0 small text-muted"><%= t("self_reports.fill_what_you_can") %></p>
           </div>
 
+          <%# The exclusions, stated UPFRONT and identically for everyone
+              (added 2026-08-25). This is not feedback on anyone's answers, so
+              it is not the oracle the no-verdict rule exists to prevent — it is
+              honest self-selection, and it is what stops somebody answering
+              five questions only to hear nothing back.
+
+              Rendered from patient_prompt, the CEI-approved participant
+              wording, never from the rule's `name` or its thresholds. %>
+          <% if upfront_exclusions.any? %>
+            <div class="alert alert-warning">
+              <p class="mb-1"><strong><%= t("self_reports.exclusions_heading") %></strong></p>
+              <ul class="mb-0">
+                <% upfront_exclusions.each do |cv| %>
+                  <li><%= patient_prompt_as_statement(cv.patient_prompt) %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
           <%= form_with url: study_self_report_path(@study), method: :post, multipart: true do |f| %>
             <% if @patient.errors.any? %>
               <div class="alert alert-danger">

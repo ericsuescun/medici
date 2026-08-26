@@ -164,12 +164,47 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
       expect(patient.patient_declarations.live.sole.declined).to be true
     end
 
-    it "never echoes a verdict — the confirmation is a plain thanks" do
+    # NARROWED 2026-08-25, deliberately. The confirmation now says whether the
+    # study looks like a match at all — answering five questions into silence
+    # was its own harm — but it still never names a criterion. What follows
+    # pins exactly where that line now sits.
+    it "confirms plainly when the answers look like a match" do
       post study_self_report_path(study), params: { answers: { age.id.to_s => "30" } }
 
       expect(flash[:notice]).to eq(I18n.t("self_reports.thanks"))
       follow_redirect!
       expect(response.body).not_to include(I18n.t("criteria_assessments.eligible"))
+    end
+
+    it "says the study is not a match, without saying which criterion" do
+      post study_self_report_path(study), params: { answers: { age.id.to_s => "9" } }
+
+      expect(flash[:notice]).to eq(I18n.t("self_reports.not_a_match"))
+      # The threshold could only leak through the message itself; the page it
+      # redirects to is full of unrelated digits (asset digests, dates), so a
+      # bare `not_to include("18")` over the body proves nothing.
+      expect(flash[:notice]).not_to include("18")
+      expect(flash[:notice]).not_to include(age.name)
+
+      follow_redirect!
+      expect(response.body).not_to include(age.name)
+      expect(response.body).not_to include(age.rule_summary.to_s)
+    end
+
+    # The two must be indistinguishable from outside: a patient who did not
+    # answer enough learns exactly as much as one who measurably does not
+    # qualify, which is nothing beyond "not a match for now".
+    it "gives an incomplete questionnaire the SAME message as a failing one" do
+      post study_self_report_path(study), params: { answers: {} }
+
+      expect(flash[:notice]).to eq(I18n.t("self_reports.not_a_match"))
+    end
+
+    it "still never names a criterion, whatever the outcome" do
+      post study_self_report_path(study), params: { answers: { age.id.to_s => "9" } }
+
+      expect(I18n.t("self_reports.not_a_match")).not_to include(age.name)
+      expect(I18n.t("self_reports.not_a_match")).not_to match(/\d/)
     end
 
     it "stores the reported city when picked from the list, ignoring free-typed values" do
@@ -216,6 +251,50 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
     end
   end
 
+
+  # The exclusions, stated to EVERYONE before any answer is given (2026-08-25).
+  # This is what makes the silent no-verdict rule survivable: a person can rule
+  # themselves out honestly instead of answering five questions into the void.
+  # It is not feedback, so it is not the oracle the rule exists to prevent.
+  describe "the exclusions shown upfront" do
+    let!(:pregnancy) do
+      profile.criteria_variables.create!(
+        name: "Embarazo o lactancia", variable_type: "exclusion", value_type: "boolean",
+        comparison_type: "true", criteria_category: "primary",
+        patient_prompt: "¿Estás embarazada o en período de lactancia?"
+      )
+    end
+
+    before { submit_participation }
+
+    it "lists them as statements, from the approved patient wording" do
+      get study_self_report_path(study)
+
+      expect(response.body).to include(I18n.t("self_reports.exclusions_heading"))
+      expect(response.body).to include("estás embarazada o en período de lactancia")
+    end
+
+    it "still never renders the rule name or its thresholds" do
+      get study_self_report_path(study)
+
+      expect(response.body).not_to include(pregnancy.name)
+      expect(response.body).not_to include(age.name)
+      expect(response.body).not_to include(age.rule_summary.to_s)
+    end
+
+    # Only exclusions. "You must be between 18 and 75" is a threshold, and
+    # thresholds are protocol — an inclusion listed here would leak one.
+    it "does not list the inclusions" do
+      get study_self_report_path(study)
+
+      heading = I18n.t("self_reports.exclusions_heading")
+      block = response.body[response.body.index(heading)..]
+      list = block[0, block.index("</ul>").to_i + 5]
+
+      expect(list).to include("embarazada")
+      expect(list).not_to include(age.patient_prompt.to_s.delete_prefix("¿").delete_suffix("?"))
+    end
+  end
   describe "session discipline" do
     it "bounces to root with no session stamp — identity never comes from params" do
       get study_self_report_path(study)
