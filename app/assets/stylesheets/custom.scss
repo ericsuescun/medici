@@ -282,20 +282,6 @@ $dark: $medici-dark;
   }
 }
 
-// Patient card with warning styling
-.patient-card {
-  border-color: $medici-warning;
-  border-radius: 8px;
-  background-color: lighten($medici-warning, 35%);
-  
-  .card-header {
-    background-color: $medici-warning;
-    color: white;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-  }
-}
-
 // City card with muted styling
 .city-card {
   border-color: $medici-muted;
