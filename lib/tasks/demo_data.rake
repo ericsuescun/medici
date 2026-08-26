@@ -131,7 +131,24 @@ namespace :demo do
     # it on for a REAL study points real applicants at questions nobody approved.
     # SELF_REPORT_ON_EXISTING=yes opts in deliberately.
     enable_on = ENV["SELF_REPORT_ON_EXISTING"] == "yes" ? Study.all : demo_studies
-    enable_on.each { |s| s.update!(patient_self_report_enabled: true) if s.criteria_profile }
+    enable_on.each do |study|
+      next unless study.criteria_profile
+      next if study.patient_self_report_enabled?
+
+      study.patient_self_report_enabled = true
+      next if study.save
+
+      # A study that predates a later validation cannot be saved normally — the
+      # first real one this hit had a blank short_title. Flipping ONE boolean is
+      # no reason to demand an unrelated legacy field be fixed, and inventing a
+      # value for it would be worse: that is somebody's real record. So the flag
+      # is written past validation, and the row is named so it can be repaired
+      # deliberately. save(validate: false) rather than update_column on purpose
+      # — callbacks still run, so PaperTrail still records who changed what.
+      warn "   ! study ##{study.id} is invalid for unrelated reasons " \
+           "(#{study.errors.full_messages.join('; ')}) — flag written past validation"
+      study.save(validate: false)
+    end
     puts "   questionnaire: enabled on #{Study.where(patient_self_report_enabled: true).count} studies"
 
     # --- Demo patients, only on demo studies --------------------------------
