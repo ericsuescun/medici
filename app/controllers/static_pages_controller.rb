@@ -5,6 +5,12 @@ class StaticPagesController < ApplicationController
   # visitors none. (The navbars that link it only render when signed in anyway.)
   before_action :authenticate_user!, only: %i[about manual]
 
+  # The only actions in the whole app that carry the measurement tags: the three
+  # public marketing pages someone can land on from a social post. #about and
+  # #manual are signed-in-only internal documentation, so they stay untagged even
+  # though they live in this controller.
+  TRACKED_ACTIONS = %w[medici_home search_by_city study_details].freeze
+
   def medici_home
     @cities = City.all.order(:name)
     # Public category filter: pills on the showcase link back here with
@@ -34,6 +40,17 @@ class StaticPagesController < ApplicationController
     @internal_documents = OperationManual::INTERNAL_DOCUMENTS
     @shipped = OperationManual.shipped
     @outstanding = OperationManual.outstanding
+  end
+
+  # Política de tratamiento de datos personales. Content lives in DataPolicy.
+  #
+  # Deliberately NOT in TRACKED_ACTIONS: loading Google and Meta tags on the
+  # page that explains our data handling would be its own answer to whether we
+  # mean it. The consent banner links here in a new tab so the decision it is
+  # waiting on survives the detour.
+  def data_policy
+    @sections = DataPolicy.sections
+    @responsible = DataPolicy.responsible
   end
 
   def medici_showcase
@@ -70,5 +87,11 @@ class StaticPagesController < ApplicationController
     end
 
     @recruitment = RecruitmentProgress.for(@studies)
+  end
+
+  private
+
+  def analytics_allowed?
+    TRACKED_ACTIONS.include?(action_name) && !user_signed_in?
   end
 end

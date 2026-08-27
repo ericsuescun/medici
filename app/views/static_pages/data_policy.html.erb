@@ -1,0 +1,96 @@
+<%# Política de Tratamiento de Datos Personales. Content and section order come
+    from DataPolicy — the six sections Decreto 1074 de 2015 requires are in
+    there, so this template stays a loop. %>
+<% content_for :title, "Política de Tratamiento de Datos Personales — Medici" %>
+<% content_for :social_description, "Cómo Medici recoge, usa y protege los datos personales de quienes consultan por un estudio clínico, conforme a la Ley 1581 de 2012." %>
+
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+
+      <div class="mb-4">
+        <%= link_to t("data_policy.back_home"), root_path, class: "btn btn-link ps-0" %>
+      </div>
+
+      <h1 class="h2 mb-2">Política de Tratamiento de Datos Personales</h1>
+      <p class="text-muted">
+        Versión <%= DataPolicy::VERSION %> · En vigencia desde el
+        <%= l(DataPolicy::EFFECTIVE_ON, format: :long) %>
+      </p>
+
+      <% unless DataPolicy.complete? %>
+        <%# Deliberately visible to everyone, not just staff: a policy that does
+            not name its responsable is not yet a policy, and hiding that fact
+            from readers while showing it to admins would be the wrong way round. %>
+        <div class="alert alert-warning" role="alert">
+          <strong>Documento en preparación.</strong>
+          Falta registrar la identificación legal del responsable. Este texto no debe
+          considerarse definitivo mientras aparezcan campos marcados como pendientes.
+        </div>
+      <% end %>
+
+      <p class="lead">
+        Esta política explica qué datos personales recogemos a través de Medici, para qué
+        los usamos, quién puede verlos y cómo puede usted controlarlos. Está redactada en
+        cumplimiento de la Ley 1581 de 2012 y del Decreto 1074 de 2015.
+      </p>
+
+      <hr class="my-4">
+
+      <nav aria-label="<%= t("data_policy.index") %>" class="mb-4">
+        <p class="fw-semibold mb-2"><%= t("data_policy.index") %></p>
+        <ol class="policy-index">
+          <% @sections.each do |section| %>
+            <li><%= link_to section.title.sub(/\A\d+\.\s*/, ""), "##{section.id}" %></li>
+          <% end %>
+        </ol>
+      </nav>
+
+      <% @sections.each do |section| %>
+        <section id="<%= section.id %>" class="policy-section">
+          <h2 class="h4"><%= section.title %></h2>
+
+          <% section.blocks.each do |block| %>
+            <% case block %>
+            <% when :responsible_table %>
+              <div class="table-responsive">
+                <table class="table table-sm policy-table">
+                  <tbody>
+                    <% @responsible.each do |label, value| %>
+                      <tr>
+                        <th scope="row"><%= label %></th>
+                        <td><%= policy_value(value) %></td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            <% when :validity %>
+              <p>
+                <strong>Fecha de entrada en vigencia.</strong>
+                Esta política rige desde el <%= l(DataPolicy::EFFECTIVE_ON, format: :long) %>
+                (versión <%= DataPolicy::VERSION %>).
+              </p>
+            <% when Array %>
+              <ul>
+                <% block.each do |item| %>
+                  <li><%= policy_text(item) %></li>
+                <% end %>
+              </ul>
+            <% else %>
+              <p><%= policy_text(block) %></p>
+            <% end %>
+          <% end %>
+        </section>
+      <% end %>
+
+      <hr class="my-4">
+
+      <p class="text-muted small mb-0">
+        Superintendencia de Industria y Comercio — autoridad de protección de datos
+        personales en Colombia: <a href="https://www.sic.gov.co" rel="noopener" target="_blank">sic.gov.co</a>
+      </p>
+
+    </div>
+  </div>
+</div>

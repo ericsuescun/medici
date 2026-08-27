@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc><%= request.base_url %>/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc><%= request.base_url %><%= static_pages_search_by_city_path %></loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc><%= request.base_url %><%= data_policy_path %></loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+<% @cities.each do |city| %>
+  <url>
+    <loc><%= request.base_url %><%= static_pages_search_by_city_path(city_id: city.id) %></loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+<% end %>
+<% @studies.each do |study| %>
+  <url>
+    <loc><%= request.base_url %><%= study_about_path(study) %></loc>
+    <lastmod><%= study.updated_at.utc.to_date.iso8601 %></lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+<% end %>
+</urlset>

@@ -1,0 +1,24 @@
+<%# Link-preview and canonical tags. Not tracking: these are what Facebook,
+    Instagram, WhatsApp, X and Google read when a Medici link is posted or
+    crawled, and without them a shared link renders as a bare grey URL.
+
+    Rendered on every page. A page can override the copy with
+    `content_for :social_description` (see static_pages/study_details). %>
+<% social_title = content_for(:title).presence || "Medici" %>
+<% social_description = content_for(:social_description).presence || t("social.description") %>
+
+<link rel="canonical" href="<%= request.base_url + request.path %>">
+<meta name="description" content="<%= social_description %>">
+
+<meta property="og:site_name" content="Medici">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="<%= I18n.locale.to_s == "es" ? "es_CO" : I18n.locale %>">
+<meta property="og:title" content="<%= social_title %>">
+<meta property="og:description" content="<%= social_description %>">
+<meta property="og:url" content="<%= request.base_url + request.path %>">
+<meta property="og:image" content="<%= request.base_url %>/icon.png">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="<%= social_title %>">
+<meta name="twitter:description" content="<%= social_description %>">
+<meta name="twitter:image" content="<%= request.base_url %>/icon.png">

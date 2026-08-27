@@ -1,4 +1,14 @@
 Rails.application.routes.draw do
+  # Crawler-facing, served from a controller so both carry the real host —
+  # see SitemapsController (public/robots.txt was removed for this to be hit).
+  get "robots.txt", to: "sitemaps#robots", defaults: { format: "text" }, as: :robots
+  get "sitemap.xml", to: "sitemaps#sitemap", defaults: { format: "xml" }, as: :sitemap
+
+  # Política de tratamiento de datos personales (Ley 1581 de 2012). Public,
+  # no login: the consent banner and the participation form both link to it.
+  # Spanish path on purpose — it is a legal document read by patients.
+  get "politica-de-datos", to: "static_pages#data_policy", as: :data_policy
+
   get "static_pages/medici_home"
   get "static_pages/search_by_city"
   root to: "static_pages#medici_home"

@@ -1,4 +1,27 @@
 es:
+
+  # ---- Política de tratamiento de datos (static_pages#data_policy) ----
+  # Only the chrome is translated. The policy text itself is Spanish-only,
+  # deliberately — see the comment atop app/models/data_policy.rb.
+  data_policy:
+    back_home: "Volver al inicio"
+    index: "Contenido"
+    link: "Política de tratamiento de datos"
+
+  # ---- Link previews (layouts/_social_meta) ----
+  social:
+    description: "Medici conecta a pacientes en Colombia con estudios clínicos que están reclutando. Consulta los estudios disponibles en tu ciudad y deja tus datos para que un centro de investigación te contacte."
+
+  # ---- Consent banner for the Google/Meta measurement tags ----
+  # Shown only on the public marketing pages, which are the only pages
+  # those tags are allowed to load on (ApplicationController#analytics_allowed?).
+  cookie_consent:
+    title: "Cookies y medición"
+    body: "Usamos cookies de Google y Meta solo para saber cómo llegaste a Medici y mejorar nuestras campañas. No se activan hasta que aceptes, y nunca se cargan en el formulario de participación ni en el cuestionario clínico (Ley 1581 de 2012)."
+    accept: "Aceptar"
+    reject: "Rechazar"
+    aria_label: "Aviso de cookies"
+    more: "Más información"
   # ---- Language selector ----
   languages:
     selector_label: "Seleccionar idioma"

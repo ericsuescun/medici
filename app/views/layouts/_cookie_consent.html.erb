@@ -1,0 +1,31 @@
+<%# Consent banner for the measurement tags. Rendered only where those tags are
+    allowed to run, so a visitor never sees it on a page that has nothing to
+    consent to.
+
+    It starts hidden and is revealed by the analytics controller, which is the
+    only thing that knows whether this browser already answered. Rendering it
+    visible and hiding it in JS would flash the banner on every page for people
+    who decided months ago.
+
+    The policy link opens in a new tab on purpose: this banner is waiting on a
+    decision, and navigating away from it would lose the decision. %>
+<div class="cookie-consent shadow-lg" data-analytics-target="banner" hidden
+     role="region" aria-label="<%= t("cookie_consent.aria_label") %>">
+  <div class="cookie-consent__text">
+    <strong><%= t("cookie_consent.title") %></strong>
+    <p class="mb-0 small">
+      <%= t("cookie_consent.body") %>
+      <%= link_to t("cookie_consent.more"), data_policy_path, target: "_blank", rel: "noopener" %>
+    </p>
+  </div>
+  <div class="cookie-consent__actions">
+    <button type="button" class="btn btn-outline-secondary btn-sm"
+            data-action="analytics#reject">
+      <%= t("cookie_consent.reject") %>
+    </button>
+    <button type="button" class="btn btn-success btn-sm"
+            data-action="analytics#accept">
+      <%= t("cookie_consent.accept") %>
+    </button>
+  </div>
+</div>

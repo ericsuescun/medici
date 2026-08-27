@@ -90,6 +90,10 @@ class SelfReportsController < ApplicationController
     looks_like_a_match = @patient.reload.primary_criteria_met_by_self_report?
 
     session.delete(SESSION_KEY)
+    # Both events: step 1 created the lead but redirected here, to a page that
+    # carries no tags, so this is the first measured page since. Reporting both
+    # keeps lead counts the same whichever path the visitor took.
+    flash[:analytics_events] = %w[participation_submitted self_report_completed]
     redirect_to study_about_path(@study),
                 notice: t(looks_like_a_match ? "self_reports.thanks" : "self_reports.not_a_match")
   end

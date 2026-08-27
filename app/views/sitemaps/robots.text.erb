@@ -1,0 +1,20 @@
+# Medici — https://www.robotstxt.org/robotstxt.html
+#
+# Everything a prospective patient can browse is open to crawlers. The two paths
+# below are closed deliberately:
+#
+#   /studies/:id/participate  the contact form, and its questionnaire step. Being
+#                             in a search index would put "this person is trying
+#                             to enrol in trial X" in a URL that gets crawled,
+#                             cached and reported on. Same reasoning as the
+#                             measurement tags, which do not load there either.
+#   /users/                   sign-in and everything behind it: staff-only, and
+#                             nothing there is public content.
+
+User-agent: *
+Disallow: /studies/*/participate
+Disallow: /users/
+Disallow: /about
+Disallow: /manual
+
+Sitemap: <%= request.base_url %>/sitemap.xml

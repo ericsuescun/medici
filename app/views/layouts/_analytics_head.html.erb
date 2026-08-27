@@ -1,0 +1,51 @@
+<%# Google + Meta measurement tags. Rendered from the <head> of every page, but
+    it emits the tags themselves only where `analytics_allowed?` says it may —
+    the public marketing pages, signed out. See ApplicationController.
+
+    Consent Mode is set up in "basic" form: every storage type starts denied and
+    NOTHING is sent until the visitor accepts in the banner. Google's "advanced"
+    mode would send cookieless pings before a decision, which buys modelled
+    conversions at the cost of contacting Google on behalf of someone who has not
+    agreed — the wrong trade for a site whose visitors are prospective clinical
+    trial participants (Ley 1581 de 2012, Art. 9: prior authorization). %>
+
+<% if Analytics.google_site_verification.present? %>
+  <meta name="google-site-verification" content="<%= Analytics.google_site_verification %>">
+<% end %>
+
+<% if Analytics.meta_domain_verification.present? %>
+  <meta name="facebook-domain-verification" content="<%= Analytics.meta_domain_verification %>">
+<% end %>
+
+<% if Analytics.enabled? && analytics_allowed? && Analytics.google? %>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+
+    gtag("consent", "default", {
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      analytics_storage: "denied",
+      functionality_storage: "denied",
+      personalization_storage: "denied",
+      security_storage: "granted",
+      wait_for_update: 500
+    });
+  </script>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=<%= Analytics.ga4_measurement_id || Analytics.google_ads_id %>"></script>
+
+  <script>
+    gtag("js", new Date());
+    <% if Analytics.ga4_measurement_id.present? %>
+      <%# send_page_view:false because Turbo swaps pages without a document load;
+          the analytics Stimulus controller sends every pageview by hand, with the
+          study id stripped out of the URL first. %>
+      gtag("config", "<%= Analytics.ga4_measurement_id %>", { send_page_view: false });
+    <% end %>
+    <% if Analytics.google_ads_id.present? %>
+      gtag("config", "<%= Analytics.google_ads_id %>");
+    <% end %>
+  </script>
+<% end %>

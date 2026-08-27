@@ -28,7 +28,10 @@
     <div class="mt-auto d-grid gap-2">
       <%= link_to t("static_pages.showcase.more_about"), detail_path, class: "btn btn-primary w-100" %>
       <% unless user_signed_in? %>
-        <%= link_to t("static_pages.showcase.participate"), new_participation_request_path(study_id: study.id), class: "btn btn-success w-100" %>
+        <%# The measured call to action: analytics_cta adds the click handler only
+            where measurement is switched on and allowed. %>
+        <%= link_to t("static_pages.showcase.participate"), new_participation_request_path(study_id: study.id),
+                    class: "btn btn-success w-100", **analytics_cta("click_participate") %>
       <% end %>
     </div>
   </div>
