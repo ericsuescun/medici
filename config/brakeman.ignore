@@ -13,7 +13,7 @@
     {
       "fingerprint": "21ab0fe00fdd5899ffc405cff75aadb91b805ee996a614f7e27b08a287e9062d",
       "file": "Gemfile.lock",
-      "note": "REAL, not a false positive \u2014 silenced deliberately so it does not hold the whole build hostage, and tracked as task U1 in CLAUDE.md instead. Rails 8.0.2 leaves support on 2026-10-07. The fix is a version bump, which is its own piece of work with its own test run, not something to slip into an unrelated deploy. REMOVE THIS ENTRY as part of that upgrade: leaving it would silence the next EOL warning too, which is the failure mode that makes ignore files dangerous. Noted 2026-10-05."
+      "note": "REAL, not a false positive \u2014 silenced deliberately so one dated advisory does not hold the whole build red, and tracked as task U1 in CLAUDE.md instead. The Rails 8.0 series stops receiving SECURITY fixes on 2026-11-07 (bug fixes already stopped on 2026-05-07), so the fix is moving to 8.1 \u2014 its own piece of work with its own test run, not something to slip into an unrelated deploy. REMOVE THIS ENTRY as part of that upgrade: leaving it would silence the next EOL warning too, which is the failure mode that makes ignore files dangerous. Noted 2026-10-05. NB the date is Brakeman's own data and it moved between gem versions (8.0.5 said 2026-10-07, 8.1.0 says 2026-11-07); rubyonrails.org/maintenance is the authority, not this file."
     }
   ],
   "brakeman_version": "8.1.0"
