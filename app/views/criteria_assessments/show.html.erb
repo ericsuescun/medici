@@ -122,10 +122,15 @@
       <div class="card-body">
         <h5 class="card-title mb-1"><%= t("criteria_assessments.brief.take_action") %></h5>
         <p class="text-muted small mb-3">
+          <%# ONLY the locked hint when the step is locked. This used to stack the
+              score hint in front of it, which was harmless while the score and
+              the gate were the same question. They are not any more: a patient
+              can be 100% / :ready on the BASIC tier while the SPECIFIC tier
+              holds the step, and promote_hint_ready says "Presione «Aceptar»
+              para promover" — instructions to press a button rendered disabled
+              immediately below it. The score is in the card above; this line
+              says what is missing. patients/show already did it this way. %>
           <% if locked_forward %>
-            <% if @result.recommendation != :none %>
-              <%= t("criteria_assessments.score.promote_hint_#{@result.recommendation}", **hint_args) %>
-            <% end %>
             <strong><%= t("criteria_assessments.locked.#{@patient.forward_event}", **hint_args) %></strong>
           <% elsif forward_allowed && @result.recommendation != :none %>
             <%= t("criteria_assessments.score.promote_hint_#{@result.recommendation}", **hint_args) %>

@@ -166,6 +166,37 @@ RSpec.describe "Criteria assessments", type: :request do
       expect(response.body).to include("bi-lock-fill")
     end
 
+    # The score and the gate are different questions now: a patient can be
+    # :ready on the basic tier (100%) while the specific tier locks the step.
+    # The take-action box must not then tell the rep to press a button it is
+    # rendering disabled — the same contradiction that had a patient at the
+    # final state being advised to reject itself (CLAUDE.md, 2026-08-25).
+    it "does not tell the rep to press a button it has disabled" do
+      specific = profile.criteria_variables.create!(
+        name: "Hemoglobina", variable_type: "inclusion", value_type: "quantitative",
+        comparison_type: "more_than_or_equal", reference_value_1: 11,
+        criteria_category: "specific"
+      )
+      patch assessment_path, params: { values: { age.id.to_s => "30" } }
+      expect(patient.reload.state).to eq("candidate")
+
+      get assessment_path
+
+      expect(response.body).to include("bi-lock-fill")
+      expect(response.body).to include(
+        I18n.t("criteria_assessments.locked.accept",
+               from: I18n.t("patients.states.candidate"),
+               to: I18n.t("patients.states.potential"))
+      )
+      expect(response.body).not_to include(
+        I18n.t("criteria_assessments.score.promote_hint_ready",
+               score: 100, event: I18n.t("patients.accept"),
+               from: I18n.t("patients.states.candidate"),
+               to: I18n.t("patients.states.potential"))
+      )
+      expect(specific).to be_persisted
+    end
+
     it "unlocks it once the basic criterion is recorded and met" do
       patch assessment_path, params: { values: { age.id.to_s => "30" } }
       get assessment_path
