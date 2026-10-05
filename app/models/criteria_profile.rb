@@ -71,13 +71,13 @@ class CriteriaProfile < ApplicationRecord
   # Note who does the scoring: the LIVE rule. A PatientDeclaration deliberately
   # carries no comparison columns (see that model), so the only way to judge it
   # is `cv.satisfied_by?(declaration.answer)` — polarity, thresholds and
-  # category all come from the current rule, and the declaration stays
+  # tier all come from the current rule, and the declaration stays
   # unscorable on its own. A declined declaration ("No sé") answers nothing, so
   # it evaluates like a missing value rather than a failing one.
   #
-  # Feeds Patient#primary_criteria_met_by_self_report?, which gates ONLY the
+  # Feeds Patient#basic_criteria_met_by_self_report?, which gates ONLY the
   # interested → candidate triage step. The clinical tier (candidate →
-  # participant) never reads declarations.
+  # potential) never reads declarations.
   def evaluate_self_reports(patient)
     declarations = patient.patient_declarations.live.index_by(&:criteria_variable_id)
 

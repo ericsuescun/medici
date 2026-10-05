@@ -1,7 +1,7 @@
 # Example eligibility profile modeled from a real severe seborrheic-dermatitis
 # protocol, to demonstrate the CriteriaProfile / CriteriaVariable engine, the
-# evaluator, and — the point of the demo patients below — how the primary /
-# secondary split drives the recruitment score.
+# evaluator, and — the point of the demo patients below — how the basic /
+# specific split drives the recruitment score.
 #
 # Idempotent. Dev/demo only — not wired into db/seeds.rb by default (it creates
 # an admin-owned example profile, a sponsor, a study and sample patients).
@@ -17,24 +17,24 @@
 #
 # TWO THINGS THIS FILE DEMONSTRATES ON PURPOSE
 #
-# 1. A SMALL, FIXED primary set: 2 inclusion + 3 exclusion = 5, out of 25
+# 1. A SMALL, FIXED basic set: 2 inclusion + 3 exclusion = 5, out of 25
 #    criteria. The count is fixed deliberately rather than derived from a
-#    percentage of the protocol — the primary criteria are the ones a patient is
+#    percentage of the protocol — the basic criteria are the ones a patient is
 #    asked about, and a public questionnaire has to stay short enough that
 #    somebody actually finishes it. Six is the ceiling; five is what this
-#    protocol needs. The other 20 are `secondary`: measured by the centre,
+#    protocol needs. The other 20 are `specific`: measured by the centre,
 #    shown, part of the whole-protocol verdict, but never able on their own to
 #    promote or hold back a patient.
 #
-#    Five also happens to be the smallest primary count that lets the score show
-#    its own thresholds: the score is `passing primary / total primary`, so with
-#    N primary the only reachable values are multiples of 100/N. With 2 you get
+#    Five also happens to be the smallest basic count that lets the score show
+#    its own thresholds: the score is `passing basic / total basic`, so with
+#    N basic the only reachable values are multiples of 100/N. With 2 you get
 #    0/50/100 and `:promising` (the >= 70% band) can never occur; with 5, 80%
 #    lands in it and all four recommendations are reachable.
 #
-# 2. ONLY the primary criteria carry a `patient_prompt`, so those five are
-#    exactly what the public step-2 questionnaire asks. Secondary rules have no
-#    prompt at all and `CriteriaVariable.askable_to_patient` filters to primary
+# 2. ONLY the basic criteria carry a `patient_prompt`, so those five are
+#    exactly what the public step-2 questionnaire asks. Specific rules have no
+#    prompt at all and `CriteriaVariable.askable_to_patient` filters to basic
 #    anyway, so the two agree. The prompt is the ONLY thing the patient ever
 #    sees — never the rule name, the comparison or the reference values — so
 #    each is written in patient language and asks for the raw fact, never for
@@ -44,9 +44,9 @@
 #
 #    All five PRIMARY criteria are things a patient can honestly answer about
 #    themselves. That is what makes auto-triage possible: it fires only when the
-#    declarations satisfy EVERY primary criterion, so a single primary rule that
+#    declarations satisfy EVERY basic criterion, so a single basic rule that
 #    only an investigator could measure would silently prevent it forever. The
-#    clinic-measured ones (IGA score, BSA%) are secondary for exactly this
+#    clinic-measured ones (IGA score, BSA%) are specific for exactly this
 #    reason — the patient is never asked, and never penalised for not knowing.
 module ExampleSeborrheicDermatitisProfile
   PROFILE_NAME = "Dermatitis seborreica grave — criterios de inclusión/exclusión".freeze
@@ -55,45 +55,45 @@ module ExampleSeborrheicDermatitisProfile
   # [name, value_type, comparison_type, reference_value_1, reference_value_2,
   #  criteria_category, patient_prompt]
   INCLUSION = [
-    [ "Edad (años)", "quantitative", "between_range", 18, 75, "primary",
+    [ "Edad (años)", "quantitative", "between_range", 18, 75, "basic",
       "¿Cuántos años tienes?" ],
-    [ "Diagnóstico confirmado de dermatitis seborreica", "boolean", "true", nil, nil, "primary",
+    [ "Diagnóstico confirmado de dermatitis seborreica", "boolean", "true", nil, nil, "basic",
       "¿Un médico te ha diagnosticado dermatitis seborreica?" ],
-    [ "Duración de la enfermedad (meses)", "quantitative", "more_than_or_equal", 3, nil, "secondary" ],
-    [ "Puntuación de severidad (IGA)", "quantitative", "more_than_or_equal", 3, nil, "secondary" ],
-    [ "Afectación BSA (%)", "quantitative", "more_than_or_equal", 10, nil, "secondary" ],
-    [ "Candidato a terapia sistémica", "boolean", "true", nil, nil, "secondary" ],
-    [ "Ha fracasado al menos un tratamiento tópico", "boolean", "true", nil, nil, "secondary" ],
-    [ "Dispuesto a firmar el consentimiento informado", "boolean", "true", nil, nil, "secondary" ],
-    [ "Disponibilidad para visitas presenciales", "boolean", "true", nil, nil, "secondary" ],
-    [ "Método anticonceptivo en edad fértil", "boolean", "true", nil, nil, "secondary" ]
+    [ "Duración de la enfermedad (meses)", "quantitative", "more_than_or_equal", 3, nil, "specific" ],
+    [ "Puntuación de severidad (IGA)", "quantitative", "more_than_or_equal", 3, nil, "specific" ],
+    [ "Afectación BSA (%)", "quantitative", "more_than_or_equal", 10, nil, "specific" ],
+    [ "Candidato a terapia sistémica", "boolean", "true", nil, nil, "specific" ],
+    [ "Ha fracasado al menos un tratamiento tópico", "boolean", "true", nil, nil, "specific" ],
+    [ "Dispuesto a firmar el consentimiento informado", "boolean", "true", nil, nil, "specific" ],
+    [ "Disponibilidad para visitas presenciales", "boolean", "true", nil, nil, "specific" ],
+    [ "Método anticonceptivo en edad fértil", "boolean", "true", nil, nil, "specific" ]
   ].freeze
 
   EXCLUSION = [
-    [ "Infección sistémica activa (últimas 2 semanas)", "boolean", "true", nil, nil, "primary",
+    [ "Infección sistémica activa (últimas 2 semanas)", "boolean", "true", nil, nil, "basic",
       "¿Has tenido una infección que necesitara antibióticos en las últimas dos semanas?" ],
-    [ "Embarazo o lactancia", "boolean", "true", nil, nil, "primary",
+    [ "Embarazo o lactancia", "boolean", "true", nil, nil, "basic",
       "¿Estás embarazada o en período de lactancia?" ],
-    [ "Participación en otro estudio clínico (últimas 12 semanas)", "boolean", "true", nil, nil, "primary",
+    [ "Participación en otro estudio clínico (últimas 12 semanas)", "boolean", "true", nil, nil, "basic",
       "¿Participas o has participado en otro estudio clínico en los últimos tres meses?" ],
-    [ "Hipersensibilidad o alergia al medicamento del estudio", "boolean", "true", nil, nil, "secondary" ],
-    [ "Planes de vacunas vivas", "boolean", "true", nil, nil, "secondary" ],
-    [ "Condición que impide adherencia (juicio del investigador)", "boolean", "true", nil, nil, "secondary" ],
-    [ "Abuso de alcohol o drogas (últimas 24 semanas)", "boolean", "true", nil, nil, "secondary" ],
-    [ "No dispuesto a limitar exposición UV", "boolean", "true", nil, nil, "secondary" ],
-    [ "Tratamiento sistémico en las últimas 4 semanas", "boolean", "true", nil, nil, "secondary" ],
-    [ "Inmunosupresión conocida", "boolean", "true", nil, nil, "secondary" ],
-    [ "Enfermedad hepática o renal grave", "boolean", "true", nil, nil, "secondary" ],
-    [ "Antecedente de cáncer (últimos 5 años)", "boolean", "true", nil, nil, "secondary" ],
-    [ "Otra enfermedad cutánea que interfiera la evaluación", "boolean", "true", nil, nil, "secondary" ],
-    [ "Tabaquismo activo", "boolean", "true", nil, nil, "secondary" ],
-    [ "Trastorno psiquiátrico no controlado", "boolean", "true", nil, nil, "secondary" ]
+    [ "Hipersensibilidad o alergia al medicamento del estudio", "boolean", "true", nil, nil, "specific" ],
+    [ "Planes de vacunas vivas", "boolean", "true", nil, nil, "specific" ],
+    [ "Condición que impide adherencia (juicio del investigador)", "boolean", "true", nil, nil, "specific" ],
+    [ "Abuso de alcohol o drogas (últimas 24 semanas)", "boolean", "true", nil, nil, "specific" ],
+    [ "No dispuesto a limitar exposición UV", "boolean", "true", nil, nil, "specific" ],
+    [ "Tratamiento sistémico en las últimas 4 semanas", "boolean", "true", nil, nil, "specific" ],
+    [ "Inmunosupresión conocida", "boolean", "true", nil, nil, "specific" ],
+    [ "Enfermedad hepática o renal grave", "boolean", "true", nil, nil, "specific" ],
+    [ "Antecedente de cáncer (últimos 5 años)", "boolean", "true", nil, nil, "specific" ],
+    [ "Otra enfermedad cutánea que interfiera la evaluación", "boolean", "true", nil, nil, "specific" ],
+    [ "Tabaquismo activo", "boolean", "true", nil, nil, "specific" ],
+    [ "Trastorno psiquiátrico no controlado", "boolean", "true", nil, nil, "specific" ]
   ].freeze
 
   ALL_VARIABLES = (INCLUSION.map { |r| [ "inclusion", r ] } +
                    EXCLUSION.map { |r| [ "exclusion", r ] }).freeze
 
-  # A patient who satisfies every criterion, primary and secondary alike.
+  # A patient who satisfies every criterion, basic and specific alike.
   # Each scenario below is this set with a few answers changed.
   BASE_ANSWERS = {
     "Edad (años)" => 34,
@@ -127,24 +127,24 @@ module ExampleSeborrheicDermatitisProfile
   # "not measured yet", which is exactly how an unmeasured criterion holds the
   # score down. Keyed by the recommendation each is built to produce.
   #
-  # The five primary criteria are: Edad, Diagnóstico confirmado, Infección
+  # The five basic criteria are: Edad, Diagnóstico confirmado, Infección
   # sistémica activa, Embarazo o lactancia, Participación en otro estudio.
   SCENARIOS = {
-    # 5/5 primary criteria pass → 100%. A *secondary* exclusion is triggered, so
+    # 5/5 basic criteria pass → 100%. A *specific* exclusion is triggered, so
     # the whole-protocol verdict is "not eligible" while the recruitment score
     # still says promote: the disagreement is the feature, not a bug.
     ready: { "Planes de vacunas vivas" => true },
 
-    # 4 of 5 primary criteria pass and the fifth is simply unmeasured → 80%,
+    # 4 of 5 basic criteria pass and the fifth is simply unmeasured → 80%,
     # nothing decisive ruled out: worth a rep's attention, not yet promotable.
     promising: { "Participación en otro estudio clínico (últimas 12 semanas)" => nil },
 
-    # A primary exclusion is triggered. Four other primary criteria still pass,
+    # A basic exclusion is triggered. Four other basic criteria still pass,
     # so the raw percentage is high — and it does not matter: one decisive
     # failure blocks promotion outright.
     blocked: { "Infección sistémica activa (últimas 2 semanas)" => true },
 
-    # Only 2 of 5 primary criteria measured → 40%. Too early to say anything.
+    # Only 2 of 5 basic criteria measured → 40%. Too early to say anything.
     pending: {
       "Diagnóstico confirmado de dermatitis seborreica" => nil,
       "Embarazo o lactancia" => nil,
@@ -219,18 +219,18 @@ module ExampleSeborrheicDermatitisProfile
   # demo! plus a printed summary — the quickest way to see the split at work.
   def self.report!
     profile = seed!
-    primary, secondary = profile.criteria_variables.partition(&:primary?)
-    puts format("profile: %d variables — %d primary (%d%%), %d secondary, %d askable to patients",
-                profile.criteria_variables.count, primary.size,
-                (primary.size.to_f / profile.criteria_variables.count * 100).round,
-                secondary.size, profile.criteria_variables.select(&:askable_to_patient?).size)
+    basic, specific = profile.criteria_variables.partition(&:basic?)
+    puts format("profile: %d variables — %d basic (%d%%), %d specific, %d askable to patients",
+                profile.criteria_variables.count, basic.size,
+                (basic.size.to_f / profile.criteria_variables.count * 100).round,
+                specific.size, profile.criteria_variables.select(&:askable_to_patient?).size)
 
     demo!(profile).each do |scenario, result|
       puts format(
-        "%-10s score=%3d%% (%d/%d primary answered)  recommendation=%-10s verdict=%s%s",
-        scenario, result.primary_score, result.primary_answered_count, result.primary_total_count,
+        "%-10s score=%3d%% (%d/%d basic answered)  recommendation=%-10s verdict=%s%s",
+        scenario, result.basic_score, result.basic_answered_count, result.basic_total_count,
         result.recommendation, result.verdict,
-        result.secondary_concerns.any? ? "  [#{result.secondary_concerns.count} secondary not met]" : ""
+        result.specific_failing.any? ? "  [#{result.specific_failing.count} specific not met]" : ""
       )
     end
     profile

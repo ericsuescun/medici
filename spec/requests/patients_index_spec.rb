@@ -1,11 +1,11 @@
 require "rails_helper"
 
-# The recruitment index and the participants page, end to end: what each one is
+# The recruitment index and the potentials page, end to end: what each one is
 # for, and — the part that matters most — who is allowed to appear on them.
 #
 # Rows are matched by dom_id rather than by name: a patient who arrived through
 # the public form has no name at all, and the name column is encrypted.
-RSpec.describe "Patients index and participants", type: :request do
+RSpec.describe "Patients index and potentials", type: :request do
   let(:city) { FactoryBot.create(:city) }
   let(:branch_a) { FactoryBot.create(:trial_center_branch).tap { |b| b.cities << city } }
   let(:branch_b) { FactoryBot.create(:trial_center_branch) }
@@ -15,7 +15,7 @@ RSpec.describe "Patients index and participants", type: :request do
 
   let!(:interested_a) { FactoryBot.create(:patient, study: study_a, state: "interested") }
   let!(:candidate_a) { FactoryBot.create(:patient, study: study_a, state: "candidate") }
-  let!(:participant_a) { FactoryBot.create(:patient, study: study_a, state: "participant") }
+  let!(:potential_a) { FactoryBot.create(:patient, study: study_a, state: "potential") }
   let!(:interested_b) { FactoryBot.create(:patient, study: study_b, state: "interested") }
 
   def row?(patient)
@@ -43,14 +43,14 @@ RSpec.describe "Patients index and participants", type: :request do
     it "leaves the enrolled ones out" do
       get patients_path
 
-      expect(row?(participant_a)).to be(false)
+      expect(row?(potential_a)).to be(false)
     end
 
     it "cannot be talked into showing an enrolled patient through the state filter" do
-      get patients_path, params: { state: "participant" }
+      get patients_path, params: { state: "potential" }
 
       expect(response).to be_successful
-      expect(row?(participant_a)).to be(false)
+      expect(row?(potential_a)).to be(false)
       expect(row?(candidate_a)).to be(true)
     end
 
@@ -126,7 +126,7 @@ RSpec.describe "Patients index and participants", type: :request do
     # participant no longer is; the count there would answer a question nobody
     # asked.
     it "does not offer the toggle on the participants page" do
-      get participants_patients_path
+      get potentials_patients_path
 
       expect(response.body).not_to include(I18n.t("patients.filters.only_leads"))
     end
@@ -153,18 +153,18 @@ RSpec.describe "Patients index and participants", type: :request do
     before { sign_in(FactoryBot.create(:user, :admin), scope: :user) }
 
     it "lists the enrolled patients and only those" do
-      get participants_patients_path
+      get potentials_patients_path
 
       expect(response).to be_successful
-      expect(row?(participant_a)).to be(true)
+      expect(row?(potential_a)).to be(true)
       expect(row?(candidate_a)).to be(false)
       expect(row?(interested_a)).to be(false)
     end
 
     it "takes the same filters" do
-      get participants_patients_path, params: { study_id: study_b.id }
+      get potentials_patients_path, params: { study_id: study_b.id }
 
-      expect(row?(participant_a)).to be(false)
+      expect(row?(potential_a)).to be(false)
     end
   end
 
@@ -198,10 +198,10 @@ RSpec.describe "Patients index and participants", type: :request do
       end
 
       it "never shows another centre's patient on the participants page either" do
-        FactoryBot.create(:patient, study: study_b, state: "participant").tap do |other|
-          get participants_patients_path
+        FactoryBot.create(:patient, study: study_b, state: "potential").tap do |other|
+          get potentials_patients_path
 
-          expect(row?(participant_a)).to be(true)
+          expect(row?(potential_a)).to be(true)
           expect(row?(other)).to be(false)
         end
       end
@@ -244,11 +244,11 @@ RSpec.describe "Patients index and participants", type: :request do
       end
 
       it "keeps the isolation on the participants page" do
-        other = FactoryBot.create(:patient, study: study_b, state: "participant")
+        other = FactoryBot.create(:patient, study: study_b, state: "potential")
 
-        get participants_patients_path
+        get potentials_patients_path
 
-        expect(row?(participant_a)).to be(true)
+        expect(row?(potential_a)).to be(true)
         expect(row?(other)).to be(false)
       end
     end
@@ -263,9 +263,62 @@ RSpec.describe "Patients index and participants", type: :request do
       expect(response).to have_http_status(:redirect)
       expect(row?(interested_a)).to be(false)
 
-      get participants_patients_path
+      get potentials_patients_path
       expect(response).to have_http_status(:redirect)
-      expect(row?(participant_a)).to be(false)
+      expect(row?(potential_a)).to be(false)
+    end
+  end
+  # The queue is worked top-down, so the order has to mean something: within a
+  # state, the record closest to clearing the next gate comes first. That is
+  # the SPECIFIC count for a candidate, because the specific tier is the one
+  # standing between them and `potential`.
+  describe "GET /patients — ordering within a state" do
+    let(:profile) { FactoryBot.create(:criteria_profile, study: study_a) }
+
+    let(:rules) do
+      3.times.map do |i|
+        profile.criteria_variables.create!(
+          name: "S#{i}", variable_type: "inclusion", value_type: "quantitative",
+          comparison_type: "more_than", reference_value_1: 10, criteria_category: "specific"
+        )
+      end
+    end
+
+    def meet(patient, count)
+      rules.each_with_index do |cv, i|
+        patient.variable_values.create!(
+          criteria_variable: cv, name: cv.name, value: (i < count ? "50" : "1"),
+          value_type: "quantitative", comparison_type: "more_than",
+          variable_type: "inclusion", criteria_category: "specific", reference_value_1: 10
+        )
+      end
+    end
+
+    it "puts the candidate who meets the most specific criteria first" do
+      thin = FactoryBot.create(:patient, study: study_a, state: "candidate")
+      full = FactoryBot.create(:patient, study: study_a, state: "candidate")
+      meet(thin, 1)
+      meet(full, 3)
+
+      sign_in(FactoryBot.create(:user, :admin), scope: :user)
+      get patients_path
+
+      thin_at = response.body.index(%(id="#{ActionView::RecordIdentifier.dom_id(thin)}"))
+      full_at = response.body.index(%(id="#{ActionView::RecordIdentifier.dom_id(full)}"))
+
+      expect(full_at).to be < thin_at
+    end
+
+    it "shows each row how far through the specific tier it is" do
+      patient = FactoryBot.create(:patient, study: study_a, state: "candidate")
+      meet(patient, 2)
+
+      sign_in(FactoryBot.create(:user, :admin), scope: :user)
+      get patients_path
+
+      expect(response.body).to include(
+        I18n.t("criteria_assessments.score.specific_count", met: 2, total: 3)
+      )
     end
   end
 end

@@ -32,10 +32,14 @@ module ApplicationHelper
   # Colour carries meaning, so the two axes stay visually distinct:
   #   variable_type      green = inclusion, red = exclusion  (does it let you in
   #                      or keep you out)
-  #   criteria_category  blue = primary, grey = secondary    (does it decide
-  #                      anything)
+  #   criteria_category  blue = basic, grey = specific      (which step does
+  #                      it gate)
+  #
+  # Note the two vocabularies that meet on the next line: `basic`/`specific` is
+  # the domain tier, `primary`/`secondary` is the Bootstrap colour token. They
+  # are unrelated, and the tokens do NOT follow a rename of the tier.
   def criteria_category_badge(variable)
-    tone = variable.primary? ? "primary" : "secondary"
+    tone = variable.basic? ? "primary" : "secondary"
     tag.span(t_enum(variable, :criteria_category),
              class: "badge border bg-#{tone}-subtle text-#{tone}-emphasis")
   end
@@ -48,7 +52,7 @@ module ApplicationHelper
 
   # A read-only on/off flag, rendered as a ticked or empty checkbox. Reads
   # faster down a column than a Sí/No badge does, and — unlike a coloured badge
-  # — it does not compete with the inclusion/exclusion and primary/secondary
+  # — it does not compete with the inclusion/exclusion and basic/specific
   # badges on the same row, which are the ones that actually carry meaning.
   #
   # `disabled` rather than `readonly`: checkboxes ignore readonly. These sit in

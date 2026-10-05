@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe RecruitmentProgress do
   def study_with(goal:, participants: 0, candidates: 0, interested: 0)
     study = FactoryBot.create(:study, sample_size: goal)
-    participants.times { FactoryBot.create(:patient, :participant, study: study) }
+    participants.times { FactoryBot.create(:patient, :potential, study: study) }
     candidates.times { FactoryBot.create(:patient, :candidate, study: study) }
     interested.times { FactoryBot.create(:patient, study: study) }
     study
@@ -15,11 +15,11 @@ RSpec.describe RecruitmentProgress do
     progress = described_class.for([ study ]).fetch(study.id)
 
     expect(progress).to be_renderable
-    expect(progress.count(:participant)).to eq(3)
+    expect(progress.count(:potential)).to eq(3)
     expect(progress.count(:candidate)).to eq(2)
     expect(progress.count(:interested)).to eq(1)
     expect(progress.total).to eq(6)
-    expect(progress.percent(:participant)).to eq(30.0)
+    expect(progress.percent(:potential)).to eq(30.0)
     expect(progress.percent(:candidate)).to eq(20.0)
     expect(progress.percent(:interested)).to eq(10.0)
   end
@@ -29,7 +29,7 @@ RSpec.describe RecruitmentProgress do
 
     progress = study.recruitment_progress
 
-    expect(progress.percent(:participant)).to eq(75.0)
+    expect(progress.percent(:potential)).to eq(75.0)
     expect(progress.percent(:candidate)).to eq(25.0)
     # Candidates already reached 100% — interested get no width at all.
     expect(progress.percent(:interested)).to eq(0.0)
@@ -55,7 +55,7 @@ RSpec.describe RecruitmentProgress do
 
   it "is not renderable without a positive goal" do
     study = FactoryBot.create(:study, sample_size: nil)
-    FactoryBot.create(:patient, :participant, study: study)
+    FactoryBot.create(:patient, :potential, study: study)
 
     expect(study.recruitment_progress).not_to be_renderable
   end

@@ -90,7 +90,7 @@ RSpec.describe "Manual", type: :request do
       flow = OperationManual::ROLE_FLOWS.fetch("patient")
 
       expect(flow).to include("no existe cuenta de paciente")
-      expect(flow).to include("system:self-report-triage")
+      expect(flow).to include("system:criteria-sync")
       # Narrowed with the controller on 2026-08-25: the questionnaire now says
       # whether the study is a match, and still never says WHICH criterion —
       # and it shows the exclusions upfront so nobody answers into silence.

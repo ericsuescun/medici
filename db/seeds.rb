@@ -106,8 +106,8 @@ if Study.count < 10
       study.update!(study_status: rand < 0.8 ? "recruiting" : "completed",
                     sample_size: rand(8..20))
       # ...and patients spread across the lifecycle states that fill it:
-      # participants (green), candidates (yellow), interested (red).
-      rand(1..4).times { FactoryBot.create(:patient, :participant, study: study) }
+      # potentials (green), candidates (yellow), interested (red).
+      rand(1..4).times { FactoryBot.create(:patient, :potential, study: study) }
       rand(0..4).times { FactoryBot.create(:patient, :candidate, study: study) }
       rand(2..5).times { FactoryBot.create(:patient, study: study) }
       FactoryBot.create_list(:article, rand(1..3), study: study)
@@ -148,7 +148,7 @@ puts "  leads:       #{Patient.where(firstname: nil).count} with no name (public
 
 # --- Eligibility profiles ----------------------------------------------------
 # One profile per study, cycling four therapeutic areas. Each is 25 criteria
-# with a FIXED primary set of 5 (2 inclusion + 3 exclusion) — those five are the
+# with a FIXED basic set of 5 (2 inclusion + 3 exclusion) — those five are the
 # only ones the patient questionnaire asks, and the only ones that are scored.
 require_relative 'seeds/example_criteria_profiles'
 created = ExampleCriteriaProfiles.seed!
@@ -166,7 +166,7 @@ Study.recruiting.order(:id).each_with_index do |study, i|
   study.update!(patient_self_report_enabled: true)
 
   # Patients answer the questions themselves. Where their answers satisfy every
-  # primary criterion this auto-triages them exactly as SelfReportsController
+  # basic criterion this auto-triages them exactly as SelfReportsController
   # does — attributed to the system, because it was.
   #
   # NAMELESS LEADS GO FIRST, and one of them answers everything (`complete:`).
@@ -189,7 +189,7 @@ puts "  self-report: #{Study.where(patient_self_report_enabled: true).count} stu
 
 # --- The worked example ------------------------------------------------------
 # Its own study + one demo patient per recruitment outcome, printed, so the
-# primary/secondary split is visible without clicking through anything.
+# basic/specific split is visible without clicking through anything.
 require_relative 'seeds/example_seborrheic_dermatitis_profile'
 puts "\n  Worked example (dermatitis seborreica):"
 ExampleSeborrheicDermatitisProfile.report!

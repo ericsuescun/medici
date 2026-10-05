@@ -16,13 +16,13 @@ RSpec.describe "Home page study showcase", type: :request do
 
   it "shows the recruitment bar above the study caption, and hides it without a goal" do
     with_goal = FactoryBot.create(:study, sample_size: 10)
-    FactoryBot.create(:patient, :participant, study: with_goal)
+    FactoryBot.create(:patient, :potential, study: with_goal)
     FactoryBot.create(:study, sample_size: nil, public_title: "Estudio sin meta")
 
     get root_path
 
     expect(response.body).to include("recruitment-bar")
-    expect(response.body).to include("seg-participant")
+    expect(response.body).to include("seg-potential")
     # Exactly one bar: the goalless study renders none.
     expect(response.body.scan("recruitment-bar").size).to eq(1)
   end

@@ -132,7 +132,7 @@ $dark: $medici-dark;
 
 // Recruitment progress bar (shown above study titles): pastel tints of the
 // palette's semantic colors so the bar informs without shouting. Fills in
-// seniority order — participants, candidates, interested — and the white
+// seniority order — potentials, candidates, interested — and the white
 // remainder reads as the unmet part of the goal.
 .recruitment-bar {
   display: flex;
@@ -147,7 +147,7 @@ $dark: $medici-dark;
     height: 100%;
   }
 
-  .seg-participant {
+  .seg-potential {
     background-color: mix($medici-success, #fff, 40%);
   }
 
@@ -205,7 +205,7 @@ $dark: $medici-dark;
 .patient-state {
   font-weight: 600;
 
-  &.patient-state--participant { color: $medici-success; }
+  &.patient-state--potential { color: $medici-success; }
   &.patient-state--candidate { color: darken($medici-warning, 12%); }
   &.patient-state--interested { color: $medici-danger; }
 }
@@ -220,7 +220,7 @@ $dark: $medici-dark;
     margin-right: 0.25rem;
   }
 
-  .dot-participant { background-color: mix($medici-success, #fff, 40%); }
+  .dot-potential { background-color: mix($medici-success, #fff, 40%); }
   .dot-candidate { background-color: mix($medici-warning, #fff, 40%); }
   .dot-interested { background-color: mix($medici-danger, #fff, 40%); }
 }

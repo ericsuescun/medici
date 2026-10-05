@@ -6,33 +6,33 @@
 #
 # SHAPE OF EVERY PROFILE (this is the part that matters)
 #
-# Each profile is 25 criteria: 5 shared primary + 12 shared secondary + 8
-# area-specific secondary.
+# Each profile is 25 criteria: 5 shared basic + 12 shared specific + 8
+# area-specific specific.
 #
 # THE PRIMARY COUNT IS FIXED AT 5 (2 inclusion + 3 exclusion), NOT A PERCENTAGE.
-# The primary criteria are exactly the questions a patient is asked on the
+# The basic criteria are exactly the questions a patient is asked on the
 # public questionnaire, and that form has to stay short enough that somebody
 # actually finishes it — so the ceiling is six, whatever the protocol's size.
-# A 60-criterion protocol still gets 5 or 6 primary; the rest are secondary.
+# A 60-criterion protocol still gets 5 or 6 basic; the rest are specific.
 #
 # Five is also the smallest count that lets the score show its own thresholds.
-# The score is `passing primary / total primary`, so with N primary the only
+# The score is `passing basic / total basic`, so with N basic the only
 # reachable values are multiples of 100/N: with 2 you get 0/50/100 and
 # `:promising` (the >= 70% band) can NEVER occur, with 5 you get 0/20/…/100 and
 # 80% lands in it. Drop below 5 and the demo stops demonstrating itself.
 #
-# ONLY THE PRIMARY CRITERIA CARRY A patient_prompt. Secondary rows have no
-# prompt at all, and `CriteriaVariable.askable_to_patient` filters to primary
+# ONLY THE PRIMARY CRITERIA CARRY A patient_prompt. Specific rows have no
+# prompt at all, and `CriteriaVariable.askable_to_patient` filters to basic
 # regardless, so the data and the code agree instead of relying on whoever
 # writes the prompts to remember. Asking a patient about complementary criteria
 # would lengthen the form without being able to move the outcome.
 #
-# The 5 primary criteria are shared across every area on purpose, and every one
+# The 5 basic criteria are shared across every area on purpose, and every one
 # of them is something a PATIENT can answer about themselves. Auto-triage fires
-# only when a patient's declarations satisfy EVERY primary criterion, so a
-# single investigator-only primary rule (a lab value, an imaging result) would
+# only when a patient's declarations satisfy EVERY basic criterion, so a
+# single investigator-only basic rule (a lab value, an imaging result) would
 # silently make auto-triage impossible for that study. Anything that needs a
-# clinic to measure it — HbA1c, VEF1, joint counts — is secondary for exactly
+# clinic to measure it — HbA1c, VEF1, joint counts — is specific for exactly
 # that reason: the patient is never asked, never penalised for not knowing.
 #
 # Each prompt asks for the RAW FACT, never the threshold. "¿Cuántos años
@@ -44,10 +44,10 @@
 module ExampleCriteriaProfiles
   # [variable_type, name, value_type, comparison_type, ref1, ref2, patient_prompt]
   # The trailing patient_prompt appears on PRIMARY rows only — those are the
-  # only ones the public questionnaire asks. Secondary rows stop at ref2.
+  # only ones the public questionnaire asks. Specific rows stop at ref2.
 
   # Decisive AND patient-answerable — see the header for why those two go together.
-  CORE_PRIMARY = [
+  CORE_BASIC = [
     [ "inclusion", "Edad (años)", "quantitative", "between_range", 18, 75,
       "¿Cuántos años tienes?" ],
     [ "inclusion", "Diagnóstico confirmado por un médico", "boolean", "true", nil, nil,
@@ -60,7 +60,7 @@ module ExampleCriteriaProfiles
       "¿Participas o has participado en otro estudio clínico en los últimos tres meses?" ]
   ].freeze
 
-  CORE_SECONDARY = [
+  CORE_SPECIFIC = [
     [ "inclusion", "Dispuesto a firmar el consentimiento informado", "boolean", "true", nil, nil ],
     [ "inclusion", "Disponibilidad para visitas presenciales", "boolean", "true", nil, nil ],
     [ "inclusion", "Residencia cercana al centro", "boolean", "true", nil, nil ],
@@ -77,7 +77,7 @@ module ExampleCriteriaProfiles
 
   # Eight area-specific complementary criteria each. The clinic-measured ones
   # (HbA1c, presión, VEF1, recuento articular) live here rather than in
-  # CORE_PRIMARY precisely because a patient cannot be expected to know them.
+  # CORE_BASIC precisely because a patient cannot be expected to know them.
   AREAS = {
     "Diabetes tipo 2" => [
       [ "inclusion", "HbA1c (%)", "quantitative", "between_range", 7, 10 ],
@@ -153,8 +153,8 @@ module ExampleCriteriaProfiles
       description: "Perfil de ejemplo (#{area}) para el estudio «#{study.short_title}»."
     )
 
-    rows = CORE_PRIMARY.map { |r| [ r, "primary" ] } +
-           (CORE_SECONDARY + AREAS.fetch(area)).map { |r| [ r, "secondary" ] }
+    rows = CORE_BASIC.map { |r| [ r, "basic" ] } +
+           (CORE_SPECIFIC + AREAS.fetch(area)).map { |r| [ r, "specific" ] }
 
     rows.each_with_index do |((variable_type, name, value_type, comparison_type, ref1, ref2, prompt), category), i|
       profile.criteria_variables.create!(
@@ -174,12 +174,12 @@ module ExampleCriteriaProfiles
   # the `:pending` / unmeasured path.
   def self.populate_answers!(profile)
     variables = profile.criteria_variables.to_a
-    primary = variables.select(&:primary?)
-    secondary = variables.reject(&:primary?)
+    basic = variables.select(&:basic?)
+    specific = variables.reject(&:basic?)
 
     # `.named` skips the public-form leads. A lead has no clinical record at all
     # — nobody has measured anything — so handing them investigator
-    # VariableValues would make them promotable straight to `participant` on the
+    # VariableValues would make them promotable straight to `potential` on the
     # CLINICAL tier, which is precisely what the two-tier design exists to
     # prevent. Their evidence is declarations, written by declare! instead.
     profile.study.patients.named.each_with_index do |patient, i|
@@ -187,27 +187,27 @@ module ExampleCriteriaProfiles
       next if outcome == :untouched
 
       answers = {}
-      # Secondary criteria: mostly satisfied, with the occasional unmet one so
+      # Specific criteria: mostly satisfied, with the occasional unmet one so
       # the advisory warning has something to say.
-      secondary.each do |cv|
+      specific.each do |cv|
         answers[cv] = rand < 0.15 ? failing_value(cv) : passing_value(cv)
       end
 
       case outcome
       when :ready
-        primary.each { |cv| answers[cv] = passing_value(cv) }
+        basic.each { |cv| answers[cv] = passing_value(cv) }
       when :promising
         # 4 of 5 pass, the fifth simply unmeasured -> 80%, nothing ruled out.
-        primary.each_with_index { |cv, n| answers[cv] = passing_value(cv) unless n.zero? }
+        basic.each_with_index { |cv, n| answers[cv] = passing_value(cv) unless n.zero? }
       when :blocked
-        # Every primary criterion measured and passing except one, which
+        # Every basic criterion measured and passing except one, which
         # measurably fails: the score stays high and it is blocked anyway.
-        primary.each { |cv| answers[cv] = passing_value(cv) }
-        if (decisive = primary.sample)
+        basic.each { |cv| answers[cv] = passing_value(cv) }
+        if (decisive = basic.sample)
           answers[decisive] = failing_value(decisive)
         end
       when :pending
-        primary.first(2).each { |cv| answers[cv] = passing_value(cv) }
+        basic.first(2).each { |cv| answers[cv] = passing_value(cv) }
       end
 
       write_values!(patient, answers)
@@ -274,12 +274,12 @@ module ExampleCriteriaProfiles
   end
 
   # Patient testimony for studies whose questionnaire is switched on: a handful
-  # of `interested` patients answer the primary questions themselves. Where the
-  # answers satisfy every primary criterion this triages them exactly as the
+  # of `interested` patients answer the basic questions themselves. Where the
+  # answers satisfy every basic criterion this triages them exactly as the
   # controller does — under a system whodunnit, because the system really is
   # what moved them.
   # `complete: true` answers every question with a passing value instead of
-  # leaving ~10% blank or declined. Auto-triage only fires when EVERY primary
+  # leaving ~10% blank or declined. Auto-triage only fires when EVERY basic
   # criterion is satisfied, so without it whether the dev graph contains a
   # self-triaged candidate is a matter of dice — and the one the recruitment
   # page most needs to show (a nameless lead who qualified on their own answers)
@@ -302,12 +302,10 @@ module ExampleCriteriaProfiles
         )
       end
 
-      patient.reload
-      next unless patient.interested? && patient.primary_criteria_met_by_self_report?
-
-      PaperTrail.request(whodunnit: "system:self-report-triage") do
-        patient.assess! if patient.may_assess?
-      end
+      # Through the real path, not a state write: the same call the
+      # questionnaire controller makes, so the seeded graph contains exactly
+      # the transitions (and the audit attribution) the app produces.
+      patient.sync_state_with_criteria!
     end
   end
 end

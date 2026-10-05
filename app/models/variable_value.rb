@@ -5,7 +5,7 @@
 #  id                   :bigint           not null, primary key
 #  comparison_type      :string           not null
 #  conditions           :text
-#  criteria_category    :string           default("primary"), not null
+#  criteria_category    :string           default("basic"), not null
 #  criteria_order       :integer
 #  description          :text
 #  enabled              :boolean          default(TRUE), not null
@@ -68,10 +68,10 @@ class VariableValue < ApplicationRecord
 
   enum :value_type, boolean: "boolean", quantitative: "quantitative", qualitative: "qualitative"
   enum :variable_type, inclusion: "inclusion", exclusion: "exclusion"
-  # Snapshot of how decisive the rule was when this answer was captured — the
+  # Snapshot of which tier the rule sat in when this answer was captured — the
   # rule may be re-categorised later; what was scored at the time should not
   # change retroactively. See CriteriaVariable#criteria_category.
-  enum :criteria_category, primary: "primary", secondary: "secondary"
+  enum :criteria_category, basic: "basic", specific: "specific"
   enum :comparison_type,
        less_than: "less_than",
        less_than_or_equal: "less_than_or_equal",

@@ -20,6 +20,11 @@ class CriteriaAssessmentsController < SecureApplicationController
 
   def update
     save_values!
+    # Recording a measurement can change where the patient belongs: enough basic
+    # criteria and they are a candidate, a newly failing one and they are not.
+    # The patient object here still holds the evaluation from before the save,
+    # so the sync reloads first.
+    @patient.sync_state_with_criteria!
     redirect_to patient_criteria_assessment_path(@patient, criteria_profile_id: @profile.id),
                 notice: t("criteria_assessments.updated")
   end
@@ -39,7 +44,7 @@ class CriteriaAssessmentsController < SecureApplicationController
 
   # Always the patient's OWN study's profile. A criteria_profile_id that does not
   # match is refused rather than honoured: assessing a patient against one rule
-  # set while `Patient#primary_criteria_met?` gates on another is how the page
+  # set while `Patient#basic_criteria_met?` gates on another is how the page
   # and the gate end up contradicting each other.
   def set_profile
     @profile = @patient.study&.criteria_profile
@@ -55,11 +60,12 @@ class CriteriaAssessmentsController < SecureApplicationController
     nil
   end
 
-  # Decisive criteria first: they are what the recruitment score is built from,
-  # so they are what a rep should be asked to measure first.
+  # Basic criteria first: they gate the earlier step and are the ones that can
+  # already have a patient-reported answer to verify, so they are what a rep
+  # should be asked to measure first.
   def ordered_variables
     @profile.criteria_variables.select(&:enabled).sort_by do |cv|
-      [ cv.criteria_category == "primary" ? 0 : 1, cv.variable_type, cv.criteria_order || 0 ]
+      [ cv.criteria_category == "basic" ? 0 : 1, cv.variable_type, cv.criteria_order || 0 ]
     end
   end
 

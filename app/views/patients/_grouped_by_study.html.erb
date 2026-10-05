@@ -1,5 +1,5 @@
 <%# The grouped result tables, shared by the recruitment index and the
-    participants page. What is in here has already been narrowed by
+    potentials page. What is in here has already been narrowed by
     PatientPolicy::Scope, so "nothing to show" means nothing THIS user may see,
     not nothing at all — which is why the empty message is passed in rather than
     assumed.
@@ -80,6 +80,20 @@
                     <% end %>
                   <% else %>
                     <span class="text-muted">—</span>
+                  <% end %>
+
+                  <%# How far the record is through the SPECIFIC tier — the key
+                      the list is sorted by, so the reason a row sits where it
+                      does is visible on the row itself. Only shown where it can
+                      still decide something: a patient already at the final
+                      state has nothing left to clear. %>
+                  <% result = patient.eligibility_result %>
+                  <% if result && result.specific_total_count.positive? && patient.forward_event %>
+                    <span class="badge bg-light text-dark border"
+                          title="<%= t("criteria_assessments.score.specific_section_hint") %>">
+                      <%= t("criteria_assessments.score.specific_count",
+                            met: result.specific_score, total: result.specific_total_count) %>
+                    </span>
                   <% end %>
                 </td>
                 <td>

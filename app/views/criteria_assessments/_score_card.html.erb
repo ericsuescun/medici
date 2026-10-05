@@ -1,4 +1,4 @@
-<%# Recruitment score — the primary criteria only (see EligibilityResult).
+<%# Recruitment score — the BASIC criteria only (see EligibilityResult).
     This is deliberately a different question from the verdict banner above it:
     the banner answers "does this patient meet the protocol", this answers
     "is there enough evidence to move them forward". Locals:
@@ -21,22 +21,26 @@
       </div>
 
       <div class="d-flex align-items-baseline gap-2">
-        <span class="<%= compact ? "fs-3" : "display-6" %> fw-bold text-<%= tone %>"><%= result.primary_score %>%</span>
+        <span class="<%= compact ? "fs-3" : "display-6" %> fw-bold text-<%= tone %>"><%= result.basic_score %>%</span>
         <span class="text-muted small">
-          <%= t("criteria_assessments.score.measured", answered: result.primary_answered_count, total: result.primary_total_count) %>
+          <%= t("criteria_assessments.score.measured", answered: result.basic_answered_count, total: result.basic_total_count) %>
         </span>
       </div>
 
       <div class="progress mt-2" style="height: .5rem" role="progressbar"
            aria-label="<%= t("criteria_assessments.score.title") %>"
-           aria-valuenow="<%= result.primary_score %>" aria-valuemin="0" aria-valuemax="100">
-        <div class="progress-bar bg-<%= tone %>" style="width: <%= result.primary_score %>%"></div>
+           aria-valuenow="<%= result.basic_score %>" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar bg-<%= tone %>" style="width: <%= result.basic_score %>%"></div>
       </div>
 
-      <% if result.secondary_concerns.any? %>
+      <% if result.specific_total_count.positive? %>
         <p class="text-muted small mb-0 mt-2">
-          <i class="bi bi-info-circle"></i>
-          <%= t("criteria_assessments.score.secondary_concerns", count: result.secondary_concerns.count) %>
+          <i class="bi bi-clipboard2-pulse"></i>
+          <%= t("criteria_assessments.score.specific_count",
+                met: result.specific_score, total: result.specific_total_count) %>
+          <% if result.specific_failing.any? %>
+            — <%= t("criteria_assessments.score.specific_failing", count: result.specific_failing.count) %>
+          <% end %>
         </p>
       <% end %>
     </div>

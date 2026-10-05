@@ -78,10 +78,12 @@ Rails.application.routes.draw do
 
   resources :patients do
     collection do
-      # Enrolled patients read as RESULTS, not as work, so they get their own
-      # page instead of sitting at the bottom of the recruitment pipeline.
-      # Declared on the collection so it is routed ahead of /patients/:id.
-      get :participants
+      # Patients cleared on both tiers read as RESULTS, not as work, so they
+      # get their own page instead of sitting at the bottom of the recruitment
+      # pipeline. Declared on the collection so it is routed ahead of
+      # /patients/:id. The old /patients/participants URL redirects below.
+      get :potentials
+      get :participants, to: redirect("/patients/potentials")
     end
     member do
       post :transition

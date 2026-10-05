@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_08_24_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_04_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -211,7 +211,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_24_120000) do
     t.boolean "shown", default: true, null: false
     t.string "variable_type", default: "inclusion", null: false
     t.integer "criteria_order"
-    t.string "criteria_category", default: "primary", null: false
+    t.string "criteria_category", default: "basic", null: false
     t.text "patient_prompt"
     t.index ["criteria_profile_id", "name"], name: "index_criteria_variables_on_criteria_profile_id_and_name"
     t.index ["criteria_profile_id", "variable_type", "criteria_order"], name: "index_cv_on_profile_type_order"
@@ -490,7 +490,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_08_24_120000) do
     t.datetime "updated_at", null: false
     t.bigint "entered_by_id"
     t.bigint "criteria_variable_id"
-    t.string "criteria_category", default: "primary", null: false
+    t.string "criteria_category", default: "basic", null: false
     t.index ["criteria_variable_id"], name: "index_variable_values_on_criteria_variable_id"
     t.index ["entered_by_id"], name: "index_variable_values_on_entered_by_id"
     t.index ["patient_id", "name"], name: "index_variable_values_on_patient_id_and_name"

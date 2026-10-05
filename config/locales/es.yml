@@ -48,7 +48,7 @@ es:
     sponsor_reps: "Representantes de Patrocinadores"
     branch_reps: "Representantes de Sedes"
     patients: "Pacientes"
-    participants: "Participantes"
+    potentials: "Potenciales"
     manual: "Manual"
     roles: "Gestionar Roles"
     user_activations: "Gestión de Usuarios"
@@ -158,8 +158,8 @@ es:
         inclusion: "Inclusión"
         exclusion: "Exclusión"
       criteria_category:
-        primary: "Primario"
-        secondary: "Secundario"
+        basic: "Básico"
+        specific: "Específico"
       comparison_type:
         less_than: "Menor que"
         less_than_or_equal: "Menor o igual que"
@@ -337,6 +337,8 @@ es:
 
   participation_requests:
     check_to_continue: "Marca la autorización para continuar."
+    confirm_adult_to_continue: "Confirma que el/la paciente es mayor de edad para continuar."
+    check_both_to_continue: "Marca la autorización y confirma que el/la paciente es mayor de edad para continuar."
     accept: "Autorizo el tratamiento de mis datos personales sensibles de salud."
     title: "Quiero participar"
     intro: "Déjanos un teléfono o un correo y un representante del centro de investigación te contactará para evaluar tu elegibilidad. No necesitas crear una cuenta."

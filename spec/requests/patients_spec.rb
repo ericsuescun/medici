@@ -55,7 +55,7 @@ RSpec.describe "Patients", type: :request do
         patient.variable_values.create!(
           criteria_variable: age, name: "Edad", value: value.to_s,
           value_type: "quantitative", comparison_type: "between_range",
-          criteria_category: "primary", reference_value_1: 18, reference_value_2: 40
+          criteria_category: "basic", reference_value_1: 18, reference_value_2: 40
         )
       end
 
@@ -63,7 +63,7 @@ RSpec.describe "Patients", type: :request do
         post transition_patient_path(patient), params: { event: "assess" }
 
         expect(patient.reload.state).to eq("interested")
-        expect(flash[:alert]).to eq(I18n.t("patients.primary_criteria_required"))
+        expect(flash[:alert]).to eq(I18n.t("patients.assess_criteria_required"))
       end
 
       it "refuses the transition when the recorded value fails the criterion" do
@@ -72,7 +72,7 @@ RSpec.describe "Patients", type: :request do
         post transition_patient_path(patient), params: { event: "assess" }
 
         expect(patient.reload.state).to eq("interested")
-        expect(flash[:alert]).to eq(I18n.t("patients.primary_criteria_required"))
+        expect(flash[:alert]).to eq(I18n.t("patients.assess_criteria_required"))
       end
 
       it "allows the transition once the criterion is recorded and met" do
@@ -110,7 +110,10 @@ RSpec.describe "Patients", type: :request do
         post transition_patient_path(patient), params: { event: "accept" }
 
         expect(patient.reload.state).to eq("candidate")
-        expect(flash[:alert]).to eq(I18n.t("patients.primary_criteria_required"))
+        # The refusal names the tier that actually blocked: accept asks for
+        # investigator values on BOTH tiers, which is a different sentence from
+        # the one assess shows.
+        expect(flash[:alert]).to eq(I18n.t("patients.accept_criteria_required"))
       end
 
       it "still allows walking a patient back when the criteria no longer hold" do

@@ -5,7 +5,7 @@
 #  id                  :bigint           not null, primary key
 #  comparison_type     :string           not null
 #  conditions          :text
-#  criteria_category   :string           default("primary"), not null
+#  criteria_category   :string           default("basic"), not null
 #  criteria_order      :integer
 #  description         :text
 #  enabled             :boolean          default(TRUE), not null
@@ -48,13 +48,13 @@ FactoryBot.define do
     # Decisive by default, matching the column default: a criterion somebody
     # bothered to define counts toward the recruitment score unless it is
     # deliberately marked complementary.
-    criteria_category { "primary" }
+    criteria_category { "basic" }
 
     enabled { true }
     shown { true }
 
-    trait :secondary do
-      criteria_category { "secondary" }
+    trait :specific do
+      criteria_category { "specific" }
     end
   end
 end

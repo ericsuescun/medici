@@ -9,7 +9,7 @@ RSpec.describe "Patient page (demographic + clinical)", type: :request do
   let(:patient) { FactoryBot.create(:patient, study: study, contact_number: "+57 300 123 4567") }
   let(:profile) { FactoryBot.create(:criteria_profile, study: study) }
 
-  def primary_rule!(name:, category: "primary")
+  def primary_rule!(name:, category: "basic")
     profile.criteria_variables.create!(
       name: name, variable_type: "inclusion", value_type: "quantitative",
       comparison_type: "between_range", reference_value_1: 18, reference_value_2: 40,
@@ -38,7 +38,7 @@ RSpec.describe "Patient page (demographic + clinical)", type: :request do
     # could not see what a patient actually PASSED without opening the form.
     it "lists every criterion and its answer, primary before secondary" do
       passing = primary_rule!(name: "Criterio primario")
-      secondary = primary_rule!(name: "Criterio secundario", category: "secondary")
+      secondary = primary_rule!(name: "Criterio secundario", category: "specific")
       patient.variable_values.create!(criteria_variable: passing, name: passing.name, value: "30",
                                       value_type: "quantitative", comparison_type: "between_range")
       patient.variable_values.create!(criteria_variable: secondary, name: secondary.name, value: "25",
@@ -76,7 +76,7 @@ RSpec.describe "Patient page (demographic + clinical)", type: :request do
     # the lone "Rechazar" button that read as a recommendation to reject a
     # patient whose primary criteria all pass.
     context "when the patient is already at the end of the lifecycle" do
-      before { patient.update!(state: "participant") }
+      before { patient.update!(state: "potential") }
 
       it "names the way back instead of offering advice about promoting" do
         get patient_path(patient)
@@ -84,7 +84,7 @@ RSpec.describe "Patient page (demographic + clinical)", type: :request do
         expect(response.body).to include(
           ERB::Util.html_escape(
             I18n.t("criteria_assessments.brief.at_final_state",
-                   state: I18n.t("patients.states.participant"),
+                   state: I18n.t("patients.states.potential"),
                    back_event: I18n.t("patients.reject"),
                    back_to: I18n.t("patients.states.candidate"))
           )

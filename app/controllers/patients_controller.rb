@@ -5,7 +5,7 @@ class PatientsController < SecureApplicationController
   # GET /patients — THE RECRUITMENT PIPELINE.
   #
   # Only the states that are still work: `interested` and `candidate`. Enrolled
-  # patients moved to #participants below, because they are a result to report
+  # patients moved to #potentials below, because they are a result to report
   # rather than a queue to work, and mixing them meant the page a rep opens all
   # day grew by one permanently-irrelevant row per success.
   #
@@ -17,14 +17,14 @@ class PatientsController < SecureApplicationController
     @patients_by_study = grouped_patients(@filter.results)
   end
 
-  # GET /patients/participants — the enrolled ones, read as results.
+  # GET /patients/potentials — the ones cleared on both tiers, read as results.
   #
   # A custom collection action, so ResourceAuthorization does not cover it and
   # the authorize call has to be explicit (its after_action would flag a miss).
-  def participants
+  def potentials
     authorize(Patient, :index?)
 
-    @filter = build_filter(policy_scope(Patient).enrolled, [ Patient::FINAL_STATE ])
+    @filter = build_filter(policy_scope(Patient).potentials, [ Patient::FINAL_STATE ])
     @patients_by_study = grouped_patients(@filter.results)
   end
 
@@ -106,9 +106,11 @@ class PatientsController < SecureApplicationController
 
     return refuse_transition(t("errors.not_authorized")) unless TRANSITION_EVENTS.include?(event)
 
+    # Re-checked here only to say WHY, per tier: the AASM guard already refuses
+    # it, but "not authorized" would not tell a rep which criteria are missing.
     tier_check = Patient::FORWARD_EVENT_CHECKS[event]
     if tier_check && !@patient.public_send(tier_check)
-      return refuse_transition(t("patients.primary_criteria_required"))
+      return refuse_transition(t("patients.#{event}_criteria_required"))
     end
 
     return refuse_transition(t("errors.not_authorized")) unless policy(@patient).public_send("#{event}?")
@@ -175,15 +177,29 @@ class PatientsController < SecureApplicationController
         patients.select! { |patient| patient.eligibility_result&.recommendation.to_s == @recommendation }
       end
 
-      # State first, then how much of the questionnaire they filled in (fullest
-      # first — they gave the rep the most to go on). `sort_by` is not stable, so
-      # the original index rides along as the last key: without it, ties would
-      # scramble the newest-first order the SQL already established.
+      # State first, then how close the record is to clearing the next gate
+      # (see #review_rank), then how much of the questionnaire they filled in
+      # (fullest first — they gave the rep the most to go on). `sort_by` is not
+      # stable, so the original index rides along as the last key: without it,
+      # ties would scramble the newest-first order the SQL already established.
       patients
         .each_with_index
-        .sort_by { |patient, i| [ Patient::STATE_REVIEW_ORDER.fetch(patient.state, 9), -@declaration_counts[patient.id], i ] }
+        .sort_by { |patient, i| [ *review_rank(patient), -@declaration_counts[patient.id], i ] }
         .map(&:first)
         .group_by(&:study)
+    end
+
+    # How near this patient is to the step they are waiting on — the ordering
+    # the rep works down. A candidate is waiting on the SPECIFIC tier, so the
+    # count of specific criteria met is what ranks them, most-complete first;
+    # the basic score breaks ties and ranks the interested ones behind them.
+    # Negated because sort_by is ascending.
+    def review_rank(patient)
+      result = patient.eligibility_result
+
+      [ Patient::STATE_REVIEW_ORDER.fetch(patient.state, 9),
+        -(result&.specific_score || 0),
+        -(result&.basic_score || 0) ]
     end
 
     # Bounce a refused state change back where it came from, saying why.

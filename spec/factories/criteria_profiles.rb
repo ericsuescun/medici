@@ -24,7 +24,11 @@
 #
 FactoryBot.define do
   factory :criteria_profile do
-    name { "Profile #{Faker::Lorem.word}" }
+    # Sequenced, not Faker::Lorem.word: that vocabulary is small enough that two
+    # profiles in one example collide every so often, and the specs that assert
+    # one sponsor's profile is ABSENT from another's page then pass or fail on
+    # a coin toss — a collision could equally hide a real scoping leak.
+    sequence(:name) { |n| "Profile #{n} #{Faker::Lorem.word}" }
     description { Faker::Lorem.sentence }
     association :user, factory: %i[user admin]
     association :study

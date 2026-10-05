@@ -23,7 +23,12 @@
           <p><%= t("participation_requests.intro") %></p>
 
           <%= form_with(model: @patient, url: participation_requests_path(study_id: @study.id), method: :post,
-                        data: { controller: "consent-gate" }) do |f| %>
+                        data: {
+                          controller: "consent-gate",
+                          consent_gate_consent_hint_value: t("participation_requests.check_to_continue"),
+                          consent_gate_adult_hint_value: t("participation_requests.confirm_adult_to_continue"),
+                          consent_gate_both_hint_value: t("participation_requests.check_both_to_continue")
+                        }) do |f| %>
             <% if @patient.errors.any? %>
               <div class="alert alert-danger">
                 <ul class="mb-0">
@@ -55,8 +60,11 @@
               <%= f.check_box :submitted_by_proxy, class: "form-check-input" %>
               <%= f.label :submitted_by_proxy, t("participation_requests.not_the_patient"), class: "form-check-label" %>
             </div>
+            <%# A gate target like the authorization below it: both are refused
+                server-side, so both have to hold the button. %>
             <div class="form-check mb-3">
-              <%= f.check_box :adult_confirmed, class: "form-check-input" %>
+              <%= f.check_box :adult_confirmed, class: "form-check-input",
+                              data: { consent_gate_target: "required", action: "change->consent-gate#toggle" } %>
               <%= f.label :adult_confirmed, t("participation_requests.adult_confirmation"), class: "form-check-label" %>
             </div>
 
@@ -87,7 +95,7 @@
                   enlarged checkbox overlaps. %>
               <div class="consent-row d-flex align-items-center gap-3" data-consent-gate-target="row">
                 <%= f.check_box :data_processing_authorization, class: "form-check-input flex-shrink-0",
-                                data: { consent_gate_target: "checkbox", action: "change->consent-gate#toggle" } %>
+                                data: { consent_gate_target: "required consent", action: "change->consent-gate#toggle" } %>
                 <%= f.label :data_processing_authorization, t("participation_requests.accept"),
                             class: "form-check-label fw-semibold mb-0" %>
               <div class="form-text">
@@ -108,10 +116,21 @@
             </div>
 
             <%# Says why the button is dead. Without this the disabled state is just
-                a mystery — the checkbox is the last thing you'd suspect. Hidden by
-                the controller once authorization is given. %>
+                a mystery — a checkbox is the last thing you'd suspect. The
+                controller rewrites it to name whichever box is still outstanding,
+                and hides it once both are. The server-rendered default covers the
+                no-JS case, where the button is never disabled anyway. %>
+            <%# Chosen server-side too, so it is right before Stimulus connects and
+                right on a re-render (adult_confirmed survives a failed submit;
+                the authorization does not — it is an attr_accessor, never a
+                column, so a refused request is never half-remembered as consent). %>
+            <% pending_hint = if @patient.adult_confirmed?
+                                "participation_requests.check_to_continue"
+                              else
+                                "participation_requests.check_both_to_continue"
+                              end %>
             <p class="small text-muted text-center mt-2 mb-0" data-consent-gate-target="hint">
-              <%= t("participation_requests.check_to_continue") %>
+              <%= t(pending_hint) %>
             </p>
           <% end %>
         </div>

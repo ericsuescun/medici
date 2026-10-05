@@ -33,27 +33,29 @@ es:
           summary: "Alguien que levantó la mano por un estudio. Es el estado inicial y no afirma nada clínico: puede no haber más que un teléfono."
           arrival: "Lo crea el formulario público «¡Quiero participar!» cuando alguien deja su contacto sobre un estudio, o lo registra un representante de sede con la ficha clínica completa."
         candidate:
-          summary: "Pasó el triaje: hay evidencia de que cumple todos los criterios primarios, así que merece la revisión de un representante. Esa evidencia puede ser del investigador o declarada por el propio paciente, de modo que un candidato NO está verificado clínicamente."
-          arrival: "Con la acción «Evaluar», hecha por un representante o disparada por el sistema cuando el cuestionario del paciente satisface todos los criterios primarios."
-        participant:
-          summary: "Aceptado en el estudio. Exige la evidencia del investigador: todos los criterios primarios medidos y cumplidos."
-          arrival: "Con la acción «Aceptar», que sólo puede hacer una persona — nunca el sistema — sobre un candidato con todos sus criterios primarios registrados."
+          summary: "Pasó el triaje: hay evidencia de que cumple todos los criterios básicos, así que merece la revisión de un representante. Esa evidencia puede ser del investigador o declarada por el propio paciente, de modo que un candidato NO está verificado clínicamente."
+          arrival: "Automáticamente, en cuanto la evidencia satisface todos los criterios básicos — ya venga del cuestionario del paciente o de los valores que registre un representante. La acción «Evaluar» queda disponible por si hace falta hacerlo a mano."
+        potential:
+          summary: "Revisado y despejado en los dos niveles: el investigador midió y se cumplen todos los criterios básicos y todos los específicos. Es el resultado del reclutamiento, no una inscripción: vincular al paciente al ensayo ocurre fuera de la plataforma."
+          arrival: "Con la acción «Aceptar», que sólo puede hacer una persona — nunca el sistema — sobre un candidato cuyos criterios básicos y específicos estén todos registrados por el investigador y cumplidos."
       transitions:
         assess:
-          actor: "Administrador o representante de sede. El sistema también la dispara solo, al enviarse el cuestionario del paciente; en el control de cambios queda firmada como «system:self-report-triage» y no como una persona."
-          requirement: "Todos los criterios primarios respondidos y cumplidos, sirviendo tanto los valores del investigador como las declaraciones del propio paciente. Es el nivel de evidencia de triaje: alcanza para entrar en la lista de revisión, no para entrar al ensayo."
+          actor: "El sistema, en cuanto la evidencia alcanza; también un administrador o representante de sede a mano. Cuando la dispara el sistema queda firmada en el control de cambios como «system:criteria-sync», no como una persona."
+          requirement: "Todos los criterios básicos respondidos y cumplidos, sirviendo tanto los valores del investigador como las declaraciones del propio paciente. Es el nivel de evidencia de triaje: alcanza para entrar en la lista de revisión, no para entrar al ensayo."
         accept:
-          actor: "Administrador o representante de sede, siempre una persona."
-          requirement: "Todos los criterios primarios con valor registrado por el investigador y cumplidos. Las declaraciones del paciente no cuentan aquí: lo no medido nunca equivale a cumplido."
+          actor: "Administrador o representante de sede, siempre una persona. El sistema nunca da este paso."
+          requirement: "Todos los criterios básicos Y todos los específicos con valor registrado por el investigador y cumplidos. Las declaraciones del paciente no cuentan aquí: lo no medido nunca equivale a cumplido."
         discard:
-          actor: "Administrador o representante de sede."
+          actor: "Administrador o representante de sede; también el sistema, si un criterio básico medido pasa a no cumplirse."
           requirement: "Ninguna. Devolver a un paciente siempre es posible, sobre todo cuando lo que falló fueron los criterios."
         reject:
-          actor: "Administrador o representante de sede."
+          actor: "Administrador o representante de sede; también el sistema, si un criterio específico medido pasa a no cumplirse."
           requirement: "Ninguna, por la misma razón."
       notes:
-        - "Los criterios SECUNDARIOS no bloquean nada. Se muestran como advertencia junto al paciente y es el representante quien decide si pesan: lo expresa haciendo o no haciendo la transición."
+        - "Los criterios se leen en dos niveles. Los BÁSICOS son los pocos decisivos que el propio paciente puede responder, y son los únicos que el cuestionario público pregunta: deciden el paso a Candidato. Los ESPECÍFICOS los mide el investigador y deciden, junto con los básicos, el paso a Potencial."
+        - "El puntaje de los específicos cuenta cuántos se cumplen, y la lista de pacientes ordena por él: los más completos aparecen primero, que son los que un representante puede promover hoy."
+        - "El sistema sólo avanza por su cuenta hasta Candidato. El paso a Potencial es siempre un clic de una persona, porque buena parte de lo que trae un candidato es testimonio del paciente sin verificar."
+        - "El sistema sí retrocede solo cuando un criterio MEDIDO deja de cumplirse. Lo no medido nunca retrocede a nadie: añadir un criterio a un perfil no degrada a los pacientes del estudio."
         - "Cuando el rol permite avanzar pero los criterios no, el botón aparece deshabilitado con el motivo a la vista, en lugar de desaparecer."
-        - "El sistema nunca promueve por su cuenta más allá del triaje descrito arriba. Apretar el botón es la decisión, y queda registrada."
-        - "Todo cambio de estado se versiona en el control de cambios con el usuario que lo hizo y el momento en que ocurrió."
-        - "Un estudio sin perfil de criterios, o con un perfil sin ningún criterio primario, no tiene nada decisivo que verificar: ahí las transiciones hacia adelante no encuentran freno."
+        - "Todo cambio de estado se versiona en el control de cambios con el usuario que lo hizo —o con el sistema— y el momento en que ocurrió."
+        - "Un estudio sin perfil de criterios, o con un perfil sin ningún criterio básico, no tiene nada decisivo que verificar: ahí las transiciones hacia adelante no encuentran freno."
