@@ -23,27 +23,29 @@ fr:
           summary: "Quelqu'un qui a levé la main pour une étude. C'est l'état initial et il n'affirme rien de clinique : il peut n'y avoir qu'un numéro de téléphone."
           arrival: "Créé par le formulaire public « Je veux participer ! » lorsque quelqu'un laisse ses coordonnées pour une étude, ou saisi par un représentant de site avec la fiche clinique complète."
         candidate:
-          summary: "A passé le triage : il existe des preuves qu'il remplit tous les critères primaires, il mérite donc l'examen d'un représentant. Ces preuves peuvent venir de l'investigateur ou être déclarées par le patient lui-même, de sorte qu'un candidat n'est PAS vérifié cliniquement."
-          arrival: "Par l'action « Évaluer », faite par un représentant ou déclenchée par le système lorsque le questionnaire du patient satisfait tous les critères primaires."
-        participant:
-          summary: "Accepté dans l'étude. Exige les preuves de l'investigateur : tous les critères primaires mesurés et remplis."
-          arrival: "Par l'action « Accepter », que seule une personne peut faire — jamais le système — sur un candidat dont tous les critères primaires sont enregistrés."
+          summary: "A passé le triage : il existe des preuves que tous les critères de base sont remplis, le dossier mérite donc la revue d'un représentant. Ces preuves peuvent venir de l'investigateur ou être déclarées par le patient : un candidat n'est donc PAS vérifié cliniquement."
+          arrival: "Automatiquement, dès que les preuves remplissent tous les critères de base — qu'elles viennent du questionnaire du patient ou des valeurs saisies par un représentant. L'action « Évaluer » reste disponible pour le faire à la main."
+        potential:
+          summary: "Revu et validé aux deux niveaux : l'investigateur a mesuré, et tous les critères de base ET spécifiques sont remplis. C'est le résultat du recrutement, pas une inscription — rejoindre l'essai se fait hors de la plateforme."
+          arrival: "Par l'action « Accepter », que seule une personne peut faire — jamais le système — sur un candidat dont les critères de base et spécifiques sont tous enregistrés par l'investigateur et remplis."
       transitions:
         assess:
-          actor: "Administrateur ou représentant de site. Le système la déclenche aussi de lui-même, à l'envoi du questionnaire du patient ; dans le journal des modifications elle est signée « system:self-report-triage » et non par une personne."
-          requirement: "Tous les critères primaires renseignés et remplis, les valeurs de l'investigateur comme les déclarations du patient comptant. C'est le niveau de preuve du triage : suffisant pour entrer dans la liste d'examen, pas pour entrer dans l'essai."
+          actor: "Le système, dès que les preuves suffisent ; également un administrateur ou un représentant de site, à la main. Lorsque le système la déclenche, le contrôle des modifications la signe « system:criteria-sync » et non une personne."
+          requirement: "Tous les critères de base renseignés et remplis, en comptant aussi bien les valeurs de l'investigateur que les déclarations du patient. C'est le niveau de preuve du triage : suffisant pour rejoindre la liste de revue, pas pour entrer dans l'essai."
         accept:
-          actor: "Administrateur ou représentant de site, toujours une personne."
-          requirement: "Tous les critères primaires avec une valeur enregistrée par l'investigateur, et remplis. Les déclarations du patient ne comptent pas ici : non mesuré n'équivaut jamais à rempli."
+          actor: "Un administrateur ou un représentant de site — toujours une personne. Le système ne franchit jamais cette étape."
+          requirement: "Tous les critères de base ET tous les critères spécifiques enregistrés par l'investigateur et remplis. Les déclarations du patient ne comptent pas ici : non mesuré n'équivaut jamais à rempli."
         discard:
-          actor: "Administrateur ou représentant de site."
-          requirement: "Aucune. Faire revenir un patient en arrière doit toujours être possible, surtout quand ce sont les critères qui ont posé problème."
+          actor: "Un administrateur ou un représentant de site ; également le système, si un critère de base MESURÉ cesse d'être rempli."
+          requirement: "Aucune. Faire reculer un patient doit toujours rester possible, surtout quand ce sont les critères qui ont échoué."
         reject:
-          actor: "Administrateur ou représentant de site."
+          actor: "Un administrateur ou un représentant de site ; également le système, si un critère spécifique MESURÉ cesse d'être rempli."
           requirement: "Aucune, pour la même raison."
       notes:
-        - "Les critères SECONDAIRES ne bloquent rien. Ils s'affichent en avertissement à côté du patient et c'est le représentant qui décide s'ils pèsent : il l'exprime en faisant ou non la transition."
-        - "Lorsque le rôle permet d'avancer mais que les critères ne le permettent pas, le bouton apparaît désactivé avec le motif en clair, plutôt que de disparaître."
-        - "Le système ne promeut jamais de lui-même au-delà du triage décrit ci-dessus. Appuyer sur le bouton est la décision, et elle est enregistrée."
-        - "Tout changement d'état est versionné dans le journal des modifications, avec l'utilisateur qui l'a fait et le moment où il est survenu."
-        - "Une étude sans profil de critères, ou avec un profil ne marquant rien comme primaire, n'a rien de décisif à vérifier : là, les transitions vers l'avant ne rencontrent aucun frein."
+        - "Les critères se lisent à deux niveaux. Les critères DE BASE sont les quelques critères décisifs auxquels le patient peut répondre lui-même, et les seuls que pose le questionnaire public : ils déterminent le passage à Candidat. Les critères SPÉCIFIQUES sont mesurés par l'investigateur et déterminent, avec les critères de base, le passage à Potentiel."
+        - "Le score des critères spécifiques compte combien sont remplis, et la liste des patients s'y trie : les dossiers les plus complets apparaissent en premier, ce sont ceux qu'un représentant peut promouvoir aujourd'hui."
+        - "Le système n'avance un patient que jusqu'à Candidat. Le passage à Potentiel est toujours un clic humain, car une bonne part de ce qu'apporte un candidat est un témoignage non vérifié."
+        - "Le système fait en revanche reculer un patient de lui-même lorsqu'un critère MESURÉ cesse d'être rempli. Le non-mesuré ne fait jamais reculer personne : ajouter un critère à un profil ne rétrograde pas les patients de l'étude."
+        - "Lorsque le rôle permet l'étape mais que les critères l'interdisent, le bouton s'affiche désactivé avec le motif en vue, au lieu de disparaître."
+        - "Tout changement d'état est versionné dans le contrôle des modifications avec l'utilisateur qui l'a fait — ou avec le système — et le moment où il s'est produit."
+        - "Une étude sans profil de critères, ou avec un profil sans aucun critère de base, n'a rien de décisif à vérifier : les transitions vers l'avant n'y rencontrent aucun frein."

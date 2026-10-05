@@ -54,8 +54,8 @@ FactoryBot.define do
       state { "candidate" }
     end
 
-    trait :participant do
-      state { "participant" }
+    trait :potential do
+      state { "potential" }
     end
 
     # As the public participation form creates them: contact details only, no

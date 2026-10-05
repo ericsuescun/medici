@@ -12,11 +12,11 @@
     <%= @profile.name %><% if @profile.study %> · <%= Study.model_name.human %>: <%= @profile.study.public_title %><% end %>
   </p>
 
-  <%# ---- Verdict banner (primary criteria) + secondary advisory ---- %>
+  <%# ---- Verdict banner (basic tier) + the specific tier's own status ---- %>
   <%= render "criteria_assessments/verdict_banner", result: @result %>
-  <%= render "criteria_assessments/secondary_warning", result: @result %>
+  <%= render "criteria_assessments/specific_status", result: @result, patient: @patient %>
 
-  <%# ---- Recruitment score: primary criteria only ---- %>
+  <%# ---- Recruitment score: basic criteria only ---- %>
   <div class="mb-4">
     <%= render "criteria_assessments/score_card", result: @result %>
   </div>
@@ -64,7 +64,7 @@
                   <span>
                     <strong><%= c.variable.name %></strong>
                     <span class="badge bg-light text-dark border ms-1"><%= c.variable.variable_type == "exclusion" ? Study.human_attribute_name(:exclusion_criteria) : Study.human_attribute_name(:inclusion_criteria) %></span>
-                    <span class="badge border ms-1 <%= c.primary? ? "bg-primary-subtle text-primary-emphasis" : "bg-light text-secondary" %>"><%= t_enum(c.variable, :criteria_category) %></span>
+                    <span class="badge border ms-1 <%= c.basic? ? "bg-primary-subtle text-primary-emphasis" : "bg-light text-secondary" %>"><%= t_enum(c.variable, :criteria_category) %></span>
                     <div class="small text-muted">
                       <%= t("criteria_assessments.brief.required") %>: <%= c.variable.rule_summary %> ·
                       <%= t("criteria_assessments.brief.measured") %>: <span class="text-danger fw-semibold"><%= c.value %></span>
@@ -89,7 +89,7 @@
                   <span>
                     <strong><%= c.variable.name %></strong>
                     <span class="badge bg-light text-dark border ms-1"><%= c.variable.variable_type == "exclusion" ? Study.human_attribute_name(:exclusion_criteria) : Study.human_attribute_name(:inclusion_criteria) %></span>
-                    <span class="badge border ms-1 <%= c.primary? ? "bg-primary-subtle text-primary-emphasis" : "bg-light text-secondary" %>"><%= t_enum(c.variable, :criteria_category) %></span>
+                    <span class="badge border ms-1 <%= c.basic? ? "bg-primary-subtle text-primary-emphasis" : "bg-light text-secondary" %>"><%= t_enum(c.variable, :criteria_category) %></span>
                     <div class="small text-muted"><%= t("criteria_assessments.brief.required") %>: <%= c.variable.rule_summary %></div>
                   </span>
                 </li>
@@ -112,9 +112,9 @@
       one, so an `interested` patient who qualified by self-report alone got a
       locked button here next to a working one. %>
   <% locked_forward = forward_event.present? && policy(@patient).update_state? && !@patient.criteria_permit_forward? %>
-  <% hint_args = transition_hint_args(@patient, score: @result.primary_score) %>
+  <% hint_args = transition_hint_args(@patient, score: @result.basic_score) %>
   <% any_transition = locked_forward || %w[assess accept discard reject].any? { |e| policy(@patient).public_send("#{e}?") } %>
-  <%# The score drives the recommendation; profiles with no primary criteria
+  <%# The score drives the recommendation; profiles with no basic criteria
       fall back to the whole-profile verdict, as before the score existed. %>
   <% recommend_forward = @result.recommendation == :none ? @result.eligible? : @result.promotable? %>
   <% if any_transition %>
@@ -126,7 +126,7 @@
             <% if @result.recommendation != :none %>
               <%= t("criteria_assessments.score.promote_hint_#{@result.recommendation}", **hint_args) %>
             <% end %>
-            <strong><%= t("criteria_assessments.locked.hint", **hint_args) %></strong>
+            <strong><%= t("criteria_assessments.locked.#{@patient.forward_event}", **hint_args) %></strong>
           <% elsif forward_allowed && @result.recommendation != :none %>
             <%= t("criteria_assessments.score.promote_hint_#{@result.recommendation}", **hint_args) %>
           <% elsif forward_allowed && @result.eligible? %>
@@ -146,7 +146,7 @@
         <div class="d-flex flex-wrap gap-2">
           <% if locked_forward %>
             <button type="button" class="btn btn-sm btn-outline-secondary" disabled
-                    title="<%= t("criteria_assessments.locked.hint", **hint_args) %>">
+                    title="<%= t("criteria_assessments.locked.#{@patient.forward_event}", **hint_args) %>">
               <i class="bi bi-lock-fill"></i> <%= t("patients.#{forward_event}") %>
             </button>
           <% end %>
@@ -175,7 +175,7 @@
   <%= form_with url: patient_criteria_assessment_path(@patient, criteria_profile_id: @profile.id), method: :patch do %>
     <%# Grouped by category first (decisive criteria on top, because they are the
         ones that move the score), then by inclusion/exclusion as before. %>
-    <% @variables.group_by(&:criteria_category).sort_by { |category, _| category == "primary" ? 0 : 1 }.each do |category, category_vars| %>
+    <% @variables.group_by(&:criteria_category).sort_by { |category, _| category == "basic" ? 0 : 1 }.each do |category, category_vars| %>
       <div class="d-flex flex-wrap align-items-baseline gap-2 mt-5 mb-1">
         <h4 class="mb-0"><%= t("criteria_assessments.score.#{category}_section") %></h4>
         <span class="text-muted small"><%= t("criteria_assessments.score.#{category}_section_hint") %></span>

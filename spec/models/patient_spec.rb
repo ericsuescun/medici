@@ -51,7 +51,7 @@ RSpec.describe Patient, type: :model do
 
     it "accept: candidate -> participant" do
       patient.assess!
-      expect { patient.accept! }.to change(patient, :state).from("candidate").to("participant")
+      expect { patient.accept! }.to change(patient, :state).from("candidate").to("potential")
     end
 
     it "discard: candidate -> interested" do
@@ -62,7 +62,7 @@ RSpec.describe Patient, type: :model do
     it "reject: participant -> candidate" do
       patient.assess!
       patient.accept!
-      expect { patient.reject! }.to change(patient, :state).from("participant").to("candidate")
+      expect { patient.reject! }.to change(patient, :state).from("potential").to("candidate")
     end
 
     it "forbids an illegal transition (accept from interested)" do
@@ -71,16 +71,16 @@ RSpec.describe Patient, type: :model do
     end
   end
 
-  # A patient only moves deeper into a trial once every PRIMARY criterion has a
-  # recorded value AND complies. Enforced as an AASM guard so no code path can
-  # skip it — and because PatientPolicy delegates to `may_assess?`, the same rule
-  # reaches the policy and every view.
-  describe "the primary-criteria gate on forward transitions" do
+  # A patient only moves deeper into a trial once the criteria of the tier that
+  # step asks for have recorded values AND comply. Enforced as AASM guards so no
+  # code path can skip them — and because PatientPolicy delegates to
+  # `may_assess?`, the same rules reach the policy and every view.
+  describe "the criteria gate on forward transitions" do
     let(:study) { FactoryBot.create(:study) }
     let(:profile) { FactoryBot.create(:criteria_profile, study: study) }
     let(:patient) { FactoryBot.create(:patient, study: study) }
 
-    def rule(name:, category: "primary", variable_type: "inclusion", comparison_type: "between_range", ref1: 18, ref2: 40)
+    def rule(name:, category: "basic", variable_type: "inclusion", comparison_type: "between_range", ref1: 18, ref2: 40)
       profile.criteria_variables.create!(
         name: name, variable_type: variable_type, value_type: "quantitative",
         comparison_type: comparison_type, reference_value_1: ref1, reference_value_2: ref2,
@@ -97,7 +97,7 @@ RSpec.describe Patient, type: :model do
       )
     end
 
-    it "blocks the transition while a primary criterion is unrecorded" do
+    it "blocks the transition while a basic criterion is unrecorded" do
       rule(name: "Edad")
 
       expect(patient.reload.may_assess?).to be false
@@ -105,26 +105,51 @@ RSpec.describe Patient, type: :model do
       expect(patient.reload.state).to eq("interested")
     end
 
-    it "blocks the transition when a primary criterion is recorded but fails" do
+    it "blocks the transition when a basic criterion is recorded but fails" do
       measure(rule(name: "Edad"), 50)
 
       expect(patient.reload.may_assess?).to be false
     end
 
-    it "allows the transition once every primary criterion is recorded and met" do
+    it "allows the transition once every basic criterion is recorded and met" do
       measure(rule(name: "Edad"), 30)
 
       expect(patient.reload.may_assess?).to be true
       expect { patient.assess! }.to change(patient, :state).from("interested").to("candidate")
     end
 
-    it "ignores secondary criteria entirely — an unmet one does not block" do
+    # The tiers gate DIFFERENT steps. This used to read "ignores secondary
+    # criteria entirely"; since 2026-10-04 a specific criterion is ignored by
+    # `assess` and decisive for `accept`, so the pin is that the two disagree.
+    it "lets a failing specific criterion through assess and stops it at accept" do
       measure(rule(name: "Edad"), 30)
-      measure(rule(name: "Talla", category: "secondary", comparison_type: "more_than", ref1: 150, ref2: nil), 140)
+      measure(rule(name: "Talla", category: "specific", comparison_type: "more_than", ref1: 150, ref2: nil), 140)
 
       result = patient.reload.eligibility_result
-      expect(result.secondary_concerns.map { |c| c.variable.name }).to eq([ "Talla" ])
+      expect(result.specific_failing.map { |c| c.variable.name }).to eq([ "Talla" ])
+
       expect(patient.may_assess?).to be true
+      patient.assess!
+      expect(patient.may_accept?).to be false
+    end
+
+    it "opens accept only when the specific criteria are recorded and met too" do
+      measure(rule(name: "Edad"), 30)
+      talla = rule(name: "Talla", category: "specific", comparison_type: "more_than", ref1: 150, ref2: nil)
+      patient.reload.assess!
+
+      # Unrecorded is not compliance on this tier either.
+      expect(patient.may_accept?).to be false
+
+      measure(talla, 170)
+      expect(patient.reload.may_accept?).to be true
+    end
+
+    it "opens accept with nothing to check when the profile defines no specific criteria" do
+      measure(rule(name: "Edad"), 30)
+      patient.reload.assess!
+
+      expect(patient.may_accept?).to be true
     end
 
     it "does not block a patient whose study has no criteria profile" do
@@ -132,13 +157,13 @@ RSpec.describe Patient, type: :model do
       expect(patient.may_assess?).to be true
     end
 
-    it "does not block when the profile marks nothing primary" do
-      rule(name: "Talla", category: "secondary")
+    it "does not block when the profile marks nothing basic" do
+      rule(name: "Talla", category: "specific")
 
       expect(patient.reload.may_assess?).to be true
     end
 
-    it "gates accept as well as assess" do
+    it "gates accept on the basic tier as well as assess" do
       age = measure(rule(name: "Edad"), 30)
       patient.reload.assess!
       expect(patient.may_accept?).to be true
@@ -187,10 +212,10 @@ RSpec.describe Patient, type: :model do
       )
     end
 
-    it "opens assess when the declarations satisfy every primary criterion" do
+    it "opens assess when the declarations satisfy every basic criterion" do
       declare(age, 30)
 
-      expect(patient.reload.primary_criteria_met_by_self_report?).to be true
+      expect(patient.reload.basic_criteria_met_by_self_report?).to be true
       expect(patient.may_assess?).to be true
       expect { patient.assess! }.to change(patient, :state).from("interested").to("candidate")
     end
@@ -205,17 +230,17 @@ RSpec.describe Patient, type: :model do
       declare(age, nil, declined: true)
 
       result = patient.reload.self_report_result
-      expect(result.primary_pending.map { |c| c.variable.name }).to eq([ "Edad" ])
+      expect(result.basic_pending.map { |c| c.variable.name }).to eq([ "Edad" ])
       expect(patient.may_assess?).to be false
     end
 
     it "scores the declaration with the LIVE rule, so a rule change re-judges old testimony" do
       declare(age, 30)
-      expect(patient.reload.primary_criteria_met_by_self_report?).to be true
+      expect(patient.reload.basic_criteria_met_by_self_report?).to be true
 
       age.update!(reference_value_1: 35, reference_value_2: 60)
 
-      expect(patient.reload.primary_criteria_met_by_self_report?).to be false
+      expect(patient.reload.basic_criteria_met_by_self_report?).to be false
     end
 
     it "ignores superseded declarations — only the live testimony speaks" do
@@ -223,7 +248,7 @@ RSpec.describe Patient, type: :model do
       first.supersede!
       declare(age, 30)
 
-      expect(patient.reload.primary_criteria_met_by_self_report?).to be true
+      expect(patient.reload.basic_criteria_met_by_self_report?).to be true
     end
 
     it "never opens accept: joining the trial requires investigator-recorded values" do
@@ -235,13 +260,13 @@ RSpec.describe Patient, type: :model do
       patient.variable_values.create!(
         criteria_variable: age, name: age.name, value: "30",
         value_type: "quantitative", comparison_type: "between_range",
-        criteria_category: "primary", reference_value_1: 18, reference_value_2: 40
+        criteria_category: "basic", reference_value_1: 18, reference_value_2: 40
       )
       expect(patient.reload.may_accept?).to be true
     end
 
     it "does not fail open: no declarations means no self-reported evidence" do
-      expect(patient.reload.primary_criteria_met_by_self_report?).to be false
+      expect(patient.reload.basic_criteria_met_by_self_report?).to be false
       # ...but the clinical tier's fail-open for no-profile patients is separate:
       # this patient HAS a profile with an unmeasured primary, so both close.
       expect(patient.may_assess?).to be false

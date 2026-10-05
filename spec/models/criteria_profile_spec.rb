@@ -57,7 +57,7 @@ RSpec.describe CriteriaProfile, type: :model do
     let(:profile) { FactoryBot.create(:criteria_profile) }
     let(:patient) { FactoryBot.create(:patient) }
 
-    def rule(name:, variable_type:, comparison_type:, value_type: "quantitative", ref1: nil, ref2: nil, category: "primary")
+    def rule(name:, variable_type:, comparison_type:, value_type: "quantitative", ref1: nil, ref2: nil, category: "basic")
       profile.criteria_variables.create!(
         name: name, variable_type: variable_type, value_type: value_type,
         comparison_type: comparison_type, reference_value_1: ref1, reference_value_2: ref2,
@@ -160,19 +160,19 @@ RSpec.describe CriteriaProfile, type: :model do
       it "scores the primary criteria only, so a failing secondary never holds a patient back" do
         age = rule(name: "Edad", variable_type: "inclusion", comparison_type: "between_range", ref1: 18, ref2: 40)
         weight = rule(name: "Peso", variable_type: "inclusion", comparison_type: "more_than", ref1: 50)
-        height = rule(name: "Talla", variable_type: "inclusion", comparison_type: "more_than", ref1: 150, category: "secondary")
+        height = rule(name: "Talla", variable_type: "inclusion", comparison_type: "more_than", ref1: 150, category: "specific")
         measure(age, 30)
         measure(weight, 70)
         measure(height, 140) # fails, but it is only complementary
 
         result = profile.evaluate(patient.reload)
-        expect(result.primary_score).to eq(100)
+        expect(result.basic_score).to eq(100)
         expect(result.recommendation).to eq(:ready)
         expect(result).to be_promotable
         # The whole-protocol verdict still reports the secondary failure — the
         # two answers are allowed to disagree, and both are surfaced.
         expect(result).not_to be_eligible
-        expect(result.secondary_concerns.map { |c| c.variable.name }).to eq([ "Talla" ])
+        expect(result.specific_failing.map { |c| c.variable.name }).to eq([ "Talla" ])
       end
 
       it "holds the score down for an unmeasured primary criterion" do
@@ -181,7 +181,7 @@ RSpec.describe CriteriaProfile, type: :model do
         passing.each { |cv| measure(cv, 20) }
 
         result = profile.evaluate(patient.reload)
-        expect(result.primary_score).to eq(75)
+        expect(result.basic_score).to eq(75)
         expect(result.recommendation).to eq(:promising)
         expect(result).not_to be_promotable
         expect(result).to be_high_score
@@ -192,7 +192,7 @@ RSpec.describe CriteriaProfile, type: :model do
         measure(rule(name: "Infección", variable_type: "exclusion", value_type: "boolean", comparison_type: "true"), true)
 
         result = profile.evaluate(patient.reload)
-        expect(result.primary_score).to eq(80)
+        expect(result.basic_score).to eq(80)
         expect(result.recommendation).to eq(:blocked)
         expect(result).not_to be_promotable
         expect(result).not_to be_high_score
@@ -203,30 +203,32 @@ RSpec.describe CriteriaProfile, type: :model do
         3.times { |i| rule(name: "Sin medir #{i}", variable_type: "inclusion", comparison_type: "more_than", ref1: 10) }
 
         result = profile.evaluate(patient.reload)
-        expect(result.primary_score).to eq(25)
+        expect(result.basic_score).to eq(25)
         expect(result.recommendation).to eq(:pending)
       end
 
       it "has no score at all when the profile marks nothing primary" do
-        measure(rule(name: "Talla", variable_type: "inclusion", comparison_type: "more_than", ref1: 150, category: "secondary"), 170)
+        measure(rule(name: "Talla", variable_type: "inclusion", comparison_type: "more_than", ref1: 150, category: "specific"), 170)
 
         result = profile.evaluate(patient.reload)
-        expect(result.primary_score).to be_nil
+        expect(result.basic_score).to be_nil
         expect(result.recommendation).to eq(:none)
         expect(result).not_to be_promotable
       end
 
-      # The migration backfilled every pre-existing rule to primary precisely so
-      # profiles written before the split keep scoring on all of their criteria.
-      it "treats a rule with no explicit category as primary" do
+      # The 2026-07-31 migration backfilled every pre-existing rule to the
+      # decisive tier precisely so profiles written before the split keep
+      # scoring on all of their criteria; the 2026-10-04 rename carried that
+      # default over from "primary" to "basic".
+      it "treats a rule with no explicit category as basic" do
         cv = profile.criteria_variables.create!(
           name: "Edad", variable_type: "inclusion", value_type: "quantitative",
           comparison_type: "between_range", reference_value_1: 18, reference_value_2: 40
         )
-        expect(cv.criteria_category).to eq("primary")
+        expect(cv.criteria_category).to eq("basic")
 
         measure(cv, 30)
-        expect(profile.evaluate(patient.reload).primary_score).to eq(100)
+        expect(profile.evaluate(patient.reload).basic_score).to eq(100)
       end
     end
   end

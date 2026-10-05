@@ -32,8 +32,8 @@ class PatientFilter
   attr_reader :filters
 
   # `base` is the policy-scoped relation. `allowed_states` bounds the state
-  # filter so the recruitment page cannot be talked into rendering participants
-  # through `?state=participant`, and vice versa.
+  # filter so the recruitment page cannot be talked into rendering potentials
+  # through `?state=potential`, and vice versa.
   def initialize(base, params, allowed_states:)
     @base = base
     @allowed_states = allowed_states.map(&:to_s)

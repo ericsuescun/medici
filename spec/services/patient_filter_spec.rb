@@ -161,17 +161,17 @@ RSpec.describe PatientFilter do
   # bound is what stops either being talked into rendering the other's rows.
   describe "the state bound" do
     it "ignores a state the page does not allow" do
-      filtered = filter("state" => "participant")
+      filtered = filter("state" => "potential")
 
       expect(filtered.filters).not_to have_key(:state)
       expect(filtered.results.map(&:state).uniq).to match_array(%w[interested candidate])
     end
 
     it "accepts a state the page does allow" do
-      FactoryBot.create(:patient, study: study_a, state: "participant")
-      filtered = described_class.new(Patient.enrolled, { "state" => "participant" }, allowed_states: [ Patient::FINAL_STATE ])
+      FactoryBot.create(:patient, study: study_a, state: "potential")
+      filtered = described_class.new(Patient.potentials, { "state" => "potential" }, allowed_states: [ Patient::FINAL_STATE ])
 
-      expect(filtered.filters[:state]).to eq("participant")
+      expect(filtered.filters[:state]).to eq("potential")
     end
   end
 

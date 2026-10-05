@@ -9,19 +9,19 @@
     <div class="alert alert-success"><%= notice %></div>
   <% end %>
 
-  <% content_for :title, t("patients.participants_title") %>
+  <% content_for :title, t("patients.potentials_title") %>
 
   <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
     <div>
-      <h1 class="h3 mb-1"><%= t("patients.participants_title") %></h1>
-      <p class="text-muted mb-0"><%= t("patients.participants_subtitle") %></p>
+      <h1 class="h3 mb-1"><%= t("patients.potentials_title") %></h1>
+      <p class="text-muted mb-0"><%= t("patients.potentials_subtitle") %></p>
     </div>
     <%= link_to t("patients.recruitment_link"), patients_path, class: "btn btn-sm btn-outline-primary" %>
   </div>
 
   <%= render "patients/filters",
              filter: @filter,
-             url: participants_patients_path,
+             url: potentials_patients_path,
              states: [ Patient::FINAL_STATE ],
              recommendations: nil,
              recommendation: nil,
@@ -30,7 +30,7 @@
   <%= render "patients/grouped_by_study",
              patients_by_study: @patients_by_study,
              declaration_counts: @declaration_counts,
-             empty_message: @filter.any? ? t("patients.no_matches") : t("patients.no_participants") %>
+             empty_message: @filter.any? ? t("patients.no_matches") : t("patients.no_potentials") %>
 
   <div class="mt-4">
     <%= link_to t("patients.back_to_home"), static_pages_medici_home_path %> |

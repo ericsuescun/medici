@@ -6,7 +6,7 @@ require 'rails_helper'
 RSpec.describe "Study page patient data", type: :request do
   let(:branch) { FactoryBot.create(:trial_center_branch) }
   let(:study) { FactoryBot.create(:study).tap { |s| s.trial_center_branches << branch } }
-  let!(:patient) { FactoryBot.create(:patient, :participant, study: study, firstname: "Zoraida") }
+  let!(:patient) { FactoryBot.create(:patient, :potential, study: study, firstname: "Zoraida") }
 
   it "lists the criteria profile's variables in Demográfico with a quick-nav anchor" do
     profile = FactoryBot.create(:criteria_profile, study: study)
@@ -32,8 +32,8 @@ RSpec.describe "Study page patient data", type: :request do
     expect(response.body).to include('<span class="badge bg-primary">1</span>')
     expect(response.body).to include("Zoraida")
     # State column, color-classed with the bar's semantics.
-    expect(response.body).to include('patient-state--participant')
-    expect(response.body).to include(I18n.t("patients.states.participant"))
+    expect(response.body).to include('patient-state--potential')
+    expect(response.body).to include(I18n.t("patients.states.potential"))
   end
 
   it "shows the compact labeled recruitment bar as a column on the index" do

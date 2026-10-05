@@ -11,7 +11,7 @@
 # What the patient sees is ONLY each rule's patient_prompt — never the rule
 # name, thresholds or rule_summary (those describe the protocol). What they
 # submit lands in patient_declarations (testimony), NEVER variable_values (the
-# investigator-verified gate inputs). If the declarations satisfy every primary
+# investigator-verified gate inputs). If the declarations satisfy every basic
 # criterion, the patient is auto-triaged interested → candidate with a system
 # whodunnit — that is the triage tier only; joining the trial still requires
 # investigator-verified values (see Patient's AASM guards).
@@ -48,7 +48,7 @@ class SelfReportsController < ApplicationController
 
   private
 
-  # The primary EXCLUSIONS, shown before any question is answered. Only
+  # The basic EXCLUSIONS, shown before any question is answered. Only
   # exclusions: those are the ones that keep somebody out of a trial that could
   # harm them, and they are the ones a person can check against themselves
   # without a clinic. Inclusions stay unlisted — "you must be 18 to 75" is a
@@ -83,11 +83,11 @@ class SelfReportsController < ApplicationController
     auto_triage!
 
     # Read AFTER auto_triage! so it reflects the same evaluation the guard used.
-    # `primary_criteria_met_by_self_report?` is false both for "measurably does
+    # `basic_criteria_met_by_self_report?` is false both for "measurably does
     # not qualify" and for "did not answer enough", which is deliberate: the
     # patient is told the study is not a match without being told why, and
     # without the two cases being distinguishable from outside.
-    looks_like_a_match = @patient.reload.primary_criteria_met_by_self_report?
+    looks_like_a_match = @patient.reload.basic_criteria_met_by_self_report?
 
     session.delete(SESSION_KEY)
     redirect_to study_about_path(@study),
@@ -170,18 +170,16 @@ class SelfReportsController < ApplicationController
     ActiveModel::Type::Boolean.new.cast(params[:future_studies_authorization])
   end
 
-  # If the declarations satisfy every primary criterion, promote interested →
-  # candidate NOW, attributed truthfully to the system, not to a person. The
-  # AASM guard re-checks the evidence (primary_criteria_met_for_triage?), so
-  # this cannot promote anyone the rules wouldn't.
+  # Put the patient where their new answers say they belong — in practice
+  # interested → candidate, when the declarations satisfy every basic
+  # criterion. Attributed truthfully to the system, not to a person.
+  #
+  # Patient#sync_state_with_criteria! is the single implementation, shared with
+  # the rep's assessment form, so there is one answer to "what do the criteria
+  # say" rather than one per entry point. It cannot over-promote from here: the
+  # step into `potential` is never automatic, and its guard reads investigator
+  # values, which a questionnaire does not produce.
   def auto_triage!
-    return unless @patient.interested?
-
-    @patient.reload
-    return unless @patient.primary_criteria_met_by_self_report?
-
-    PaperTrail.request(whodunnit: "system:self-report-triage") do
-      @patient.assess! if @patient.may_assess?
-    end
+    @patient.sync_state_with_criteria!
   end
 end

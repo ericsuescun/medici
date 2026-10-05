@@ -6,7 +6,7 @@ class EnforceOneCriteriaProfilePerStudy < ActiveRecord::Migration[8.0]
   # point at the same study.
   #
   # That became dangerous when the criteria profile started gating patient
-  # promotion (Patient#primary_criteria_met?): `has_one` emits LIMIT 1 with no
+  # promotion (Patient#basic_criteria_met?): `has_one` emits LIMIT 1 with no
   # ORDER BY, so which of the two answered was physical row order, and it flips
   # when a row is merely updated. A study whose duplicate happens to have no
   # primary criteria evaluates to "nothing decisive to check" and lets patients

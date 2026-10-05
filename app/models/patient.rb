@@ -155,10 +155,10 @@ class Patient < ApplicationRecord
   }
 
   # The pipeline the recruitment index works: everybody who has not yet joined a
-  # trial. `participant` is deliberately NOT here — those are results, not work,
-  # and they get their own page (PatientsController#participants).
+  # trial. `potential` is deliberately NOT here — those are results, not work,
+  # and they get their own page (PatientsController#potentials).
   RECRUITING_STATES = %w[interested candidate].freeze
-  FINAL_STATE = "participant"
+  FINAL_STATE = "potential"
 
   # Patients as the PUBLIC form creates them: a phone number and nothing else.
   # `firstname` is the marker because that form cannot set it — it permits only
@@ -184,11 +184,11 @@ class Patient < ApplicationRecord
   scope :named, -> { where.not(firstname: BLANK_NAMES) }
 
   scope :recruiting, -> { where(state: RECRUITING_STATES) }
-  scope :enrolled, -> { where(state: FINAL_STATE) }
+  scope :potentials, -> { where(state: FINAL_STATE) }
 
   # Review order: candidates first (they asked for the rep's attention — many
   # arrive auto-triaged from their own questionnaire answers), then interested,
-  # then participants. Lived in PatientsController as a Ruby sort key; it is a
+  # then potentials. Lived in PatientsController as a Ruby sort key; it is a
   # property of the lifecycle, not of one page, and expressing it in SQL means a
   # relation is already in review order before anything materialises it.
   STATE_REVIEW_ORDER = { "candidate" => 0, "interested" => 1, FINAL_STATE => 2 }.freeze
@@ -235,21 +235,21 @@ class Patient < ApplicationRecord
   # declarations; `accept` (clinical) opens on investigator values only.
   #
   # This lived in PatientsController while three views hardcoded
-  # `!primary_criteria_met?` for BOTH events, so an `interested` patient who
+  # `!basic_criteria_met?` for BOTH events, so an `interested` patient who
   # qualified only by self-report rendered a disabled "locked" button next to a
   # working one. Anything asking "do the criteria permit the next step" must go
   # through `criteria_permit_forward?` rather than pick a predicate itself.
   FORWARD_EVENT_CHECKS = {
-    "assess" => :primary_criteria_met_for_triage?,
-    "accept" => :primary_criteria_met?
+    "assess" => :criteria_met_for_candidate?,
+    "accept" => :criteria_met_for_potential?
   }.freeze
 
   # The step BACK available from the current state, or nil at the start of the
   # line. Never gated — see the aasm block — but a patient at the END of the
   # line has only this, and the take-action copy has to be able to name it:
-  # offering promotion advice to a participant is what made the box read as
+  # offering promotion advice to a patient at `potential` is what made the box read as
   # "reject this patient" (fixed 2026-08-25).
-  BACKWARD_EVENTS = { "candidate" => "discard", "participant" => "reject" }.freeze
+  BACKWARD_EVENTS = { "candidate" => "discard", "potential" => "reject" }.freeze
 
   def forward_event
     FORWARD_EVENTS[state]
@@ -261,7 +261,7 @@ class Patient < ApplicationRecord
 
   # The state an event lands in from where the patient stands now. Read off the
   # AASM machine rather than kept as a second hardcoded map, so the copy the rep
-  # reads on the button ("promover de Candidato a Participante") cannot describe
+  # reads on the button ("promover de Candidato a Potencial") cannot describe
   # a transition the machine no longer makes.
   def target_state_for(event)
     return nil if event.blank?
@@ -287,40 +287,138 @@ class Patient < ApplicationRecord
     check.nil? || public_send(check)
   end
 
-  # The clinical tier: every PRIMARY criterion has an investigator-recorded
+  # The basic tier, investigator half: every BASIC criterion has a recorded
   # VariableValue and all of them comply (inclusions met, exclusions not met).
   # Unmeasured is not compliance — a rep has to actually record the value.
   #
-  # Secondary criteria are deliberately not consulted. Whether an unmet
-  # complementary criterion should stop a patient is the rep's clinical
-  # judgment; they express it by making or withholding the transition, and
-  # PaperTrail records who did it and when.
+  # Specific criteria are deliberately not consulted here: they are the OTHER
+  # tier, gating the next step (see #criteria_met_for_potential?), not this one.
   #
   # True when the study has no criteria profile, or the profile marks nothing
-  # primary: there is nothing decisive to check, so nothing to block on.
-  def primary_criteria_met?
+  # basic: there is nothing decisive to check, so nothing to block on.
+  def basic_criteria_met?
     result = eligibility_result
 
-    result.nil? || result.permits_promotion?
+    result.nil? || result.basic_criteria_met?
   end
 
-  # The triage tier: the patient's own declarations satisfy every primary
+  # The triage tier: the patient's own declarations satisfy every basic
   # criterion. Deliberately weaker evidence for a deliberately weaker claim —
   # "worth a rep's review", never "fit to participate". Unlike the clinical
-  # tier there is NO fail-open here: with no profile, no primary criteria, or
+  # tier there is NO fail-open here: with no profile, no basic criteria, or
   # no declarations there is no self-reported evidence, so this is false and
   # triage falls back to the clinical tier's judgment.
-  def primary_criteria_met_by_self_report?
+  def basic_criteria_met_by_self_report?
     result = self_report_result
 
-    !result.nil? && result.primary_total_count.positive? && result.promotable?
+    !result.nil? && result.basic_total_count.positive? && result.promotable?
   end
 
   # Guard for interested → candidate (triage): investigator-verified values OR
   # the patient's own declarations open it. Candidate honestly means "worth a
   # rep's look" — which self-reported answers can establish.
-  def primary_criteria_met_for_triage?
-    primary_criteria_met? || primary_criteria_met_by_self_report?
+  def criteria_met_for_candidate?
+    basic_criteria_met? || basic_criteria_met_by_self_report?
+  end
+
+  # Guard for candidate → potential (clinical). BOTH tiers, and investigator
+  # values only on both — `basic_criteria_met?` reads `eligibility_result`,
+  # which is built from VariableValues, so a patient who reached `candidate` on
+  # their own testimony cannot go further until a rep has actually measured the
+  # basic criteria too. That re-measurement IS the review this step exists for.
+  #
+  # The specific half is vacuously true when the profile defines no specific
+  # criteria (nothing to check, nothing to block on), the same fail-open the
+  # basic half has; it is the basic half that keeps self-report out.
+  def criteria_met_for_potential?
+    result = eligibility_result
+
+    result.nil? || (result.basic_criteria_met? && result.specific_criteria_met?)
+  end
+
+  # Attribution for an automatic move. Deliberately the system even when a rep's
+  # save is what triggered the sync: the rep recorded a measurement, they did
+  # not decide to promote anybody, and a version signed with their name would
+  # claim they did. Same reasoning as the self-report triage whodunnit.
+  SYSTEM_WHODUNNIT = "system:criteria-sync".freeze
+
+  # Forward steps the system may take on its own — `assess` ONLY.
+  #
+  # Reaching `candidate` is a filing decision: it says "this one is worth a
+  # rep's time", and making the rep click to agree with arithmetic they can
+  # already see adds nothing. Reaching `potential` is not. It says the centre
+  # has a patient it can approach about a trial, and the whole point of the
+  # candidate stage is that a human reads the record first — much of which
+  # arrived as the patient's own unverified testimony. So `accept` stays a
+  # click, with both tiers guarding it; what automation owes the rep there is
+  # ordering the queue so the ready ones are on top, not pressing the button.
+  AUTO_FORWARD_EVENTS = %w[assess].freeze
+
+  # Three states, so no sync can need more than two steps; the cap is a backstop
+  # against a future state being added without revisiting this loop.
+  MAX_SYNC_STEPS = 4
+
+  # Where the recorded evidence says this patient should stand, applied.
+  #
+  # The ONE place a patient moves without a rep pressing a button. Called after
+  # any change to the evidence — a rep saving the assessment form, a patient
+  # submitting the questionnaire. Demotion is evaluated BEFORE promotion: a
+  # criterion that now measurably fails outranks everything that still passes.
+  # Each step is a real AASM event, so each one is guarded, versioned and
+  # visible in the patient's history — never a write to the state column.
+  def sync_state_with_criteria!
+    reload
+
+    PaperTrail.request(whodunnit: SYSTEM_WHODUNNIT) do
+      MAX_SYNC_STEPS.times do
+        if criteria_demotion_target
+          public_send("#{BACKWARD_EVENTS.fetch(state)}!")
+        elsif AUTO_FORWARD_EVENTS.include?(forward_event) && criteria_permit_forward? && auto_promotable?
+          public_send("#{forward_event}!")
+        else
+          break
+        end
+      end
+    end
+  end
+
+  # Positive evidence that the step is earned — deliberately stricter than the
+  # AASM guard beside it.
+  #
+  # The guard fails OPEN when a study has no criteria profile, or none in the
+  # tier: with no rule to check there is nothing to hold anybody back, which is
+  # the right answer to "may a rep do this". It is the wrong answer to "should
+  # the system do it unasked" — a study whose profile nobody has written yet
+  # would have every one of its patients filed as a candidate on the strength
+  # of no evidence whatsoever. Automation therefore requires a rule that exists
+  # AND is satisfied; the button keeps the fail-open.
+  def auto_promotable?
+    basic_criteria_measured_and_met? || basic_criteria_met_by_self_report?
+  end
+
+  def basic_criteria_measured_and_met?
+    result = eligibility_result
+
+    !result.nil? && result.basic_total_count.positive? && result.basic_criteria_met?
+  end
+
+  # The state a MEASURED failure drags this patient back to, or nil when nothing
+  # recorded contradicts where they stand.
+  #
+  # Three deliberate restrictions. Only `eligibility_result` is consulted, so a
+  # patient's own testimony can never demote them — a rep who disbelieves a
+  # declaration presses Descartar, and that stays a human act. Only `:fail`
+  # counts, never `:missing`, so adding a criterion to a profile does not demote
+  # every patient on the study the moment it is saved. And a failing specific
+  # criterion only reaches back as far as `candidate`: it gates the step into
+  # `potential`, so that is the step it can undo.
+  def criteria_demotion_target
+    result = eligibility_result
+    return nil if result.nil? || state == "interested"
+    return "interested" if result.basic_failing.any?
+    return "candidate" if state == FINAL_STATE && result.specific_failing.any?
+
+    nil
   end
 
   include AASM
@@ -328,22 +426,29 @@ class Patient < ApplicationRecord
   aasm column: :state do
     state :interested, initial: true
     state :candidate
-    state :participant
+    state :potential
 
-    # Forward steps are guarded, but by TWO TIERS OF EVIDENCE for two tiers of
-    # claim: `assess` (triage — the patient is worth reviewing) accepts
-    # self-reported declarations; `accept` (clinical — the patient joins the
-    # trial) requires investigator-verified values ONLY. A patient can
-    # self-report their way onto the rep's review list, never into the trial.
+    # Forward steps are guarded by TWO TIERS, for two different claims.
+    #
+    # `assess` (interested → candidate) asks the BASIC criteria only, and will
+    # take the patient's own declarations as evidence: "candidate" claims no
+    # more than "worth a rep's look", which a questionnaire can establish. It
+    # is the one step the system takes by itself (see AUTO_FORWARD_EVENTS).
+    #
+    # `accept` (candidate → potential) asks BOTH tiers and will only read
+    # investigator-recorded values, on both. So a patient can self-report their
+    # way onto the review list and no further; the measurement a rep has to do
+    # to open this step is exactly the review the candidate stage exists for.
+    #
     # The guards live here rather than in the controller so no code path can
     # skip them — and because PatientPolicy#assess?/#accept? delegate to AASM's
     # `may_*?`, they propagate to the policy and every view for free.
     event :assess do
-      transitions from: :interested, to: :candidate, guard: :primary_criteria_met_for_triage?
+      transitions from: :interested, to: :candidate, guard: :criteria_met_for_candidate?
     end
 
     event :accept do
-      transitions from: :candidate, to: :participant, guard: :primary_criteria_met?
+      transitions from: :candidate, to: :potential, guard: :criteria_met_for_potential?
     end
 
     # Backward steps are never gated — walking a patient back must always be
@@ -353,7 +458,7 @@ class Patient < ApplicationRecord
     end
 
     event :reject do
-      transitions from: :participant, to: :candidate
+      transitions from: :potential, to: :candidate
     end
   end
 

@@ -37,7 +37,7 @@ es:
         other: "%{count} errores impidieron guardar la variable:"
       criteria_order_label: "Orden dentro del grupo"
       criteria_order_hint: "Sugerido automáticamente según el grupo (inclusión/exclusión). Puede cambiarlo."
-      criteria_category_hint: "Los primarios deciden el puntaje de reclutamiento; los secundarios solo complementan la evaluación."
+      criteria_category_hint: "Los básicos deciden el paso automático a Candidato y son los únicos que se le preguntan al paciente; los específicos los mide el investigador y deciden el paso a Potencial."
       patient_prompt_placeholder: "¿Cuál es su edad en años?"
       patient_prompt_hint: "Pregunta en lenguaje del paciente. Si se escribe, el cuestionario público la mostrará (solo la pregunta — nunca la regla ni sus umbrales). Sin pregunta, la variable no se le pregunta al paciente."
       qualitative_scale_label: "Escala cualitativa (separada por comas)"

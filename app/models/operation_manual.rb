@@ -131,7 +131,7 @@ module OperationManual
       responsibilities: [
         "Registrar y actualizar pacientes, incluyendo su descripción de enfermedad y notas clínicas.",
         "Capturar los valores de las variables del paciente y ejecutar la evaluación de elegibilidad contra el perfil de criterios del estudio.",
-        "Mover al paciente por su ciclo de vida: interesado → candidato → participante (y de vuelta cuando corresponda).",
+        "Mover al paciente por su ciclo de vida: interesado → candidato → potencial (y de vuelta cuando corresponda).",
         "Consultar el perfil de criterios que define el patrocinador y evaluar contra él a cada paciente (definirlo ya no le corresponde desde 2026-08-25).",
         "Cargar resultados y gestionar los contactos del estudio.",
         "Consultar estudios, centros, sedes, ciudades, artículos y medicamentos, sin poder modificarlos."
@@ -253,9 +253,9 @@ module OperationManual
         J --> K{"¿Todos los criterios primarios<br/>registrados y cumplidos?"}
         K -- "No" --> L["El botón aparece bloqueado<br/>con el motivo a la vista"]
         L --> J
-        K -- "Sí" --> M["«Evaluar» → Candidato"]
-        M --> N["«Aceptar» → Participante"]
-        N --> O["Participantes: el resultado del reclutamiento"]
+        K -- "Sí" --> M["El sistema lo pasa a Candidato<br/>en cuanto cumple los criterios básicos"]
+        M --> N["«Aceptar» (siempre una persona) → Potencial<br/>exige básicos Y específicos medidos"]
+        N --> O["Potenciales: el resultado del reclutamiento"]
         K -.-> P["Los criterios secundarios no bloquean:<br/>avisan, y el representante decide"]
     MERMAID
 
@@ -272,7 +272,7 @@ module OperationManual
         P --> I["Responde solo las preguntas<br/>de los criterios primarios"]
         I --> J["Sus respuestas se guardan como declaraciones,<br/>nunca como mediciones del investigador"]
         J --> L{"¿Sus respuestas cumplen<br/>todos los criterios primarios?"}
-        L -- "Sí" --> M["El sistema lo pasa a Candidato<br/>y firma el cambio como «system:self-report-triage»"]
+        L -- "Sí" --> M["El sistema lo pasa a Candidato<br/>y firma el cambio como «system:criteria-sync»"]
         L -- "No" --> Q["«Por ahora este estudio no parece corresponder»<br/>— nunca se le dice qué criterio falló"]
         Q --> H
         M --> H
@@ -297,22 +297,22 @@ module OperationManual
   # fire each event. spec/models/operation_manual_spec.rb fails when the two
   # drift, AND when a locale is missing a state's or a transition's copy — a
   # gap that would otherwise fall back to Spanish and look deliberate.
-  PATIENT_STATES = %w[interested candidate participant].freeze
+  PATIENT_STATES = %w[interested candidate potential].freeze
 
   # direction: :forward (gated by the criteria) | :backward (never gated).
   PatientTransition = Struct.new(:event, :from, :to, :direction, keyword_init: true)
 
   PATIENT_TRANSITIONS = [
     PatientTransition.new(event: "assess", from: "interested", to: "candidate", direction: :forward),
-    PatientTransition.new(event: "accept", from: "candidate", to: "participant", direction: :forward),
+    PatientTransition.new(event: "accept", from: "candidate", to: "potential", direction: :forward),
     PatientTransition.new(event: "discard", from: "candidate", to: "interested", direction: :backward),
-    PatientTransition.new(event: "reject", from: "participant", to: "candidate", direction: :backward)
+    PatientTransition.new(event: "reject", from: "potential", to: "candidate", direction: :backward)
   ].freeze
 
   # How many standing notes the page renders under the transitions table. The
   # notes themselves are a YAML list per locale; this is what lets the spec catch
   # a language that translated four of five.
-  PATIENT_LIFECYCLE_NOTE_COUNT = 5
+  PATIENT_LIFECYCLE_NOTE_COUNT = 7
 
   # Primary regulatory sources. Local copies of each live in docs/sources/ (see
   # its README) because government links are known to move; the URLs below are
@@ -460,7 +460,7 @@ module OperationManual
     Feature.new(
       name: "Ciclo de vida del paciente",
       status: :done,
-      detail: "Máquina de estados interesado → candidato → participante, con las transiciones de descarte y rechazo."
+      detail: "Máquina de estados interesado → candidato → potencial, con las transiciones de descarte y rechazo."
     ),
     Feature.new(
       name: "Salvaguarda de transferencia internacional",

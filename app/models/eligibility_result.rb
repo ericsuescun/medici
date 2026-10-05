@@ -1,22 +1,25 @@
 # Outcome of evaluating a patient against a CriteriaProfile. Wraps a list of
-# per-variable Checks and answers three questions: is the patient eligible, is
-# the assessment even complete (all values captured), and — the recruitment
-# question — is there enough evidence to move the patient forward.
+# per-variable Checks and answers two kinds of question: does the patient meet
+# the protocol, and may they move along the recruitment lifecycle.
 #
-# The first two are about the *protocol*: they weigh every criterion, because a
-# patient who fails any criterion does not meet the protocol. The third is about
-# *recruitment*, and only weighs the criteria marked primary (see
-# CriteriaVariable#criteria_category): those carry the score that tells a rep
-# whether an interested patient is ready to become a candidate. Secondary
-# criteria are still measured and still shown — they complement the picture —
-# but they never move the score, so they can never on their own promote or hold
-# back a patient.
+# The protocol question (`eligible?`, `complete?`, `verdict`) weighs every
+# criterion, because a patient who fails any criterion does not meet the
+# protocol.
 #
-# The two can therefore disagree, and that is the point: a patient can be
-# `:ready` on the decisive criteria while a complementary criterion is still not
-# met. Surface both rather than collapsing them.
+# The lifecycle question is asked TWICE, once per tier, because the two steps
+# are different claims (see CriteriaVariable#criteria_category):
+#
+#   basic     — the decisive few a patient can answer about themselves. They
+#               carry `basic_score` and open interested → candidate.
+#   specific  — the investigator-measured rest. They carry `specific_score` and,
+#               together with the basic tier, open candidate → potential.
+#
+# The protocol verdict and the tier verdicts are allowed to disagree, and the UI
+# surfaces both rather than collapsing them: `verdict` is kept for reporting,
+# `basic_verdict` is what the banner headlines, and the specific tier is shown
+# as its own gate with its own count.
 class EligibilityResult
-  # A patient is recommended for promotion only when every primary criterion is
+  # A patient is recommended for promotion only when every basic criterion is
   # answered and passing — a decisive criterion left unmeasured is not evidence.
   READY_SCORE = 100
   # Below `ready` but at or above this, the score is worth a rep's attention:
@@ -47,13 +50,13 @@ class EligibilityResult
       passed? ? :pass : :fail
     end
 
-    # Decisive (scored) vs complementary (informative only).
-    def primary?
-      variable.criteria_category == "primary"
+    # Which tier this criterion belongs to — which lifecycle step it gates.
+    def basic?
+      variable.criteria_category == "basic"
     end
 
-    def secondary?
-      !primary?
+    def specific?
+      !basic?
     end
   end
 
@@ -90,17 +93,16 @@ class EligibilityResult
   end
 
   # A single symbol summarizing the WHOLE-PROTOCOL verdict, weighing every
-  # criterion regardless of category:
+  # criterion regardless of tier:
   #   :eligible     — every criterion answered and passing
   #   :not_eligible — at least one criterion measurably fails
   #   :incomplete   — nothing failing yet, but values still missing
   #   :empty        — no criteria to evaluate
   #
   # This is the honest "does the patient meet the protocol" answer, kept for
-  # reporting. It is deliberately NOT what the UI headlines any more: a patient
-  # blocked only by a complementary criterion should not be shouted at as "not
-  # eligible". Use `primary_verdict` for that, plus `secondary_concerns` as a
-  # separate advisory. See EligibilityResult#primary_verdict.
+  # reporting. It is deliberately NOT what the UI headlines: a patient who has
+  # simply not been measured yet should not be shouted at as "not eligible".
+  # Use `basic_verdict` for the headline and `specific_verdict` beside it.
   def verdict
     return :empty if checks.none?
     return :eligible if eligible?
@@ -118,98 +120,146 @@ class EligibilityResult
     checks.size
   end
 
-  # ---- Recruitment score (primary criteria only) ---------------------------
+  # ---- Basic tier (interested → candidate) ---------------------------------
 
-  def primary_checks
-    checks.select(&:primary?)
+  def basic_checks
+    checks.select(&:basic?)
   end
 
-  def secondary_checks
-    checks.select(&:secondary?)
+  def basic_passing
+    basic_checks.select { |c| c.status == :pass }
   end
 
-  def primary_passing
-    primary_checks.select { |c| c.status == :pass }
+  def basic_failing
+    basic_checks.select { |c| c.status == :fail }
   end
 
-  def primary_failing
-    primary_checks.select { |c| c.status == :fail }
-  end
-
-  def primary_pending
-    primary_checks.select(&:missing?)
+  def basic_pending
+    basic_checks.select(&:missing?)
   end
 
   # Percentage (0–100) of the decisive criteria the patient satisfies, measured
-  # against *all* primary criteria rather than only the answered ones: an
+  # against *all* basic criteria rather than only the answered ones: an
   # unmeasured criterion is not evidence in the patient's favour, so it should
   # hold the score down until somebody measures it. nil when the profile defines
-  # no primary criteria at all (nothing to score).
-  def primary_score
-    return nil if primary_checks.none?
+  # no basic criteria at all (nothing to score).
+  def basic_score
+    return nil if basic_checks.none?
 
-    (primary_passing.count.to_f / primary_checks.count * 100).round
+    (basic_passing.count.to_f / basic_checks.count * 100).round
   end
 
-  def primary_answered_count
-    primary_checks.count { |c| !c.missing? }
+  def basic_answered_count
+    basic_checks.count { |c| !c.missing? }
   end
 
-  def primary_total_count
-    primary_checks.size
+  def basic_total_count
+    basic_checks.size
   end
 
-  # What the score says a rep should do:
-  #   :ready     — every primary criterion answered and passing; promote
+  # What the basic score says a rep should do:
+  #   :ready     — every basic criterion answered and passing; promote
   #   :promising — nothing decisive failed and the score is already high; worth
   #                a look, finish measuring the rest
   #   :blocked   — a decisive criterion measurably fails; do not promote on
   #                criteria grounds, whatever the rest of the score says
   #   :pending   — too little measured yet to say anything
-  #   :none      — the profile marks no criterion primary, so there is no score
+  #   :none      — the profile marks no criterion basic, so there is no score
   def recommendation
-    return :none if primary_checks.none?
-    return :blocked if primary_failing.any?
-    return :ready if primary_score >= READY_SCORE
-    return :promising if primary_score >= HIGH_SCORE
+    return :none if basic_checks.none?
+    return :blocked if basic_failing.any?
+    return :ready if basic_score >= READY_SCORE
+    return :promising if basic_score >= HIGH_SCORE
 
     :pending
   end
 
-  # The eligibility verdict as the UI headlines it: decided by the primary
+  # The eligibility verdict as the UI headlines it: decided by the basic
   # criteria alone.
-  #   :eligible     — every primary criterion is recorded AND complies
-  #   :not_eligible — at least one primary criterion measurably fails
-  #   :incomplete   — none failing, but primary criteria are still unrecorded
-  #   :none         — the profile marks nothing primary; nothing decisive to say
+  #   :eligible     — every basic criterion is recorded AND complies
+  #   :not_eligible — at least one basic criterion measurably fails
+  #   :incomplete   — none failing, but basic criteria are still unrecorded
+  #   :none         — the profile marks nothing basic; nothing decisive to say
   #
   # Note what :eligible means for an exclusion criterion: it complies when the
   # patient does NOT meet it. An unrecorded exclusion never counts as complying,
   # so "no active infection" is only ever true because somebody measured it.
-  def primary_verdict
-    return :none if primary_checks.none?
-    return :not_eligible if primary_failing.any?
-    return :incomplete if primary_pending.any?
+  def basic_verdict
+    return :none if basic_checks.none?
+    return :not_eligible if basic_failing.any?
+    return :incomplete if basic_pending.any?
 
     :eligible
   end
 
-  # Whether the criteria allow this patient to move forward in the trial.
-  #
-  # True only when every primary criterion has a recorded value and all of them
-  # comply — or when the profile defines no primary criteria at all, in which
-  # case there is nothing decisive to hold anyone back. Secondary criteria are
-  # never consulted: whether an unmet complementary criterion matters is the
-  # rep's judgment, and the rep expresses it by making (or not making) the
-  # transition, which PaperTrail records.
-  #
-  # This is the authority behind Patient's AASM guard on assess/accept.
-  def permits_promotion?
-    %i[none eligible].include?(primary_verdict)
+  # Tier 1 gate: every basic criterion recorded and complying — or no basic
+  # criteria at all, in which case there is nothing decisive to hold anyone
+  # back. Authority behind Patient's AASM guard on `assess`.
+  def basic_criteria_met?
+    %i[none eligible].include?(basic_verdict)
   end
 
-  # The score endorses moving this patient forward. Narrower than
-  # `permits_promotion?`: this is false when there are no primary criteria,
+  # ---- Specific tier (candidate → potential) -------------------------------
+
+  def specific_checks
+    checks.select(&:specific?)
+  end
+
+  def specific_passing
+    specific_checks.select { |c| c.status == :pass }
+  end
+
+  def specific_failing
+    specific_checks.select { |c| c.status == :fail }
+  end
+
+  def specific_pending
+    specific_checks.select(&:missing?)
+  end
+
+  # How many specific criteria the patient meets. A COUNT, not a percentage, on
+  # purpose: this is what the patient list sorts by, and a rep comparing two
+  # candidates wants "5 of 7" rather than "71%" — the denominator differs per
+  # study, so the raw count is the honest comparison within one study's queue.
+  # 0 when the profile defines none.
+  def specific_score
+    specific_passing.count
+  end
+
+  def specific_answered_count
+    specific_checks.count { |c| !c.missing? }
+  end
+
+  def specific_total_count
+    specific_checks.size
+  end
+
+  # Mirrors `basic_verdict` so the UI can render the two tiers alike:
+  #   :met        — every specific criterion recorded and complying
+  #   :not_met    — at least one measurably fails
+  #   :incomplete — none failing, but some still unrecorded
+  #   :none       — the profile marks nothing specific
+  def specific_verdict
+    return :none if specific_checks.none?
+    return :not_met if specific_failing.any?
+    return :incomplete if specific_pending.any?
+
+    :met
+  end
+
+  # Tier 2 gate, specific half: every specific criterion recorded and complying.
+  # Vacuously true when the profile defines none — with nothing to check there
+  # is nothing to block on, the same fail-open the basic tier has. What keeps a
+  # self-reported patient out of `potential` is the BASIC half of the tier-2
+  # guard requiring investigator values, not this one.
+  def specific_criteria_met?
+    %i[none met].include?(specific_verdict)
+  end
+
+  # ---- Cross-tier -----------------------------------------------------------
+
+  # The score endorses moving this patient forward on the basic tier. Narrower
+  # than `basic_criteria_met?`: this is false when there are no basic criteria,
   # because there is no score to endorse anything with.
   def promotable?
     recommendation == :ready
@@ -218,11 +268,5 @@ class EligibilityResult
   # Worth surfacing to a rep even if not yet promotable.
   def high_score?
     %i[ready promising].include?(recommendation)
-  end
-
-  # Complementary criteria the patient does not meet. These do NOT block
-  # promotion — they are shown so the decision is made with eyes open.
-  def secondary_concerns
-    secondary_checks.select { |c| c.status == :fail }
   end
 end

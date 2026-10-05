@@ -1,4 +1,4 @@
-<%# Stacked recruitment bar: participants → candidates → interested in pastel
+<%# Stacked recruitment bar: potentials → candidates → interested in pastel
     tones, white remainder = patients still to recruit. Pass `progress:` from
     a RecruitmentProgress.for bulk map on listings; falls back to a per-study
     query otherwise. `labeled: true` renders the tall variant with the patient
@@ -11,7 +11,7 @@
        role="img"
        aria-label="<%= t("studies.recruitment.aria", total: progress.total, goal: progress.goal) %>"
        title="<%= t("studies.recruitment.tooltip",
-                    participants: progress.count(:participant),
+                    potentials: progress.count(:potential),
                     candidates: progress.count(:candidate),
                     interested: progress.count(:interested),
                     goal: progress.goal) %>">

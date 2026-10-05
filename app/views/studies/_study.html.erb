@@ -38,13 +38,13 @@
             <%# The structured eligibility rules (criteria profile variables),
                 name + category — the full grammar lives in the profile card
                 below. The category is here because "is this one decisive?" is
-                the first thing a rep asks of a rule, and primary criteria are
+                the first thing a rep asks of a rule, and basic criteria are
                 also exactly the questions the patient questionnaire asks. %>
             <% if (profile = study.criteria_profile) %>
               <div class="row mt-2">
                 <div class="col-md-6">
                   <h6><%= t("studies.inclusion_variables") %></h6>
-                  <% variables = profile.criteria_variables.inclusion.order(Arel.sql("CASE WHEN criteria_category = 'primary' THEN 0 ELSE 1 END"), :name) %>
+                  <% variables = profile.criteria_variables.inclusion.order(Arel.sql("CASE WHEN criteria_category = 'basic' THEN 0 ELSE 1 END"), :name) %>
                   <% if variables.any? %>
                     <ul class="mb-0">
                       <% variables.each do |variable| %>
@@ -57,7 +57,7 @@
                 </div>
                 <div class="col-md-6">
                   <h6><%= t("studies.exclusion_variables") %></h6>
-                  <% variables = profile.criteria_variables.exclusion.order(Arel.sql("CASE WHEN criteria_category = 'primary' THEN 0 ELSE 1 END"), :name) %>
+                  <% variables = profile.criteria_variables.exclusion.order(Arel.sql("CASE WHEN criteria_category = 'basic' THEN 0 ELSE 1 END"), :name) %>
                   <% if variables.any? %>
                     <ul class="mb-0">
                       <% variables.each do |variable| %>
@@ -265,7 +265,7 @@
               <%= render "studies/recruitment_bar", study: study, progress: progress, labeled: true %>
               <p class="text-muted small mt-2 mb-2"><%= t("studies.recruitment.summary", total: progress.total, goal: progress.goal) %></p>
               <div class="recruitment-legend small text-muted">
-                <span class="me-3"><span class="dot dot-participant"></span><%= t("studies.recruitment.legend_participants") %></span>
+                <span class="me-3"><span class="dot dot-potential"></span><%= t("studies.recruitment.legend_potentials") %></span>
                 <span class="me-3"><span class="dot dot-candidate"></span><%= t("studies.recruitment.legend_candidates") %></span>
                 <span><span class="dot dot-interested"></span><%= t("studies.recruitment.legend_interested") %></span>
               </div>
@@ -325,7 +325,7 @@
                       <% end %>
                     </td>
                     <td><%= get_age(patient.dob) if patient.dob.present? %></td>
-                    <%# Same semantics as the bar: participant green, candidate
+                    <%# Same semantics as the bar: potential green, candidate
                         amber, interested red. %>
                     <td><span class="patient-state patient-state--<%= patient.state %>"><%= t("patients.states.#{patient.state}", default: patient.state) %></span></td>
                   </tr>

@@ -1,4 +1,4 @@
-<%# Filter bar, shared by the recruitment index and the participants page.
+<%# Filter bar, shared by the recruitment index and the potentials page.
 
     Every option list comes from PatientFilter, which derives them from the
     POLICY-SCOPED relation — never Study.all / Sponsor.all. A select naming
@@ -28,7 +28,7 @@
     <strong><%= t("patients.filters.title") %></strong>
     <div class="d-flex flex-wrap gap-2">
       <%# Recruitment page only: "lead" describes somebody nobody has spoken to
-          yet, which an enrolled participant no longer is, and the count there
+          yet, which a patient at `potential` no longer is, and the count there
           would answer a question nobody asked. %>
       <% if leads_toggle %>
         <%= link_to lead_href,
@@ -119,7 +119,7 @@
       </div>
 
       <%# Recruitment recommendation — the one filter that is not SQL (see
-          PatientsController::RECOMMENDATIONS). Hidden on the participants page:
+          PatientsController::RECOMMENDATIONS). Hidden on the potentials page:
           they are already enrolled, so there is nothing left to recommend. %>
       <% if recommendations.present? %>
         <div class="col-sm-6 col-lg-3">

@@ -1,0 +1,71 @@
+<%# The SPECIFIC tier: investigator-measured criteria that, together with the
+    basic ones, gate the step to Potencial.
+
+    This used to be _secondary_warning, an advisory that said out loud it did
+    not block anything. It does now, so the copy says what it is: a count out
+    of the total, the verdict, and — when something is missing or failing —
+    which step it is holding up. Still never the eligibility HEADLINE, which
+    stays the basic tier's (_verdict_banner): a patient with every basic
+    criterion met is a real candidate even with specific work outstanding.
+
+    Locals:
+      result  — an EligibilityResult
+      patient — optional; names the step being blocked. Falls back to the
+                final state's own name when absent.
+      compact — tighter padding, for the patient page's narrower column
+%>
+<% if result.specific_total_count.positive? %>
+  <% compact = local_assigns.fetch(:compact, false) %>
+  <% patient = local_assigns[:patient] %>
+  <% to = t("patients.states.#{patient&.forward_target_state || Patient::FINAL_STATE}") %>
+  <% tone, icon = case result.specific_verdict
+                  when :met then [ "success", "check-circle-fill" ]
+                  when :not_met then [ "danger", "x-octagon-fill" ]
+                  else [ "secondary", "hourglass-split" ]
+                  end %>
+
+  <div class="alert alert-<%= tone %> <%= "py-2" if compact %> mb-3">
+    <div class="d-flex align-items-start gap-2">
+      <i class="bi bi-<%= icon %>"></i>
+      <div class="flex-grow-1">
+        <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+          <strong><%= t("criteria_assessments.specific_status.title") %></strong>
+          <span class="badge bg-<%= tone %>">
+            <%= t("criteria_assessments.specific_status.count",
+                  met: result.specific_score, total: result.specific_total_count) %>
+          </span>
+        </div>
+
+        <p class="mb-1 small">
+          <% case result.specific_verdict %>
+          <% when :met %>
+            <%= t("criteria_assessments.specific_status.met") %>
+          <% when :not_met %>
+            <%= t("criteria_assessments.specific_status.not_met",
+                  count: result.specific_failing.count, to: to) %>
+          <% else %>
+            <%= t("criteria_assessments.specific_status.incomplete",
+                  count: result.specific_pending.count, to: to) %>
+          <% end %>
+        </p>
+
+        <% listed = result.specific_failing + result.specific_pending %>
+        <% if listed.any? %>
+          <ul class="small mb-0">
+            <% listed.each do |c| %>
+              <li>
+                <strong><%= c.variable.name %></strong> —
+                <%= t("criteria_assessments.brief.required") %>: <%= c.variable.rule_summary %><%
+                %><% if c.missing? %>,
+                  <%= t("criteria_assessments.brief.pending") %>
+                <% else %>,
+                  <%= t("criteria_assessments.brief.measured") %>: <%= c.value %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

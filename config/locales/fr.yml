@@ -25,7 +25,7 @@ fr:
     sponsor_reps: "Représentants des promoteurs"
     branch_reps: "Représentants des sites"
     patients: "Patients"
-    participants: "Participants"
+    potentials: "Potentiels"
     manual: "Manuel"
     roles: "Gérer les rôles"
     user_activations: "Gestion des utilisateurs"
@@ -134,8 +134,8 @@ fr:
         inclusion: "Inclusion"
         exclusion: "Exclusion"
       criteria_category:
-        primary: "Primaire"
-        secondary: "Secondaire"
+        basic: "De base"
+        specific: "Spécifique"
       comparison_type:
         less_than: "Inférieur à"
         less_than_or_equal: "Inférieur ou égal à"

@@ -4,7 +4,7 @@ RSpec.describe "Criteria assessments", type: :request do
   # The profile belongs to the patient's OWN study — the only arrangement the
   # controller accepts, and the one the app actually links to. (These used to be
   # two unrelated studies, which meant the page evaluated one rule set while
-  # Patient#primary_criteria_met? gated on another.)
+  # Patient#basic_criteria_met? gated on another.)
   let(:study) { FactoryBot.create(:study) }
   let(:patient) { FactoryBot.create(:patient, study: study) }
   let(:profile) { FactoryBot.create(:criteria_profile, study: study) }
@@ -56,14 +56,14 @@ RSpec.describe "Criteria assessments", type: :request do
     it "snapshots how decisive the rule was onto the captured value" do
       patch assessment_path, params: { values: { age.id.to_s => "30" } }
 
-      expect(patient.variable_values.find_by(name: "Edad").criteria_category).to eq("primary")
+      expect(patient.variable_values.find_by(name: "Edad").criteria_category).to eq("basic")
     end
 
     describe "the recruitment score" do
       let!(:height) do
         profile.criteria_variables.create!(
           name: "Talla", variable_type: "inclusion", value_type: "quantitative",
-          comparison_type: "more_than", reference_value_1: 150, criteria_category: "secondary"
+          comparison_type: "more_than", reference_value_1: 150, criteria_category: "specific"
         )
       end
 
@@ -93,17 +93,22 @@ RSpec.describe "Criteria assessments", type: :request do
         patch assessment_path, params: { values: { age.id.to_s => "30", height.id.to_s => "140" } }
         get assessment_path
 
-        expect(response.body).to include(I18n.t("criteria_assessments.secondary_warning.title"))
+        expect(response.body).to include(I18n.t("criteria_assessments.specific_status.title"))
         expect(response.body).to include(I18n.t("criteria_assessments.eligible"))
-        expect(response.body).not_to include(I18n.t("criteria_assessments.primary.not_eligible_detail", count: 1))
+        expect(response.body).not_to include(I18n.t("criteria_assessments.basic.not_eligible_detail", count: 1))
       end
 
-      it "separates the capture form into primary and secondary sections" do
+      # Keyed on the section HINTS, not the headings: "Criterios específicos"
+      # is also the title of the specific-tier status alert further up the
+      # page, so the headings alone cannot say which block came first.
+      it "separates the capture form into basic and specific sections, basic first" do
         get assessment_path
 
-        expect(response.body).to include("Criterios primarios")
-        expect(response.body).to include("Criterios secundarios")
-        expect(response.body.index("Criterios primarios")).to be < response.body.index("Criterios secundarios")
+        basic = I18n.t("criteria_assessments.score.basic_section_hint")
+        specific = I18n.t("criteria_assessments.score.specific_section_hint")
+
+        expect(response.body).to include(basic).and include(specific)
+        expect(response.body.index(basic)).to be < response.body.index(specific)
       end
     end
 
@@ -119,15 +124,26 @@ RSpec.describe "Criteria assessments", type: :request do
       expect(response.body).to include("por medir")        # Peso not yet measured
     end
 
-    it "offers a promote action once the primary criterion is recorded and met" do
-      patch assessment_path, params: { values: { age.id.to_s => "30" } }
-
+    # Recording the last basic criterion IS the trigger — the rep does not have
+    # to press anything for the triage step (Patient#sync_state_with_criteria!,
+    # wired into #update). The manual button stays available as a fallback and
+    # is exercised by the next example.
+    it "promotes to candidate on save, as soon as every basic criterion is met" do
       expect {
-        post transition_patient_path(patient, event: "assess")
+        patch assessment_path, params: { values: { age.id.to_s => "30" } }
       }.to change { patient.reload.state }.from("interested").to("candidate")
+
+      version = patient.versions.last
+      expect(version.whodunnit).to eq(Patient::SYSTEM_WHODUNNIT)
     end
 
-    it "refuses the promote action while the primary criterion is unrecorded" do
+    it "leaves the patient where they are when the save does not satisfy the tier" do
+      expect {
+        patch assessment_path, params: { values: { age.id.to_s => "80" } }
+      }.not_to change { patient.reload.state }
+    end
+
+    it "refuses the promote action while the basic criterion is unrecorded" do
       expect {
         post transition_patient_path(patient, event: "assess")
       }.not_to change { patient.reload.state }
@@ -143,14 +159,14 @@ RSpec.describe "Criteria assessments", type: :request do
 
       expect(response).to be_successful
       expect(response.body).to include(
-        I18n.t("criteria_assessments.locked.hint",
+        I18n.t("criteria_assessments.locked.assess",
                from: I18n.t("patients.states.interested"),
                to: I18n.t("patients.states.candidate"))
       )
       expect(response.body).to include("bi-lock-fill")
     end
 
-    it "unlocks it once the primary criterion is recorded and met" do
+    it "unlocks it once the basic criterion is recorded and met" do
       patch assessment_path, params: { values: { age.id.to_s => "30" } }
       get assessment_path
 

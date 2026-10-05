@@ -7,7 +7,7 @@ require 'rails_helper'
 #  id                  :bigint           not null, primary key
 #  comparison_type     :string           not null
 #  conditions          :text
-#  criteria_category   :string           default("primary"), not null
+#  criteria_category   :string           default("basic"), not null
 #  criteria_order      :integer
 #  description         :text
 #  enabled             :boolean          default(TRUE), not null

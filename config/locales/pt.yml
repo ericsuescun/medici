@@ -25,7 +25,7 @@ pt:
     sponsor_reps: "Representantes de Patrocinadores"
     branch_reps: "Representantes de Centros"
     patients: "Pacientes"
-    participants: "Participantes"
+    potentials: "Potenciais"
     manual: "Manual"
     roles: "Gerenciar Perfis"
     user_activations: "Gestão de Usuários"
@@ -134,8 +134,8 @@ pt:
         inclusion: "Inclusão"
         exclusion: "Exclusão"
       criteria_category:
-        primary: "Primário"
-        secondary: "Secundário"
+        basic: "Básico"
+        specific: "Específico"
       comparison_type:
         less_than: "Menor que"
         less_than_or_equal: "Menor ou igual a"

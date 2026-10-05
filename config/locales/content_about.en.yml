@@ -23,27 +23,29 @@ en:
           summary: "Someone who raised their hand about a study. This is the initial state and it claims nothing clinical: there may be no more than a phone number."
           arrival: "Created by the public “I want to participate!” form when somebody leaves their contact details against a study, or registered by a trial centre rep with the full clinical record."
         candidate:
-          summary: "Passed triage: there is evidence they meet every primary criterion, so they deserve a rep's review. That evidence may come from the investigator or be declared by the patient themselves, so a candidate is NOT clinically verified."
-          arrival: "Through the “Assess” action, taken by a rep or fired by the system when the patient's questionnaire satisfies every primary criterion."
-        participant:
-          summary: "Accepted into the study. Requires the investigator's evidence: every primary criterion measured and met."
-          arrival: "Through the “Accept” action, which only a person can take — never the system — on a candidate with every primary criterion recorded."
+          summary: "Passed triage: there is evidence that every basic criterion is met, so the record deserves a rep's review. That evidence may come from the investigator or be declared by the patient, so a candidate is NOT clinically verified."
+          arrival: "Automatically, as soon as the evidence satisfies every basic criterion — whether from the patient's questionnaire or from values a rep records. The “Assess” action stays available for doing it by hand."
+        potential:
+          summary: "Reviewed and cleared on both tiers: the investigator measured, and every basic AND specific criterion is met. This is the result of recruitment, not an enrolment — joining the trial happens outside the platform."
+          arrival: "Through the “Accept” action, which only a person can take — never the system — on a candidate whose basic and specific criteria are all investigator-recorded and met."
       transitions:
         assess:
-          actor: "Admin or trial centre rep. The system also fires it on its own when the patient's questionnaire is submitted; in the change log it is signed “system:self-report-triage” rather than by a person."
-          requirement: "Every primary criterion answered and met, with the investigator's values and the patient's own declarations both counting. This is the triage tier of evidence: enough to reach the review list, not enough to enter the trial."
+          actor: "The system, as soon as the evidence suffices; also an admin or trial centre rep by hand. When the system fires it, change control signs it “system:criteria-sync”, not a person."
+          requirement: "Every basic criterion answered and met, counting both investigator values and the patient's own declarations. That is the triage level of evidence: enough to reach the review list, not enough to enter the trial."
         accept:
-          actor: "Admin or trial centre rep — always a person."
-          requirement: "Every primary criterion with a value recorded by the investigator, and met. Patient declarations do not count here: unmeasured never equals met."
+          actor: "An admin or trial centre rep — always a person. The system never takes this step."
+          requirement: "Every basic AND every specific criterion recorded by the investigator and met. Patient declarations do not count here: unmeasured is never the same as met."
         discard:
-          actor: "Admin or trial centre rep."
-          requirement: "None. Walking a patient back must always be possible, above all when the criteria are what went wrong."
+          actor: "An admin or trial centre rep; also the system, if a MEASURED basic criterion stops being met."
+          requirement: "None. Walking a patient back must always be possible, especially when the criteria are what went wrong."
         reject:
-          actor: "Admin or trial centre rep."
+          actor: "An admin or trial centre rep; also the system, if a MEASURED specific criterion stops being met."
           requirement: "None, for the same reason."
       notes:
-        - "SECONDARY criteria block nothing. They appear as a warning beside the patient, and it is the rep who decides whether they weigh: they say so by making or withholding the transition."
-        - "When the role permits moving forward but the criteria do not, the button appears disabled with the reason in plain sight, rather than disappearing."
-        - "The system never promotes on its own beyond the triage described above. Pressing the button is the decision, and it is recorded."
-        - "Every state change is versioned in the change log, with the user who made it and the moment it happened."
-        - "A study with no criteria profile, or with a profile that marks nothing primary, has nothing decisive to check: there the forward transitions meet no brake."
+        - "Criteria are read in two tiers. BASIC are the few decisive ones a patient can answer about themselves, and the only ones the public questionnaire asks: they decide the step to Candidate. SPECIFIC are investigator-measured and decide, together with the basic ones, the step to Potential."
+        - "The specific score counts how many are met, and the patient list sorts by it: the fullest records come first, which are the ones a rep can actually promote today."
+        - "The system only advances a patient as far as Candidate on its own. The step to Potential is always a person's click, because much of what a candidate brings is unverified patient testimony."
+        - "The system does walk a patient back on its own when a MEASURED criterion stops being met. Unmeasured never demotes anybody: adding a criterion to a profile does not demote the study's patients."
+        - "When the role permits the step but the criteria do not, the button renders disabled with the reason in view rather than vanishing."
+        - "Every state change is versioned in change control with the user who made it — or with the system — and when it happened."
+        - "A study with no criteria profile, or a profile with no basic criterion, has nothing decisive to verify: forward transitions meet no brake there."

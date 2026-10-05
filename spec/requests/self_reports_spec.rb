@@ -13,7 +13,7 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
     profile.criteria_variables.create!(
       name: "Edad", variable_type: "inclusion", value_type: "quantitative",
       comparison_type: "between_range", reference_value_1: 18, reference_value_2: 40,
-      criteria_category: "primary", patient_prompt: "¿Cuál es su edad en años?"
+      criteria_category: "basic", patient_prompt: "¿Cuál es su edad en años?"
     )
   end
   let!(:secret_rule) do
@@ -21,7 +21,7 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
     profile.criteria_variables.create!(
       name: "Puntuación PASI", variable_type: "inclusion", value_type: "quantitative",
       comparison_type: "more_than_or_equal", reference_value_1: 20,
-      criteria_category: "secondary"
+      criteria_category: "specific"
     )
   end
 
@@ -39,7 +39,7 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
     profile.criteria_variables.create!(
       name: "Duración de la enfermedad", variable_type: "inclusion",
       value_type: "quantitative", comparison_type: "more_than_or_equal",
-      reference_value_1: 6, criteria_category: "secondary",
+      reference_value_1: 6, criteria_category: "specific",
       patient_prompt: "¿Hace cuántos meses aparecieron los síntomas?"
     )
   end
@@ -143,12 +143,22 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
       expect(patient.consents.pluck(:document_type)).to include(Consent::FUTURE_STUDIES)
     end
 
-    it "auto-triages to candidate when every primary criterion complies, attributed to the system" do
+    it "auto-triages to candidate when every basic criterion complies, attributed to the system" do
       post study_self_report_path(study), params: { answers: { age.id.to_s => "30" } }
 
       expect(patient.reload.state).to eq("candidate")
       version = patient.versions.last
-      expect(version.whodunnit).to eq("system:self-report-triage")
+      expect(version.whodunnit).to eq(Patient::SYSTEM_WHODUNNIT)
+    end
+
+    # The questionnaire produces declarations, never VariableValues, and the
+    # step into `potential` reads only VariableValues — so no amount of
+    # self-reporting can reach it. This is the whole point of the two tiers.
+    it "never carries a patient past candidate, however complete the answers" do
+      post study_self_report_path(study), params: { answers: { age.id.to_s => "30" } }
+
+      expect(patient.reload.state).to eq("candidate")
+      expect(patient.may_accept?).to be false
     end
 
     it "stays interested when the declaration fails the rule" do
@@ -260,7 +270,7 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
     let!(:pregnancy) do
       profile.criteria_variables.create!(
         name: "Embarazo o lactancia", variable_type: "exclusion", value_type: "boolean",
-        comparison_type: "true", criteria_category: "primary",
+        comparison_type: "true", criteria_category: "basic",
         patient_prompt: "¿Estás embarazada o en período de lactancia?"
       )
     end
