@@ -74,7 +74,7 @@ end
 group :test do
   # Browser-driven feature specs (headless Chrome via Selenium).
   gem "capybara", "~> 3.40"
-  gem "selenium-webdriver", "~> 4.27.0" # keep < 4.40 (4.40+ requires Ruby 3.4; this app is on 3.3.0)
+  gem "selenium-webdriver", "~> 4.46.0" # keep < 4.40 (4.40+ requires Ruby 3.4; this app is on 3.3.0)
 end
 
 group :development do
