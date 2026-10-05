@@ -53,7 +53,7 @@ module DataPolicy
   end
 
   # True when the policy still names no legal entity — the page shows a warning
-  # and `spec/models/data_policy_spec.rb` documents that publishing it in this
+  # and `spec/requests/data_policy_spec.rb` documents that publishing it in this
   # state is not the intent.
   def self.complete?
     responsible.values.none? { |v| pending?(v) }

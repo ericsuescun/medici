@@ -57,6 +57,18 @@ RSpec.describe "Política de tratamiento de datos", type: :request do
   end
 
   describe "when the legal identity has not been configured" do
+    # dotenv-rails loads a local .env in test too, so a developer who has set the
+    # MEDICI_* vars for their own machine would otherwise see this example fail.
+    # Clear them explicitly for the example's duration and put them back after.
+    around do |example|
+      keys = %w[MEDICI_LEGAL_NAME MEDICI_NIT MEDICI_CITY MEDICI_ADDRESS MEDICI_PRIVACY_EMAIL MEDICI_PHONE]
+      original = ENV.to_hash.slice(*keys)
+      keys.each { |k| ENV.delete(k) }
+      example.run
+    ensure
+      original.each { |k, v| ENV[k] = v }
+    end
+
     it "marks the missing fields and warns the reader" do
       get data_policy_path
 

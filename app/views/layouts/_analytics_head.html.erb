@@ -38,14 +38,13 @@
 
   <script>
     gtag("js", new Date());
-    <% if Analytics.ga4_measurement_id.present? %>
-      <%# send_page_view:false because Turbo swaps pages without a document load;
-          the analytics Stimulus controller sends every pageview by hand, with the
-          study id stripped out of the URL first. %>
-      gtag("config", "<%= Analytics.ga4_measurement_id %>", { send_page_view: false });
-    <% end %>
-    <% if Analytics.google_ads_id.present? %>
-      gtag("config", "<%= Analytics.google_ads_id %>");
-    <% end %>
+    <%# No gtag("config", ...) here, on purpose. The config is issued by the
+        analytics Stimulus controller (configureGoogle), once consent is granted,
+        with send_page_view:false and a sanitised page_location/page_title:
+        config-level params persist for every later event on the page, so a
+        config issued from <head> with the real document URL would hand Google
+        the study id through every enhanced-measurement auto event, before the
+        controller ever ran. The controller also sends each pageview by hand
+        (Turbo swaps pages without a document load). %>
   </script>
 <% end %>
