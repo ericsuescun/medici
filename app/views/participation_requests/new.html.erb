@@ -90,6 +90,11 @@
                                 data: { consent_gate_target: "checkbox", action: "change->consent-gate#toggle" } %>
                 <%= f.label :data_processing_authorization, t("participation_requests.accept"),
                             class: "form-check-label fw-semibold mb-0" %>
+              <div class="form-text">
+                <%# Ley 1581 Art. 9 requires the authorization to be informed; a link to
+                    the policy is the difference between a checkbox and an informed one. %>
+                <%= link_to t("data_policy.link"), data_policy_path, target: "_blank", rel: "noopener" %>
+              </div>
               </div>
             </div>
 

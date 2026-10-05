@@ -1,3 +1,7 @@
+<%# The link preview for a shared study link names the study itself. %>
+<% content_for :title, "#{@study.public_title} — Medici" %>
+<% content_for :social_description, @study.short_title.presence || @study.main_intervention.presence || t("social.description") %>
+
 <div class="container my-5">
   <div class="mb-3">
     <%= link_to t("static_pages.study_details.back_home"), root_path, class: "btn btn-link ps-0" %>
@@ -17,7 +21,8 @@
               of the column on desktop, which is where it was. DOM order matches
               the mobile order so tab order follows the visual one on phones. %>
           <div class="d-grid mb-3 mb-lg-0 mt-lg-3 order-lg-last">
-            <%= link_to t("static_pages.showcase.participate"), new_participation_request_path(study_id: @study.id), class: "btn btn-success" %>
+            <%= link_to t("static_pages.showcase.participate"), new_participation_request_path(study_id: @study.id),
+                        class: "btn btn-success", **analytics_cta("click_participate") %>
           </div>
 
           <%# h-auto is load-bearing: .stat-card sets height:100% for the

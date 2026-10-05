@@ -45,8 +45,12 @@ class ParticipationRequestsController < ApplicationController
           "patient_id" => @patient.id,
           "expires_at" => SelfReportsController::SESSION_TTL.from_now.iso8601
         }
+        # No measurement flag here: the next page is the questionnaire, which
+        # carries no tags. SelfReportsController flags the conversion when the
+        # visitor lands back on a public page.
         redirect_to study_self_report_path(@study)
       else
+        flash[:analytics_events] = %w[participation_submitted]
         redirect_to study_about_path(@study), notice: t("participation_requests.thanks")
       end
     else

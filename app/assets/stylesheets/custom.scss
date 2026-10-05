@@ -532,3 +532,108 @@ a {
     }
   }
 }
+
+// ---- Consent banner for the measurement tags ----
+// Rendered by layouts/_cookie_consent, revealed by the analytics Stimulus
+// controller. Fixed to the bottom so it never displaces the page content the
+// visitor came for; `hidden` on the element keeps it out of the way (and out of
+// the accessibility tree) until there is actually a decision to make.
+.cookie-consent {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 1080; // above Bootstrap's fixed navbar (1030), below modals (1055+)
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+
+  &[hidden] {
+    display: none; // `display:flex` would otherwise beat the hidden attribute
+  }
+
+  &__text {
+    flex: 1 1 20rem;
+    max-width: 60ch;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.5rem;
+    flex: 0 0 auto;
+  }
+}
+
+// The mobile block above stretches every .btn to full width, which would stack
+// the two consent buttons into a tall wall. They are short; keep them side by
+// side.
+@media (max-width: 575.98px) {
+  .cookie-consent__actions {
+    width: 100%; // the row wraps below the text here, so let it use the width
+  }
+
+  .cookie-consent__actions .btn {
+    width: auto;
+    flex: 1 1 0;
+  }
+}
+
+// ---- Política de tratamiento de datos (static_pages#data_policy) ----
+// A long legal document read start to finish, so the job here is measure and
+// rhythm, not decoration.
+.policy-section {
+  margin-top: 2.25rem;
+  scroll-margin-top: 5rem; // the index links jump here; clear the fixed navbar
+
+  h2 {
+    margin-bottom: .75rem;
+  }
+
+  p,
+  li {
+    max-width: 68ch; // ~10-14 words a line; a full-width legal paragraph is unreadable
+  }
+
+  p {
+    margin-bottom: 1rem;
+  }
+
+  ul {
+    margin-bottom: 1rem;
+  }
+
+  li {
+    margin-bottom: .45rem;
+  }
+}
+
+.policy-index {
+  columns: 2;
+  column-gap: 2rem;
+
+  @media (max-width: 575.98px) {
+    columns: 1;
+  }
+}
+
+.policy-table {
+  max-width: 40rem;
+
+  th {
+    width: 12rem;
+    font-weight: 600;
+  }
+}
+
+// A field the deployment has not filled in yet. Loud on purpose: this is the
+// one thing on the page that must never ship unnoticed.
+.policy-pending {
+  background: #fff3cd;
+  color: #664d03;
+  padding: .1rem .4rem;
+  border: 1px dashed #997404;
+  font-size: .9em;
+}

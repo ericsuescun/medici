@@ -1,0 +1,50 @@
+<%# Google + Meta measurement tags. Rendered from the <head> of every page, but
+    it emits the tags themselves only where `analytics_allowed?` says it may —
+    the public marketing pages, signed out. See ApplicationController.
+
+    Consent Mode is set up in "basic" form: every storage type starts denied and
+    NOTHING is sent until the visitor accepts in the banner. Google's "advanced"
+    mode would send cookieless pings before a decision, which buys modelled
+    conversions at the cost of contacting Google on behalf of someone who has not
+    agreed — the wrong trade for a site whose visitors are prospective clinical
+    trial participants (Ley 1581 de 2012, Art. 9: prior authorization). %>
+
+<% if Analytics.google_site_verification.present? %>
+  <meta name="google-site-verification" content="<%= Analytics.google_site_verification %>">
+<% end %>
+
+<% if Analytics.meta_domain_verification.present? %>
+  <meta name="facebook-domain-verification" content="<%= Analytics.meta_domain_verification %>">
+<% end %>
+
+<% if Analytics.enabled? && analytics_allowed? && Analytics.google? %>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+
+    gtag("consent", "default", {
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+      analytics_storage: "denied",
+      functionality_storage: "denied",
+      personalization_storage: "denied",
+      security_storage: "granted",
+      wait_for_update: 500
+    });
+  </script>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=<%= Analytics.ga4_measurement_id || Analytics.google_ads_id %>"></script>
+
+  <script>
+    gtag("js", new Date());
+    <%# No gtag("config", ...) here, on purpose. The config is issued by the
+        analytics Stimulus controller (configureGoogle), once consent is granted,
+        with send_page_view:false and a sanitised page_location/page_title:
+        config-level params persist for every later event on the page, so a
+        config issued from <head> with the real document URL would hand Google
+        the study id through every enhanced-measurement auto event, before the
+        controller ever ran. The controller also sends each pageview by hand
+        (Turbo swaps pages without a document load). %>
+  </script>
+<% end %>
