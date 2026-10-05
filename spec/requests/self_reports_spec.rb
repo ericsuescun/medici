@@ -266,6 +266,60 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
   # This is what makes the silent no-verdict rule survivable: a person can rule
   # themselves out honestly instead of answering five questions into the void.
   # It is not feedback, so it is not the oracle the rule exists to prevent.
+  # Who is responsible for what, before a single answer is given.
+  #
+  # Written as a statement of roles rather than a waiver on purpose: Ley 1480
+  # de 2011 Art. 43 voids a clause limiting our own liability (nº 1) or shifting
+  # it to a third party outside the relationship (nº 5), so an "exoneration"
+  # would be struck out and would have bought nothing. What the page says
+  # instead is where responsibility already sits — and that it does NOT move
+  # because a regulator authorized the trial.
+  describe "the responsibility disclaimer" do
+    # Step 1 writes the session stamp this page reads; without it the request
+    # redirects to root and the body is empty.
+    before { submit_participation }
+
+    it "is shown before any question is answered" do
+      get study_self_report_path(study)
+
+      %w[heading role responsibility insurance no_enrollment not_medical_advice].each do |key|
+        expect(response.body).to include(ERB::Util.html_escape(I18n.t("self_reports.disclaimer.#{key}")))
+      end
+    end
+
+    it "is the first thing on the page, ahead of the questions and the exclusions" do
+      get study_self_report_path(study)
+
+      disclaimer = response.body.index(ERB::Util.html_escape(I18n.t("self_reports.disclaimer.heading")))
+      why = response.body.index(ERB::Util.html_escape(I18n.t("self_reports.why_it_matters")))
+      question = response.body.index(ERB::Util.html_escape(age.patient_prompt))
+
+      expect(disclaimer).to be < why
+      expect(disclaimer).to be < question
+    end
+
+    # The whole point is naming where responsibility sits. A text that said only
+    # "Medici is not responsible" would be the void kind.
+    it "names the parties that carry it, and says a regulator's sign-off does not move it" do
+      get study_self_report_path(study)
+      body = response.body
+
+      expect(body).to include("patrocinador")
+      expect(body).to include("investigador")
+      expect(body).to include(ERB::Util.html_escape("Resolución 2378 de 2008"))
+      expect(body).to include(ERB::Util.html_escape("comité de ética"))
+    end
+
+    it "renders in every language without a missing translation" do
+      I18n.available_locales.each do |locale|
+        %w[heading role responsibility insurance no_enrollment not_medical_advice].each do |key|
+          expect { I18n.t!("self_reports.disclaimer.#{key}", locale: locale) }
+            .not_to raise_error, "self_reports.disclaimer.#{key} missing in #{locale}"
+        end
+      end
+    end
+  end
+
   describe "the exclusions shown upfront" do
     let!(:pregnancy) do
       profile.criteria_variables.create!(

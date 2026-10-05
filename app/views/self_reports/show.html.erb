@@ -17,6 +17,31 @@
         <div class="card-body">
           <p class="mb-1"><strong><%= @study.public_title %></strong></p>
 
+          <%# WHO IS RESPONSIBLE FOR WHAT, read before anything is answered.
+              Written as a statement of roles, NOT as a waiver: Ley 1480 de 2011
+              (Estatuto del Consumidor) Art. 43 makes a clause limiting our own
+              liability ineficaz de pleno derecho (nº 1), and one shifting it onto
+              a third party who is not a party to this relationship ineficaz too
+              (nº 5). So the text says what Medici actually does and does not do,
+              and names where the law already puts responsibility for conducting a
+              trial — Resolución 2378 de 2008: sponsor, principal investigator and
+              institution, none of them discharged by INVIMA's authorization or the
+              ethics committee's opinion. A description we can stand behind, rather
+              than an exoneration a court would strike out.
+
+              Deliberately the FIRST thing on the page — ahead of why the questions
+              matter and ahead of the exclusions — because it frames everything
+              under it, and ahead of any answer because that is when it is still
+              information rather than justification. %>
+          <div class="alert alert-secondary border">
+            <p class="mb-2"><strong><%= t("self_reports.disclaimer.heading") %></strong></p>
+            <p class="mb-2 small"><%= t("self_reports.disclaimer.role") %></p>
+            <p class="mb-2 small"><%= t("self_reports.disclaimer.responsibility") %></p>
+            <p class="mb-2 small"><%= t("self_reports.disclaimer.insurance") %></p>
+            <p class="mb-2 small"><%= t("self_reports.disclaimer.no_enrollment") %></p>
+            <p class="mb-0 small"><%= t("self_reports.disclaimer.not_medical_advice") %></p>
+          </div>
+
           <%# Why these questions matter — key to being considered for the
               study — while staying honest that answering is optional. %>
           <div class="alert alert-info">

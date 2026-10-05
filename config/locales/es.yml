@@ -353,6 +353,13 @@ es:
     adult_confirmation_required: "Debe confirmar que el/la paciente es mayor de edad para continuar."
 
   self_reports:
+    disclaimer:
+      heading: "Antes de continuar, quién es responsable de qué"
+      role: "Medici es una plataforma que te ayuda a encontrar estudios clínicos y a dejar tus datos de contacto. Medici no realiza el estudio, no presta atención médica y no decide quién participa."
+      responsibility: "El estudio lo conduce un centro de investigación, bajo la dirección de un investigador principal, y lo financia su patrocinador. Conforme a la Resolución 2378 de 2008, son ellos —patrocinador, investigador e institución— quienes responden por la conducción del estudio, por la seguridad de quienes participan y por sus resultados. Esa responsabilidad es suya y no se traslada a Medici; tampoco desaparece por la autorización de la autoridad sanitaria ni por el concepto del comité de ética."
+      insurance: "La misma norma exige que el patrocinador contrate una póliza que ampare los daños que pudieran derivarse del estudio para quienes participan en él."
+      no_enrollment: "Responder este cuestionario no te inscribe en el estudio ni garantiza que seas aceptado. Esa decisión la toma el centro de investigación después de evaluarte, y para participar deberás firmar un consentimiento informado aparte, en el centro y con tiempo para preguntar lo que necesites."
+      not_medical_advice: "Nada de lo que leas aquí es consejo médico ni reemplaza a tu médico tratante. Consúltalo antes de decidir participar. Si entras a un estudio, puedes retirarte en cualquier momento y sin dar explicaciones."
     title: "Cuéntanos más sobre ti"
     why_it_matters: "Estas preguntas son clave para tu participación: nos ayudan a saber si este estudio es para ti, o si podrías participar en otros estudios en el futuro."
     fill_what_you_can: "Responde las que puedas — todas son opcionales. Si no conoces alguna respuesta, marca «No lo sé»."

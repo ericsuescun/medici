@@ -354,6 +354,13 @@ en:
     adult_confirmation_required: "You must confirm the patient is an adult to continue."
 
   self_reports:
+    disclaimer:
+      heading: "Before you continue — who is responsible for what"
+      role: "Medici is a platform that helps you find clinical studies and leave your contact details. Medici does not run the study, does not provide medical care, and does not decide who takes part."
+      responsibility: "The study is run by a research centre under a principal investigator, and funded by its sponsor. Under Resolución 2378 de 2008 it is they — sponsor, investigator and institution — who answer for how the study is conducted, for the safety of the people in it, and for its results. That responsibility is theirs and does not pass to Medici; nor is it discharged by the health authority's authorization or the ethics committee's opinion."
+      insurance: "The same rule requires the sponsor to hold an insurance policy covering harm that participants could suffer as a result of the study."
+      no_enrollment: "Answering this questionnaire does not enrol you in the study and does not guarantee you will be accepted. The research centre makes that decision after assessing you, and taking part means signing a separate informed consent, at the centre, with time to ask whatever you need to."
+      not_medical_advice: "Nothing you read here is medical advice or a substitute for your own doctor. Talk to them before deciding to take part. If you do join a study, you may withdraw at any time, without having to explain why."
     title: "Tell us more about you"
     why_it_matters: "These questions are key to your participation: they help us know whether this study is for you, or whether you could join other studies in the future."
     fill_what_you_can: "Answer the ones you can — all are optional. If you don't know an answer, tick \"I don't know\"."
