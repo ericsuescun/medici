@@ -19,6 +19,7 @@ require 'rails_helper'
 #  notes               :string
 #  participant_code    :string
 #  reported_city       :string
+#  self_registered     :boolean          default(FALSE), not null
 #  sex                 :string
 #  state               :string           default("interested"), not null
 #  submitted_by_proxy  :boolean          default(FALSE), not null
@@ -29,6 +30,7 @@ require 'rails_helper'
 # Indexes
 #
 #  index_patients_on_participant_code  (participant_code) UNIQUE
+#  index_patients_on_self_registered   (self_registered)
 #  index_patients_on_state             (state)
 #  index_patients_on_study_id          (study_id)
 #

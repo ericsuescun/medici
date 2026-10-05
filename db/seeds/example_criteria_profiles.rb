@@ -21,7 +21,8 @@
 # `:promising` (the >= 70% band) can NEVER occur, with 5 you get 0/20/…/100 and
 # 80% lands in it. Drop below 5 and the demo stops demonstrating itself.
 #
-# ONLY THE PRIMARY CRITERIA CARRY A patient_prompt. Specific rows have no
+# EVERY BASIC CRITERION CARRIES A patient_prompt, and so do the specific ones a
+# patient can honestly answer. The clinic-measured specific rows have no
 # prompt at all, and `CriteriaVariable.askable_to_patient` filters to basic
 # regardless, so the data and the code agree instead of relying on whoever
 # writes the prompts to remember. Asking a patient about complementary criteria
@@ -43,8 +44,8 @@
 #   ExampleCriteriaProfiles.seed!(Study.limit(10))
 module ExampleCriteriaProfiles
   # [variable_type, name, value_type, comparison_type, ref1, ref2, patient_prompt]
-  # The trailing patient_prompt appears on PRIMARY rows only — those are the
-  # only ones the public questionnaire asks. Specific rows stop at ref2.
+  # The trailing patient_prompt is optional, and its presence is what makes a
+  # rule askable in the public questionnaire. Rows without one stop at ref2.
 
   # Decisive AND patient-answerable — see the header for why those two go together.
   CORE_BASIC = [
@@ -60,14 +61,25 @@ module ExampleCriteriaProfiles
       "¿Participas o has participado en otro estudio clínico en los últimos tres meses?" ]
   ].freeze
 
+  # Specific criteria. The ones a PATIENT can honestly answer carry a prompt and
+  # are asked in the questionnaire (since 2026-10-04); the clinic-measured ones
+  # deliberately do not, which is what keeps the form finishable. Nobody knows
+  # their own immunosuppression status or the investigator's adherence judgment,
+  # but everybody knows whether they can get to the centre on a weekday.
   CORE_SPECIFIC = [
-    [ "inclusion", "Dispuesto a firmar el consentimiento informado", "boolean", "true", nil, nil ],
-    [ "inclusion", "Disponibilidad para visitas presenciales", "boolean", "true", nil, nil ],
-    [ "inclusion", "Residencia cercana al centro", "boolean", "true", nil, nil ],
-    [ "inclusion", "Método anticonceptivo en edad fértil", "boolean", "true", nil, nil ],
-    [ "inclusion", "Duración de la enfermedad (meses)", "quantitative", "more_than_or_equal", 6, nil ],
+    [ "inclusion", "Dispuesto a firmar el consentimiento informado", "boolean", "true", nil, nil,
+      "¿Estarías dispuesto a firmar el consentimiento informado del estudio?" ],
+    [ "inclusion", "Disponibilidad para visitas presenciales", "boolean", "true", nil, nil,
+      "¿Podrías asistir a las visitas presenciales que exige el estudio?" ],
+    [ "inclusion", "Residencia cercana al centro", "boolean", "true", nil, nil,
+      "¿Vives cerca del centro donde se realiza el estudio?" ],
+    [ "inclusion", "Método anticonceptivo en edad fértil", "boolean", "true", nil, nil,
+      "Si estás en edad fértil, ¿usas algún método anticonceptivo?" ],
+    [ "inclusion", "Duración de la enfermedad (meses)", "quantitative", "more_than_or_equal", 6, nil,
+      "¿Hace cuántos meses aparecieron los síntomas?" ],
     [ "exclusion", "Enfermedad hepática o renal grave", "boolean", "true", nil, nil ],
-    [ "exclusion", "Antecedente de cáncer (últimos 5 años)", "boolean", "true", nil, nil ],
+    [ "exclusion", "Antecedente de cáncer (últimos 5 años)", "boolean", "true", nil, nil,
+      "¿Has tenido un diagnóstico de cáncer en los últimos 5 años?" ],
     [ "exclusion", "Inmunosupresión conocida", "boolean", "true", nil, nil ],
     [ "exclusion", "Abuso de alcohol o drogas (últimas 24 semanas)", "boolean", "true", nil, nil ],
     [ "exclusion", "Trastorno psiquiátrico no controlado", "boolean", "true", nil, nil ],
@@ -177,12 +189,12 @@ module ExampleCriteriaProfiles
     basic = variables.select(&:basic?)
     specific = variables.reject(&:basic?)
 
-    # `.named` skips the public-form leads. A lead has no clinical record at all
+    # `.staff_entered` skips the public-form leads. A lead has no clinical record at all
     # — nobody has measured anything — so handing them investigator
     # VariableValues would make them promotable straight to `potential` on the
     # CLINICAL tier, which is precisely what the two-tier design exists to
     # prevent. Their evidence is declarations, written by declare! instead.
-    profile.study.patients.named.each_with_index do |patient, i|
+    profile.study.patients.staff_entered.each_with_index do |patient, i|
       outcome = OUTCOMES[i % OUTCOMES.size]
       next if outcome == :untouched
 

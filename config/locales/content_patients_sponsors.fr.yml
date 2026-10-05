@@ -58,6 +58,8 @@ fr:
     accept_criteria_required: "Impossible de promouvoir ce patient à Potentiel : tous les critères de base ET tous les critères spécifiques doivent être enregistrés par l'investigateur et remplis."
     answered_questions: "Questionnaire"
     answered_count: "%{count} réponses"
+    declared_specific: "%{met}/%{total} déclarés"
+    declared_specific_hint: "Ce que le patient a répondu sur les critères spécifiques. Un témoignage, pas une mesure : cela n'ouvre pas le passage à Potentiel, cela indique seulement quel dossier mérite d'être ouvert."
     proxy_badge: "Tiers"
     proxy_hint: "Le formulaire a été rempli par quelqu'un d'autre, pas par le patient."
 

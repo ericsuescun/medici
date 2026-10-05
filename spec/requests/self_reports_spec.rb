@@ -32,10 +32,10 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
     }
   end
 
-  # A SECONDARY rule that DOES carry a prompt. The pair (secret_rule, this one)
-  # separates the two reasons a rule can go unasked — no prompt vs. not primary —
-  # which `secret_rule` alone confounds, since it is both.
-  let!(:prompted_secondary) do
+  # A SPECIFIC rule that DOES carry a prompt — asked since 2026-10-04. The pair
+  # (secret_rule, this one) separates the two reasons a rule can go unasked: no
+  # prompt at all vs. a prompt somebody wrote. Only the first silences a rule now.
+  let!(:prompted_specific) do
     profile.criteria_variables.create!(
       name: "Duración de la enfermedad", variable_type: "inclusion",
       value_type: "quantitative", comparison_type: "more_than_or_equal",
@@ -50,15 +50,22 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
       get study_self_report_path(study)
     end
 
-    it "asks the primary criteria" do
+    it "asks the basic criteria" do
       expect(response.body).to include("¿Cuál es su edad en años?")
     end
 
-    it "never asks a secondary criterion, even one that has a prompt written" do
-      # The questionnaire exists to triage, and only the primary criteria are
-      # scored — so asking about a complementary one would lengthen the form
-      # without being able to move the outcome.
-      expect(response.body).not_to include("¿Hace cuántos meses aparecieron los síntomas?")
+    # Flipped deliberately on 2026-10-04. It was basic-only on the reasoning
+    # that a specific criterion "cannot move the outcome", which expired when
+    # the specific tier became a gate: specific answers now decide the step to
+    # `potential` and carry the count that orders a rep's queue. Asking the ones
+    # a patient can actually speak to is how that queue gets filled while we
+    # still have their attention.
+    it "asks a specific criterion too, when somebody wrote it a prompt" do
+      expect(response.body).to include("¿Hace cuántos meses aparecieron los síntomas?")
+    end
+
+    it "still never asks a rule nobody wrote a prompt for" do
+      expect(response.body).not_to include("Puntuación PASI")
     end
 
     it "leaks neither the rule names nor their thresholds" do
@@ -274,6 +281,44 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
   # would be struck out and would have bought nothing. What the page says
   # instead is where responsibility already sits — and that it does NOT move
   # because a regulator authorized the trial.
+  # The line that does NOT move, now that specific criteria can be asked: a
+  # declaration is testimony, never a measurement. Answering every specific
+  # question perfectly still leaves the clinical gate shut, because
+  # `criteria_met_for_potential?` reads investigator VariableValues and a
+  # questionnaire writes PatientDeclarations.
+  describe "a specific criterion answered by the patient" do
+    before { submit_participation }
+
+    it "is stored as a declaration, never as a scorable value" do
+      post study_self_report_path(study), params: { answers: { prompted_specific.id.to_s => "12" } }
+
+      patient = Patient.last
+      expect(patient.patient_declarations.live.map(&:criteria_variable_id)).to include(prompted_specific.id)
+      expect(patient.variable_values).to be_empty
+    end
+
+    it "cannot open the step to potential, however well it is answered" do
+      post study_self_report_path(study),
+           params: { answers: { age.id.to_s => "30", prompted_specific.id.to_s => "12" } }
+
+      patient = Patient.last.reload
+      expect(patient.state).to eq("candidate")
+      expect(patient.criteria_met_for_potential?).to be false
+      expect(patient.may_accept?).to be false
+    end
+
+    # What it DOES do: fill the count a rep sorts the queue by, on the
+    # self-report side, which is the whole point of asking.
+    it "counts toward the declared specific score the rep sees" do
+      post study_self_report_path(study),
+           params: { answers: { age.id.to_s => "30", prompted_specific.id.to_s => "12" } }
+
+      declared = Patient.last.reload.self_report_result
+      expect(declared.specific_score).to eq(1)
+      expect(declared.specific_total_count).to eq(2)
+    end
+  end
+
   describe "the responsibility disclaimer" do
     # Step 1 writes the session stamp this page reads; without it the request
     # redirects to root and the body is empty.

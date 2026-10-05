@@ -58,6 +58,8 @@ en:
     accept_criteria_required: "Cannot promote this patient to Potential: every basic criterion AND every specific one must be recorded by the investigator and met."
     answered_questions: "Questionnaire"
     answered_count: "%{count} answered"
+    declared_specific: "%{met}/%{total} declared"
+    declared_specific_hint: "What the patient answered about the specific criteria. Testimony, not a measurement: it does not open the step to Potential, it only shows which record is worth opening."
     proxy_badge: "Proxy"
     proxy_hint: "The form was filled in by somebody else, not the patient."
 

@@ -58,6 +58,8 @@ pt:
     accept_criteria_required: "Não é possível promover o paciente para Potencial: todos os critérios básicos E todos os específicos devem estar registrados pelo investigador e atendidos."
     answered_questions: "Questionário"
     answered_count: "%{count} respondidas"
+    declared_specific: "%{met}/%{total} declarados"
+    declared_specific_hint: "O que o paciente respondeu sobre os critérios específicos. É testemunho, não uma medição: não habilita a passagem para Potencial, apenas indica qual registro vale a pena abrir."
     proxy_badge: "Terceiro"
     proxy_hint: "O formulário foi preenchido por outra pessoa, não pelo paciente."
 

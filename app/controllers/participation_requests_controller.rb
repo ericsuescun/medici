@@ -20,7 +20,7 @@ class ParticipationRequestsController < ApplicationController
   # data and needs explicit, prior authorization. Same hard gate the old sign-up
   # had — without authorization nothing is written at all.
   def create
-    @patient = Patient.new(participation_params.merge(study: @study))
+    @patient = Patient.new(participation_params.merge(study: @study, self_registered: true))
 
     unless data_processing_authorized?
       @patient.errors.add(:base, t("participation_requests.authorization_required"))
@@ -67,8 +67,19 @@ class ParticipationRequestsController < ApplicationController
   # Only the contact details plus two declared facts about the submission
   # itself. Nothing clinical is collected here — that is step 2 (the
   # questionnaire) or the rep's call.
+  # Contact details, a name to greet them by, and two declared facts about the
+  # submission itself. Still nothing clinical — that is step 2 (the
+  # questionnaire) or the rep's call.
+  #
+  # The name is OPTIONAL. It is here because a rep ringing a stranger needs
+  # something to say after "buenos días", and because a list of participant
+  # codes is not a list anybody wants to work; it is not required because a
+  # phone number with no name is still a lead worth calling, and making the
+  # name mandatory would buy a few greetings at the cost of the submissions
+  # that stop right there.
   def participation_params
-    params.require(:patient).permit(:contact_number, :email, :submitted_by_proxy, :adult_confirmed)
+    params.require(:patient).permit(:firstname, :lastname, :contact_number, :email,
+                                    :submitted_by_proxy, :adult_confirmed)
   end
 
   def data_processing_authorized?

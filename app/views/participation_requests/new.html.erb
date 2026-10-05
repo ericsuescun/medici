@@ -39,6 +39,24 @@
               </div>
             <% end %>
 
+            <%# Name first, and OPTIONAL. A rep ringing a stranger needs something
+                to say after "buenos días", and a queue of participant codes is
+                not a queue anybody works. Not required, though: a phone number
+                with no name is still a lead worth calling, and a mandatory name
+                would buy a few greetings at the cost of the submissions that
+                stop right there. %>
+            <div class="row g-2 mb-1">
+              <div class="col-sm-6">
+                <%= f.label :firstname, t("participation_requests.firstname"), class: "form-label" %>
+                <%= f.text_field :firstname, class: "form-control", autocomplete: "given-name" %>
+              </div>
+              <div class="col-sm-6">
+                <%= f.label :lastname, t("participation_requests.lastname"), class: "form-label" %>
+                <%= f.text_field :lastname, class: "form-control", autocomplete: "family-name" %>
+              </div>
+            </div>
+            <p class="text-muted small"><%= t("participation_requests.name_hint") %></p>
+
             <div class="mb-3">
               <%= f.label :contact_number, t("participation_requests.contact_number"), class: "form-label" %>
               <%= f.telephone_field :contact_number, class: "form-control", autocomplete: "tel" %>

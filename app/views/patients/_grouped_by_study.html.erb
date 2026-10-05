@@ -94,6 +94,21 @@
                       <%= t("criteria_assessments.score.specific_count",
                             met: result.specific_score, total: result.specific_total_count) %>
                     </span>
+
+                    <%# What the PATIENT said about the same tier. Rendered apart
+                        from the measured count, never added to it: one is an
+                        investigator's measurement and the other is testimony,
+                        and a single blended number would hide which. It earns
+                        its place by telling a rep which record is already worth
+                        opening. %>
+                    <% declared = patient.self_report_result %>
+                    <% if declared && declared.specific_score.positive? %>
+                      <span class="badge bg-info-subtle text-info-emphasis border"
+                            title="<%= t("patients.declared_specific_hint") %>">
+                        <%= t("patients.declared_specific",
+                              met: declared.specific_score, total: declared.specific_total_count) %>
+                      </span>
+                    <% end %>
                   <% end %>
                 </td>
                 <td>

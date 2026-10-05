@@ -191,15 +191,24 @@ class PatientsController < SecureApplicationController
 
     # How near this patient is to the step they are waiting on — the ordering
     # the rep works down. A candidate is waiting on the SPECIFIC tier, so the
-    # count of specific criteria met is what ranks them, most-complete first;
-    # the basic score breaks ties and ranks the interested ones behind them.
-    # Negated because sort_by is ascending.
+    # count of specific criteria met ranks them, most-complete first.
+    #
+    # VERIFIED outranks DECLARED, and they are separate keys rather than a sum:
+    # an investigator's measurement and a patient's answer are not the same
+    # evidence, and a queue that added them would quietly promote the patient
+    # who answered confidently over the one somebody actually measured. Declared
+    # breaks ties beneath it — which is what makes answering the questionnaire
+    # worth the patient's time, since it moves them up a rep's list without ever
+    # moving them through a gate. The basic score ranks the interested ones
+    # behind both. Negated because sort_by is ascending.
     def review_rank(patient)
-      result = patient.eligibility_result
+      verified = patient.eligibility_result
+      declared = patient.self_report_result
 
       [ Patient::STATE_REVIEW_ORDER.fetch(patient.state, 9),
-        -(result&.specific_score || 0),
-        -(result&.basic_score || 0) ]
+        -(verified&.specific_score || 0),
+        -(declared&.specific_score || 0),
+        -(verified&.basic_score || 0) ]
     end
 
     # Bounce a refused state change back where it came from, saying why.

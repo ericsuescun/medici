@@ -17,6 +17,7 @@
 #  notes               :string
 #  participant_code    :string
 #  reported_city       :string
+#  self_registered     :boolean          default(FALSE), not null
 #  sex                 :string
 #  state               :string           default("interested"), not null
 #  submitted_by_proxy  :boolean          default(FALSE), not null
@@ -27,6 +28,7 @@
 # Indexes
 #
 #  index_patients_on_participant_code  (participant_code) UNIQUE
+#  index_patients_on_self_registered   (self_registered)
 #  index_patients_on_state             (state)
 #  index_patients_on_study_id          (study_id)
 #
@@ -160,28 +162,22 @@ class Patient < ApplicationRecord
   RECRUITING_STATES = %w[interested candidate].freeze
   FINAL_STATE = "potential"
 
-  # Patients as the PUBLIC form creates them: a phone number and nothing else.
-  # `firstname` is the marker because that form cannot set it — it permits only
-  # `:contact_number, :email`. Worth being able to isolate: a lead has no name to
-  # recognise them by and no clinical record yet, so somebody has to ring them
-  # before anything else can happen, and one who self-reported their way to
-  # `candidate` is the most urgent call on the page.
+  # Patients who registered THEMSELVES through the public form — as opposed to
+  # the ones a rep typed in. For a rep this is the "nobody has called these
+  # people yet" list, and it is the one worth working first: they raised their
+  # hand minutes ago.
   #
-  # Expressible in SQL even though names are encrypted: it tests for NULL and for
-  # ONE exact value, neither of which needs to read the ciphertext — which is why
-  # it works where an ILIKE on a name cannot.
+  # Recorded as a column rather than inferred. It used to be inferred from a
+  # blank `firstname`, which worked only because the public form could not ask
+  # for a name; now that it can (2026-10-04), the inference would have quietly
+  # dropped every self-registered patient who actually typed one — the most
+  # engaged ones — out of the list a rep works from.
   #
-  # Both nil AND "" on purpose. The public form leaves the column NULL, but the
-  # staff edit form submits `patient[firstname]=""` on every save, so the first
-  # time a rep opens a lead and presses save — without typing a name — NULL
-  # becomes "". A `firstname: nil` test then silently drops exactly the leads
-  # somebody has already touched once, while `display_name` still shows the bare
-  # participant code. Deterministic encryption maps "" to a single fixed
-  # ciphertext, so equality still matches it.
-  BLANK_NAMES = [ nil, "" ].freeze
-
-  scope :leads, -> { where(firstname: BLANK_NAMES) }
-  scope :named, -> { where.not(firstname: BLANK_NAMES) }
+  # `display_name` still falls back to the participant code, because the name
+  # stays OPTIONAL on that form: somebody who will leave a phone number but not
+  # a name is still a lead worth calling.
+  scope :leads, -> { where(self_registered: true) }
+  scope :staff_entered, -> { where(self_registered: false) }
 
   scope :recruiting, -> { where(state: RECRUITING_STATES) }
   scope :potentials, -> { where(state: FINAL_STATE) }

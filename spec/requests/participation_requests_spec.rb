@@ -49,13 +49,44 @@ RSpec.describe "Participation requests", type: :request do
     expect(consent.granted_at).to be_present
   end
 
-  it "collects nothing clinical — that is the rep's job after making contact" do
+  # A name is not clinical data, and since 2026-10-04 the form asks for one so a
+  # rep has something to say after "buenos días". What stays out is the clinical
+  # record: that is the rep's job after making contact, or step 2's.
+  it "takes the name, and still nothing clinical" do
     post participation_requests_path(study_id: study.id),
-         params: participation_params(authorized: true, illness_description: "psoriasis", firstname: "Ana")
+         params: participation_params(authorized: true, firstname: "Ana", lastname: "Moreno",
+                                      illness_description: "psoriasis", dob: "1990-01-01",
+                                      sex: "female", notes: "nota")
 
     patient = Patient.last
+    expect(patient.firstname).to eq("Ana")
+    expect(patient.lastname).to eq("Moreno")
     expect(patient.illness_description).to be_blank
-    expect(patient.firstname).to be_blank
+    expect(patient.dob).to be_nil
+    expect(patient.sex).to be_blank
+    expect(patient.notes).to be_blank
+  end
+
+  # The name is a convenience, never a condition — somebody who will leave a
+  # phone number but not a name is still a lead worth calling.
+  it "accepts a submission with no name at all" do
+    expect {
+      post participation_requests_path(study_id: study.id), params: participation_params(authorized: true)
+    }.to change(Patient, :count).by(1)
+
+    expect(Patient.last.display_name).to eq(Patient.last.participant_code)
+  end
+
+  # Provenance is recorded, not inferred from a blank name — that inference died
+  # the moment this form could capture one.
+  it "marks what it creates as self-registered, so the lead list still finds it" do
+    post participation_requests_path(study_id: study.id),
+         params: participation_params(authorized: true, firstname: "Ana")
+
+    patient = Patient.last
+    expect(patient).to be_self_registered
+    expect(Patient.leads).to include(patient)
+    expect(Patient.staff_entered).not_to include(patient)
   end
 
   describe "the habeas-data gate" do

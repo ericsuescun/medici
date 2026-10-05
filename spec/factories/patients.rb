@@ -17,6 +17,7 @@
 #  notes               :string
 #  participant_code    :string
 #  reported_city       :string
+#  self_registered     :boolean          default(FALSE), not null
 #  sex                 :string
 #  state               :string           default("interested"), not null
 #  submitted_by_proxy  :boolean          default(FALSE), not null
@@ -27,6 +28,7 @@
 # Indexes
 #
 #  index_patients_on_participant_code  (participant_code) UNIQUE
+#  index_patients_on_self_registered   (self_registered)
 #  index_patients_on_state             (state)
 #  index_patients_on_study_id          (study_id)
 #
@@ -60,12 +62,27 @@ FactoryBot.define do
 
     # As the public participation form creates them: contact details only, no
     # clinical data, no account.
+    # A patient as the PUBLIC form creates one. `self_registered` is what makes
+    # it a lead now — the blank name used to be the marker, and stopped being
+    # one when that form started asking for a name (2026-10-04). The name is
+    # still blank here because it is optional on that form and plenty of people
+    # leave it so; `display_name` falling back to the participant code is the
+    # case worth keeping in the fixtures.
     trait :lead do
+      self_registered { true }
       firstname { nil }
       lastname { nil }
       dob { nil }
       sex { nil }
       email { nil }
+    end
+
+    # A lead who did give their name — the shape the form produces most of the
+    # time now, and the one a blank-name inference would have missed.
+    trait :named_lead do
+      self_registered { true }
+      dob { nil }
+      sex { nil }
     end
   end
 end

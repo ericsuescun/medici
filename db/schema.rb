@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_10_04_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_10_04_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -298,7 +298,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_10_04_120000) do
     t.boolean "submitted_by_proxy", default: false, null: false
     t.boolean "adult_confirmed", default: false, null: false
     t.string "reported_city"
+    t.boolean "self_registered", default: false, null: false
     t.index ["participant_code"], name: "index_patients_on_participant_code", unique: true
+    t.index ["self_registered"], name: "index_patients_on_self_registered"
     t.index ["state"], name: "index_patients_on_state"
     t.index ["study_id"], name: "index_patients_on_study_id"
   end

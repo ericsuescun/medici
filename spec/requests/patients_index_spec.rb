@@ -114,6 +114,20 @@ RSpec.describe "Patients index and potentials", type: :request do
       expect(response.body).to include("identity=lead")
     end
 
+    # The regression the self_registered column exists to prevent: before it,
+    # "lead" meant "has no name", so a self-registered patient who typed one
+    # silently vanished from the list a rep works — the most engaged ones first.
+    it "still counts a self-registered patient who gave their name" do
+      named = FactoryBot.create(:patient, :named_lead, study: study_a, state: "candidate",
+                                                       firstname: "Ana", lastname: "Moreno")
+      sign_in(FactoryBot.create(:user, :admin), scope: :user)
+
+      get patients_path, params: { identity: "lead" }
+
+      expect(row?(named)).to be(true)
+      expect(Patient.leads).to include(named)
+    end
+
     it "narrows to leads alone when the toggle is on" do
       get patients_path, params: { identity: "lead" }
 

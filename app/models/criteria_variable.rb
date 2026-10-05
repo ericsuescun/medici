@@ -77,23 +77,36 @@ class CriteriaVariable < ApplicationRecord
        true: "true",
        false: "false"
 
-  # Rules the public questionnaire may ask a patient. TWO conditions, both
-  # load-bearing:
+  # Rules the public questionnaire may ask a patient. ONE condition: the rule
+  # carries a patient_prompt.
   #
-  #   1. BASIC only. The questionnaire exists to triage — to find out whether
-  #      somebody is worth a rep's review — and only the basic criteria decide
-  #      that (auto-triage needs every one of them answered). A specific
-  #      criterion is investigator-measured by definition, so asking a patient
-  #      about one lengthens the form without being able to move the outcome.
-  #      Enforced here rather than left to whoever writes the prompts: a
-  #      specific rule that happens to carry a prompt is still never asked.
-  #   2. The prompt's PRESENCE is the switch. The questionnaire renders
-  #      patient_prompt and nothing else (never name/rule_summary/thresholds —
-  #      they leak the protocol), so a rule without a prompt cannot be asked.
-  scope :askable_to_patient, -> { basic.where(enabled: true).where.not(patient_prompt: [ nil, "" ]) }
+  # The prompt's PRESENCE is the switch, and writing one is the editorial act —
+  # it is the CEI-approved participant wording, which is what
+  # `patient_self_report_enabled` attests. The questionnaire renders the prompt
+  # and nothing else (never name/rule_summary/thresholds — those describe the
+  # protocol), so a rule without a prompt cannot be asked at all.
+  #
+  # This was BASIC-only between 2026-08-24 and 2026-10-04, on the reasoning that
+  # "a specific criterion cannot move the outcome, so asking about it only
+  # lengthens the form". That reasoning expired when the specific tier became a
+  # gate of its own: specific answers now decide the step to `potential` and
+  # carry the count that orders a rep's queue, so they move an outcome plainly.
+  #
+  # What has NOT changed, and must not: a declaration is testimony, never a
+  # measurement. Answers land in patient_declarations, which has no comparison
+  # columns and cannot be scored on its own, and `criteria_met_for_potential?`
+  # reads investigator VariableValues only. So a patient may now be ASKED a
+  # specific criterion, and still cannot self-report their way past candidate.
+  #
+  # Most specific criteria have no business being asked (a patient does not know
+  # their IGA score or BSA%). The ones worth a prompt are the ones they can
+  # actually speak to — prior treatments that failed, willingness to attend
+  # visits, other trials, habits. Leaving the rest promptless is how the form
+  # stays short enough to finish.
+  scope :askable_to_patient, -> { where(enabled: true).where.not(patient_prompt: [ nil, "" ]) }
 
   def askable_to_patient?
-    basic? && enabled? && patient_prompt.present?
+    enabled? && patient_prompt.present?
   end
 
   # Normalize qualitative_scale when provided as a comma-separated string from forms

@@ -26,7 +26,8 @@ class PatientFilter
 
   QUESTIONNAIRE_VALUES = %w[with without].freeze
 
-  # "lead" = arrived through the public form, so no name — see Patient.leads.
+  # "lead" = registered through the public form and not yet called — see
+  # Patient.leads (a column since 2026-10-04, not a blank-name inference).
   IDENTITY_VALUES = %w[lead named].freeze
 
   attr_reader :filters
@@ -56,7 +57,7 @@ class PatientFilter
 
     scoped = scoped.where(reported_city: filters[:reported_city]) if filters[:reported_city]
     scoped = apply_questionnaire(scoped) if filters[:questionnaire]
-    scoped = filters[:identity] == "lead" ? scoped.leads : scoped.named if filters[:identity]
+    scoped = filters[:identity] == "lead" ? scoped.leads : scoped.staff_entered if filters[:identity]
 
     scoped
   end

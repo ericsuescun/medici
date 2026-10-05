@@ -87,11 +87,12 @@ module DataPolicy
         title: "2. Qué datos recogemos",
         blocks: [
           "Recogemos únicamente lo necesario para cada paso, y cada paso es voluntario.",
-          "**Cuando usted deja sus datos en «¡Quiero participar!»:** un teléfono de " \
-          "contacto y/o un correo electrónico, el estudio sobre el que consulta, si está " \
-          "diligenciando el formulario por otra persona, y su confirmación de que el " \
-          "paciente es mayor de edad. En ese momento registramos también la fecha y la " \
-          "dirección IP desde la que otorgó su autorización, como prueba de la misma.",
+          "**Cuando usted deja sus datos en «¡Quiero participar!»:** su nombre y apellido " \
+          "si decide darlos —son opcionales—, un teléfono de contacto y/o un correo " \
+          "electrónico, el estudio sobre el que consulta, si está diligenciando el " \
+          "formulario por otra persona, y su confirmación de que el paciente es mayor de " \
+          "edad. En ese momento registramos también la fecha y la dirección IP desde la " \
+          "que otorgó su autorización, como prueba de la misma.",
           "**Si el estudio tiene cuestionario y usted decide responderlo:** sus respuestas " \
           "a las preguntas aprobadas por el comité de ética del estudio, la ciudad donde " \
           "vive, y los exámenes o documentos médicos que quiera adjuntar. Todas las " \
