@@ -315,6 +315,8 @@ en:
 
   participation_requests:
     check_to_continue: "Tick the authorization to continue."
+    confirm_adult_to_continue: "Confirm the patient is an adult to continue."
+    check_both_to_continue: "Tick the authorization and confirm the patient is an adult to continue."
     accept: "I authorize the processing of my sensitive personal health data."
     title: "I want to participate"
     intro: "Leave us a phone number or an email and a trial centre representative will contact you to assess your eligibility. No account needed."

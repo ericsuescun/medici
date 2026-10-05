@@ -3,7 +3,12 @@ require "rails_helper"
 # The consent gate as a person actually meets it. Needs a real browser: the
 # enable/disable is Stimulus, and rack_test runs no JS.
 #
-# The server-side gate (nothing is written without authorization) is covered in
+# TWO boxes gate this form, and both are refused server-side: the habeas-data
+# authorization (Ley 1581 Arts. 6 and 9) and the adult confirmation (Art. 7).
+# The gate watched only the first until 2026-10-04, so leaving the second
+# unticked gave you an enabled button and a 422.
+#
+# The server-side gate (nothing is written without both) is covered in
 # spec/requests/participation_requests_spec.rb — that is the one that matters for
 # compliance. This covers the affordance in front of it.
 RSpec.feature "Participation request consent gate", type: :feature, js: true do
@@ -38,17 +43,34 @@ RSpec.feature "Participation request consent gate", type: :feature, js: true do
     expect(positions["copyBottom"]).to be <= positions["checkboxTop"] + 1
   end
 
-  it "keeps the submit button disabled until the box is ticked" do
+  it "keeps the submit button disabled until BOTH boxes are ticked" do
+    expect_submit_disabled
+
+    check "patient_data_processing_authorization"
+    expect_submit_disabled
+
+    check "patient_adult_confirmed"
+    expect_submit_enabled
+  end
+
+  it "stays disabled when only the adult confirmation is given" do
+    check "patient_adult_confirmed"
+
+    expect_submit_disabled
+  end
+
+  it "disables it again if either box is un-ticked" do
+    check "patient_data_processing_authorization"
+    check "patient_adult_confirmed"
+    expect_submit_enabled
+
+    uncheck "patient_data_processing_authorization"
     expect_submit_disabled
 
     check "patient_data_processing_authorization"
     expect_submit_enabled
-  end
 
-  it "disables it again if the box is un-ticked" do
-    check "patient_data_processing_authorization"
-    uncheck "patient_data_processing_authorization"
-
+    uncheck "patient_adult_confirmed"
     expect_submit_disabled
   end
 
@@ -72,15 +94,35 @@ RSpec.feature "Participation request consent gate", type: :feature, js: true do
     expect(size).to be >= 20
   end
 
+  # The hint has to name the box that is actually outstanding. Telling somebody
+  # to "marca la autorización" next to an authorization they already ticked is
+  # worse than saying nothing: they look at the one thing that is already done.
   describe "the disabled-button hint" do
-    it "explains why the button is dead" do
-      expect(page).to have_content(I18n.t("participation_requests.check_to_continue"))
+    it "names both boxes while both are outstanding" do
+      expect(page).to have_content(I18n.t("participation_requests.check_both_to_continue"))
     end
 
-    it "goes away once authorization is given" do
+    it "names only the adult confirmation once the authorization is given" do
       check "patient_data_processing_authorization"
 
-      expect(page).not_to have_content(I18n.t("participation_requests.check_to_continue"))
+      expect(page).to have_content(I18n.t("participation_requests.confirm_adult_to_continue"))
+      expect(page).not_to have_content(I18n.t("participation_requests.check_both_to_continue"))
+    end
+
+    it "names only the authorization once the adult confirmation is given" do
+      check "patient_adult_confirmed"
+
+      expect(page).to have_content(I18n.t("participation_requests.check_to_continue"))
+      expect(page).not_to have_content(I18n.t("participation_requests.check_both_to_continue"))
+    end
+
+    it "goes away once both are given" do
+      check "patient_data_processing_authorization"
+      check "patient_adult_confirmed"
+
+      %w[check_to_continue confirm_adult_to_continue check_both_to_continue].each do |key|
+        expect(page).not_to have_content(I18n.t("participation_requests.#{key}"))
+      end
     end
   end
 
