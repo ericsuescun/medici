@@ -1,0 +1,20 @@
+{
+  "ignored_warnings": [
+    {
+      "fingerprint": "232bce789be562fed9d44d579791c5d68357d6c832cde5ce8df326fd338d38a4",
+      "file": "app/views/patients/_filters.html.erb",
+      "note": "False positive. The href is always a trusted path helper plus an escaped query string: `url` is a local the two callers pass as patients_path (index.html.erb:26) or potentials_patients_path (potentials.html.erb:24) \u2014 never user input \u2014 and the rest is request.query_parameters run through to_query, which percent-encodes. So the value cannot begin with javascript: or any other scheme. Brakeman flags it because it cannot see where the `url` local comes from. Reviewed 2026-10-05."
+    },
+    {
+      "fingerprint": "3ec659183d85c6b81161fc9ab02fc16594c5d94889d231456ff44d7080fcbfcd",
+      "file": "app/models/patient.rb",
+      "note": "False positive. Every value interpolated into the CASE comes from Patient::STATE_REVIEW_ORDER, a frozen constant: the states go through connection.quote and the ranks are integer literals in that same constant. No request data reaches this string. The Arel.sql wrapper is required because Rails will not accept a raw ordering expression otherwise. Reviewed 2026-10-05."
+    },
+    {
+      "fingerprint": "21ab0fe00fdd5899ffc405cff75aadb91b805ee996a614f7e27b08a287e9062d",
+      "file": "Gemfile.lock",
+      "note": "REAL, not a false positive \u2014 silenced deliberately so it does not hold the whole build hostage, and tracked as task U1 in CLAUDE.md instead. Rails 8.0.2 leaves support on 2026-10-07. The fix is a version bump, which is its own piece of work with its own test run, not something to slip into an unrelated deploy. REMOVE THIS ENTRY as part of that upgrade: leaving it would silence the next EOL warning too, which is the failure mode that makes ignore files dangerous. Noted 2026-10-05."
+    }
+  ],
+  "brakeman_version": "8.1.0"
+}
