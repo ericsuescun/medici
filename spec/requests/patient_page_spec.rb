@@ -55,6 +55,92 @@ RSpec.describe "Patient page (demographic + clinical)", type: :request do
       expect(body.index("Criterio primario")).to be < body.index("Criterio secundario")
     end
 
+    # Found 2026-10-06 walking the two-page questionnaire by hand: a patient who
+    # reached Candidato on their own answers opened to "Evaluación incompleta —
+    # faltan 5 criterios básicos por registrar" and a row of zeros, with nothing
+    # on the page saying why they were a candidate at all. The clinical column
+    # read only what the centre recorded. Both halves of the evidence are shown
+    # now — labelled, side by side, and never added together.
+    describe "a patient who answered the questionnaire" do
+      let!(:age) { primary_rule!(name: "Edad") }
+      let!(:visits) do
+        profile.criteria_variables.create!(
+          name: "Visitas", variable_type: "inclusion", value_type: "boolean",
+          comparison_type: "true", criteria_category: "specific"
+        )
+      end
+
+      before do
+        [ [ age, "30" ], [ visits, "true" ] ].each do |cv, answer|
+          patient.patient_declarations.create!(
+            criteria_variable: cv, prompt: "¿?", answer: answer, value_type: cv.value_type,
+            capture_mode: "public_form", declared_at: Time.current
+          )
+        end
+        patient.sync_state_with_criteria!
+      end
+
+      def row_for(body, name)
+        body.scan(%r{<tr>.*?</tr>}m).find { |row| row.include?("<td>#{name}</td>") }
+      end
+
+      it "says what the patient declared, and what that does and does not unlock" do
+        get patient_path(patient)
+        body = CGI.unescapeHTML(response.body)
+
+        expect(patient.reload.state).to eq("candidate")
+        expect(body).to include(I18n.t("criteria_assessments.self_report.title"))
+        expect(body).to include(I18n.t("criteria_assessments.self_report.basic", met: 1, total: 1))
+        expect(body).to include(I18n.t("criteria_assessments.self_report.specific", met: 1, total: 1))
+      end
+
+      it "labels the verdict and the counts as what the centre recorded" do
+        get patient_path(patient)
+        body = CGI.unescapeHTML(response.body)
+        heading = I18n.t("criteria_assessments.recorded_heading")
+
+        expect(body).to include(heading)
+        expect(body.index(heading)).to be < body.index(I18n.t("criteria_assessments.incomplete"))
+      end
+
+      it "shows each declared answer beside the recorded one" do
+        get patient_path(patient)
+        body = CGI.unescapeHTML(response.body)
+
+        expect(body).to include(I18n.t("criteria_assessments.declared_column"))
+        expect(row_for(body, "Edad")).to match(%r{class="declared-value[^"]*">30</span>})
+        # In words, not the stored "true" — and in the declared cell itself: the
+        # Regla column of a Sí/No rule says "Sí" too, so the row alone proves nothing.
+        expect(row_for(body, "Visitas")).to match(%r{class="declared-value[^"]*">#{I18n.t('common.yes')}</span>})
+        expect(row_for(body, "Visitas")).not_to include(">true<")
+      end
+
+      it "keeps the declared verdict apart from the answer, so «No» and «Cumple» never read as one" do
+        get patient_path(patient)
+        row = row_for(CGI.unescapeHTML(response.body), "Visitas")
+        between = row[row.index("declared-value")...row.index("declared-verdict")]
+
+        expect(row).to include(%(class="declared-verdict ms-auto))
+        expect(between).to include("</div>")
+      end
+
+      it "carries the same summary on the assessment page" do
+        get patient_criteria_assessment_path(patient)
+
+        expect(CGI.unescapeHTML(response.body))
+          .to include(I18n.t("criteria_assessments.self_report.basic", met: 1, total: 1))
+      end
+    end
+
+    it "shows no declared summary or column for a patient who never answered" do
+      primary_rule!(name: "Edad")
+
+      get patient_path(patient)
+
+      expect(response.body).not_to include(I18n.t("criteria_assessments.self_report.title"))
+      expect(response.body).not_to include(I18n.t("criteria_assessments.declared_column"))
+    end
+
     it "marks an unmeasured criterion as no-data rather than as a failure" do
       primary_rule!(name: "Sin medir")
 

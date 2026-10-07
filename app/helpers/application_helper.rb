@@ -93,6 +93,20 @@ module ApplicationHelper
     variable.patient_prompt
   end
 
+  # What a patient declared, in the words the questionnaire offered them. A
+  # Sí/No answer is stored as the select's VALUE, "true"/"false", which a rep
+  # reading a Spanish page would see as code. Matched exactly rather than cast,
+  # because a boolean cast turns any other string into "Sí" — a transcription
+  # that is not "true"/"false" is shown as typed instead of being made to agree.
+  def declared_value(declaration)
+    return t("criteria_assessments.self_report.dont_know") if declaration.declined?
+
+    value = declaration.answer.to_s
+    return value unless declaration.value_type == "boolean"
+
+    { "true" => t("common.yes"), "false" => t("common.no") }.fetch(value, value)
+  end
+
   # URL for switching to `locale`, preserving the current path and query.
   def locale_switch_url(locale)
     url_for(request.query_parameters.merge(locale: locale))

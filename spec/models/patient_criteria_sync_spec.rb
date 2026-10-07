@@ -131,6 +131,29 @@ RSpec.describe Patient, "#sync_state_with_criteria!" do
 
       expect { patient.sync_state_with_criteria! }.not_to change { patient.reload.state }
     end
+
+    # Found 2026-10-06 by the hand-testing scenario (SelfReportScenario's
+    # "Fede"). A patient who declared their way to candidate and was then
+    # MEASURED failing a basic criterion flapped: demoted on the measurement,
+    # re-promoted on the very declaration it had just contradicted, and round
+    # again until MAX_SYNC_STEPS ran out — ending in candidate, with four
+    # spurious versions in the audit trail on every save. The measurement wins.
+    it "lets a measured basic failure outrank the declaration that triaged the patient" do
+      age = rule(name: "Edad")
+      patient.patient_declarations.create!(
+        criteria_variable: age, prompt: "¿Edad?", answer: "30",
+        value_type: "quantitative", capture_mode: "public_form", declared_at: Time.current
+      )
+      patient.sync_state_with_criteria!
+      expect(patient.state).to eq("candidate")
+
+      measure(age, 80)
+
+      expect { patient.sync_state_with_criteria! }
+        .to change { patient.state }.from("candidate").to("interested")
+        .and change { patient.versions.count }.by(1)
+      expect(patient.may_assess?).to be false
+    end
   end
 
   # The AASM guards fail open with no rules to check, so a REP may still move

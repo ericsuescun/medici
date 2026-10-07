@@ -39,6 +39,12 @@ class PatientsController < SecureApplicationController
     # Memoized on the patient, so the AASM guards consulted by `policy(@patient)`
     # further down the page reuse this evaluation instead of redoing it per call.
     @result = @patient.eligibility_result
+    # The other half of the evidence: what the patient declared. Shown beside
+    # the recorded values, never added to them — it is what put a self-triaged
+    # patient in `candidate`, and a page that left it out read "0 cumplidos"
+    # next to a Candidato badge.
+    @self_report_result = @patient.self_report_result
+    @declarations_by_variable = @patient.patient_declarations.live.index_by(&:criteria_variable_id)
     @complementary_information = @patient.complementary_information
   end
 

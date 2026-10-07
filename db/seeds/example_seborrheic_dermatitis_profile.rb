@@ -19,12 +19,12 @@
 #
 # 1. A SMALL, FIXED basic set: 2 inclusion + 3 exclusion = 5, out of 25
 #    criteria. The count is fixed deliberately rather than derived from a
-#    percentage of the protocol — the basic criteria are the ones a patient is
-#    asked about, and a public questionnaire has to stay short enough that
-#    somebody actually finishes it. Six is the ceiling; five is what this
-#    protocol needs. The other 20 are `specific`: measured by the centre,
-#    shown, part of the whole-protocol verdict, but never able on their own to
-#    promote or hold back a patient.
+#    percentage of the protocol — the basic criteria decide triage, so every
+#    one must be something a patient can answer, and a public questionnaire
+#    has to stay short enough that somebody actually finishes it. Six is the
+#    ceiling; five is what this protocol needs. The other 20 are `specific`:
+#    they gate the step from candidate to `potential`, on values the centre
+#    records — never on the patient's word.
 #
 #    Five also happens to be the smallest basic count that lets the score show
 #    its own thresholds: the score is `passing basic / total basic`, so with
@@ -32,17 +32,19 @@
 #    0/50/100 and `:promising` (the >= 70% band) can never occur; with 5, 80%
 #    lands in it and all four recommendations are reachable.
 #
-# 2. ONLY the basic criteria carry a `patient_prompt`, so those five are
-#    exactly what the public step-2 questionnaire asks. Specific rules have no
-#    prompt at all and `CriteriaVariable.askable_to_patient` filters to basic
-#    anyway, so the two agree. The prompt is the ONLY thing the patient ever
-#    sees — never the rule name, the comparison or the reference values — so
-#    each is written in patient language and asks for the raw fact, never for
-#    the threshold. "¿Cuántos años tienes?", never "¿Tienes entre 18 y 75
-#    años?": the second leaks the protocol and turns the form into an oracle to
-#    optimise against.
+# 2. A rule is asked in the public questionnaire when it carries a
+#    `patient_prompt` — the only switch, for both tiers since 2026-10-04. All
+#    five basic criteria carry one, and so do the six specific ones a patient
+#    can honestly speak to (how long, what they have tried, whether they can
+#    attend). The clinic-measured ones (IGA score, BSA%, the investigator's
+#    adherence judgment) have none and are never asked. The prompt is the ONLY
+#    thing the patient ever sees — never the rule name, the comparison or the
+#    reference values — so each is written in patient language and asks for
+#    the raw fact, never for the threshold. "¿Cuántos años tienes?", never
+#    "¿Tienes entre 18 y 75 años?": the second leaks the protocol and turns the
+#    form into an oracle to optimise against.
 #
-#    All five PRIMARY criteria are things a patient can honestly answer about
+#    All five BASIC criteria are things a patient can honestly answer about
 #    themselves. That is what makes auto-triage possible: it fires only when the
 #    declarations satisfy EVERY basic criterion, so a single basic rule that
 #    only an investigator could measure would silently prevent it forever. The
@@ -59,14 +61,19 @@ module ExampleSeborrheicDermatitisProfile
       "¿Cuántos años tienes?" ],
     [ "Diagnóstico confirmado de dermatitis seborreica", "boolean", "true", nil, nil, "basic",
       "¿Un médico te ha diagnosticado dermatitis seborreica?" ],
-    [ "Duración de la enfermedad (meses)", "quantitative", "more_than_or_equal", 3, nil, "specific" ],
+    [ "Duración de la enfermedad (meses)", "quantitative", "more_than_or_equal", 3, nil, "specific",
+      "¿Hace cuántos meses aparecieron los síntomas?" ],
     [ "Puntuación de severidad (IGA)", "quantitative", "more_than_or_equal", 3, nil, "specific" ],
     [ "Afectación BSA (%)", "quantitative", "more_than_or_equal", 10, nil, "specific" ],
     [ "Candidato a terapia sistémica", "boolean", "true", nil, nil, "specific" ],
-    [ "Ha fracasado al menos un tratamiento tópico", "boolean", "true", nil, nil, "specific" ],
-    [ "Dispuesto a firmar el consentimiento informado", "boolean", "true", nil, nil, "specific" ],
-    [ "Disponibilidad para visitas presenciales", "boolean", "true", nil, nil, "specific" ],
-    [ "Método anticonceptivo en edad fértil", "boolean", "true", nil, nil, "specific" ]
+    [ "Ha fracasado al menos un tratamiento tópico", "boolean", "true", nil, nil, "specific",
+      "¿Has usado cremas o champús recetados para la dermatitis sin que te funcionaran?" ],
+    [ "Dispuesto a firmar el consentimiento informado", "boolean", "true", nil, nil, "specific",
+      "¿Estarías dispuesto a firmar el consentimiento informado del estudio?" ],
+    [ "Disponibilidad para visitas presenciales", "boolean", "true", nil, nil, "specific",
+      "¿Podrías asistir a las visitas presenciales que exige el estudio?" ],
+    [ "Método anticonceptivo en edad fértil", "boolean", "true", nil, nil, "specific",
+      "Si estás en edad fértil, ¿usas algún método anticonceptivo?" ]
   ].freeze
 
   EXCLUSION = [
@@ -84,7 +91,8 @@ module ExampleSeborrheicDermatitisProfile
     [ "Tratamiento sistémico en las últimas 4 semanas", "boolean", "true", nil, nil, "specific" ],
     [ "Inmunosupresión conocida", "boolean", "true", nil, nil, "specific" ],
     [ "Enfermedad hepática o renal grave", "boolean", "true", nil, nil, "specific" ],
-    [ "Antecedente de cáncer (últimos 5 años)", "boolean", "true", nil, nil, "specific" ],
+    [ "Antecedente de cáncer (últimos 5 años)", "boolean", "true", nil, nil, "specific",
+      "¿Has tenido un diagnóstico de cáncer en los últimos 5 años?" ],
     [ "Otra enfermedad cutánea que interfiera la evaluación", "boolean", "true", nil, nil, "specific" ],
     [ "Tabaquismo activo", "boolean", "true", nil, nil, "specific" ],
     [ "Trastorno psiquiátrico no controlado", "boolean", "true", nil, nil, "specific" ]

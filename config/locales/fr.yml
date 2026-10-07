@@ -374,6 +374,10 @@ fr:
     future_studies_text: "De manière facultative et indépendante de votre participation à cette étude, vous pouvez nous autoriser à utiliser vos réponses pour vous proposer d'autres études cliniques à l'avenir. Ne pas autoriser n'affecte pas votre participation à cette étude."
     future_studies_accept: "J'autorise à être considéré(e) pour d'autres études à l'avenir."
     submit: "Envoyer mes réponses"
+    continue: "Continuer"
+    more:
+      title: "Quelques questions de plus"
+      intro: "Merci ! Quelques dernières questions pour que le centre prépare votre évaluation."
     consent_note: "En envoyant, vous autorisez le traitement de ces réponses pour évaluer votre éligibilité à cette étude (Ley 1581 de 2012)."
     thanks: "Merci ! Le centre examinera vos réponses et vous contactera bientôt."
     not_a_match: "Merci d'avoir répondu. Pour l'instant cette étude ne semble pas correspondre à votre situation, mais le centre conserve vos coordonnées et vous préviendra si une étude adaptée s'ouvre."

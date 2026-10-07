@@ -2,18 +2,22 @@
 # the recruitment score and the public questionnaire all have something to chew
 # on in a development database.
 #
-# Dev/demo only. Idempotent: re-running updates the same profiles in place.
+# Dev/demo only. Idempotent, but NOT self-updating: `seed!` never rebuilds a
+# study that already has a profile, so an edit to the rows below reaches an
+# existing database only through `fill_missing_prompts!` (wired into seeds.rb).
 #
 # SHAPE OF EVERY PROFILE (this is the part that matters)
 #
 # Each profile is 25 criteria: 5 shared basic + 12 shared specific + 8
 # area-specific specific.
 #
-# THE PRIMARY COUNT IS FIXED AT 5 (2 inclusion + 3 exclusion), NOT A PERCENTAGE.
-# The basic criteria are exactly the questions a patient is asked on the
-# public questionnaire, and that form has to stay short enough that somebody
-# actually finishes it — so the ceiling is six, whatever the protocol's size.
-# A 60-criterion protocol still gets 5 or 6 basic; the rest are specific.
+# THE BASIC COUNT IS FIXED AT 5 (2 inclusion + 3 exclusion), NOT A PERCENTAGE.
+# The basic criteria decide triage: a patient whose own answers satisfy every
+# one of them is filed as a candidate automatically. That only works if every
+# basic criterion is something a patient can answer about themselves, and the
+# questionnaire has to stay short enough that somebody actually finishes it —
+# so the ceiling is six, whatever the protocol's size. A 60-criterion protocol
+# still gets 5 or 6 basic; the rest are specific.
 #
 # Five is also the smallest count that lets the score show its own thresholds.
 # The score is `passing basic / total basic`, so with N basic the only
@@ -21,12 +25,15 @@
 # `:promising` (the >= 70% band) can NEVER occur, with 5 you get 0/20/…/100 and
 # 80% lands in it. Drop below 5 and the demo stops demonstrating itself.
 #
-# EVERY BASIC CRITERION CARRIES A patient_prompt, and so do the specific ones a
-# patient can honestly answer. The clinic-measured specific rows have no
-# prompt at all, and `CriteriaVariable.askable_to_patient` filters to basic
-# regardless, so the data and the code agree instead of relying on whoever
-# writes the prompts to remember. Asking a patient about complementary criteria
-# would lengthen the form without being able to move the outcome.
+# WHICH RULES ARE ASKED. A rule is asked in the public questionnaire when it
+# carries a patient_prompt — that is the only switch (`askable_to_patient`),
+# for basic and specific alike since 2026-10-04. Every basic criterion carries
+# one. Of the specific ones, only the six a patient can honestly answer do
+# (whether they could attend visits, how long they have had symptoms…); the
+# clinic-measured ones (immunosuppression, the investigator's adherence
+# judgment, every lab value in AREAS) deliberately do not. 11 questions, not 25.
+# Specific answers are testimony: they order a rep's queue and never open the
+# step to `potential`, which reads investigator values only.
 #
 # The 5 basic criteria are shared across every area on purpose, and every one
 # of them is something a PATIENT can answer about themselves. Auto-triage fires
@@ -42,6 +49,7 @@
 #
 #   ExampleCriteriaProfiles.seed!            # profiles for every study that lacks one
 #   ExampleCriteriaProfiles.seed!(Study.limit(10))
+#   ExampleCriteriaProfiles.fill_missing_prompts!   # prompts added since a profile was built
 module ExampleCriteriaProfiles
   # [variable_type, name, value_type, comparison_type, ref1, ref2, patient_prompt]
   # The trailing patient_prompt is optional, and its presence is what makes a
@@ -158,10 +166,34 @@ module ExampleCriteriaProfiles
     created
   end
 
+  def self.profile_name(area)
+    "#{area} — criterios de inclusión/exclusión"
+  end
+
+  # Prompts this file has gained since a profile was built. `seed!` leaves any
+  # study that already has a profile alone, so without this an existing
+  # database keeps the questionnaire it was first seeded with — which is how
+  # the dev graph went on asking five basic questions and not one specific one
+  # after specific criteria became askable (2026-10-04).
+  #
+  # Fills BLANK prompts only, matched by rule name, and only on profiles this
+  # module built: a prompt somebody edited by hand is theirs to keep, and a
+  # profile written by anybody else is not ours to reword. Returns the count.
+  def self.fill_missing_prompts!
+    prompts = (CORE_BASIC + CORE_SPECIFIC + AREAS.values.flatten(1))
+              .select { |row| row[6].present? }
+              .to_h { |row| [ row[1], row[6] ] }
+
+    CriteriaVariable.joins(:criteria_profile)
+                    .where(criteria_profiles: { name: AREA_NAMES.map { |area| profile_name(area) } })
+                    .where(name: prompts.keys, patient_prompt: [ nil, "" ])
+                    .find_each.count { |cv| cv.update!(patient_prompt: prompts.fetch(cv.name)) }
+  end
+
   def self.build_profile!(study, area, owner)
     profile = CriteriaProfile.create!(
       study: study, user: owner,
-      name: "#{area} — criterios de inclusión/exclusión",
+      name: profile_name(area),
       description: "Perfil de ejemplo (#{area}) para el estudio «#{study.short_title}»."
     )
 
@@ -286,7 +318,7 @@ module ExampleCriteriaProfiles
   end
 
   # Patient testimony for studies whose questionnaire is switched on: a handful
-  # of `interested` patients answer the basic questions themselves. Where the
+  # of `interested` patients answer the questionnaire themselves. Where the
   # answers satisfy every basic criterion this triages them exactly as the
   # controller does — under a system whodunnit, because the system really is
   # what moved them.
@@ -300,24 +332,39 @@ module ExampleCriteriaProfiles
     askable = profile.criteria_variables.askable_to_patient.to_a
     return if askable.empty?
 
-    patients.each do |patient|
-      askable.each do |cv|
-        next if !complete && rand < 0.1 # some questions simply left blank
+    basic, specific = askable.partition(&:basic?)
 
-        declined = !complete && rand < 0.1
-        patient.patient_declarations.create!(
-          criteria_variable: cv, prompt: cv.patient_prompt,
-          answer: declined ? nil : passing_value(cv).to_s,
-          declined: declined, value_type: cv.value_type,
-          qualitative_scale: cv.qualitative_scale,
-          capture_mode: "public_form", declared_at: Time.current
-        )
+    patients.each do |patient|
+      # The questionnaire's two pages, in order: the specific questions are
+      # only shown to a patient the basic answers keep in the running (or when
+      # there is no basic question to rule anybody out on), so a seeded patient
+      # who is ruled out must not hold specific answers either — the app could
+      # never have produced one.
+      declare_answers!(patient, basic, complete)
+      patient.reload
+      if basic.empty? || patient.basic_criteria_met_by_self_report?
+        declare_answers!(patient, specific, complete)
       end
 
       # Through the real path, not a state write: the same call the
       # questionnaire controller makes, so the seeded graph contains exactly
       # the transitions (and the audit attribution) the app produces.
       patient.sync_state_with_criteria!
+    end
+  end
+
+  def self.declare_answers!(patient, questions, complete)
+    questions.each do |cv|
+      next if !complete && rand < 0.1 # some questions simply left blank
+
+      declined = !complete && rand < 0.1
+      patient.patient_declarations.create!(
+        criteria_variable: cv, prompt: cv.patient_prompt,
+        answer: declined ? nil : passing_value(cv).to_s,
+        declined: declined, value_type: cv.value_type,
+        qualitative_scale: cv.qualitative_scale,
+        capture_mode: "public_form", declared_at: Time.current
+      )
     end
   end
 end

@@ -112,6 +112,90 @@ RSpec.describe "Criteria assessments", type: :request do
       end
     end
 
+    # Side by side since 2026-10-06. The patient's answer used to be a muted line
+    # under the criterion name, and the rep's input sat under a "Valor del
+    # paciente" header — so the one thing on the row that was the REP's pick
+    # read as the patient's, and the patient's actual answer was easy to miss.
+    describe "the capture table" do
+      let!(:pregnancy) do
+        profile.criteria_variables.create!(
+          name: "Embarazo o lactancia", variable_type: "exclusion", value_type: "boolean",
+          comparison_type: "true", patient_prompt: "¿Estás embarazada?"
+        )
+      end
+      let!(:ecg) do
+        profile.criteria_variables.create!(
+          name: "Alteración en el ECG", variable_type: "exclusion", value_type: "boolean",
+          comparison_type: "true", criteria_category: "specific"
+        )
+      end
+
+      before do
+        age.update!(patient_prompt: "¿Cuántos años tienes?")
+        patient.patient_declarations.create!(
+          criteria_variable: age, prompt: "¿Cuántos años tienes?", answer: "30",
+          value_type: "quantitative", capture_mode: "public_form", declared_at: Time.current
+        )
+      end
+
+      def row_for(name)
+        CGI.unescapeHTML(response.body).scan(%r{<tr>.*?</tr>}m).find { |row| row.include?(name) && row.include?("<td") }
+      end
+
+      it "heads the two columns as the patient's declaration and the centre's record" do
+        get assessment_path
+        body = CGI.unescapeHTML(response.body)
+
+        expect(body).to include(I18n.t("criteria_assessments.capture.patient_column"))
+        expect(body).to include(I18n.t("criteria_assessments.capture.centre_column"))
+        expect(body).not_to include("Valor del paciente") # the old, misleading header
+      end
+
+      it "puts the patient's answer, and the question they were asked, in its own cell before the input" do
+        get assessment_path
+        row = row_for("Edad")
+        patient_cell = row.index("¿Cuántos años tienes?")
+
+        expect(row).to match(%r{class="declared-value[^"]*">30</span>})
+        expect(patient_cell).to be < row.index(%(name="values[#{age.id}]"))
+      end
+
+      # A "No" glued to a "Cumple" badge reads as one phrase, «No cumple» — the
+      # opposite of what it says. The verdict sits apart, at the cell's far end.
+      it "keeps the patient's verdict apart from their answer, never inline beside it" do
+        get assessment_path
+        row = row_for("Edad")
+        between = row[row.index("declared-value")...row.index("declared-verdict")]
+
+        expect(row).to include(%(class="declared-verdict ms-auto))
+        expect(between).to include("</div>")
+      end
+
+      it "tells an asked-but-unanswered question apart from one the patient is never asked" do
+        get assessment_path
+
+        expect(row_for("Embarazo o lactancia")).to include(I18n.t("criteria_assessments.capture.not_answered"))
+        expect(row_for("Alteración en el ECG")).to include(I18n.t("criteria_assessments.capture.not_asked"))
+      end
+
+      it "says how to answer each input, and that the fact is recorded, not the verdict" do
+        get assessment_path
+
+        expect(row_for("Edad")).to include(I18n.t("criteria_assessments.capture.how.quantitative"))
+        expect(row_for("Embarazo o lactancia")).to include(I18n.t("criteria_assessments.capture.how.boolean"))
+        expect(row_for("Embarazo o lactancia")).to include(I18n.t("criteria_assessments.capture.not_recorded"))
+      end
+
+      # "> 160" under an exclusion is the excluding condition, not a requirement.
+      it "states an exclusion's rule as what excludes, and an inclusion's as what is required" do
+        get assessment_path
+
+        expect(row_for("Edad")).to include(I18n.t("criteria_assessments.capture.requires", rule: age.rule_summary))
+        expect(row_for("Embarazo o lactancia"))
+          .to include(I18n.t("criteria_assessments.capture.excludes_if", rule: pregnancy.rule_summary))
+      end
+    end
+
     it "shows the brief's out-of-reach and pending sections" do
       profile.criteria_variables.create!(
         name: "Peso", variable_type: "inclusion", value_type: "quantitative",

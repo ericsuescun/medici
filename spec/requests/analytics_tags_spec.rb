@@ -73,17 +73,33 @@ RSpec.describe "Google/Meta measurement tags", type: :request do
       expect(response.body).not_to include("cookie-consent")
     end
 
-    it "does not load on the self-report questionnaire" do
+    # Walked for real, both pages. The version this replaced stubbed the session
+    # but gave the study no criteria profile, so the questionnaire redirected
+    # home and the assertions held over an empty body — they could not fail.
+    it "does not load on either page of the self-report questionnaire" do
       study = FactoryBot.create(:study, patient_self_report_enabled: true)
-      patient = FactoryBot.create(:patient, study: study)
-
-      # The questionnaire identifies the patient from the session stamp step 1 wrote.
-      allow_any_instance_of(SelfReportsController).to receive(:set_patient_from_session) do |controller|
-        controller.instance_variable_set(:@patient, patient)
-      end
+      profile = FactoryBot.create(:criteria_profile, study: study)
+      age = profile.criteria_variables.create!(
+        name: "Edad", variable_type: "inclusion", value_type: "quantitative",
+        comparison_type: "between_range", reference_value_1: 18, reference_value_2: 40,
+        criteria_category: "basic", patient_prompt: "¿Cuántos años tienes?"
+      )
+      profile.criteria_variables.create!(
+        name: "Visitas", variable_type: "inclusion", value_type: "boolean", comparison_type: "true",
+        criteria_category: "specific", patient_prompt: "¿Podrías asistir a las visitas?"
+      )
+      post participation_requests_path(study_id: study.id), params: {
+        patient: { contact_number: "+57 300 123 4567", data_processing_authorization: "1", adult_confirmed: "1" }
+      }
 
       get study_self_report_path(study)
+      expect(response).to be_successful
+      expect(response.body).not_to include("googletagmanager")
+      expect(response.body).not_to include('data-controller="analytics"')
 
+      post study_self_report_path(study), params: { answers: { age.id.to_s => "30" } }
+      get study_self_report_more_path(study)
+      expect(response).to be_successful
       expect(response.body).not_to include("googletagmanager")
       expect(response.body).not_to include('data-controller="analytics"')
     end

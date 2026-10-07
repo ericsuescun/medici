@@ -313,8 +313,24 @@ class Patient < ApplicationRecord
   # Guard for interested → candidate (triage): investigator-verified values OR
   # the patient's own declarations open it. Candidate honestly means "worth a
   # rep's look" — which self-reported answers can establish.
+  #
+  # Unless a measurement already contradicts them. Declarations are evidence
+  # only while nothing measured says otherwise: once the centre has recorded a
+  # basic criterion and it fails, that is the reason `criteria_demotion_target`
+  # sends the patient back, and this guard must refuse on the same fact or the
+  # two undo each other. They did until 2026-10-06 — demote, re-promote on the
+  # declaration, demote again, until MAX_SYNC_STEPS ran out with the patient
+  # back in `candidate` and four spurious versions in the audit trail.
   def criteria_met_for_candidate?
-    basic_criteria_met? || basic_criteria_met_by_self_report?
+    basic_criteria_met? || (basic_criteria_met_by_self_report? && !basic_failure_measured?)
+  end
+
+  # A basic criterion the centre MEASURED and found failing. Never true on
+  # testimony (declarations are not consulted) nor on an unmeasured criterion.
+  def basic_failure_measured?
+    result = eligibility_result
+
+    !result.nil? && result.basic_failing.any?
   end
 
   # Guard for candidate → potential (clinical). BOTH tiers, and investigator
@@ -411,7 +427,7 @@ class Patient < ApplicationRecord
   def criteria_demotion_target
     result = eligibility_result
     return nil if result.nil? || state == "interested"
-    return "interested" if result.basic_failing.any?
+    return "interested" if basic_failure_measured?
     return "candidate" if state == FINAL_STATE && result.specific_failing.any?
 
     nil

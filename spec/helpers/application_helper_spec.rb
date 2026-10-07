@@ -43,6 +43,33 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
   end
 
+  # The questionnaire's Sí/No select submits "true"/"false", and that is what a
+  # declaration stores. Shown raw, a rep read «Paciente declaró: true».
+  describe "#declared_value" do
+    def declaration(**attrs)
+      PatientDeclaration.new({ value_type: "boolean", declined: false }.merge(attrs))
+    end
+
+    it "speaks a boolean answer in the page's language" do
+      expect(helper.declared_value(declaration(answer: "true"))).to eq(I18n.t("common.yes"))
+      expect(helper.declared_value(declaration(answer: "false"))).to eq(I18n.t("common.no"))
+    end
+
+    it "shows a boolean answer that is neither as typed, never coerced to Sí" do
+      expect(helper.declared_value(declaration(answer: "a veces"))).to eq("a veces")
+    end
+
+    it "leaves numbers and scale values alone" do
+      expect(helper.declared_value(declaration(value_type: "quantitative", answer: "40"))).to eq("40")
+      expect(helper.declared_value(declaration(value_type: "qualitative", answer: "Intensa"))).to eq("Intensa")
+    end
+
+    it "says «No lo sé» for a declined answer" do
+      expect(helper.declared_value(declaration(declined: true, answer: nil)))
+        .to eq(I18n.t("criteria_assessments.self_report.dont_know"))
+    end
+  end
+
   # The take-action hints tell a rep what pressing the button will DO — "«Aceptar»
   # promueve al paciente de Candidato a Potencial" — so every one of them has
   # to render in every language. A locale that references an interpolation the

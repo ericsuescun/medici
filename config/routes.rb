@@ -28,6 +28,9 @@ Rails.application.routes.draw do
   # params (see that controller).
   get "studies/:study_id/participate/questions", to: "self_reports#show", as: :study_self_report
   post "studies/:study_id/participate/questions", to: "self_reports#create"
+  # Page 2 — the specific criteria, for a patient the basic answers keep in the running.
+  get "studies/:study_id/participate/questions/more", to: "self_reports#more", as: :study_self_report_more
+  post "studies/:study_id/participate/questions/more", to: "self_reports#create_more"
 
   # Operation manual / regulatory sources / feature inventory (signed-in only).
   get "about", to: "static_pages#about", as: :about

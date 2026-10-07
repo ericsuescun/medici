@@ -39,6 +39,13 @@ end
 
 puts "\nSeeds: development sample data..."
 
+# The hand-testing scenario (built at the end) is a fixture whose every patient
+# has a stated outcome. The generic blocks below add leads and answers to
+# recruiting studies at random, so they must never reach it — on a re-run it
+# already exists by the time they loop.
+require_relative 'seeds/self_report_scenario'
+ordinary_recruiting = Study.recruiting.where.not(short_title: SelfReportScenario::STUDY_SHORT_TITLE)
+
 # --- Lookup tables -----------------------------------------------------------
 require_relative 'seeds/create_id_types'
 require_relative 'seeds/create_medications'
@@ -121,17 +128,18 @@ puts "  sponsors:    #{Sponsor.count} (#{Study.count} studies, #{Patient.count} 
 # --- Leads: patients as the PUBLIC form actually creates them -----------------
 # Everything above is a FactoryBot patient with a Faker name, which is the shape
 # a trial centre rep types in — not the shape most patients arrive in. Somebody
-# who presses "¡Quiero participar!" leaves a phone number and nothing else: no
-# name, no dob, no sex (ParticipationRequestsController permits `:contact_number,
-# :email` and nothing more). They are the ones who most need a call back, and
-# until 2026-08-25 the dev graph contained none of them, so the recruitment page
-# never showed the case it exists for.
+# who presses "¡Quiero participar!" leaves a phone number and often nothing else:
+# the name is optional there (since 2026-10-04), and nothing clinical is asked
+# at all. They are the ones who most need a call back, and until 2026-08-25 the
+# dev graph contained none of them, so the recruitment page never showed the
+# case it exists for. These are seeded nameless, the shape that tests
+# `display_name`'s fallback to the participant code.
 #
 # In its own block rather than inside the studies loop above, which is guarded by
 # `if Study.count < 10` — this way an existing development database gets its
 # leads on the next `db:seed` instead of needing a reset.
-Study.recruiting.includes(:patients).find_each do |study|
-  next if study.patients.any? { |p| p.firstname.nil? } # already has leads
+ordinary_recruiting.includes(:patients).find_each do |study|
+  next if study.patients.any?(&:self_registered?) # already has leads
 
   rand(1..3).times do
     FactoryBot.create(
@@ -144,22 +152,28 @@ Study.recruiting.includes(:patients).find_each do |study|
     )
   end
 end
-puts "  leads:       #{Patient.where(firstname: nil).count} with no name (public-form shape)"
+puts "  leads:       #{Patient.leads.count} self-registered (public-form shape)"
 
 # --- Eligibility profiles ----------------------------------------------------
 # One profile per study, cycling four therapeutic areas. Each is 25 criteria
-# with a FIXED basic set of 5 (2 inclusion + 3 exclusion) — those five are the
-# only ones the patient questionnaire asks, and the only ones that are scored.
+# with a FIXED basic set of 5 (2 inclusion + 3 exclusion), which decide triage;
+# the questionnaire asks those five plus the six specific ones a patient can
+# honestly answer.
+#
+# `seed!` never rebuilds an existing profile, so `fill_missing_prompts!` is what
+# carries a prompt added to the seed file into a database seeded before it.
 require_relative 'seeds/example_criteria_profiles'
 created = ExampleCriteriaProfiles.seed!
-puts "  profiles:    #{CriteriaProfile.count} (#{created} new, #{CriteriaVariable.count} criteria)"
+prompted = ExampleCriteriaProfiles.fill_missing_prompts!
+puts "  profiles:    #{CriteriaProfile.count} (#{created} new, #{CriteriaVariable.count} criteria, " \
+     "#{prompted} prompts filled in)"
 
 # --- The public step-2 questionnaire -----------------------------------------
 # Switched on for a third of the recruiting studies. The flag means "this
 # study's question wording is CEI-approved participant material", so it is
 # deliberately not on by default — but it has no UI yet, so without seeding it
 # the public questionnaire is unreachable in development.
-Study.recruiting.order(:id).each_with_index do |study, i|
+ordinary_recruiting.order(:id).each_with_index do |study, i|
   next unless (i % 3).zero?
   next if study.criteria_profile.nil?
 
@@ -178,8 +192,8 @@ Study.recruiting.order(:id).each_with_index do |study, i|
   # this a second `db:seed` would give the same person two sets of answers.
   interested = study.patients.where(state: "interested")
                     .where.missing(:patient_declarations)
-  leads = interested.where(firstname: nil).to_a
-  named = interested.where.not(firstname: nil).limit(1).to_a
+  leads = interested.leads.to_a
+  named = interested.staff_entered.limit(1).to_a
 
   ExampleCriteriaProfiles.declare!(study.criteria_profile, leads.first(1), complete: true)
   ExampleCriteriaProfiles.declare!(study.criteria_profile, leads.drop(1).first(1) + named)
@@ -193,5 +207,15 @@ puts "  self-report: #{Study.where(patient_self_report_enabled: true).count} stu
 require_relative 'seeds/example_seborrheic_dermatitis_profile'
 puts "\n  Worked example (dermatitis seborreica):"
 ExampleSeborrheicDermatitisProfile.report!
+
+# --- The hand-testing scenario -----------------------------------------------
+# A fixed study whose every answer has a known outcome, plus one example patient
+# per stage of the questionnaire flow. The rake task prints the full cheat sheet
+# (which answer passes, what each example shows) and RESET=1 rebuilds it.
+scenario = SelfReportScenario.build!
+puts "\n  Hand-testing scenario: study ##{scenario[:study].id} «#{scenario[:study].public_title}», " \
+     "#{scenario[:study].patients.count} patients (#{scenario[:seeded]} new); " \
+     "rep #{SelfReportScenario::REP_EMAIL}"
+puts "  Cheat sheet: bin/rails scenarios:self_report"
 
 puts "\nSeeds done. Log in as edsuescun@gmail.com / 12345678\n\n"

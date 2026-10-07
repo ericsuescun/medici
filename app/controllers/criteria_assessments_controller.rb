@@ -16,6 +16,9 @@ class CriteriaAssessmentsController < SecureApplicationController
     # as testimony beside each rule so the rep can verify rather than re-ask.
     # Never evaluated here: only investigator-recorded values feed @result.
     @declarations_by_variable = @patient.patient_declarations.live.index_by(&:criteria_variable_id)
+    # ...and summarised the same way the patient page does, so the banner and
+    # score (which read only recorded values) do not stand alone.
+    @self_report_result = @profile.evaluate_self_reports(@patient)
   end
 
   def update

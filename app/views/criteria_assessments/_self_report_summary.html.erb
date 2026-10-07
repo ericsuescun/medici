@@ -1,0 +1,34 @@
+<%# What the patient declared about themselves, summarised — the OTHER half of
+    the evidence. The verdict banner, score card and counts beside it read only
+    values the centre recorded; without this a patient who reached Candidato on
+    their own answers showed "0 cumplidos" next to the badge, with nothing on
+    the page saying why they were a candidate at all (found 2026-10-06).
+
+    Kept apart from those on purpose and never added to them: a declaration is
+    testimony, enough for the triage step and never for the clinical one.
+    Renders nothing when the patient declared nothing. Locals:
+      result — the patient's self_report_result (an EligibilityResult over declarations), or nil
+%>
+<% if result && result.answered_count.positive? %>
+  <div class="alert alert-info py-2 mb-3">
+    <p class="mb-1">
+      <i class="bi bi-chat-left-quote"></i>
+      <strong><%= t("criteria_assessments.self_report.title") %></strong>
+    </p>
+    <ul class="mb-1 small">
+      <% if result.basic_total_count.positive? %>
+        <li><%= t("criteria_assessments.self_report.basic", met: result.basic_passing.count, total: result.basic_total_count) %></li>
+      <% end %>
+      <% if result.basic_failing.any? %>
+        <li><%= t("criteria_assessments.self_report.basic_failing", count: result.basic_failing.count) %></li>
+      <% end %>
+      <% if result.specific_total_count.positive? %>
+        <li><%= t("criteria_assessments.self_report.specific", met: result.specific_score, total: result.specific_total_count) %></li>
+      <% end %>
+    </ul>
+    <p class="mb-0 small text-muted">
+      <%= t("criteria_assessments.self_report.note",
+            candidate: t("patients.states.candidate"), potential: t("patients.states.potential")) %>
+    </p>
+  </div>
+<% end %>

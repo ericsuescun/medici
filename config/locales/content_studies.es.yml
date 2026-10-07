@@ -107,7 +107,6 @@ es:
       other: "%{count} criterios no se cumplen."
     criterion: "Criterio"
     rule: "Regla"
-    patient_value: "Valor del paciente"
     status: "Estado"
     pass: "Cumple"
     fail: "No cumple"
@@ -139,9 +138,33 @@ es:
     locked:
       assess: "Para pasar a este paciente de %{from} a %{to} debe registrar un valor para cada criterio básico, y todos deben cumplirse."
       accept: "Para promover a este paciente de %{from} a %{to} usted debe haber registrado y cumplido todos los criterios básicos y todos los específicos. Lo declarado por el paciente no basta en este paso."
-    declared: "Paciente declaró: %{value}"
-    declared_dont_know: "Paciente declaró: no lo sé"
     declared_by_patient: "autodiligenciado"
+    capture:
+      patient_column: "Declarado por el paciente"
+      centre_column: "Registro del centro"
+      centre_column_hint: "Lo que usted verifica o mide"
+      requires: "Requiere: %{rule}"
+      excludes_if: "Excluye si: %{rule}"
+      asked: "Pregunta: %{prompt}"
+      not_answered: "Sin respuesta"
+      not_asked: "No se le pregunta al paciente"
+      not_recorded: "— Sin registrar —"
+      how:
+        boolean: "Registre el hecho (Sí o No); el sistema calcula si cumple."
+        quantitative: "Escriba el número medido."
+        qualitative: "Elija la opción que corresponda."
+    recorded_heading: "Registrado por el centro"
+    declared_column: "Declarado"
+    recorded_column: "Registrado"
+    self_report:
+      title: "Lo que declaró el paciente"
+      basic: "Según sus propias respuestas cumple %{met} de %{total} criterios básicos."
+      specific: "Específicos: %{met} de %{total} cumplidos según lo declarado."
+      basic_failing:
+        one: "%{count} criterio básico no se cumple según su respuesta."
+        other: "%{count} criterios básicos no se cumplen según sus respuestas."
+      note: "Es testimonio, no una medición: puede llevar al paciente a %{candidate}, nunca a %{potential}. El veredicto, el puntaje y los conteos de abajo cuentan solo lo que registró el centro."
+      dont_know: "No lo sé"
     brief:
       passing: "Cumplidos"
       out_of_reach: "Fuera de alcance"

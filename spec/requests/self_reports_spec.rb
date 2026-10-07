@@ -7,6 +7,8 @@ require 'rails_helper'
 # declarations satisfy every primary criterion, the patient is auto-triaged
 # interested → candidate with a system whodunnit.
 RSpec.describe "Self reports (public questionnaire)", type: :request do
+  include ActiveSupport::Testing::TimeHelpers
+
   let(:study) { FactoryBot.create(:study, patient_self_report_enabled: true) }
   let(:profile) { FactoryBot.create(:criteria_profile, study: study) }
   let!(:age) do
@@ -60,8 +62,17 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
     # `potential` and carry the count that orders a rep's queue. Asking the ones
     # a patient can actually speak to is how that queue gets filled while we
     # still have their attention.
-    it "asks a specific criterion too, when somebody wrote it a prompt" do
+    #
+    # Moved to its own page on 2026-10-06: page 1 asks the basic criteria, page
+    # 2 the specific ones, and only a patient still in the running reaches it.
+    it "asks a specific criterion too, when somebody wrote it a prompt — on page 2" do
+      expect(response.body).not_to include("¿Hace cuántos meses aparecieron los síntomas?")
+
+      post study_self_report_path(study), params: { answers: { age.id.to_s => "30" } }
+      follow_redirect!
+
       expect(response.body).to include("¿Hace cuántos meses aparecieron los síntomas?")
+      expect(response.body).not_to include("¿Cuál es su edad en años?")
     end
 
     it "still never asks a rule nobody wrote a prompt for" do
@@ -187,6 +198,8 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
     # pins exactly where that line now sits.
     it "confirms plainly when the answers look like a match" do
       post study_self_report_path(study), params: { answers: { age.id.to_s => "30" } }
+      expect(response).to redirect_to(study_self_report_more_path(study))
+      post study_self_report_more_path(study), params: { answers: {} }
 
       expect(flash[:notice]).to eq(I18n.t("self_reports.thanks"))
       follow_redirect!
@@ -248,15 +261,36 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
       expect(newest.patient_declarations.live.sole.answer).to eq("30")
     end
 
-    it "rejects more files than the cap, saving nothing" do
+    # Saving NOTHING includes the answers. Until 2026-10-06 the declarations
+    # were written before the files were validated, so this left health
+    # testimony stored with no self-report consent beside it — testimony that
+    # could still triage the patient. The old version of this spec posted no
+    # answers, which is why it never noticed.
+    it "rejects more files than the cap, saving nothing — answers included" do
       files = Array.new(Patient::MAX_SELF_REPORTED_FILES + 1) do
         Rack::Test::UploadedFile.new(StringIO.new("%PDF-1.4 fake"), "application/pdf", original_filename: "exam.pdf")
       end
 
-      post study_self_report_path(study), params: { answers: {}, files: files }
+      post study_self_report_path(study),
+           params: { answers: { age.id.to_s => "30" }, files: files, reported_city: "Cali" }
 
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(patient.reload.self_reported_files.count).to eq(0)
+      patient.reload
+      expect(patient.self_reported_files.count).to eq(0)
+      expect(patient.patient_declarations).to be_empty
+      expect(patient.consents.pluck(:document_type)).not_to include(Consent::SELF_REPORT_QUESTIONNAIRE)
+      expect(patient.reported_city).to be_nil
+      expect(patient.state).to eq("interested")
+    end
+
+    it "shows the rejected page again with the answers as they were typed" do
+      files = Array.new(Patient::MAX_SELF_REPORTED_FILES + 1) do
+        Rack::Test::UploadedFile.new(StringIO.new("%PDF-1.4 fake"), "application/pdf", original_filename: "exam.pdf")
+      end
+
+      post study_self_report_path(study), params: { answers: { age.id.to_s => "37" }, files: files }
+
+      expect(response.body).to match(/name="answers\[#{age.id}\]"[^>]*value="37"|value="37"[^>]*name="answers\[#{age.id}\]"/)
     end
 
     it "attaches valid files within the cap" do
@@ -289,8 +323,14 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
   describe "a specific criterion answered by the patient" do
     before { submit_participation }
 
+    # Page 1 with a passing age, then page 2 with whatever specific answers.
+    def answer_both(specific)
+      post study_self_report_path(study), params: { answers: { age.id.to_s => "30" } }
+      post study_self_report_more_path(study), params: { answers: specific }
+    end
+
     it "is stored as a declaration, never as a scorable value" do
-      post study_self_report_path(study), params: { answers: { prompted_specific.id.to_s => "12" } }
+      answer_both(prompted_specific.id.to_s => "12")
 
       patient = Patient.last
       expect(patient.patient_declarations.live.map(&:criteria_variable_id)).to include(prompted_specific.id)
@@ -298,8 +338,7 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
     end
 
     it "cannot open the step to potential, however well it is answered" do
-      post study_self_report_path(study),
-           params: { answers: { age.id.to_s => "30", prompted_specific.id.to_s => "12" } }
+      answer_both(prompted_specific.id.to_s => "12")
 
       patient = Patient.last.reload
       expect(patient.state).to eq("candidate")
@@ -310,8 +349,7 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
     # What it DOES do: fill the count a rep sorts the queue by, on the
     # self-report side, which is the whole point of asking.
     it "counts toward the declared specific score the rep sees" do
-      post study_self_report_path(study),
-           params: { answers: { age.id.to_s => "30", prompted_specific.id.to_s => "12" } }
+      answer_both(prompted_specific.id.to_s => "12")
 
       declared = Patient.last.reload.self_report_result
       expect(declared.specific_score).to eq(1)
@@ -403,6 +441,30 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
       expect(list).to include("embarazada")
       expect(list).not_to include(age.patient_prompt.to_s.delete_prefix("¿").delete_suffix("?"))
     end
+
+    # Regression, 2026-10-06. Asking specific criteria (2026-10-04) widened
+    # @questions, and the upfront list filtered on polarity alone — so every
+    # prompted specific exclusion silently joined the warning that is meant to
+    # hold only the few decisive facts. Still asked — on page 2 — never listed.
+    it "does not list a specific exclusion, even one the patient is asked" do
+      profile.criteria_variables.create!(
+        name: "Uso de opioides", variable_type: "exclusion", value_type: "boolean",
+        comparison_type: "true", criteria_category: "specific",
+        patient_prompt: "¿Tomas opioides para el dolor?"
+      )
+      get study_self_report_path(study)
+
+      heading = I18n.t("self_reports.exclusions_heading")
+      block = response.body[response.body.index(heading)..]
+      list = block[0, block.index("</ul>").to_i + 5]
+
+      expect(list).to include("embarazada")
+      expect(response.body).not_to include("opioides")
+
+      post study_self_report_path(study), params: { answers: { age.id.to_s => "30", pregnancy.id.to_s => "false" } }
+      follow_redirect!
+      expect(response.body).to include("¿Tomas opioides para el dolor?")
+    end
   end
   describe "session discipline" do
     it "bounces to root with no session stamp — identity never comes from params" do
@@ -410,12 +472,138 @@ RSpec.describe "Self reports (public questionnaire)", type: :request do
       expect(response).to redirect_to(root_path)
     end
 
-    it "one submission consumes the stamp" do
+    it "the last page submitted consumes the stamp" do
       submit_participation
       post study_self_report_path(study), params: { answers: { age.id.to_s => "30" } }
+      post study_self_report_more_path(study), params: { answers: {} }
 
       get study_self_report_path(study)
       expect(response).to redirect_to(root_path)
+      get study_self_report_more_path(study)
+      expect(response).to redirect_to(root_path)
+    end
+
+    it "expires — a stamp older than SESSION_TTL leads home, whatever page it is on" do
+      submit_participation
+
+      travel(SelfReportsController::SESSION_TTL + 1.minute) do
+        get study_self_report_path(study)
+        expect(response).to redirect_to(root_path)
+      end
+    end
+  end
+
+  # Split 2026-10-06: basic on page 1, specific on page 2, and page 2 only for
+  # a patient the basic answers keep in the running (Decreto 1377 Art. 4 —
+  # collect what is pertinent to the purpose, and for a patient already ruled
+  # out of THIS study, no specific answer is).
+  describe "the two pages" do
+    before { submit_participation }
+
+    let(:patient) { Patient.order(:id).last }
+
+    it "finishes a ruled-out patient on page 1, never asking the specific questions" do
+      post study_self_report_path(study), params: { answers: { age.id.to_s => "9" } }
+
+      expect(response).to redirect_to(study_about_path(study))
+      expect(flash[:notice]).to eq(I18n.t("self_reports.not_a_match"))
+      get study_self_report_more_path(study)
+      expect(response).to redirect_to(root_path)
+    end
+
+    it "finishes an unanswered page 1 the same way, with the same message" do
+      post study_self_report_path(study), params: { answers: {} }
+
+      expect(response).to redirect_to(study_about_path(study))
+      expect(flash[:notice]).to eq(I18n.t("self_reports.not_a_match"))
+    end
+
+    it "sends a patient still in the running on to page 2, with no verdict yet" do
+      post study_self_report_path(study), params: { answers: { age.id.to_s => "30" } }
+
+      expect(response).to redirect_to(study_self_report_more_path(study))
+      expect(flash[:notice]).to be_nil
+      expect(patient.reload.state).to eq("candidate") # triaged by page 1 alone
+    end
+
+    it "keeps the disclaimer and everything that is not a criterion on page 1" do
+      post study_self_report_path(study), params: { answers: { age.id.to_s => "30" } }
+      get study_self_report_more_path(study)
+
+      expect(response.body).not_to include(ERB::Util.html_escape(I18n.t("self_reports.disclaimer.heading")))
+      expect(response.body).not_to include('name="reported_city"')
+      expect(response.body).not_to include('name="files[]"')
+      expect(response.body).not_to include('name="future_studies_authorization"')
+      expect(response.body).to include(ERB::Util.html_escape(I18n.t("self_reports.consent_note")))
+    end
+
+    it "ends page 2 with the thanks, the answers stored and a consent for them" do
+      post study_self_report_path(study), params: { answers: { age.id.to_s => "30" } }
+      post study_self_report_more_path(study), params: { answers: { prompted_specific.id.to_s => "12" } }
+
+      expect(response).to redirect_to(study_about_path(study))
+      expect(flash[:notice]).to eq(I18n.t("self_reports.thanks"))
+      expect(flash[:analytics_events]).to eq(%w[participation_submitted self_report_completed])
+      expect(patient.patient_declarations.live.map(&:criteria_variable_id))
+        .to contain_exactly(age.id, prompted_specific.id)
+      expect(patient.consents.where(document_type: Consent::SELF_REPORT_QUESTIONNAIRE).count).to eq(2)
+    end
+
+    # Once per page, so the bit cannot be probed by going back and trying other
+    # answers — and the back button lands somewhere useful instead of an error.
+    it "cannot answer page 1 twice: going back from page 2 leads forward" do
+      post study_self_report_path(study), params: { answers: { age.id.to_s => "30" } }
+
+      get study_self_report_path(study)
+      expect(response).to redirect_to(study_self_report_more_path(study))
+
+      expect {
+        post study_self_report_path(study), params: { answers: { age.id.to_s => "9" } }
+      }.not_to change(PatientDeclaration, :count)
+      expect(response).to redirect_to(study_self_report_more_path(study))
+    end
+
+    it "cannot reach page 2 before answering page 1" do
+      get study_self_report_more_path(study)
+      expect(response).to redirect_to(study_self_report_path(study))
+
+      post study_self_report_more_path(study), params: { answers: { prompted_specific.id.to_s => "12" } }
+      expect(patient.patient_declarations).to be_empty
+    end
+
+    it "ignores an answer posted for the other page's question" do
+      post study_self_report_path(study),
+           params: { answers: { age.id.to_s => "30", prompted_specific.id.to_s => "12" } }
+
+      expect(patient.patient_declarations.live.map(&:criteria_variable_id)).to eq([ age.id ])
+    end
+
+    it "labels page 1's button Continuar only when a page 2 exists" do
+      get study_self_report_path(study)
+      expect(response.body).to include(%(value="#{I18n.t('self_reports.continue')}"))
+
+      prompted_specific.update!(patient_prompt: nil)
+      get study_self_report_path(study)
+      expect(response.body).to include(%(value="#{I18n.t('self_reports.submit')}"))
+    end
+
+    it "finishes on page 1 with the thanks when the study asks no specific question" do
+      prompted_specific.update!(patient_prompt: nil)
+
+      post study_self_report_path(study), params: { answers: { age.id.to_s => "30" } }
+
+      expect(response).to redirect_to(study_about_path(study))
+      expect(flash[:notice]).to eq(I18n.t("self_reports.thanks"))
+    end
+
+    # Nothing to rule anybody out on, so nobody is held back from page 2 —
+    # otherwise such a profile's specific questions could never be asked.
+    it "goes straight on to page 2 when the profile asks no basic question" do
+      age.update!(patient_prompt: nil)
+
+      post study_self_report_path(study), params: { answers: {} }
+
+      expect(response).to redirect_to(study_self_report_more_path(study))
     end
   end
 end

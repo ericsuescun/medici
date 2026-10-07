@@ -376,6 +376,10 @@ en:
     future_studies_text: "Optionally and independently of your participation in this study, you can authorize us to use your answers to consider you for other clinical studies in the future. Not authorizing does not affect your participation in this study."
     future_studies_accept: "I authorize being considered for other studies in the future."
     submit: "Send my answers"
+    continue: "Continue"
+    more:
+      title: "A few more questions"
+      intro: "Thank you! A few last questions so the centre comes to your assessment prepared."
     consent_note: "By sending, you authorize the processing of these answers to assess your eligibility for this study (Ley 1581 de 2012)."
     thanks: "Thank you! The centre will review your answers and contact you soon."
     not_a_match: "Thank you for answering. For now this study does not look like a match for your situation, but the centre keeps your details and will let you know if one that fits opens up."

@@ -1,0 +1,31 @@
+<%# One questionnaire question, shared by both pages. The patient_prompt and
+    nothing else — never the rule name, rule_summary, or min/max on the input,
+    all of which describe the protocol. Locals: cv, current (the live or
+    just-submitted declaration, or nil). %>
+<div class="mb-4">
+  <label class="form-label fw-semibold" for="answers_<%= cv.id %>"><%= cv.patient_prompt %></label>
+  <% if cv.value_type == "boolean" %>
+    <%= select_tag "answers[#{cv.id}]",
+          options_for_select([ [ t("self_reports.no_answer"), "" ],
+                               [ t("common.yes"), "true" ],
+                               [ t("common.no"), "false" ] ],
+                             current&.declined? ? "" : current&.answer),
+          class: "form-select", id: "answers_#{cv.id}" %>
+  <% elsif cv.value_type == "qualitative" %>
+    <%= select_tag "answers[#{cv.id}]",
+          options_for_select([ [ t("self_reports.no_answer"), "" ] ] + Array(cv.qualitative_scale).map { |o| [ o, o ] },
+                             current&.declined? ? "" : current&.answer),
+          class: "form-select", id: "answers_#{cv.id}" %>
+  <% else %>
+    <%# Plain number input — no min/max: bounds would leak the rule. %>
+    <%= number_field_tag "answers[#{cv.id}]", current&.declined? ? nil : current&.answer,
+          step: :any, class: "form-control", id: "answers_#{cv.id}" %>
+  <% end %>
+  <div class="form-check mt-1">
+    <%= check_box_tag "declined[#{cv.id}]", "1", current&.declined? || false,
+          class: "form-check-input", id: "declined_#{cv.id}" %>
+    <label class="form-check-label small text-muted" for="declined_<%= cv.id %>">
+      <%= t("self_reports.dont_know") %>
+    </label>
+  </div>
+</div>

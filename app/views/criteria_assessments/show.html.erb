@@ -12,6 +12,10 @@
     <%= @profile.name %><% if @profile.study %> · <%= Study.model_name.human %>: <%= @profile.study.public_title %><% end %>
   </p>
 
+  <%# ---- What the patient declared, then what the centre recorded ---- %>
+  <%= render "criteria_assessments/self_report_summary", result: @self_report_result %>
+  <p class="text-uppercase text-muted small fw-semibold mb-2"><%= t("criteria_assessments.recorded_heading") %></p>
+
   <%# ---- Verdict banner (basic tier) + the specific tier's own status ---- %>
   <%= render "criteria_assessments/verdict_banner", result: @result %>
   <%= render "criteria_assessments/specific_status", result: @result, patient: @patient %>
@@ -176,6 +180,7 @@
 
   <%# ---- Capture values ---- %>
   <% checks_by_var = @result.checks.index_by { |c| c.variable.id } %>
+  <% declared_checks = (@self_report_result&.checks || []).index_by { |c| c.variable.id } %>
 
   <%= form_with url: patient_criteria_assessment_path(@patient, criteria_profile_id: @profile.id), method: :patch do %>
     <%# Grouped by category first (decisive criteria on top, because they are the
@@ -187,40 +192,80 @@
       </div>
       <% category_vars.group_by(&:variable_type).each do |variable_type, vars| %>
       <h6 class="mt-3 text-muted text-uppercase small"><%= variable_type == "inclusion" ? Study.human_attribute_name(:inclusion_criteria) : Study.human_attribute_name(:exclusion_criteria) %></h6>
+      <%# Side by side (2026-10-06): what the PATIENT declared, read-only and
+          in blue like the summary at the top of the page, then the CENTRE's
+          record, which is the input. Before this the patient's answer was a
+          muted line under the rule name and the input sat under a "Valor del
+          paciente" header, so the rep's own pick read as the patient's.
+
+          The input records the FACT, not the verdict — "Sí, está embarazada",
+          never "Sí, cumple" — which is why the rule is stated as "Excluye si"
+          for an exclusion: "> 160" under an exclusion is what keeps the
+          patient out, not a requirement. %>
       <div class="table-responsive">
         <table class="table align-middle">
           <thead>
-            <tr><th><%= t("criteria_assessments.criterion") %></th><th><%= t("criteria_assessments.rule") %></th><th><%= t("criteria_assessments.patient_value") %></th><th><%= t("criteria_assessments.status") %></th></tr>
+            <tr>
+              <th><%= t("criteria_assessments.criterion") %></th>
+              <th class="bg-info-subtle"><%= t("criteria_assessments.capture.patient_column") %></th>
+              <th>
+                <%= t("criteria_assessments.capture.centre_column") %>
+                <div class="small fw-normal text-muted"><%= t("criteria_assessments.capture.centre_column_hint") %></div>
+              </th>
+              <th><%= t("criteria_assessments.status") %></th>
+            </tr>
           </thead>
           <tbody>
             <% vars.each do |cv| %>
               <% current = (@values_by_var[cv.id] || @values_by_name[cv.name])&.value %>
               <% status = checks_by_var[cv.id]&.status %>
+              <% declaration = @declarations_by_variable[cv.id] %>
+              <% how_id = "how_#{cv.id}" %>
               <tr>
                 <td>
-                  <%= cv.name %>
-                  <% if (declaration = @declarations_by_variable[cv.id]) %>
-                    <div class="small text-muted">
-                      <i class="bi bi-chat-left-quote"></i>
-                      <% if declaration.declined? %>
-                        <%= t("criteria_assessments.declared_dont_know") %>
-                      <% else %>
-                        <%= t("criteria_assessments.declared", value: declaration.answer) %>
+                  <div class="fw-semibold"><%= cv.name %></div>
+                  <div class="small text-muted">
+                    <%= t("criteria_assessments.capture.#{cv.exclusion? ? 'excludes_if' : 'requires'}", rule: cv.rule_summary) %>
+                  </div>
+                </td>
+                <td class="bg-info-subtle" style="min-width: 12rem">
+                  <% if declaration %>
+                    <%# The verdict at the far end, never inline after the answer:
+                        a "No" followed by "Cumple" reads as «No cumple». %>
+                    <div class="d-flex align-items-start gap-2">
+                      <div>
+                        <span class="declared-value fw-semibold"><%= declared_value(declaration) %></span>
+                        <% if declaration.prompt.present? %>
+                          <div class="small text-muted mt-1"><%= t("criteria_assessments.capture.asked", prompt: declaration.prompt) %></div>
+                        <% end %>
+                        <div class="small text-muted">
+                          <%= l(declaration.declared_at.to_date) %><% if declaration.recorded_by.nil? %> · <%= t("criteria_assessments.declared_by_patient") %><% end %>
+                        </div>
+                      </div>
+                      <% declared_check = declared_checks[cv.id] %>
+                      <% if declared_check && !declaration.declined? %>
+                        <div class="declared-verdict ms-auto flex-shrink-0"><%= check_status_badge(declared_check) %></div>
                       <% end %>
-                      · <%= l(declaration.declared_at.to_date) %>
-                      <% if declaration.recorded_by.nil? %>(<%= t("criteria_assessments.declared_by_patient") %>)<% end %>
                     </div>
+                  <% elsif cv.askable_to_patient? %>
+                    <span class="text-muted"><%= t("criteria_assessments.capture.not_answered") %></span>
+                  <% else %>
+                    <span class="text-muted fst-italic small"><%= t("criteria_assessments.capture.not_asked") %></span>
                   <% end %>
                 </td>
-                <td><span class="text-muted"><%= cv.rule_summary %></span></td>
-                <td style="max-width: 220px">
+                <td style="min-width: 13rem; max-width: 16rem">
+                  <% blank = [ t("criteria_assessments.capture.not_recorded"), "" ] %>
                   <% if cv.value_type == "boolean" %>
-                    <%= select_tag "values[#{cv.id}]", options_for_select([[t("common.none"), ""], [t("common.yes"), "true"], [t("common.no"), "false"]], current), class: "form-select form-select-sm" %>
+                    <%= select_tag "values[#{cv.id}]", options_for_select([ blank, [ t("common.yes"), "true" ], [ t("common.no"), "false" ] ], current),
+                                   class: "form-select form-select-sm", aria: { describedby: how_id } %>
                   <% elsif cv.value_type == "qualitative" %>
-                    <%= select_tag "values[#{cv.id}]", options_for_select([[t("common.none"), ""]] + Array(cv.qualitative_scale).map { |o| [o, o] }, current), class: "form-select form-select-sm" %>
+                    <%= select_tag "values[#{cv.id}]", options_for_select([ blank ] + Array(cv.qualitative_scale).map { |o| [ o, o ] }, current),
+                                   class: "form-select form-select-sm", aria: { describedby: how_id } %>
                   <% else %>
-                    <%= number_field_tag "values[#{cv.id}]", current, step: :any, class: "form-control form-control-sm" %>
+                    <%= number_field_tag "values[#{cv.id}]", current, step: :any,
+                                         class: "form-control form-control-sm", aria: { describedby: how_id } %>
                   <% end %>
+                  <div id="<%= how_id %>" class="form-text"><%= t("criteria_assessments.capture.how.#{cv.value_type}") %></div>
                 </td>
                 <td>
                   <% if status == :pass %>

@@ -107,7 +107,6 @@ en:
       other: "%{count} criteria are not met."
     criterion: "Criterion"
     rule: "Rule"
-    patient_value: "Patient value"
     status: "Status"
     pass: "Met"
     fail: "Not met"
@@ -139,9 +138,33 @@ en:
     locked:
       assess: "To move this patient from %{from} to %{to} you must record a value for every basic criterion, and all of them must be met."
       accept: "To promote this patient from %{from} to %{to} you must have recorded and met every basic criterion AND every specific one. What the patient declared is not enough at this step."
-    declared: "Patient declared: %{value}"
-    declared_dont_know: "Patient declared: don't know"
     declared_by_patient: "self-reported"
+    capture:
+      patient_column: "Declared by the patient"
+      centre_column: "Centre's record"
+      centre_column_hint: "What you verify or measure"
+      requires: "Requires: %{rule}"
+      excludes_if: "Excludes if: %{rule}"
+      asked: "Question: %{prompt}"
+      not_answered: "No answer"
+      not_asked: "Not asked to the patient"
+      not_recorded: "— Not recorded —"
+      how:
+        boolean: "Record the fact (Yes or No); the system works out whether it is met."
+        quantitative: "Enter the measured number."
+        qualitative: "Choose the option that applies."
+    recorded_heading: "Recorded by the centre"
+    declared_column: "Declared"
+    recorded_column: "Recorded"
+    self_report:
+      title: "What the patient declared"
+      basic: "By their own answers they meet %{met} of %{total} basic criteria."
+      specific: "Specific: %{met} of %{total} met by what they declared."
+      basic_failing:
+        one: "%{count} basic criterion is not met by their answer."
+        other: "%{count} basic criteria are not met by their answers."
+      note: "This is testimony, not a measurement: it can take the patient to %{candidate}, never to %{potential}. The verdict, score and counts below reflect only what the centre recorded."
+      dont_know: "I don't know"
     brief:
       passing: "Met"
       out_of_reach: "Out of reach"

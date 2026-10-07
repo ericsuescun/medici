@@ -118,10 +118,11 @@ namespace :demo do
     # Every study that lacks one, INCLUDING a real study that has none: that is
     # what makes the eligibility engine, the recruitment score and the
     # questionnaire show anything at all. Shape comes from the seeder: 25
-    # criteria with exactly 5 primary (2 inclusion + 3 exclusion), each of the
-    # five patient-answerable and carrying a prompt, everything clinic-measured
-    # left secondary. That 5 is a ceiling, not a ratio — the primary criteria
-    # ARE the questions the patient is asked, and the form has to stay finishable.
+    # criteria with exactly 5 basic (2 inclusion + 3 exclusion), each of the
+    # five patient-answerable and carrying a prompt; the other 20 are specific,
+    # and only the 6 a patient can honestly speak to carry one. That 5 is a
+    # ceiling, not a ratio — the basic criteria decide triage, and the form has
+    # to stay finishable.
     created = ExampleCriteriaProfiles.seed!(Study.all, owner: owner)
     puts "   profiles: #{created} created (#{CriteriaProfile.count} total, #{CriteriaVariable.count} criteria)"
 
@@ -155,7 +156,7 @@ namespace :demo do
     demo_studies.each do |study|
       next if study.patients.where("participant_code LIKE ?", "#{DEMO_CODE_PREFIX}%").any?
 
-      2.times { demo_patient!(study, state: "participant") }
+      2.times { demo_patient!(study, state: "potential") }
       2.times { demo_patient!(study, state: "candidate") }
       2.times { demo_patient!(study, state: "interested") }
       # The shape most people actually arrive in: a phone number and nothing

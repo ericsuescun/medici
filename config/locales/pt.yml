@@ -374,6 +374,10 @@ pt:
     future_studies_text: "De forma opcional e independente da sua participação neste estudo, você pode nos autorizar a usar suas respostas para considerá-lo em outros estudos clínicos no futuro. Não autorizar não afeta sua participação neste estudo."
     future_studies_accept: "Autorizo ser considerado para outros estudos no futuro."
     submit: "Enviar minhas respostas"
+    continue: "Continuar"
+    more:
+      title: "Mais algumas perguntas"
+      intro: "Obrigado! Algumas últimas perguntas para que o centro chegue preparado à sua avaliação."
     consent_note: "Ao enviar, você autoriza o tratamento destas respostas para avaliar sua elegibilidade neste estudo (Ley 1581 de 2012)."
     thanks: "Obrigado! O centro revisará suas respostas e entrará em contato em breve."
     not_a_match: "Obrigado por responder. Por enquanto este estudo não parece corresponder à sua situação, mas o centro guarda os seus dados e avisará se abrir algum que encaixe."

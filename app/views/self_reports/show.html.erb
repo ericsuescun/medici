@@ -1,10 +1,14 @@
-<%# Step 2 of the public participation flow — the self-report questionnaire.
-    Renders ONLY each rule's patient_prompt: never the rule name, thresholds,
-    rule_summary, or min/max on inputs (they describe the protocol), and never
-    any verdict or per-answer feedback (the form must not be an oracle a
-    patient can optimise against). Everything here is optional — the copy says
-    "fill in what you can" — except nothing: even submitting zero answers is
-    allowed. Spanish-first copy like the rest of the public flow. %>
+<%# Step 2 of the public participation flow — page 1 of the self-report
+    questionnaire: the BASIC questions, plus everything that is not a criterion
+    (city, files, the future-studies consent), which every patient must be able
+    to reach — page 2 is only for those the basic answers keep in the running
+    (see SelfReportsController). Renders ONLY each rule's patient_prompt: never
+    the rule name, thresholds, rule_summary, or min/max on inputs (they describe
+    the protocol), and never any verdict or per-answer feedback (the form must
+    not be an oracle a patient can optimise against). Everything here is
+    optional — the copy says "fill in what you can" — except nothing: even
+    submitting zero answers is allowed. Spanish-first copy like the rest of the
+    public flow. %>
 <% content_for :title, t("self_reports.title") %>
 
 <div class="container my-5">
@@ -15,7 +19,7 @@
           <h1 class="h4 mb-0"><%= t("self_reports.title") %></h1>
         </div>
         <div class="card-body">
-          <p class="mb-1"><strong><%= @study.public_title %></strong></p>
+          <p class="mb-1"><strong><%= @study.display_title %></strong></p>
 
           <%# WHO IS RESPONSIBLE FOR WHAT, read before anything is answered.
               Written as a statement of roles, NOT as a waiver: Ley 1480 de 2011
@@ -79,35 +83,8 @@
               </div>
             <% end %>
 
-            <% @questions.each do |cv| %>
-              <% current = @declarations_by_variable[cv.id] %>
-              <div class="mb-4">
-                <label class="form-label fw-semibold" for="answers_<%= cv.id %>"><%= cv.patient_prompt %></label>
-                <% if cv.value_type == "boolean" %>
-                  <%= select_tag "answers[#{cv.id}]",
-                        options_for_select([ [ t("self_reports.no_answer"), "" ],
-                                             [ t("common.yes"), "true" ],
-                                             [ t("common.no"), "false" ] ],
-                                           current&.declined? ? "" : current&.answer),
-                        class: "form-select", id: "answers_#{cv.id}" %>
-                <% elsif cv.value_type == "qualitative" %>
-                  <%= select_tag "answers[#{cv.id}]",
-                        options_for_select([ [ t("self_reports.no_answer"), "" ] ] + Array(cv.qualitative_scale).map { |o| [ o, o ] },
-                                           current&.declined? ? "" : current&.answer),
-                        class: "form-select", id: "answers_#{cv.id}" %>
-                <% else %>
-                  <%# Plain number input — no min/max: bounds would leak the rule. %>
-                  <%= number_field_tag "answers[#{cv.id}]", current&.declined? ? nil : current&.answer,
-                        step: :any, class: "form-control", id: "answers_#{cv.id}" %>
-                <% end %>
-                <div class="form-check mt-1">
-                  <%= check_box_tag "declined[#{cv.id}]", "1", current&.declined? || false,
-                        class: "form-check-input", id: "declined_#{cv.id}" %>
-                  <label class="form-check-label small text-muted" for="declined_<%= cv.id %>">
-                    <%= t("self_reports.dont_know") %>
-                  </label>
-                </div>
-              </div>
+            <% @basic_questions.each do |cv| %>
+              <%= render "question", cv: cv, current: @declarations_by_variable[cv.id] %>
             <% end %>
 
             <%# City — for matching the person to a nearby centre. Picker is the
@@ -147,7 +124,10 @@
             </div>
 
             <div class="d-grid mt-3">
-              <%= submit_tag t("self_reports.submit"), class: "btn btn-success" %>
+              <%# "Continuar" when a second page may follow — it does not for every
+                  patient, but the label must not depend on their answers. %>
+              <%= submit_tag t(@specific_questions.any? ? "self_reports.continue" : "self_reports.submit"),
+                             class: "btn btn-success" %>
             </div>
             <p class="small text-muted text-center mt-2 mb-0"><%= t("self_reports.consent_note") %></p>
           <% end %>

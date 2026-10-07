@@ -107,7 +107,6 @@ fr:
       other: "%{count} critères ne sont pas remplis."
     criterion: "Critère"
     rule: "Règle"
-    patient_value: "Valeur du patient"
     status: "Statut"
     pass: "Rempli"
     fail: "Non rempli"
@@ -139,9 +138,33 @@ fr:
     locked:
       assess: "Pour faire passer ce patient de %{from} à %{to}, vous devez enregistrer une valeur pour chaque critère de base, et tous doivent être remplis."
       accept: "Pour promouvoir ce patient de %{from} à %{to}, vous devez avoir enregistré et rempli tous les critères de base ET tous les critères spécifiques. Les déclarations du patient ne suffisent pas à cette étape."
-    declared: "Le patient a déclaré : %{value}"
-    declared_dont_know: "Le patient a déclaré : ne sait pas"
     declared_by_patient: "auto-déclaré"
+    capture:
+      patient_column: "Déclaré par le patient"
+      centre_column: "Relevé du centre"
+      centre_column_hint: "Ce que vous vérifiez ou mesurez"
+      requires: "Exige : %{rule}"
+      excludes_if: "Exclut si : %{rule}"
+      asked: "Question : %{prompt}"
+      not_answered: "Sans réponse"
+      not_asked: "Non demandé au patient"
+      not_recorded: "— Non enregistré —"
+      how:
+        boolean: "Enregistrez le fait (Oui ou Non) ; le système calcule s'il est rempli."
+        quantitative: "Saisissez le nombre mesuré."
+        qualitative: "Choisissez l'option qui convient."
+    recorded_heading: "Enregistré par le centre"
+    declared_column: "Déclaré"
+    recorded_column: "Enregistré"
+    self_report:
+      title: "Ce que le patient a déclaré"
+      basic: "D'après ses propres réponses, il remplit %{met} des %{total} critères de base."
+      specific: "Spécifiques : %{met} sur %{total} remplis d'après ses déclarations."
+      basic_failing:
+        one: "%{count} critère de base n'est pas rempli d'après sa réponse."
+        other: "%{count} critères de base ne sont pas remplis d'après ses réponses."
+      note: "C'est un témoignage, pas une mesure : il peut amener le patient à %{candidate}, jamais à %{potential}. Le verdict, le score et les décomptes ci-dessous ne reflètent que ce que le centre a enregistré."
+      dont_know: "Je ne sais pas"
     brief:
       passing: "Remplis"
       out_of_reach: "Hors de portée"

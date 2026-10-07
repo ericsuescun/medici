@@ -1,0 +1,43 @@
+<%# Page 2 of the self-report questionnaire — the SPECIFIC questions. Reached
+    only by a patient the basic answers on page 1 kept in the running (see
+    SelfReportsController#ask_specific?). Nothing answered here can move the
+    patient: specific declarations are testimony, and the step they gate reads
+    investigator values only. What they buy is a better-prepared first call and
+    a place higher in the rep's queue.
+
+    No disclaimer, no exclusions, no extras: all of that was read and answered
+    on page 1, and repeating it would only make this page longer. Same rules as
+    page 1 otherwise — prompts only, nothing that describes the protocol, no
+    verdict per answer. %>
+<% content_for :title, t("self_reports.more.title") %>
+
+<div class="container my-5">
+  <div class="row">
+    <div class="col-lg-7 mx-auto">
+      <div class="card health-card shadow-sm">
+        <div class="card-header">
+          <h1 class="h4 mb-0"><%= t("self_reports.more.title") %></h1>
+        </div>
+        <div class="card-body">
+          <p class="mb-1"><strong><%= @study.display_title %></strong></p>
+
+          <div class="alert alert-info">
+            <p class="mb-1"><%= t("self_reports.more.intro") %></p>
+            <p class="mb-0 small text-muted"><%= t("self_reports.fill_what_you_can") %></p>
+          </div>
+
+          <%= form_with url: study_self_report_more_path(@study), method: :post do %>
+            <% @specific_questions.each do |cv| %>
+              <%= render "question", cv: cv, current: @declarations_by_variable[cv.id] %>
+            <% end %>
+
+            <div class="d-grid mt-3">
+              <%= submit_tag t("self_reports.submit"), class: "btn btn-success" %>
+            </div>
+            <p class="small text-muted text-center mt-2 mb-0"><%= t("self_reports.consent_note") %></p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
