@@ -179,15 +179,22 @@ module ExampleCriteriaProfiles
   # Fills BLANK prompts only, matched by rule name, and only on profiles this
   # module built: a prompt somebody edited by hand is theirs to keep, and a
   # profile written by anybody else is not ours to reword. Returns the count.
-  def self.fill_missing_prompts!
+  #
+  # `studies:` limits it further, and outside development it is not optional in
+  # spirit: demo:review_data gave REAL studies example profiles too (production
+  # study #1 has one), and a prompt is a question put to that study's real
+  # applicants. Production runs pass the [DEMO] studies explicitly.
+  def self.fill_missing_prompts!(studies: nil)
     prompts = (CORE_BASIC + CORE_SPECIFIC + AREAS.values.flatten(1))
               .select { |row| row[6].present? }
               .to_h { |row| [ row[1], row[6] ] }
 
-    CriteriaVariable.joins(:criteria_profile)
-                    .where(criteria_profiles: { name: AREA_NAMES.map { |area| profile_name(area) } })
-                    .where(name: prompts.keys, patient_prompt: [ nil, "" ])
-                    .find_each.count { |cv| cv.update!(patient_prompt: prompts.fetch(cv.name)) }
+    scope = CriteriaVariable.joins(:criteria_profile)
+                            .where(criteria_profiles: { name: AREA_NAMES.map { |area| profile_name(area) } })
+                            .where(name: prompts.keys, patient_prompt: [ nil, "" ])
+    scope = scope.where(criteria_profiles: { study_id: studies }) unless studies.nil?
+
+    scope.find_each.count { |cv| cv.update!(patient_prompt: prompts.fetch(cv.name)) }
   end
 
   def self.build_profile!(study, area, owner)
