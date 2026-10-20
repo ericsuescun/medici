@@ -10,12 +10,12 @@
     declaration is enough for the triage step and never for the clinical one,
     which is what the note says.
 
-    The declared column only appears when the patient answered something; a
-    patient the centre entered by hand gets the recorded column alone. Locals:
+    The patient's column is always there; with no answers it says "Sin
+    respuestas" rather than disappearing (2026-10-19). Locals:
       recorded — the patient's eligibility_result (recorded values)
       declared — the patient's self_report_result, or nil
 %>
-<% show_declared = declared.present? && declared.answered_count.positive? %>
+<% show_declared = declared.present? %>
 <% candidate = t("patients.states.candidate") %>
 <% potential = t("patients.states.potential") %>
 <% tiers = [ [ :basic, t("criteria_assessments.tiers.basic_gate", candidate: candidate) ],

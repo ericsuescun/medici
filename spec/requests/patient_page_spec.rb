@@ -166,15 +166,20 @@ RSpec.describe "Patient page (demographic + clinical)", type: :request do
       end
     end
 
-    it "shows no declared column, in the tiers or the table, for a patient who never answered" do
+    # Flipped 2026-10-19. The column used to vanish for a patient who never
+    # answered, which read as "this page does not show answers" rather than
+    # "this patient gave none" — and seeded Candidatos with no evidence at all
+    # made that worth being crystal clear about.
+    it "says outright that a patient who never answered has no answers, in the box and the table" do
       primary_rule!(name: "Edad")
 
       get patient_path(patient)
 
-      expect(response.body).not_to include(I18n.t("criteria_assessments.tiers.declared"))
-      expect(response.body).not_to include(I18n.t("criteria_assessments.declared_column"))
-      expect(response.body).not_to include('data-source="declared"')
-      expect(tally(:basic, :recorded)).to include(I18n.t("criteria_assessments.tiers.done_recorded", done: 0, total: 1))
+      declared = tally(:basic, :declared)
+      expect(declared).to include(I18n.t("criteria_assessments.tiers.done_declared", done: 0, total: 1))
+      expect(declared).to include(I18n.t("criteria_assessments.tiers.no_answers"))
+      expect(response.body).to include(I18n.t("criteria_assessments.declared_column"))
+      expect(tally(:basic, :recorded)).to include(I18n.t("criteria_assessments.tiers.not_recorded"))
     end
 
     it "marks an unmeasured criterion as no-data rather than as a failure" do

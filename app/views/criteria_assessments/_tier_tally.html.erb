@@ -16,8 +16,14 @@
   <div class="small fw-semibold text-body-secondary"><%= t("criteria_assessments.tiers.#{source}") %></div>
   <div class="fs-5 fw-bold <%= tone %>"><%= t("criteria_assessments.tiers.done_#{source}", done: done, total: total) %></div>
   <div class="small">
-    <span class="text-success-emphasis"><i class="bi bi-check-circle" aria-hidden="true"></i> <%= t("criteria_assessments.tiers.passing", count: met) %></span>
-    ·
-    <span class="<%= failing.positive? ? "text-danger-emphasis fw-semibold" : "text-body-secondary" %>"><i class="bi bi-x-circle" aria-hidden="true"></i> <%= t("criteria_assessments.tiers.failing", count: failing) %></span>
+    <% if done.zero? %>
+      <%# Said outright, not "0 cumplen · 0 no cumplen": a patient with no answer
+          at all must read as exactly that (2026-10-19). %>
+      <span class="text-body-secondary fst-italic" data-empty><%= t(source == :declared ? "criteria_assessments.tiers.no_answers" : "criteria_assessments.tiers.not_recorded") %></span>
+    <% else %>
+      <span class="text-success-emphasis"><i class="bi bi-check-circle" aria-hidden="true"></i> <%= t("criteria_assessments.tiers.passing", count: met) %></span>
+      ·
+      <span class="<%= failing.positive? ? "text-danger-emphasis fw-semibold" : "text-body-secondary" %>"><i class="bi bi-x-circle" aria-hidden="true"></i> <%= t("criteria_assessments.tiers.failing", count: failing) %></span>
+    <% end %>
   </div>
 </div>

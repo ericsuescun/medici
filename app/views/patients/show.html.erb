@@ -152,9 +152,9 @@
                 the summary counting only what the centre recorded, so a patient
                 who answered every question read as if they had answered none.
 
-                The patient's column appears only when they answered the
-                questionnaire. %>
-            <% show_declared = @declarations_by_variable.any? %>
+                The patient's box and column are ALWAYS there, even when they
+                answered nothing (2026-10-19): a missing column read as "this
+                page does not show answers", not as "this patient gave none". %>
             <% declared_checks = (@self_report_result&.checks || []).index_by { |c| c.variable.id } %>
             <% tiers = [ [ :basic, result.basic_checks, t("criteria_assessments.tiers.basic_gate", candidate: t("patients.states.candidate")) ],
                          [ :specific, result.specific_checks, t("criteria_assessments.tiers.specific_gate", potential: t("patients.states.potential")) ] ]
@@ -170,10 +170,8 @@
                 </div>
 
                 <div class="row g-2 mb-2">
-                  <% if show_declared %>
-                    <div class="col-sm-6"><%= render "criteria_assessments/tier_tally", result: @self_report_result, tier: tier, source: :declared %></div>
-                  <% end %>
-                  <div class="<%= show_declared ? "col-sm-6" : "col-12" %>"><%= render "criteria_assessments/tier_tally", result: result, tier: tier, source: :recorded %></div>
+                  <div class="col-sm-6"><%= render "criteria_assessments/tier_tally", result: @self_report_result, tier: tier, source: :declared %></div>
+                  <div class="col-sm-6"><%= render "criteria_assessments/tier_tally", result: result, tier: tier, source: :recorded %></div>
                 </div>
 
                 <div class="table-responsive">
@@ -183,14 +181,12 @@
                         <th><%= t("criteria_assessments.criterion") %></th>
                         <th><%= CriteriaVariable.human_attribute_name(:variable_type) %></th>
                         <th><%= t("criteria_assessments.rule") %></th>
-                        <% if show_declared %>
-                          <th class="bg-info-subtle"><%= t("criteria_assessments.declared_column") %></th>
-                        <% end %>
+                        <th class="bg-info-subtle"><%= t("criteria_assessments.declared_column") %></th>
                         <th><%= t("criteria_assessments.recorded_column") %></th>
                         <%# Beside a Declarado column, a bare "Estado" reading "Sin dato" next
                             to a declared "Cumple" looks like a contradiction; it is the
                             centre's status, so it says so. %>
-                        <th><%= t(show_declared ? "criteria_assessments.recorded_status" : "criteria_assessments.status") %></th>
+                        <th><%= t("criteria_assessments.recorded_status") %></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -199,22 +195,20 @@
                           <td><%= check.variable.name %></td>
                           <td><%= variable_type_badge(check.variable) %></td>
                           <td class="small text-muted"><%= check.variable.rule_summary %></td>
-                          <% if show_declared %>
-                            <td class="bg-info-subtle">
-                              <% if (declaration = @declarations_by_variable[check.variable.id]) %>
-                                <%# Verdict at the far end, never inline: «No» + «Cumple» reads as «No cumple». %>
-                                <div class="d-flex align-items-start gap-2">
-                                  <div><span class="declared-value"><%= declared_value(declaration) %></span></div>
-                                  <% declared_check = declared_checks[check.variable.id] %>
-                                  <% if declared_check && !declaration.declined? %>
-                                    <div class="declared-verdict ms-auto flex-shrink-0"><%= check_status_badge(declared_check) %></div>
-                                  <% end %>
-                                </div>
-                              <% else %>
-                                <span class="text-muted">—</span>
-                              <% end %>
-                            </td>
-                          <% end %>
+                          <td class="bg-info-subtle">
+                            <% if (declaration = @declarations_by_variable[check.variable.id]) %>
+                              <%# Verdict at the far end, never inline: «No» + «Cumple» reads as «No cumple». %>
+                              <div class="d-flex align-items-start gap-2">
+                                <div><span class="declared-value"><%= declared_value(declaration) %></span></div>
+                                <% declared_check = declared_checks[check.variable.id] %>
+                                <% if declared_check && !declaration.declined? %>
+                                  <div class="declared-verdict ms-auto flex-shrink-0"><%= check_status_badge(declared_check) %></div>
+                                <% end %>
+                              </div>
+                            <% else %>
+                              <span class="text-muted">—</span>
+                            <% end %>
+                          </td>
                           <td>
                             <% if check.value.present? %>
                               <%= check.value %>
@@ -230,11 +224,9 @@
                 </div>
               </section>
             <% end %>
-            <% if show_declared %>
-              <p class="small text-muted mb-0">
-                <%= t("criteria_assessments.tiers.note", candidate: t("patients.states.candidate"), potential: t("patients.states.potential")) %>
-              </p>
-            <% end %>
+            <p class="small text-muted mb-0">
+              <%= t("criteria_assessments.tiers.note", candidate: t("patients.states.candidate"), potential: t("patients.states.potential")) %>
+            </p>
           <% end %>
         </div>
       </div>
