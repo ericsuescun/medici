@@ -150,6 +150,8 @@ en:
       not_asked: "Not asked to the patient"
       ask_it: "Ask by phone or in consultation:"
       not_recorded: "— Not recorded —"
+      prefilled: "Taken from the patient's answer; check it."
+      prefill_note: "Fields in blue already carry the patient's answer. When you save, they are recorded by the centre under your name: check each one before saving."
       how:
         boolean: "Record the fact (Yes or No); the system works out whether it is met."
         quantitative: "Enter the measured number."

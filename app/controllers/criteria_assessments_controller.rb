@@ -16,9 +16,16 @@ class CriteriaAssessmentsController < SecureApplicationController
     # as testimony beside each rule so the rep can verify rather than re-ask.
     # Never evaluated here: only investigator-recorded values feed @result.
     @declarations_by_variable = @patient.patient_declarations.live.index_by(&:criteria_variable_id)
-    # ...and summarised the same way the patient page does, so the banner and
-    # score (which read only recorded values) do not stand alone.
+    # ...and summarised per tier, beside what the centre recorded.
     @self_report_result = @profile.evaluate_self_reports(@patient)
+    # The patient's answer as the starting value of every input the centre has
+    # not recorded yet, so the rep verifies instead of retyping (2026-10-19).
+    @prefill_by_var = @variables.each_with_object({}) do |cv, prefill|
+      next if @values_by_var[cv.id] || @values_by_name[cv.name]
+
+      answer = prefill_from(@declarations_by_variable[cv.id], cv)
+      prefill[cv.id] = answer if answer
+    end
   end
 
   def update
@@ -105,5 +112,25 @@ class CriteriaAssessmentsController < SecureApplicationController
     @patient.variable_values.find_by(criteria_variable_id: cv.id) ||
       @patient.variable_values.where(criteria_variable_id: nil).find_by(name: cv.name) ||
       @patient.variable_values.build
+  end
+
+  # A declared answer as the starting value of the centre's input for `cv`, or
+  # nil when it cannot be one: no answer, "No sé", a rule whose type changed
+  # since the patient answered, or a value the input would not accept.
+  #
+  # Deliberately here and not on PatientDeclaration, which is built so that a
+  # declaration cannot be treated as a measurement. This does not treat it as
+  # one: it only fills an input. It becomes the centre's record when the rep
+  # saves, under the rep's name — which the page says above the form.
+  def prefill_from(declaration, cv)
+    return nil if declaration.nil? || declaration.declined? || declaration.answer.blank?
+    return nil unless declaration.value_type == cv.value_type
+
+    answer = declaration.answer
+    case cv.value_type
+    when "boolean" then answer if %w[true false].include?(answer)
+    when "qualitative" then answer if Array(cv.qualitative_scale).include?(answer)
+    else answer if Float(answer, exception: false)
+    end
   end
 end

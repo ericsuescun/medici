@@ -67,35 +67,37 @@ RSpec.describe "Criteria assessments", type: :request do
         )
       end
 
-      it "is computed from the primary criteria only, and a failing secondary does not lower it" do
+      # Since 2026-10-19 the only summary above the take-action card is the
+      # per-tier table; the score card, verdict banner and specific block that
+      # used to sit here restated the capture table and pushed it a screen down.
+      def recorded(tier)
+        Nokogiri::HTML(response.body).at_css(%(tr[data-tier="#{tier}"] td[data-source="recorded"])).text.squish
+      end
+
+      it "reports each tier on its own, so a failing specific criterion does not touch the basic one" do
         patch assessment_path, params: { values: { age.id.to_s => "30", height.id.to_s => "140" } }
         get assessment_path
 
-        expect(response.body).to include("Puntaje de reclutamiento")
-        expect(response.body).to include("100%")
-        expect(response.body).to include("Listo para promover")
-        # ...while the secondary failure is still reported, not hidden.
-        expect(response.body).to include("no se cumple")
+        expect(recorded(:basic)).to eq(I18n.t("criteria_assessments.tiers.met", met: 1, total: 1))
+        expect(recorded(:specific)).to include(I18n.t("criteria_assessments.tiers.failing", count: 1))
       end
 
-      it "reports a decisive criterion left unmeasured as still assessing" do
+      it "reports a basic criterion left unmeasured as not recorded" do
         patch assessment_path, params: { values: { height.id.to_s => "170" } }
         get assessment_path
 
-        expect(response.body).to include("0%")
-        expect(response.body).to include("En evaluación")
+        expect(recorded(:basic)).to eq(I18n.t("criteria_assessments.tiers.not_recorded"))
+        expect(recorded(:specific)).to eq(I18n.t("criteria_assessments.tiers.met", met: 1, total: 1))
       end
 
-      # A patient held up only by a complementary criterion must not be
-      # headlined "not eligible" — that is a warning, and the copy has to say
-      # SECONDARY so nobody reads it as a verdict.
-      it "warns about an unmet secondary criterion instead of calling the patient ineligible" do
+      it "goes straight from the tier table to the take-action card" do
         patch assessment_path, params: { values: { age.id.to_s => "30", height.id.to_s => "140" } }
         get assessment_path
+        body = CGI.unescapeHTML(response.body)
 
-        expect(response.body).to include(I18n.t("criteria_assessments.specific_status.title"))
-        expect(response.body).to include(I18n.t("criteria_assessments.eligible"))
-        expect(response.body).not_to include(I18n.t("criteria_assessments.basic.not_eligible_detail", count: 1))
+        expect(body).not_to include(I18n.t("criteria_assessments.score.title"))
+        expect(body).not_to include(I18n.t("criteria_assessments.brief.out_of_reach"))
+        expect(body.index("evidence-by-tier")).to be < body.index(I18n.t("criteria_assessments.brief.take_action"))
       end
 
       # Keyed on the section HINTS, not the headings: "Criterios específicos"
@@ -196,7 +198,7 @@ RSpec.describe "Criteria assessments", type: :request do
       end
     end
 
-    it "shows the brief's out-of-reach and pending sections" do
+    it "counts a failing and an unmeasured criterion in the tier table" do
       profile.criteria_variables.create!(
         name: "Peso", variable_type: "inclusion", value_type: "quantitative",
         comparison_type: "more_than", reference_value_1: 50
@@ -204,8 +206,92 @@ RSpec.describe "Criteria assessments", type: :request do
       patient.variable_values.create!(criteria_variable: age, name: "Edad", value: "50", value_type: "quantitative", comparison_type: "between_range")
 
       get assessment_path
-      expect(response.body).to include("fuera de alcance") # Edad = 50 fails the 18–40 range
-      expect(response.body).to include("por medir")        # Peso not yet measured
+      basic = Nokogiri::HTML(response.body).at_css('tr[data-tier="basic"] td[data-source="recorded"]').text.squish
+      expect(basic).to include(I18n.t("criteria_assessments.tiers.failing", count: 1)) # Edad = 50 fails 18–40
+      expect(basic).to include(I18n.t("criteria_assessments.tiers.unknown", count: 1)) # Peso not yet measured
+    end
+
+    # Eric's call, 2026-10-19: the rep should not have to type again what the
+    # patient already answered. Every input the centre has not recorded starts
+    # from the patient's answer, marked, and becomes the centre's record —
+    # under the rep's name — only when the rep saves.
+    describe "prefilling from what the patient answered" do
+      let!(:pregnancy) do
+        profile.criteria_variables.create!(
+          name: "Embarazo", variable_type: "exclusion", value_type: "boolean", comparison_type: "true",
+          patient_prompt: "¿Estás embarazada?"
+        )
+      end
+      let!(:intensity) do
+        profile.criteria_variables.create!(
+          name: "Intensidad", variable_type: "inclusion", value_type: "qualitative", comparison_type: "different",
+          qualitative_scale: %w[Leve Moderada Intensa], qualitative_value: "Leve", criteria_category: "specific",
+          patient_prompt: "¿Qué tan fuerte?"
+        )
+      end
+
+      def declare!(cv, answer, declined: false)
+        patient.patient_declarations.create!(
+          criteria_variable: cv, prompt: cv.patient_prompt || "¿?", answer: answer, declined: declined,
+          value_type: cv.value_type, capture_mode: "public_form", declared_at: Time.current
+        )
+      end
+
+      def input(cv)
+        Nokogiri::HTML(response.body).at_css(%([name="values[#{cv.id}]"]))
+      end
+
+      def shown_value(cv)
+        field = input(cv)
+        field.name == "select" ? field.at_css("option[selected]")&.[]("value") : field["value"]
+      end
+
+      it "starts every unrecorded input from the patient's answer, of every type, and marks it" do
+        declare!(age, "30")
+        declare!(pregnancy, "false")
+        declare!(intensity, "Intensa")
+
+        get assessment_path
+
+        expect(shown_value(age)).to eq("30")
+        expect(shown_value(pregnancy)).to eq("false")
+        expect(shown_value(intensity)).to eq("Intensa")
+        expect(input(age)["class"]).to include("bg-info-subtle")
+        expect(response.body.scan("data-prefilled").size).to eq(3)
+        expect(response.body).to include("data-prefill-note")
+      end
+
+      it "never overrides what the centre already recorded" do
+        declare!(age, "30")
+        patient.variable_values.create!(criteria_variable: age, name: "Edad", value: "55",
+                                        value_type: "quantitative", comparison_type: "between_range")
+        get assessment_path
+
+        expect(shown_value(age)).to eq("55")
+        expect(input(age)["class"]).not_to include("bg-info-subtle")
+        expect(response.body).not_to include("data-prefill-note")
+      end
+
+      it "leaves the input empty for a «No sé», or an answer the input would not accept" do
+        declare!(age, nil, declined: true)
+        declare!(intensity, "Insoportable") # not on the rule's scale
+
+        get assessment_path
+
+        expect(shown_value(age)).to be_blank
+        expect(shown_value(intensity)).to be_blank
+        expect(response.body).not_to include("data-prefilled")
+      end
+
+      it "records the prefilled answers as the centre's, under the rep's name, once saved" do
+        declare!(age, "30")
+        get assessment_path
+        patch assessment_path, params: { values: { age.id.to_s => shown_value(age) } }
+
+        value = patient.variable_values.find_by(criteria_variable: age)
+        expect(value.value).to eq("30")
+        expect(value.entered_by).to eq(admin_user)
+      end
     end
 
     # Recording the last basic criterion IS the trigger — the rep does not have
@@ -286,7 +372,7 @@ RSpec.describe "Criteria assessments", type: :request do
       get assessment_path
 
       expect(response.body).not_to include("bi-lock-fill")
-      expect(response.body).to include(I18n.t("criteria_assessments.score.recommendation.ready"))
+      expect(response.body).to include(transition_patient_path(patient, event: "accept"))
     end
   end
 

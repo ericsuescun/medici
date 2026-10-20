@@ -150,6 +150,8 @@ es:
       not_asked: "No se le pregunta al paciente"
       ask_it: "Preguntar por teléfono o en consulta:"
       not_recorded: "— Sin registrar —"
+      prefilled: "Tomado de la respuesta del paciente; verifíquelo."
+      prefill_note: "Los campos en azul ya traen lo que respondió el paciente. Al guardar, quedan registrados por el centro a su nombre: verifique cada uno antes de guardar."
       how:
         boolean: "Registre el hecho (Sí o No); el sistema calcula si cumple."
         quantitative: "Escriba el número medido."

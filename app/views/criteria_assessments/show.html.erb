@@ -12,98 +12,13 @@
     <%= @profile.name %><% if @profile.study %> · <%= Study.model_name.human %>: <%= @profile.study.public_title %><% end %>
   </p>
 
-  <%# ---- What the patient declared, then what the centre recorded ---- %>
+  <%# ---- Where the patient stands, per tier and per source ---- %>
+  <%# Only this table above the take-action card (2026-10-19). The page is for
+      FINISHING the assessment: the verdict banner, specific-criteria block,
+      % score, whole-profile tiles and failing/pending lists that used to sit
+      here all restated the capture table below, and pushed the action and the
+      inputs a screen down. %>
   <%= render "criteria_assessments/evidence_by_tier", recorded: @result, declared: @self_report_result %>
-  <p class="text-uppercase text-muted small fw-semibold mb-2"><%= t("criteria_assessments.recorded_heading") %></p>
-
-  <%# ---- Verdict banner (basic tier) + the specific tier's own status ---- %>
-  <%= render "criteria_assessments/verdict_banner", result: @result %>
-  <%= render "criteria_assessments/specific_status", result: @result, patient: @patient %>
-
-  <%# ---- Recruitment score: basic criteria only ---- %>
-  <div class="mb-4">
-    <%= render "criteria_assessments/score_card", result: @result %>
-  </div>
-
-  <%# ---- Brief: at-a-glance counts (whole profile, both categories) ---- %>
-  <div class="row g-3 mb-4">
-    <div class="col-6 col-md-3">
-      <div class="stat-card h-100 text-center p-3 border rounded">
-        <div class="fs-3 fw-bold text-success"><%= @result.passing.count %></div>
-        <div class="text-muted small"><%= t("criteria_assessments.brief.passing") %></div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="stat-card h-100 text-center p-3 border rounded">
-        <div class="fs-3 fw-bold text-danger"><%= @result.failing.count %></div>
-        <div class="text-muted small"><%= t("criteria_assessments.brief.out_of_reach") %></div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="stat-card h-100 text-center p-3 border rounded">
-        <div class="fs-3 fw-bold text-secondary"><%= @result.pending.count %></div>
-        <div class="text-muted small"><%= t("criteria_assessments.brief.pending") %></div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="stat-card h-100 text-center p-3 border rounded">
-        <div class="fs-3 fw-bold"><%= @result.answered_count %>/<%= @result.total_count %></div>
-        <div class="text-muted small"><%= t("criteria_assessments.brief.answered") %></div>
-      </div>
-    </div>
-  </div>
-
-  <%# ---- Brief: what blocks / what's left, so the investigator sees it at a glance ---- %>
-  <% if @result.failing.any? || @result.pending.any? %>
-    <div class="row g-3 mb-4">
-      <% if @result.failing.any? %>
-        <div class="col-md-6">
-          <div class="card border-danger h-100">
-            <div class="card-header bg-danger-subtle text-danger-emphasis fw-semibold">
-              <%= t("criteria_assessments.brief.out_of_reach_heading", count: @result.failing.count) %>
-            </div>
-            <ul class="list-group list-group-flush">
-              <% @result.failing.each do |c| %>
-                <li class="list-group-item d-flex justify-content-between align-items-start gap-2">
-                  <span>
-                    <strong><%= c.variable.name %></strong>
-                    <span class="badge bg-light text-dark border ms-1"><%= c.variable.variable_type == "exclusion" ? Study.human_attribute_name(:exclusion_criteria) : Study.human_attribute_name(:inclusion_criteria) %></span>
-                    <span class="badge border ms-1 <%= c.basic? ? "bg-primary-subtle text-primary-emphasis" : "bg-light text-secondary" %>"><%= t_enum(c.variable, :criteria_category) %></span>
-                    <div class="small text-muted">
-                      <%= t("criteria_assessments.brief.required") %>: <%= c.variable.rule_summary %> ·
-                      <%= t("criteria_assessments.brief.measured") %>: <span class="text-danger fw-semibold"><%= c.value %></span>
-                    </div>
-                  </span>
-                </li>
-              <% end %>
-            </ul>
-          </div>
-        </div>
-      <% end %>
-
-      <% if @result.pending.any? %>
-        <div class="col-md-6">
-          <div class="card border-secondary h-100">
-            <div class="card-header bg-secondary-subtle text-secondary-emphasis fw-semibold">
-              <%= t("criteria_assessments.brief.pending_heading", count: @result.pending.count) %>
-            </div>
-            <ul class="list-group list-group-flush">
-              <% @result.pending.each do |c| %>
-                <li class="list-group-item d-flex justify-content-between align-items-start gap-2">
-                  <span>
-                    <strong><%= c.variable.name %></strong>
-                    <span class="badge bg-light text-dark border ms-1"><%= c.variable.variable_type == "exclusion" ? Study.human_attribute_name(:exclusion_criteria) : Study.human_attribute_name(:inclusion_criteria) %></span>
-                    <span class="badge border ms-1 <%= c.basic? ? "bg-primary-subtle text-primary-emphasis" : "bg-light text-secondary" %>"><%= t_enum(c.variable, :criteria_category) %></span>
-                    <div class="small text-muted"><%= t("criteria_assessments.brief.required") %>: <%= c.variable.rule_summary %></div>
-                  </span>
-                </li>
-              <% end %>
-            </ul>
-          </div>
-        </div>
-      <% end %>
-    </div>
-  <% end %>
 
   <%# ---- Take action: promote the patient through the trial lifecycle ---- %>
   <% forward_event = @patient.forward_event %>
@@ -132,8 +47,8 @@
               can be 100% / :ready on the BASIC tier while the SPECIFIC tier
               holds the step, and promote_hint_ready says "Presione «Aceptar»
               para promover" — instructions to press a button rendered disabled
-              immediately below it. The score is in the card above; this line
-              says what is missing. patients/show already did it this way. %>
+              immediately below it. This line says what is missing.
+              patients/show already did it this way. %>
           <% if locked_forward %>
             <strong><%= t("criteria_assessments.locked.#{@patient.forward_event}", **hint_args) %></strong>
           <% elsif forward_allowed && @result.recommendation != :none %>
@@ -183,6 +98,13 @@
   <% declared_checks = (@self_report_result&.checks || []).index_by { |c| c.variable.id } %>
 
   <%= form_with url: patient_criteria_assessment_path(@patient, criteria_profile_id: @profile.id), method: :patch do %>
+    <% if @prefill_by_var.any? %>
+      <%# Prefilled inputs become the centre's record, under this rep's name,
+          the moment the form is saved — so say so before they press it. %>
+      <div class="alert alert-info small" data-prefill-note>
+        <i class="bi bi-info-circle"></i> <%= t("criteria_assessments.capture.prefill_note") %>
+      </div>
+    <% end %>
     <%# Grouped by category first (decisive criteria on top, because they are the
         ones that move the score), then by inclusion/exclusion as before. %>
     <% @variables.group_by(&:criteria_category).sort_by { |category, _| category == "basic" ? 0 : 1 }.each do |category, category_vars| %>
@@ -217,7 +139,13 @@
           </thead>
           <tbody>
             <% vars.each do |cv| %>
-              <% current = (@values_by_var[cv.id] || @values_by_name[cv.name])&.value %>
+              <% recorded = (@values_by_var[cv.id] || @values_by_name[cv.name])&.value %>
+              <%# Nothing recorded yet: start from what the patient answered, so the
+                  rep verifies instead of retyping (2026-10-19). A recorded value
+                  always wins; see CriteriaAssessmentsController#prefill_from. %>
+              <% prefilled = recorded.nil? && @prefill_by_var.key?(cv.id) %>
+              <% current = prefilled ? @prefill_by_var[cv.id] : recorded %>
+              <% input_class = prefilled ? " bg-info-subtle" : "" %>
               <% status = checks_by_var[cv.id]&.status %>
               <% declaration = @declarations_by_variable[cv.id] %>
               <% how_id = "how_#{cv.id}" %>
@@ -262,15 +190,20 @@
                   <% blank = [ t("criteria_assessments.capture.not_recorded"), "" ] %>
                   <% if cv.value_type == "boolean" %>
                     <%= select_tag "values[#{cv.id}]", options_for_select([ blank, [ t("common.yes"), "true" ], [ t("common.no"), "false" ] ], current),
-                                   class: "form-select form-select-sm", aria: { describedby: how_id } %>
+                                   class: "form-select form-select-sm#{input_class}", aria: { describedby: how_id } %>
                   <% elsif cv.value_type == "qualitative" %>
                     <%= select_tag "values[#{cv.id}]", options_for_select([ blank ] + Array(cv.qualitative_scale).map { |o| [ o, o ] }, current),
-                                   class: "form-select form-select-sm", aria: { describedby: how_id } %>
+                                   class: "form-select form-select-sm#{input_class}", aria: { describedby: how_id } %>
                   <% else %>
                     <%= number_field_tag "values[#{cv.id}]", current, step: :any,
-                                         class: "form-control form-control-sm", aria: { describedby: how_id } %>
+                                         class: "form-control form-control-sm#{input_class}", aria: { describedby: how_id } %>
                   <% end %>
-                  <div id="<%= how_id %>" class="form-text"><%= t("criteria_assessments.capture.how.#{cv.value_type}") %></div>
+                  <div id="<%= how_id %>" class="form-text">
+                    <% if prefilled %>
+                      <span class="d-block text-info-emphasis fw-semibold" data-prefilled><%= t("criteria_assessments.capture.prefilled") %></span>
+                    <% end %>
+                    <%= t("criteria_assessments.capture.how.#{cv.value_type}") %>
+                  </div>
                 </td>
                 <td>
                   <% if status == :pass %>
