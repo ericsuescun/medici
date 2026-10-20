@@ -145,7 +145,14 @@ module ExampleCriteriaProfiles
 
   # Outcomes the demo patients are built to land on, so a dev browsing the
   # patients index sees the whole spread rather than a wall of one colour.
-  OUTCOMES = %i[ready promising blocked pending untouched].freeze
+  # :potential and :ready are the two that move a patient (to Potencial and to
+  # Candidato); the rest leave them Interesado, for a reason the evidence shows.
+  OUTCOMES = %i[potential ready promising blocked ready pending potential untouched].freeze
+
+  # Who moved a seeded patient. The automatic step to Candidato is still signed
+  # by the sync itself (Patient::SYSTEM_WHODUNNIT); this signs the Aceptar a rep
+  # would have pressed, so the history says plainly that a seed pressed it.
+  SEED_WHODUNNIT = "seed:example-criteria-profiles".freeze
 
   # One profile per study (the DB enforces at most one), cycling the areas so a
   # dev sees several different rule sets. Studies that already own a profile are
@@ -220,9 +227,17 @@ module ExampleCriteriaProfiles
   end
 
   # Give the study's patients investigator-recorded values, spread across the
-  # recruitment outcomes. Deliberately NOT every patient: leaving some with no
-  # values at all is realistic (nobody has assessed them yet) and it exercises
-  # the `:pending` / unmeasured path.
+  # recruitment outcomes, and let the app put each one where those values say.
+  # Deliberately NOT every patient: leaving some with no values at all is
+  # realistic (nobody has assessed them yet) and it exercises the `:pending` /
+  # unmeasured path.
+  #
+  # The STATE follows from the evidence, never the other way round (2026-10-19).
+  # Seeds used to create patients already at Candidato/Potencial and then hand
+  # them values cycled through these outcomes with no regard for that state, so
+  # most of them sat at a step their own record said they had not earned — 87 of
+  # 134 candidates and 108 of 110 potentials in the dev graph. Now every patient
+  # starts Interesado and only `establish!` / the sync move them.
   def self.populate_answers!(profile)
     variables = profile.criteria_variables.to_a
     basic = variables.select(&:basic?)
@@ -236,6 +251,7 @@ module ExampleCriteriaProfiles
     profile.study.patients.staff_entered.each_with_index do |patient, i|
       outcome = OUTCOMES[i % OUTCOMES.size]
       next if outcome == :untouched
+      next establish!(patient, :potential) if outcome == :potential
 
       answers = {}
       # Specific criteria: mostly satisfied, with the occasional unmet one so
@@ -262,6 +278,54 @@ module ExampleCriteriaProfiles
       end
 
       write_values!(patient, answers)
+      # :ready meets every basic criterion, which is what files a patient as a
+      # candidate — the same automatic step a rep's save triggers.
+      patient.sync_state_with_criteria!
+    end
+  end
+
+  # Bring a staff-entered patient to `target` ("candidate" or "potential") the
+  # way the app would: record values consistent with it, let the sync file them
+  # as a candidate, and for potential press Aceptar — guarded, so it fails
+  # loudly if the values do not support it. Never writes the state column.
+  #
+  # Candidate: every basic criterion met; the specific tier mostly met, with
+  # the occasional failure, which is what holds a real candidate back.
+  # Potential: every basic AND every specific criterion met — what the step
+  # requires (Patient#criteria_met_for_potential?).
+  def self.establish!(patient, target)
+    profile = patient.study&.criteria_profile
+    return unless profile
+
+    basic, specific = profile.criteria_variables.to_a.partition(&:basic?)
+    answers = basic.to_h { |cv| [ cv, passing_value(cv) ] }
+    specific.each do |cv|
+      answers[cv] = target.to_s == "candidate" && rand < 0.2 ? failing_value(cv) : passing_value(cv)
+    end
+    write_values!(patient, answers)
+
+    patient.sync_state_with_criteria!
+    return unless target.to_s == "potential" && patient.reload.candidate?
+
+    PaperTrail.request(whodunnit: SEED_WHODUNNIT) { patient.accept! }
+  end
+
+  # Repair seeded patients whose state their own evidence does not support —
+  # the rows written before establish! existed. Each Candidato/Potencial the
+  # guards would refuse gets values consistent with where it stands (written
+  # over its old ones), so the demo keeps its spread. Anybody whose evidence
+  # already supports their state is left exactly as they are; returns the count
+  # repaired.
+  #
+  # INVENTS EVIDENCE. Only ever hand it fake patients: db/seeds.rb passes the
+  # dev graph's staff-entered patients, demo:reconcile_states the DEMO- ones.
+  def self.reconcile_states!(patients)
+    patients.select { |p| %w[candidate potential].include?(p.state) }.count do |patient|
+      supported = patient.candidate? ? patient.criteria_met_for_candidate? : patient.criteria_met_for_potential?
+      next false if supported || patient.study&.criteria_profile.nil?
+
+      establish!(patient, patient.state)
+      true
     end
   end
 

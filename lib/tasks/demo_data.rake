@@ -170,7 +170,22 @@ namespace :demo do
 
     puts "   patients: #{Patient.where('participant_code LIKE ?', "#{DEMO_CODE_PREFIX}%").count} demo " \
          "(#{Patient.count} total, #{Patient.where(state: 'candidate').count} candidates)"
+    # Demo patients from a run before establish! existed sit at a state their
+    # record does not support; this is idempotent for the rest.
+    puts "   states: #{reconcile_demo_states!} demo patients given evidence matching their state"
     puts "== done =="
+  end
+
+  # The production fix for the rows above, on its own so it can run without
+  # re-running the whole of review_data. DEMO- patients ONLY: it records
+  # values nobody measured, which is only acceptable on a patient who is not a
+  # person.
+  desc "Give DEMO- patients at Candidato/Potencial values that support their state (CONFIRM=yes)"
+  task reconcile_states: :environment do
+    abort "Refusing to run without CONFIRM=yes." unless ENV["CONFIRM"] == "yes"
+
+    require Rails.root.join("db/seeds/example_criteria_profiles")
+    puts "#{reconcile_demo_states!} demo patients given evidence matching their state."
   end
 
   desc "Remove ONLY the rows demo:review_data created (CONFIRM=yes)"
@@ -193,10 +208,24 @@ namespace :demo do
   # it can be queried and purged), and `display_name` falls back to it for a
   # lead, so anyone looking at the recruitment list sees "DEMO-…" and cannot
   # mistake the row for a real person who needs calling.
+  # Created Interesado and moved by evidence (ExampleCriteriaProfiles.establish!),
+  # never by writing `state:` — which is how the first demo patients ended up at
+  # Candidato and Potencial with no evidence at all (found 2026-10-19).
   def demo_patient!(study, state:, lead: false)
     traits = lead ? [ :patient, :lead ] : [ :patient ]
-    FactoryBot.create(*traits, study: study, state: state,
-                      participant_code: "#{DEMO_CODE_PREFIX}#{SecureRandom.alphanumeric(6).upcase}",
-                      reported_city: Patient::PRINCIPAL_CITIES.sample)
+    patient = FactoryBot.create(*traits, study: study,
+                                participant_code: "#{DEMO_CODE_PREFIX}#{SecureRandom.alphanumeric(6).upcase}",
+                                reported_city: Patient::PRINCIPAL_CITIES.sample)
+    ExampleCriteriaProfiles.establish!(patient, state) unless state == "interested"
+    patient
+  end
+
+  def reconcile_demo_states!
+    PaperTrail.request(whodunnit: "demo:reconcile_states") do
+      ExampleCriteriaProfiles.reconcile_states!(
+        Patient.where("participant_code LIKE ?", "#{DEMO_CODE_PREFIX}%")
+               .includes(:variable_values, :patient_declarations, study: { criteria_profile: :criteria_variables })
+      )
+    end
   end
 end

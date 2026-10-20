@@ -112,11 +112,11 @@ if Study.count < 10
       # a small recruitment goal so the progress bar shows meaningful fill...
       study.update!(study_status: rand < 0.8 ? "recruiting" : "completed",
                     sample_size: rand(8..20))
-      # ...and patients spread across the lifecycle states that fill it:
-      # potentials (green), candidates (yellow), interested (red).
-      rand(1..4).times { FactoryBot.create(:patient, :potential, study: study) }
-      rand(0..4).times { FactoryBot.create(:patient, :candidate, study: study) }
-      rand(2..5).times { FactoryBot.create(:patient, study: study) }
+      # ...and patients to fill it. All of them start Interesado: the spread
+      # across the lifecycle (potentials green, candidates yellow) comes from
+      # the evidence ExampleCriteriaProfiles.populate_answers! records below,
+      # never from writing the state — see the note on that method.
+      rand(4..11).times { FactoryBot.create(:patient, study: study) }
       FactoryBot.create_list(:article, rand(1..3), study: study)
       FactoryBot.create_list(:contact, rand(1..2), study: study)
       FactoryBot.create_list(:result, rand(1..4), study: study)
@@ -167,6 +167,15 @@ created = ExampleCriteriaProfiles.seed!
 prompted = ExampleCriteriaProfiles.fill_missing_prompts!
 puts "  profiles:    #{CriteriaProfile.count} (#{created} new, #{CriteriaVariable.count} criteria, " \
      "#{prompted} prompts filled in)"
+
+# A database seeded before 2026-10-19 holds Candidatos and Potenciales whose own
+# values say they never earned the step. Give those values that match where
+# they stand; everybody whose record already supports their state is untouched.
+repaired = ExampleCriteriaProfiles.reconcile_states!(
+  Patient.staff_entered.includes(:variable_values, :patient_declarations,
+                                 study: { criteria_profile: :criteria_variables })
+)
+puts "  states:      #{repaired} seeded patients given evidence matching their state"
 
 # --- The public step-2 questionnaire -----------------------------------------
 # Switched on for a third of the recruiting studies. The flag means "this
