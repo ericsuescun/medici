@@ -93,6 +93,22 @@ class ParticipationRequestsController < ApplicationController
     ActiveModel::Type::Boolean.new.cast(params.dig(:patient, :adult_confirmed))
   end
 
+  # This browser started the questionnaire for THIS study and has not finished
+  # it. The back button from the questions lands on this form, and sending it
+  # again creates a second patient while the first stays empty — which is how
+  # one person became two "Juan Restrepo"s on 2026-10-19, one of them with no
+  # answers at all. So the form offers the way forward first. It does not force
+  # it: the same browser may be registering somebody else (submitted_by_proxy),
+  # and their answers must never land on another person's record.
+  def questionnaire_in_progress?
+    stamp = session[SelfReportsController::SESSION_KEY]
+    return false if stamp.blank? || stamp["expires_at"].blank?
+    return false if Time.zone.parse(stamp["expires_at"]) < Time.current
+
+    Patient.where(id: stamp["patient_id"], study_id: @study.id).exists?
+  end
+  helper_method :questionnaire_in_progress?
+
   # Step 2 exists only when the study has approved patient-facing questions.
   def step_two_available?
     @study.patient_self_report_enabled? &&

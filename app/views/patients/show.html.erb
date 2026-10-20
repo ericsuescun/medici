@@ -137,89 +137,104 @@
           <% if result.nil? %>
             <p class="text-muted mb-0"><%= t("patient_briefings.no_profile") %></p>
           <% else %>
-            <%# What the patient declared first: it is what explains a Candidato
-                the centre has not measured yet. Everything under the heading
-                below reads only what the centre recorded. %>
-            <%= render "criteria_assessments/self_report_summary", result: @self_report_result %>
-            <p class="text-uppercase text-muted small fw-semibold mb-2"><%= t("criteria_assessments.recorded_heading") %></p>
-            <%= render "criteria_assessments/verdict_banner", result: result, compact: true %>
-            <%= render "criteria_assessments/specific_status", result: result, patient: @patient, compact: true %>
+            <%# One section per tier — basic first, because that is the order
+                the decision is made in: the basic set gates the step to
+                Candidato, the specific set (with the basic one) the step to
+                Potencial. Each section has the two sources of evidence side by
+                side — what the patient answered and what the centre recorded,
+                never added together — and then EVERY criterion of the tier
+                with both answers (the old briefing listed only the failing and
+                pending ones, so a rep could not see what a patient passed).
 
-            <div class="mb-3">
-              <%= render "criteria_assessments/score_card", result: result, compact: true %>
-            </div>
+                Reworked 2026-10-19. Before this the card stacked a summary, a
+                verdict banner, a specific-criteria block listing all twenty, a
+                % score and four whole-profile tiles above the table — all but
+                the summary counting only what the centre recorded, so a patient
+                who answered every question read as if they had answered none.
 
-            <div class="row g-2 mb-3">
-              <div class="col-3"><div class="stat-card text-center p-2 border rounded"><div class="fw-bold text-success"><%= result.passing.count %></div><div class="text-muted small"><%= t("criteria_assessments.brief.passing") %></div></div></div>
-              <div class="col-3"><div class="stat-card text-center p-2 border rounded"><div class="fw-bold text-danger"><%= result.failing.count %></div><div class="text-muted small"><%= t("criteria_assessments.brief.out_of_reach") %></div></div></div>
-              <div class="col-3"><div class="stat-card text-center p-2 border rounded"><div class="fw-bold text-secondary"><%= result.pending.count %></div><div class="text-muted small"><%= t("criteria_assessments.brief.pending") %></div></div></div>
-              <div class="col-3"><div class="stat-card text-center p-2 border rounded"><div class="fw-bold"><%= result.answered_count %>/<%= result.total_count %></div><div class="text-muted small"><%= t("criteria_assessments.brief.answered") %></div></div></div>
-            </div>
-
-            <%# EVERY criterion and its answer, basic block first. The old
-                briefing showed only the failing and pending ones, which meant a
-                rep could not see what a patient actually passed without opening
-                the assessment form. Basic before specific because that is
-                the order the decision is made in: the basic set gates the step
-                to candidate, the specific set the step to potential.
-
-                The DECLARED column appears when the patient answered the
-                questionnaire, beside the recorded one and never merged into it:
-                the status badge is the recorded value's, and the declared
-                answer carries its own. %>
+                The patient's column appears only when they answered the
+                questionnaire. %>
             <% show_declared = @declarations_by_variable.any? %>
             <% declared_checks = (@self_report_result&.checks || []).index_by { |c| c.variable.id } %>
-            <div class="table-responsive">
-              <table class="table table-sm align-middle mb-0">
-                <thead>
-                  <tr>
-                    <th><%= t("criteria_assessments.criterion") %></th>
-                    <th><%= CriteriaVariable.human_attribute_name(:criteria_category) %></th>
-                    <th><%= CriteriaVariable.human_attribute_name(:variable_type) %></th>
-                    <th><%= t("criteria_assessments.rule") %></th>
-                    <% if show_declared %>
-                      <th><%= t("criteria_assessments.declared_column") %></th>
-                    <% end %>
-                    <th><%= t("criteria_assessments.recorded_column") %></th>
-                    <th><%= t("criteria_assessments.status") %></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% (result.basic_checks + result.specific_checks).each do |check| %>
-                    <tr>
-                      <td><%= check.variable.name %></td>
-                      <td><%= criteria_category_badge(check.variable) %></td>
-                      <td><%= variable_type_badge(check.variable) %></td>
-                      <td class="small text-muted"><%= check.variable.rule_summary %></td>
-                      <% if show_declared %>
-                        <td>
-                          <% if (declaration = @declarations_by_variable[check.variable.id]) %>
-                            <%# Verdict at the far end, never inline: «No» + «Cumple» reads as «No cumple». %>
-                            <div class="d-flex align-items-start gap-2">
-                              <div><span class="declared-value"><%= declared_value(declaration) %></span></div>
-                              <% declared_check = declared_checks[check.variable.id] %>
-                              <% if declared_check && !declaration.declined? %>
-                                <div class="declared-verdict ms-auto flex-shrink-0"><%= check_status_badge(declared_check) %></div>
-                              <% end %>
-                            </div>
-                          <% else %>
-                            <span class="text-muted">—</span>
-                          <% end %>
-                        </td>
-                      <% end %>
-                      <td>
-                        <% if check.value.present? %>
-                          <%= check.value %>
-                        <% else %>
-                          <span class="text-muted">—</span>
-                        <% end %>
-                      </td>
-                      <td><%= check_status_badge(check) %></td>
-                    </tr>
+            <% tiers = [ [ :basic, result.basic_checks, t("criteria_assessments.tiers.basic_gate", candidate: t("patients.states.candidate")) ],
+                         [ :specific, result.specific_checks, t("criteria_assessments.tiers.specific_gate", potential: t("patients.states.potential")) ] ]
+                       .reject { |_, checks, _| checks.empty? } %>
+            <% if tiers.empty? %>
+              <p class="text-muted mb-0"><%= t("criteria_assessments.no_criteria") %></p>
+            <% end %>
+            <% tiers.each do |tier, checks, gate| %>
+              <section class="mb-4" data-tier="<%= tier %>">
+                <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-2">
+                  <h2 class="h6 fw-semibold mb-0"><%= t("criteria_assessments.tiers.#{tier}") %></h2>
+                  <span class="small text-muted"><%= gate %></span>
+                </div>
+
+                <div class="row g-2 mb-2">
+                  <% if show_declared %>
+                    <div class="col-sm-6"><%= render "criteria_assessments/tier_tally", result: @self_report_result, tier: tier, source: :declared %></div>
                   <% end %>
-                </tbody>
-              </table>
-            </div>
+                  <div class="<%= show_declared ? "col-sm-6" : "col-12" %>"><%= render "criteria_assessments/tier_tally", result: result, tier: tier, source: :recorded %></div>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table table-sm align-middle mb-0">
+                    <thead>
+                      <tr>
+                        <th><%= t("criteria_assessments.criterion") %></th>
+                        <th><%= CriteriaVariable.human_attribute_name(:variable_type) %></th>
+                        <th><%= t("criteria_assessments.rule") %></th>
+                        <% if show_declared %>
+                          <th class="bg-info-subtle"><%= t("criteria_assessments.declared_column") %></th>
+                        <% end %>
+                        <th><%= t("criteria_assessments.recorded_column") %></th>
+                        <%# Beside a Declarado column, a bare "Estado" reading "Sin dato" next
+                            to a declared "Cumple" looks like a contradiction; it is the
+                            centre's status, so it says so. %>
+                        <th><%= t(show_declared ? "criteria_assessments.recorded_status" : "criteria_assessments.status") %></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% checks.each do |check| %>
+                        <tr>
+                          <td><%= check.variable.name %></td>
+                          <td><%= variable_type_badge(check.variable) %></td>
+                          <td class="small text-muted"><%= check.variable.rule_summary %></td>
+                          <% if show_declared %>
+                            <td class="bg-info-subtle">
+                              <% if (declaration = @declarations_by_variable[check.variable.id]) %>
+                                <%# Verdict at the far end, never inline: «No» + «Cumple» reads as «No cumple». %>
+                                <div class="d-flex align-items-start gap-2">
+                                  <div><span class="declared-value"><%= declared_value(declaration) %></span></div>
+                                  <% declared_check = declared_checks[check.variable.id] %>
+                                  <% if declared_check && !declaration.declined? %>
+                                    <div class="declared-verdict ms-auto flex-shrink-0"><%= check_status_badge(declared_check) %></div>
+                                  <% end %>
+                                </div>
+                              <% else %>
+                                <span class="text-muted">—</span>
+                              <% end %>
+                            </td>
+                          <% end %>
+                          <td>
+                            <% if check.value.present? %>
+                              <%= check.value %>
+                            <% else %>
+                              <span class="text-muted">—</span>
+                            <% end %>
+                          </td>
+                          <td><%= check_status_badge(check) %></td>
+                        </tr>
+                      <% end %>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            <% end %>
+            <% if show_declared %>
+              <p class="small text-muted mb-0">
+                <%= t("criteria_assessments.tiers.note", candidate: t("patients.states.candidate"), potential: t("patients.states.potential")) %>
+              </p>
+            <% end %>
           <% end %>
         </div>
       </div>

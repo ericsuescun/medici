@@ -58,7 +58,7 @@
                     <th><%= CriteriaVariable.human_attribute_name(:qualitative_scale) %></th>
                     <th><%= CriteriaVariable.human_attribute_name(:qualitative_value) %></th>
                     <th><%= CriteriaVariable.human_attribute_name(:enabled) %></th>
-                    <th><%= CriteriaVariable.human_attribute_name(:shown) %></th>
+                    <th><%= CriteriaVariable.human_attribute_name(:asked_online) %></th>
                   </tr>
                   </thead>
                   <tbody>
@@ -83,7 +83,7 @@
                         <%= boolean_checkbox(variable.enabled?, label: CriteriaVariable.human_attribute_name(:enabled)) %>
                       </td>
                       <td>
-                        <%= boolean_checkbox(variable.shown?, label: CriteriaVariable.human_attribute_name(:shown)) %>
+                        <%= boolean_checkbox(variable.askable_to_patient?, label: CriteriaVariable.human_attribute_name(:asked_online)) %>
                       </td>
                     </tr>
                   <% end %>

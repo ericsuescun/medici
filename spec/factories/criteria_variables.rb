@@ -3,6 +3,7 @@
 # Table name: criteria_variables
 #
 #  id                  :bigint           not null, primary key
+#  asked_online        :boolean          default(TRUE), not null
 #  comparison_type     :string           not null
 #  conditions          :text
 #  criteria_category   :string           default("basic"), not null
@@ -15,7 +16,6 @@
 #  qualitative_value   :string
 #  reference_value_1   :decimal(15, 6)
 #  reference_value_2   :decimal(15, 6)
-#  shown               :boolean          default(TRUE), not null
 #  value_type          :string           not null
 #  variable_type       :string           default("inclusion"), not null
 #  created_at          :datetime         not null
@@ -51,7 +51,7 @@ FactoryBot.define do
     criteria_category { "basic" }
 
     enabled { true }
-    shown { true }
+    asked_online { true }
 
     trait :specific do
       criteria_category { "specific" }

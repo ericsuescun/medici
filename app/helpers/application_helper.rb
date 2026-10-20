@@ -83,14 +83,35 @@ module ApplicationHelper
              class: "badge border bg-#{tone}-subtle text-#{tone}-emphasis")
   end
 
+  # One tier (:basic / :specific) of one source of evidence, in a cell of
+  # criteria_assessments/_evidence_by_tier: "5 de 5 cumplen · 1 no cumple ·
+  # 2 sin dato", or `empty` when the source says nothing about the tier. The
+  # two sources are rendered side by side by the caller and never added up.
+  def tier_evidence(result, tier, empty:)
+    met = result.public_send("#{tier}_passing").count
+    failing = result.public_send("#{tier}_failing").count
+    total = result.public_send("#{tier}_total_count")
+    return tag.span(empty, class: "text-muted") if (met + failing).zero?
+
+    parts = [ tag.strong(t("criteria_assessments.tiers.met", met: met, total: total)) ]
+    parts << tag.span(t("criteria_assessments.tiers.failing", count: failing), class: "text-danger") if failing.positive?
+    unknown = total - met - failing
+    parts << tag.span(t("criteria_assessments.tiers.unknown", count: unknown), class: "text-muted") if unknown.positive?
+    safe_join(parts, " · ")
+  end
+
   # A rule's patient-facing question, or a muted dash. Blank is meaningful — it
   # is what makes a rule un-askable — so it gets a visible placeholder rather
   # than an empty cell. Plain-String return is escaped by ERB, which matters:
-  # the prompt is staff-entered text.
+  # the prompt is staff-entered text (safe_join escapes it too). A question the
+  # centre asks instead of the form says so, or the column would read as if
+  # every prompted rule were on the questionnaire.
   def patient_prompt_display(variable)
     return tag.span("—", class: "text-muted") if variable.patient_prompt.blank?
+    return variable.patient_prompt unless variable.asked_by_centre?
 
-    variable.patient_prompt
+    safe_join([ variable.patient_prompt,
+                tag.span(t("criteria_variables.form.asked_by_centre_note"), class: "d-block small text-muted fst-italic") ])
   end
 
   # What a patient declared, in the words the questionnaire offered them. A

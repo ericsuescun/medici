@@ -275,7 +275,7 @@ en:
         qualitative_value: "Qualitative value"
         criteria_order: "Order"
         enabled: "Enabled"
-        shown: "Shown"
+        asked_online: "Online"
         conditions: "Conditions"
       result:
         name: "Name"
@@ -345,6 +345,10 @@ en:
     check_both_to_continue: "Tick the authorization and confirm the patient is an adult to continue."
     accept: "I authorize the processing of my sensitive personal health data."
     title: "I want to participate"
+    resume:
+      text: "You already started answering this study's questions in this browser."
+      continue: "Continue with the questions"
+      someone_else: "If you are signing up someone else, fill in the form again."
     intro: "Leave us a phone number or an email and a trial centre representative will contact you to assess your eligibility. No account needed."
     contact_number: "Contact phone"
     email: "Email"

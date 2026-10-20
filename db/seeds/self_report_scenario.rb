@@ -203,7 +203,7 @@ module SelfReportScenario
         reference_value_1: qualitative ? nil : ref1, reference_value_2: ref2,
         qualitative_value: qualitative ? ref1 : nil,
         qualitative_scale: qualitative ? INTENSITY_SCALE : [],
-        patient_prompt: prompt, criteria_order: i + 1, enabled: true, shown: true
+        patient_prompt: prompt, criteria_order: i + 1, enabled: true, asked_online: true
       )
       cv.save!
     end

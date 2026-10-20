@@ -20,16 +20,12 @@
       <%= criteria_category_badge(criteria_variable) %>
       <span class="text-muted small"><%= t("criteria_variables.form.criteria_category_hint") %></span>
     </p>
-    <%# The patient-facing question. Its PRESENCE is the switch that makes this
-        rule askable in the public questionnaire, so say so explicitly when it
-        is blank rather than rendering an empty line. %>
+    <%# The patient-facing question. Its PRESENCE is what makes this rule
+        askable at all, so say so explicitly when it is blank rather than
+        rendering an empty line. %>
     <p>
       <strong><%= CriteriaVariable.human_attribute_name(:patient_prompt) %>:</strong>
-      <% if criteria_variable.patient_prompt.present? %>
-        <%= criteria_variable.patient_prompt %>
-      <% else %>
-        <span class="text-muted">—</span>
-      <% end %>
+      <%= patient_prompt_display(criteria_variable) %>
       <span class="text-muted small d-block"><%= t("criteria_variables.form.patient_prompt_hint") %></span>
     </p>
     <p>
@@ -64,8 +60,8 @@
       <%= boolean_checkbox(criteria_variable.enabled?, label: CriteriaVariable.human_attribute_name(:enabled)) %>
     </p>
     <p>
-      <strong><%= CriteriaVariable.human_attribute_name(:shown) %>:</strong>
-      <%= boolean_checkbox(criteria_variable.shown?, label: CriteriaVariable.human_attribute_name(:shown)) %>
+      <strong><%= CriteriaVariable.human_attribute_name(:asked_online) %>:</strong>
+      <%= boolean_checkbox(criteria_variable.askable_to_patient?, label: CriteriaVariable.human_attribute_name(:asked_online)) %>
     </p>
   </div>
 </div>

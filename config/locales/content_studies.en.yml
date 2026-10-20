@@ -121,8 +121,8 @@ en:
         one: "%{count} basic criterion is not met."
         other: "%{count} basic criteria are not met."
       incomplete_detail:
-        one: "%{count} basic criterion still needs recording."
-        other: "%{count} basic criteria still need recording."
+        one: "the centre has not recorded %{count} basic criterion yet."
+        other: "the centre has not recorded %{count} basic criteria yet."
       none: "This profile marks no criterion as basic, so it defines no eligibility."
     specific_status:
       title: "Specific criteria"
@@ -133,8 +133,8 @@ en:
         one: "%{count} specific criterion is not met. It blocks the step to %{to}."
         other: "%{count} specific criteria are not met. They block the step to %{to}."
       incomplete:
-        one: "%{count} specific criterion still needs recording before the step to %{to}."
-        other: "%{count} specific criteria still need recording before the step to %{to}."
+        one: "the centre has not recorded %{count} specific criterion yet; it is needed for the step to %{to}."
+        other: "the centre has not recorded %{count} specific criteria yet; they are needed for the step to %{to}."
     locked:
       assess: "To move this patient from %{from} to %{to} you must record a value for every basic criterion, and all of them must be met."
       accept: "To promote this patient from %{from} to %{to} you must have recorded and met every basic criterion AND every specific one. What the patient declared is not enough at this step."
@@ -148,6 +148,7 @@ en:
       asked: "Question: %{prompt}"
       not_answered: "No answer"
       not_asked: "Not asked to the patient"
+      ask_it: "Ask by phone or in consultation:"
       not_recorded: "— Not recorded —"
       how:
         boolean: "Record the fact (Yes or No); the system works out whether it is met."
@@ -156,14 +157,29 @@ en:
     recorded_heading: "Recorded by the centre"
     declared_column: "Declared"
     recorded_column: "Recorded"
+    recorded_status: "Status (centre)"
+    tiers:
+      level: "Tier"
+      declared: "Answered by the patient"
+      recorded: "Recorded by the centre"
+      basic: "Basic"
+      basic_gate: "Open the step to %{candidate}"
+      specific: "Specific"
+      specific_gate: "With the basic ones, open the step to %{potential}"
+      met: "%{met} of %{total} met"
+      done_declared: "%{done} of %{total} answered"
+      done_recorded: "%{done} of %{total} recorded"
+      passing:
+        one: "%{count} met"
+        other: "%{count} met"
+      failing:
+        one: "%{count} not met"
+        other: "%{count} not met"
+      unknown: "%{count} no data"
+      no_answers: "No answers"
+      not_recorded: "Not recorded"
+      note: "What the patient answers is testimony, not a measurement: enough to reach %{candidate}, never %{potential}, which needs the centre to record both the basic and the specific criteria. The two columns are never added together."
     self_report:
-      title: "What the patient declared"
-      basic: "By their own answers they meet %{met} of %{total} basic criteria."
-      specific: "Specific: %{met} of %{total} met by what they declared."
-      basic_failing:
-        one: "%{count} basic criterion is not met by their answer."
-        other: "%{count} basic criteria are not met by their answers."
-      note: "This is testimony, not a measurement: it can take the patient to %{candidate}, never to %{potential}. The verdict, score and counts below reflect only what the centre recorded."
       dont_know: "I don't know"
     brief:
       passing: "Met"

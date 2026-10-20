@@ -170,10 +170,13 @@ RSpec.describe "Self-report hand-testing scenario", type: :request do
       ana = Patient.find_by!(participant_code: "PRUEBA-A")
       get patient_path(ana)
 
-      body = CGI.unescapeHTML(response.body)
-      expect(body).to include(I18n.t("criteria_assessments.self_report.basic", met: 5, total: 5))
-      expect(body).to include(I18n.t("criteria_assessments.self_report.specific", met: 4, total: 7))
-      expect(body).to include(I18n.t("criteria_assessments.recorded_heading"))
+      doc = Nokogiri::HTML(response.body)
+      declared = ->(tier) { doc.at_css(%(section[data-tier="#{tier}"] [data-source="declared"])).text.squish }
+      expect(declared.(:basic)).to include(I18n.t("criteria_assessments.tiers.done_declared", done: 5, total: 5))
+      expect(declared.(:basic)).to include(I18n.t("criteria_assessments.tiers.passing", count: 5))
+      expect(declared.(:specific)).to include(I18n.t("criteria_assessments.tiers.passing", count: 4))
+      expect(doc.at_css('section[data-tier="basic"] [data-source="recorded"]').text.squish)
+        .to include(I18n.t("criteria_assessments.tiers.done_recorded", done: 0, total: 5))
     end
 
     it "shows Ana's 9 answers beside the inputs, in words, and marks the 3 she was never asked" do

@@ -17,6 +17,11 @@ RSpec.describe "Patient page (demographic + clinical)", type: :request do
     )
   end
 
+  # One source of evidence for one tier, as the patient page states it.
+  def tally(tier, source)
+    Nokogiri::HTML(response.body).at_css(%(section[data-tier="#{tier}"] [data-source="#{source}"]))&.text&.squish
+  end
+
   describe "as an admin" do
     before { sign_in(FactoryBot.create(:user, :admin), scope: :user) }
 
@@ -30,7 +35,7 @@ RSpec.describe "Patient page (demographic + clinical)", type: :request do
       expect(response).to be_successful
       expect(response.body).to include(I18n.t("patients.sections.demographic"))
       expect(response.body).to include(I18n.t("patients.sections.clinical"))
-      expect(response.body).to include(I18n.t("criteria_assessments.not_eligible"))
+      expect(tally(:basic, :recorded)).to include(I18n.t("criteria_assessments.tiers.failing", count: 1))
       expect(response.body).to include(I18n.t("complementary_informations.index_title"))
     end
 
@@ -84,23 +89,53 @@ RSpec.describe "Patient page (demographic + clinical)", type: :request do
         body.scan(%r{<tr>.*?</tr>}m).find { |row| row.include?("<td>#{name}</td>") }
       end
 
-      it "says what the patient declared, and what that does and does not unlock" do
-        get patient_path(patient)
-        body = CGI.unescapeHTML(response.body)
-
-        expect(patient.reload.state).to eq("candidate")
-        expect(body).to include(I18n.t("criteria_assessments.self_report.title"))
-        expect(body).to include(I18n.t("criteria_assessments.self_report.basic", met: 1, total: 1))
-        expect(body).to include(I18n.t("criteria_assessments.self_report.specific", met: 1, total: 1))
+      def tier_cell(source, tier)
+        Nokogiri::HTML(response.body).at_css(%(tr[data-tier="#{tier}"] td[data-source="#{source}"])).text.squish
       end
 
-      it "labels the verdict and the counts as what the centre recorded" do
+      it "gives each tier its own section, with what the patient answered beside what the centre recorded" do
+        get patient_path(patient)
+
+        expect(patient.reload.state).to eq("candidate")
+        %i[basic specific].each do |tier|
+          expect(tally(tier, :declared)).to include(I18n.t("criteria_assessments.tiers.done_declared", done: 1, total: 1))
+          expect(tally(tier, :declared)).to include(I18n.t("criteria_assessments.tiers.passing", count: 1))
+          expect(tally(tier, :recorded)).to include(I18n.t("criteria_assessments.tiers.done_recorded", done: 0, total: 1))
+        end
+      end
+
+      it "lists each criterion under its own tier" do
+        get patient_path(patient)
+        doc = Nokogiri::HTML(response.body)
+
+        expect(doc.css('section[data-tier="basic"] tbody td:first-child').map(&:text)).to eq([ "Edad" ])
+        expect(doc.css('section[data-tier="specific"] tbody td:first-child').map(&:text)).to eq([ "Visitas" ])
+      end
+
+      # Found 2026-10-19 in production: a patient who answered every question
+      # opened to "Evaluación incompleta — faltan 5 criterios básicos por
+      # registrar", a 0-of-20 block listing all twenty, a 0% score and four zero
+      # tiles — all counting only what the centre recorded, which was nothing.
+      # Partners read it as their answers having been lost. The per-tier boxes
+      # replace all of it.
+      it "carries none of the recorded-only blocks that used to stack above the table" do
         get patient_path(patient)
         body = CGI.unescapeHTML(response.body)
-        heading = I18n.t("criteria_assessments.recorded_heading")
 
-        expect(body).to include(heading)
-        expect(body.index(heading)).to be < body.index(I18n.t("criteria_assessments.incomplete"))
+        expect(body).not_to include(I18n.t("criteria_assessments.incomplete"))
+        expect(body).not_to include(I18n.t("criteria_assessments.specific_status.title"))
+        expect(body).not_to include(I18n.t("criteria_assessments.score.title"))
+        expect(body).not_to include(I18n.t("criteria_assessments.brief.out_of_reach"))
+      end
+
+      it "counts what the centre records in the centre's box only" do
+        patient.variable_values.create!(criteria_variable: visits, name: visits.name, value: "false",
+                                        value_type: "boolean", comparison_type: "true")
+        get patient_path(patient)
+
+        expect(tally(:specific, :recorded)).to include(I18n.t("criteria_assessments.tiers.done_recorded", done: 1, total: 1))
+        expect(tally(:specific, :recorded)).to include(I18n.t("criteria_assessments.tiers.failing", count: 1))
+        expect(tally(:specific, :declared)).to include(I18n.t("criteria_assessments.tiers.passing", count: 1))
       end
 
       it "shows each declared answer beside the recorded one" do
@@ -124,21 +159,22 @@ RSpec.describe "Patient page (demographic + clinical)", type: :request do
         expect(between).to include("</div>")
       end
 
-      it "carries the same summary on the assessment page" do
+      it "carries the same tiers on the assessment page" do
         get patient_criteria_assessment_path(patient)
 
-        expect(CGI.unescapeHTML(response.body))
-          .to include(I18n.t("criteria_assessments.self_report.basic", met: 1, total: 1))
+        expect(tier_cell(:declared, :basic)).to eq(I18n.t("criteria_assessments.tiers.met", met: 1, total: 1))
       end
     end
 
-    it "shows no declared summary or column for a patient who never answered" do
+    it "shows no declared column, in the tiers or the table, for a patient who never answered" do
       primary_rule!(name: "Edad")
 
       get patient_path(patient)
 
-      expect(response.body).not_to include(I18n.t("criteria_assessments.self_report.title"))
+      expect(response.body).not_to include(I18n.t("criteria_assessments.tiers.declared"))
       expect(response.body).not_to include(I18n.t("criteria_assessments.declared_column"))
+      expect(response.body).not_to include('data-source="declared"')
+      expect(tally(:basic, :recorded)).to include(I18n.t("criteria_assessments.tiers.done_recorded", done: 0, total: 1))
     end
 
     it "marks an unmeasured criterion as no-data rather than as a failure" do

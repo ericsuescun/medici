@@ -4,6 +4,10 @@
     ParticipationRequestsController#create. Spanish copy, matching the sign-up
     form it replaces. %>
 <% content_for :title, t("participation_requests.title") %>
+<%# Always fetched, never restored from Turbo's snapshot: the back button from
+    the questionnaire must reach the server, or the "continue" offer below
+    never appears and the stale form invites a duplicate submission. %>
+<% content_for :head, tag.meta(name: "turbo-cache-control", content: "no-cache") %>
 
 <div class="container my-5">
   <div class="row">
@@ -19,6 +23,16 @@
         <div class="card-body">
           <p class="mb-1"><strong><%= @study.public_title %></strong></p>
           <p class="text-muted small"><%= @study.scientific_title %></p>
+
+          <% if questionnaire_in_progress? %>
+            <%# See ParticipationRequestsController#questionnaire_in_progress?:
+                offered, not forced — this browser may be registering someone else. %>
+            <div class="alert alert-info" data-questionnaire="in-progress">
+              <p class="mb-2"><%= t("participation_requests.resume.text") %></p>
+              <%= link_to t("participation_requests.resume.continue"), study_self_report_path(@study), class: "btn btn-primary btn-sm" %>
+              <p class="small text-muted mb-0 mt-2"><%= t("participation_requests.resume.someone_else") %></p>
+            </div>
+          <% end %>
 
           <p><%= t("participation_requests.intro") %></p>
 

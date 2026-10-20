@@ -3,6 +3,7 @@
 # Table name: criteria_variables
 #
 #  id                  :bigint           not null, primary key
+#  asked_online        :boolean          default(TRUE), not null
 #  comparison_type     :string           not null
 #  conditions          :text
 #  criteria_category   :string           default("basic"), not null
@@ -15,7 +16,6 @@
 #  qualitative_value   :string
 #  reference_value_1   :decimal(15, 6)
 #  reference_value_2   :decimal(15, 6)
-#  shown               :boolean          default(TRUE), not null
 #  value_type          :string           not null
 #  variable_type       :string           default("inclusion"), not null
 #  created_at          :datetime         not null
@@ -77,10 +77,10 @@ class CriteriaVariable < ApplicationRecord
        true: "true",
        false: "false"
 
-  # Rules the public questionnaire may ask a patient. ONE condition: the rule
-  # carries a patient_prompt.
+  # Rules the public questionnaire may ask a patient: the rule carries a
+  # patient_prompt and, if it is SPECIFIC, is switched to be asked online.
   #
-  # The prompt's PRESENCE is the switch, and writing one is the editorial act —
+  # The prompt's PRESENCE is what makes a rule askable at all, and writing one is the editorial act —
   # it is the CEI-approved participant wording, which is what
   # `patient_self_report_enabled` attests. The questionnaire renders the prompt
   # and nothing else (never name/rule_summary/thresholds — those describe the
@@ -103,11 +103,31 @@ class CriteriaVariable < ApplicationRecord
   # actually speak to — prior treatments that failed, willingness to attend
   # visits, other trials, habits. Leaving the rest promptless is how the form
   # stays short enough to finish.
-  scope :askable_to_patient, -> { where(enabled: true).where.not(patient_prompt: [ nil, "" ]) }
+  #
+  # `asked_online` (2026-10-19, was the never-read `shown`) keeps a prompted
+  # SPECIFIC rule off the form when the centre would rather ask it itself — by
+  # phone or in consultation — and record the answer as a measurement. The
+  # prompt stays, as the wording the rep reads out. It never applies to a BASIC
+  # rule: auto-triage needs a declaration for every basic criterion, so one
+  # basic question taken offline would end every applicant on page 1 with "not
+  # a match" and nobody could reach candidate on their own answers. Hence the
+  # `basic OR asked_online` here, and the normalisation below that keeps the
+  # stored value truthful.
+  scope :askable_to_patient, lambda {
+    where(enabled: true).where.not(patient_prompt: [ nil, "" ])
+                        .and(where(criteria_category: "basic").or(where(asked_online: true)))
+  }
 
   def askable_to_patient?
-    enabled? && patient_prompt.present?
+    enabled? && patient_prompt.present? && (basic? || asked_online?)
   end
+
+  # Has the wording of a question, but the centre asks it rather than the form.
+  def asked_by_centre?
+    enabled? && patient_prompt.present? && !askable_to_patient?
+  end
+
+  before_validation :ask_basic_criteria_online
 
   # Normalize qualitative_scale when provided as a comma-separated string from forms
   before_validation :normalize_qualitative_scale
@@ -120,6 +140,10 @@ class CriteriaVariable < ApplicationRecord
   validate :qualitative_value_in_scale, if: -> { value_type == "qualitative" }
 
   private
+
+  def ask_basic_criteria_online
+    self.asked_online = true if basic?
+  end
 
   def normalize_qualitative_scale
     return if self[:qualitative_scale].nil?

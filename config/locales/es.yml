@@ -274,7 +274,7 @@ es:
         qualitative_value: "Valor cualitativo"
         criteria_order: "Orden"
         enabled: "Habilitado"
-        shown: "Mostrado"
+        asked_online: "En línea"
         conditions: "Condiciones"
       result:
         name: "Nombre"
@@ -344,6 +344,10 @@ es:
     check_both_to_continue: "Marca la autorización y confirma que el/la paciente es mayor de edad para continuar."
     accept: "Autorizo el tratamiento de mis datos personales sensibles de salud."
     title: "Quiero participar"
+    resume:
+      text: "Ya empezaste a responder las preguntas de este estudio en este navegador."
+      continue: "Continuar con las preguntas"
+      someone_else: "Si vas a inscribir a otra persona, llena el formulario de nuevo."
     intro: "Déjanos un teléfono o un correo y un representante del centro de investigación te contactará para evaluar tu elegibilidad. No necesitas crear una cuenta."
     contact_number: "Teléfono de contacto"
     email: "Correo electrónico"

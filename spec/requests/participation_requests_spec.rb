@@ -152,4 +152,60 @@ RSpec.describe "Participation requests", type: :request do
 
     expect(Patient.last.consents.pluck(:document_type)).to eq([ Consent::LEY_1581_HABEAS_DATA ])
   end
+
+  # 2026-10-19, production: somebody reached the questions, pressed back, sent
+  # this form again — and became two patients, the first with no answers at
+  # all. The form now offers the questionnaire this browser already started,
+  # without forcing it (it may be registering a different person).
+  describe "a questionnaire already in progress in this browser" do
+    let(:study) { FactoryBot.create(:study, patient_self_report_enabled: true) }
+
+    before do
+      FactoryBot.create(:criteria_profile, study: study).criteria_variables.create!(
+        name: "Edad", variable_type: "inclusion", value_type: "quantitative",
+        comparison_type: "between_range", reference_value_1: 18, reference_value_2: 40,
+        criteria_category: "basic", patient_prompt: "¿Cuántos años tienes?"
+      )
+      post participation_requests_path(study_id: study.id), params: participation_params(authorized: true)
+    end
+
+    def offer
+      Nokogiri::HTML(response.body).at_css('[data-questionnaire="in-progress"]')
+    end
+
+    it "offers to continue it when the form is opened again for the same study" do
+      get new_participation_request_path(study_id: study.id)
+
+      expect(offer).to be_present
+      expect(offer.at_css("a")["href"]).to eq(study_self_report_path(study))
+      expect(offer.text).to include(I18n.t("participation_requests.resume.someone_else"))
+    end
+
+    it "still lets the form be sent again, for somebody else" do
+      get new_participation_request_path(study_id: study.id)
+
+      expect {
+        post participation_requests_path(study_id: study.id), params: participation_params(authorized: true)
+      }.to change(Patient, :count).by(1)
+    end
+
+    it "makes no offer on another study's form" do
+      get new_participation_request_path(study_id: FactoryBot.create(:study).id)
+
+      expect(offer).to be_nil
+    end
+
+    it "makes no offer once the questionnaire is finished" do
+      post study_self_report_path(study), params: { answers: {} }
+      get new_participation_request_path(study_id: study.id)
+
+      expect(offer).to be_nil
+    end
+
+    it "is never restored from Turbo's cache, so the back button reaches the server" do
+      get new_participation_request_path(study_id: study.id)
+
+      expect(response.body).to include('<meta name="turbo-cache-control" content="no-cache">')
+    end
+  end
 end

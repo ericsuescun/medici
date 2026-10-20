@@ -1,0 +1,59 @@
+<%# Where the patient stands on each tier, from BOTH sources side by side:
+    what the patient answered (testimony) and what the centre recorded
+    (measurement). Shared by the patient page and the assessment page.
+
+    Replaced _self_report_summary on 2026-10-19. That box stated the declared
+    half in a sentence and everything under it counted only recorded values, so
+    a patient who answered every question opened to "Evaluación incompleta" and
+    a row of zeros — and partners testing the questionnaire read it as their
+    answers having been lost. The two columns are never added together: a
+    declaration is enough for the triage step and never for the clinical one,
+    which is what the note says.
+
+    The declared column only appears when the patient answered something; a
+    patient the centre entered by hand gets the recorded column alone. Locals:
+      recorded — the patient's eligibility_result (recorded values)
+      declared — the patient's self_report_result, or nil
+%>
+<% show_declared = declared.present? && declared.answered_count.positive? %>
+<% candidate = t("patients.states.candidate") %>
+<% potential = t("patients.states.potential") %>
+<% tiers = [ [ :basic, t("criteria_assessments.tiers.basic_gate", candidate: candidate) ],
+             [ :specific, t("criteria_assessments.tiers.specific_gate", potential: potential) ] ]
+             .select { |tier, _| recorded.public_send("#{tier}_total_count").positive? } %>
+<% if tiers.any? %>
+  <div class="table-responsive <%= show_declared ? "mb-1" : "mb-3" %>">
+    <table class="table table-sm align-middle mb-1 evidence-by-tier">
+      <thead>
+        <tr>
+          <th scope="col"><%= t("criteria_assessments.tiers.level") %></th>
+          <% if show_declared %>
+            <th scope="col" class="bg-info-subtle"><%= t("criteria_assessments.tiers.declared") %></th>
+          <% end %>
+          <th scope="col"><%= t("criteria_assessments.tiers.recorded") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% tiers.each do |tier, gate| %>
+          <tr data-tier="<%= tier %>">
+            <th scope="row">
+              <%= t("criteria_assessments.tiers.#{tier}") %>
+              <div class="small text-muted fw-normal"><%= gate %></div>
+            </th>
+            <% if show_declared %>
+              <td class="bg-info-subtle" data-source="declared">
+                <%= tier_evidence(declared, tier, empty: t("criteria_assessments.tiers.no_answers")) %>
+              </td>
+            <% end %>
+            <td data-source="recorded">
+              <%= tier_evidence(recorded, tier, empty: t("criteria_assessments.tiers.not_recorded")) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <% if show_declared %>
+    <p class="small text-muted mb-3"><%= t("criteria_assessments.tiers.note", candidate: candidate, potential: potential) %></p>
+  <% end %>
+<% end %>

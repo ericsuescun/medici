@@ -1,0 +1,23 @@
+<%# One tier, one source of evidence: how much of it is known, and how it
+    came out — "5 de 5 respondidos · 5 cumplen · 0 no cumplen". The patient
+    page shows one of these per source, side by side, at the head of each tier
+    (2026-10-19); the two are never added together. Locals:
+      result — an EligibilityResult (self_report_result for :declared,
+               eligibility_result for :recorded)
+      tier   — :basic or :specific
+      source — :declared or :recorded
+%>
+<% met = result.public_send("#{tier}_passing").count %>
+<% failing = result.public_send("#{tier}_failing").count %>
+<% total = result.public_send("#{tier}_total_count") %>
+<% done = met + failing %>
+<% tone = if failing.positive? then "text-danger-emphasis" elsif done == total then "text-success-emphasis" else "text-body" end %>
+<div class="border rounded p-2 h-100 <%= "bg-info-subtle" if source == :declared %>" data-source="<%= source %>">
+  <div class="small fw-semibold text-body-secondary"><%= t("criteria_assessments.tiers.#{source}") %></div>
+  <div class="fs-5 fw-bold <%= tone %>"><%= t("criteria_assessments.tiers.done_#{source}", done: done, total: total) %></div>
+  <div class="small">
+    <span class="text-success-emphasis"><i class="bi bi-check-circle" aria-hidden="true"></i> <%= t("criteria_assessments.tiers.passing", count: met) %></span>
+    ·
+    <span class="<%= failing.positive? ? "text-danger-emphasis fw-semibold" : "text-body-secondary" %>"><i class="bi bi-x-circle" aria-hidden="true"></i> <%= t("criteria_assessments.tiers.failing", count: failing) %></span>
+  </div>
+</div>

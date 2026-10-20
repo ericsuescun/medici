@@ -121,8 +121,8 @@ fr:
         one: "%{count} critère de base n'est pas rempli."
         other: "%{count} critères de base ne sont pas remplis."
       incomplete_detail:
-        one: "%{count} critère de base reste à enregistrer."
-        other: "%{count} critères de base restent à enregistrer."
+        one: "le centre n'a pas encore enregistré %{count} critère de base."
+        other: "le centre n'a pas encore enregistré %{count} critères de base."
       none: "Ce profil ne marque aucun critère comme critère de base ; il ne définit donc pas l'éligibilité."
     specific_status:
       title: "Critères spécifiques"
@@ -133,8 +133,8 @@ fr:
         one: "%{count} critère spécifique n'est pas rempli. Il bloque le passage à %{to}."
         other: "%{count} critères spécifiques ne sont pas remplis. Ils bloquent le passage à %{to}."
       incomplete:
-        one: "%{count} critère spécifique reste à enregistrer avant le passage à %{to}."
-        other: "%{count} critères spécifiques restent à enregistrer avant le passage à %{to}."
+        one: "le centre n'a pas encore enregistré %{count} critère spécifique ; il est nécessaire pour le passage à %{to}."
+        other: "le centre n'a pas encore enregistré %{count} critères spécifiques ; ils sont nécessaires pour le passage à %{to}."
     locked:
       assess: "Pour faire passer ce patient de %{from} à %{to}, vous devez enregistrer une valeur pour chaque critère de base, et tous doivent être remplis."
       accept: "Pour promouvoir ce patient de %{from} à %{to}, vous devez avoir enregistré et rempli tous les critères de base ET tous les critères spécifiques. Les déclarations du patient ne suffisent pas à cette étape."
@@ -148,6 +148,7 @@ fr:
       asked: "Question : %{prompt}"
       not_answered: "Sans réponse"
       not_asked: "Non demandé au patient"
+      ask_it: "À poser par téléphone ou en consultation :"
       not_recorded: "— Non enregistré —"
       how:
         boolean: "Enregistrez le fait (Oui ou Non) ; le système calcule s'il est rempli."
@@ -156,14 +157,29 @@ fr:
     recorded_heading: "Enregistré par le centre"
     declared_column: "Déclaré"
     recorded_column: "Enregistré"
+    recorded_status: "Statut (centre)"
+    tiers:
+      level: "Niveau"
+      declared: "Répondu par le patient"
+      recorded: "Enregistré par le centre"
+      basic: "De base"
+      basic_gate: "Ouvrent le passage à %{candidate}"
+      specific: "Spécifiques"
+      specific_gate: "Avec ceux de base, ouvrent le passage à %{potential}"
+      met: "%{met} sur %{total} remplis"
+      done_declared: "%{done} sur %{total} répondus"
+      done_recorded: "%{done} sur %{total} enregistrés"
+      passing:
+        one: "%{count} rempli"
+        other: "%{count} remplis"
+      failing:
+        one: "%{count} non rempli"
+        other: "%{count} non remplis"
+      unknown: "%{count} sans donnée"
+      no_answers: "Aucune réponse"
+      not_recorded: "Non enregistré"
+      note: "Ce que répond le patient est un témoignage, pas une mesure : il suffit pour passer à %{candidate}, jamais à %{potential}, qui exige que le centre enregistre les critères de base et les critères spécifiques. Les deux colonnes ne s'additionnent jamais."
     self_report:
-      title: "Ce que le patient a déclaré"
-      basic: "D'après ses propres réponses, il remplit %{met} des %{total} critères de base."
-      specific: "Spécifiques : %{met} sur %{total} remplis d'après ses déclarations."
-      basic_failing:
-        one: "%{count} critère de base n'est pas rempli d'après sa réponse."
-        other: "%{count} critères de base ne sont pas remplis d'après ses réponses."
-      note: "C'est un témoignage, pas une mesure : il peut amener le patient à %{candidate}, jamais à %{potential}. Le verdict, le score et les décomptes ci-dessous ne reflètent que ce que le centre a enregistré."
       dont_know: "Je ne sais pas"
     brief:
       passing: "Remplis"

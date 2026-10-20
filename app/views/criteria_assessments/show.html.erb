@@ -13,7 +13,7 @@
   </p>
 
   <%# ---- What the patient declared, then what the centre recorded ---- %>
-  <%= render "criteria_assessments/self_report_summary", result: @self_report_result %>
+  <%= render "criteria_assessments/evidence_by_tier", recorded: @result, declared: @self_report_result %>
   <p class="text-uppercase text-muted small fw-semibold mb-2"><%= t("criteria_assessments.recorded_heading") %></p>
 
   <%# ---- Verdict banner (basic tier) + the specific tier's own status ---- %>
@@ -249,6 +249,11 @@
                     </div>
                   <% elsif cv.askable_to_patient? %>
                     <span class="text-muted"><%= t("criteria_assessments.capture.not_answered") %></span>
+                  <% elsif cv.asked_by_centre? %>
+                    <%# Kept off the questionnaire on purpose: the rep asks it, in
+                        the approved wording, and records the answer beside it. %>
+                    <div class="small fw-semibold"><%= t("criteria_assessments.capture.ask_it") %></div>
+                    <div class="small"><%= cv.patient_prompt %></div>
                   <% else %>
                     <span class="text-muted fst-italic small"><%= t("criteria_assessments.capture.not_asked") %></span>
                   <% end %>

@@ -26,7 +26,7 @@
             <th><%= CriteriaVariable.human_attribute_name(:qualitative_scale) %></th>
             <th><%= CriteriaVariable.human_attribute_name(:qualitative_value) %></th>
             <th><%= CriteriaVariable.human_attribute_name(:enabled) %></th>
-            <th><%= CriteriaVariable.human_attribute_name(:shown) %></th>
+            <th><%= CriteriaVariable.human_attribute_name(:asked_online) %></th>
             <th></th>
           </tr>
           </thead>
@@ -45,14 +45,9 @@
               </td>
               <%# The patient-facing question. Its PRESENCE is what makes the rule
                   askable at all (CriteriaVariable#askable_to_patient?), so a blank
-                  cell means the public questionnaire never asks this one. %>
-              <td style="min-width: 14rem">
-                <% if variable.patient_prompt.present? %>
-                  <%= variable.patient_prompt %>
-                <% else %>
-                  <span class="text-muted">—</span>
-                <% end %>
-              </td>
+                  cell means nobody asks this one; a specific rule switched off
+                  the questionnaire is marked as asked by the centre. %>
+              <td style="min-width: 14rem"><%= patient_prompt_display(variable) %></td>
               <td><%= variable.comparison_type %></td>
               <td><%= variable.reference_value_1 %></td>
               <td><%= variable.reference_value_2 %></td>
@@ -63,7 +58,7 @@
                 <%= boolean_checkbox(variable.enabled?, label: CriteriaVariable.human_attribute_name(:enabled)) %>
               </td>
               <td>
-                <%= boolean_checkbox(variable.shown?, label: CriteriaVariable.human_attribute_name(:shown)) %>
+                <%= boolean_checkbox(variable.askable_to_patient?, label: CriteriaVariable.human_attribute_name(:asked_online)) %>
               </td>
               <td>
                 <%= link_to t("common.edit"), edit_criteria_profile_criteria_variable_path(@criteria_profile, variable) %>

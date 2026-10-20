@@ -1,4 +1,4 @@
-<%= form_with(model: [@criteria_profile, @criteria_variable], class: "row g-3") do |form| %>
+<%= form_with(model: [@criteria_profile, @criteria_variable], class: "row g-3", data: { controller: "specific-only" }) do |form| %>
   <% if @criteria_variable.errors.any? %>
     <div class="alert alert-danger">
       <h4><%= t("criteria_variables.form.error_header", count: @criteria_variable.errors.count) %></h4>
@@ -40,7 +40,8 @@
     <%= form.label :criteria_category, CriteriaVariable.human_attribute_name(:criteria_category) %>
     <%= form.select :criteria_category,
                     CriteriaVariable.criteria_categories.keys.map { |k| [t("enums.criteria_variable.criteria_category.#{k}", default: k.humanize), k] },
-                    {}, class: "form-select", required: true %>
+                    {}, class: "form-select", required: true,
+                    data: { specific_only_target: "category", action: "specific-only#toggle" } %>
     <div class="form-text"><%= t("criteria_variables.form.criteria_category_hint") %></div>
   </div>
 
@@ -82,14 +83,19 @@
     <div class="form-text"><%= t("criteria_variables.form.patient_prompt_hint") %></div>
   </div>
 
+  <%# Specific rules only: a basic question is always asked online (see
+      CriteriaVariable#askable_to_patient), so the switch is not offered there. %>
+  <%= tag.div class: "col-12", hidden: !@criteria_variable.specific?, data: { specific_only_target: "specificOnly" } do %>
+    <div class="form-check form-switch">
+      <%= form.check_box :asked_online, class: "form-check-input", role: "switch", id: "criteria_variable_asked_online" %>
+      <%= form.label :asked_online, t("criteria_variables.form.asked_online_label"), class: "form-check-label", for: "criteria_variable_asked_online" %>
+    </div>
+    <div class="form-text"><%= t("criteria_variables.form.asked_online_hint") %></div>
+  <% end %>
+
   <div class="col-md-3 form-check">
     <%= form.check_box :enabled, class: "form-check-input", id: "criteria_variable_enabled" %>
     <%= form.label :enabled, CriteriaVariable.human_attribute_name(:enabled), class: "form-check-label" %>
-  </div>
-
-  <div class="col-md-3 form-check">
-    <%= form.check_box :shown, class: "form-check-input", id: "criteria_variable_shown" %>
-    <%= form.label :shown, CriteriaVariable.human_attribute_name(:shown), class: "form-check-label" %>
   </div>
 
   <div class="col-12">

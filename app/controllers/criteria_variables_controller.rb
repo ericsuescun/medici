@@ -95,7 +95,7 @@ class CriteriaVariablesController < SecureApplicationController
     def criteria_variable_params
       params.require(:criteria_variable).permit(
         :name, :description, :value_type, :variable_type, :criteria_category, :reference_value_1, :reference_value_2,
-        :comparison_type, :conditions, :qualitative_value, :qualitative_scale, :enabled, :shown, :criteria_order,
+        :comparison_type, :conditions, :qualitative_value, :qualitative_scale, :enabled, :asked_online, :criteria_order,
         :patient_prompt
       )
     end
